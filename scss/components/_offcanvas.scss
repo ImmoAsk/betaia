@@ -1,0 +1,152 @@
+//
+// Offcanvas
+// --------------------------------------------------
+
+
+// Offcanvas base styles
+
+.offcanvas {
+  will-change: transform, box-shadow;
+  transition: transform .4s cubic-bezier(.165, .84, .44, 1), box-shadow .3s ease;
+}
+
+
+// Offcanvas Header and Footer
+
+.offcanvas-header,
+.offcanvas-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+  padding: $offcanvas-padding-y $offcanvas-padding-x;
+
+  .bg-dark & {
+    background-color: rgba($white, .05);
+  }
+}
+
+
+// Offcanvas body (content holder)
+
+.offcanvas-body,
+.fixed-nav-body {
+  height: 100%;
+
+  // Custom scrollbar inside offcanvas
+  &::-webkit-scrollbar {
+    width: $scrollbar-width;
+    background-color: transparent;
+    opacity: 0;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: $scrollbar-bg;
+    @include border-radius($scrollbar-width * .5);
+  }
+  & > .simplebar-track {
+    display: block;
+    background-color: transparent;
+  }
+  .simplebar-vertical { margin-right: .1875rem; }
+
+  // Nav inside offcanvas
+  > :not(.card) {
+
+    .nav {
+      flex-direction: column;
+      margin: {
+        right: -$offcanvas-padding-x;
+        left: -$offcanvas-padding-x;
+      }
+      > li { margin-bottom: 0; }
+    }
+    &:not(.navbar-nav) .nav-link {
+      padding: .3rem $offcanvas-padding-x;
+      font-weight: normal;
+      &.active {
+        position: relative;
+        &::before {
+          display: block;
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: .125rem;
+          height: 100%;
+          background-color: $nav-link-active-color;
+          content: '';
+        }
+      }
+    }
+    .nav-light .nav-link.active::before {
+      background-color: $nav-link-light-active-color;
+    }
+  }
+}
+
+.bg-dark .offcanvas-body,
+.bg-dark .fixed-nav-body {
+  &::-webkit-scrollbar-thumb {
+    background-color: $scrollbar-light-bg;
+  }
+}
+
+
+// Styles for expanded offcanvas only
+
+[class^='offcanvas-expand-']  .card-flush,
+[class*=' offcanvas-expand-'] .card-flush {
+  border: 0;
+  > .card-body { padding: 0; }
+}
+
+.offcanvas-expand {
+  @each $breakpoint in map-keys($grid-breakpoints) {
+    $next: breakpoint-next($breakpoint, $grid-breakpoints);
+    $infix: breakpoint-infix($next, $grid-breakpoints);
+
+    &#{$infix} {
+      @include media-breakpoint-up($next) {
+        position: inherit;
+        bottom: 0;
+        flex-grow: 1;
+        width: auto;
+        transform: none;
+        @include transition(none);
+        background-color: transparent;
+        border-right: 0;
+        border-left: 0;
+        @include box-shadow(none);
+        visibility: visible !important;
+        z-index: 1;
+
+        .offcanvas-header,
+        .offcanvas-footer {
+          display: none;
+        }
+
+        .offcanvas-top,
+        .offcanvas-bottom {
+          height: auto;
+          border-top: 0;
+          border-bottom: 0;
+        }
+
+        .offcanvas-body {
+          padding: 0;
+          overflow-y: visible;
+        }
+
+        &.position-fixed {
+          z-index: $zindex-fixed + 1;
+        }
+
+        .card-flush {
+          border: $card-border-width solid $card-border-color;
+          > .card-body {
+            padding: $card-spacer-y $card-spacer-x;
+          }
+        }
+      }
+    }
+  }
+}

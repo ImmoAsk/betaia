@@ -1,0 +1,86 @@
+ [
+    [
+      {
+        "href": "/tg/catalog?category=rent",
+        "media": "fi-apartment",
+        "title": "Appartement"
+      },
+      {
+        "href": "/tg/catalog?category=sale",
+        "media": "fi-apartment",
+        "title": "Villa"
+      },
+      {
+        "href": "/tg/catalog?category=rent",
+        "media": "fi-shop",
+        "title": "Chambre salon"
+      },
+      {
+        "href": "/tg/catalog?category=rent",
+        "media": "fi-rent",
+        "title": "Studio"
+      },
+      {
+        "href": "/tg/catalog?category=sale",
+        "media": "fi-rent",
+        "title": "Terrains"
+      },
+      {
+        "href": "/tg/catalog?category=sale",
+        "media": "fi-house-chosen",
+        "title": "Boutiques"
+      },
+      {
+        "href": "/tg/catalog?category=sale",
+        "media": "fi-house-chosen",
+        "title": "Immeuble commercial"
+      },
+      {
+        "href": "/tg/catalog?category=sale",
+        "media": "fi-computer",
+        "title": "Magasins"
+      },
+      {
+        "href": "/tg/catalog?category=rent",
+        "media": "fi-single-bed",
+        "title": "Bureaux"
+      },
+      {
+        "href": "/tg/catalog?category=sale",
+        "media": "fi-parking",
+        "title": "Espaces co-working"
+      },
+      {
+        "href": "/tg/catalog?category=sale",
+        "media": "fi-parking",
+        "title": "Mur commercial"
+      },
+      {
+        "href": "/tg/catalog?category=sale",
+        "media": "fi-single-bed",
+        "title": "Chambre"
+      }
+    ],
+    [
+      {
+        "href": "/tg/catalog?category=rent",
+        "media": "fi-single-bed",
+        "title": "Bureau"
+      },
+      {
+        "href": "/tg/catalog?category=sale",
+        "media": "fi-computer",
+        "title": "Magasins"
+      },
+      {
+        "href": "/tg/catalog?category=rent",
+        "media": "fi-tg-buy",
+        "title": "Immeuble commercial"
+      },
+      {
+        "href": "/tg/catalog?category=sale",
+        "media": "fi-parking",
+        "title": "Bureaux co-working"
+      }
+    ]
+  ]
