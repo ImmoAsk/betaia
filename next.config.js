@@ -1,6 +1,6 @@
 module.exports = {
   reactStrictMode: true,
-  output: 'export',
+  output: 'standalone',
   //swcMinify: true,
   images: {
     domains: ['immoask.com','immoaskbetaapi.omnisoft.africa'],
