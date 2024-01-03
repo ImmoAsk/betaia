@@ -33,7 +33,7 @@
     "lightgallery": "^2.4.0",
     "lottie-web": "^5.9.3",
     "moment": "^2.29.4",
-    "next": "^12.1.2",
+    "next": "^12.2.5",
     "next-auth": "^4.20.1",
     "nouislider-react": "^3.4.1",
     "nprogress": "^0.2.0",
