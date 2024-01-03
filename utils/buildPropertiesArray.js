@@ -3,8 +3,7 @@ import getFirstImageArray from "./formatFirsImageArray";
 import getPropertyFullUrl from "./getPropertyFullURL";
 
 function buildPropertiesArray  (properties)  {
-    //const { status, data:badges_property, error, isFetching,isLoading,isError }  = usePropertyBadges(1);
-    //let badgeArray = usePropertyBadges(1);
+
     let  tempPropertyArray =[];
     
     if(Array.isArray(properties) && !properties.length){
@@ -14,7 +13,6 @@ function buildPropertiesArray  (properties)  {
       const _objetProperty=createPropertyObject(property);
       tempPropertyArray.push(_objetProperty);
     });
-    //console.log(tempBadgesArray);
     let propertiesArrayCustomized = tempPropertyArray;
     return propertiesArrayCustomized;
   }
