@@ -5,9 +5,8 @@ import Link from 'next/link'
 import Nav from 'react-bootstrap/Nav'
 import Button from 'react-bootstrap/Button'
 import PropertyCard from '../../components/PropertyCard'
-import { getSession, useSession } from 'next-auth/react'
 import EditPropertyModal from '../../components/iacomponents/EditPropertyModal'
-import { buildPropertiesArray } from '../../utils/buildPropertiesArray'
+import { buildPropertiesArray } from '../../utils/generalUtils'
 import { useSession,getSession } from 'next-auth/react'
 
 const AccountPropertiesPage = ({_userProperties}) => {
