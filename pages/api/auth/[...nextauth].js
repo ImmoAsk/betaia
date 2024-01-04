@@ -4,10 +4,11 @@ import { GraphQLClient, gql } from 'graphql-request'
 import NextAuth from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { authService } from "../../../services/auth.service.ts";
-
+import 'dotenv/config'
+const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 const login = async (username, password) => {
-
-    return axios.get(`http://127.0.0.1:8000/api/v2?query=mutation{login(input:{username:"${username}",password:"${password}"}){access_token,token_type,expires_in,refresh_token,user{name,id,email,role{id,description,statut,code}}}}`)
+    console.log(apiUrl);
+    return axios.get(`${apiUrl}?query=mutation{login(input:{username:"${username}",password:"${password}"}){access_token,token_type,expires_in,refresh_token,user{name,id,email,role{id,description,statut,code}}}}`)
     .then((res) => {
       //console.log(res.data.data);
       const u = {
