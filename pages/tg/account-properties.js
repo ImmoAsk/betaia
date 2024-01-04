@@ -8,7 +8,7 @@ import PropertyCard from '../../components/PropertyCard'
 import { getSession, useSession } from 'next-auth/react'
 import EditPropertyModal from '../../components/iacomponents/EditPropertyModal'
 import { buildPropertiesArray } from '../../utils/buildPropertiesArray'
-
+import { useSession,getSession } from 'next-auth/react'
 
 const AccountPropertiesPage = ({_userProperties}) => {
 
@@ -155,6 +155,11 @@ const AccountPropertiesPage = ({_userProperties}) => {
 
 export async function getServerSideProps(context) {
   const session = await getSession(context);
+  if (!session) {
+    context.res.writeHead(302, { Location: "/auth/signin" });
+    context.res.end();
+    return { props: {} };
+  }
   const userid = session ? session.user.id : 0;
   // Fetch data from external API
   let dataAPIresponse = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getUserProperties(user_id:${userid},first:10,orderBy:{column:NUO,order:DESC}){data{surface,badge_propriete{badge{badge_name,badge_image}},id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination},visuels{uri}}}}`);
@@ -162,6 +167,6 @@ export async function getServerSideProps(context) {
 
   _userProperties = _userProperties.data.getUserProperties.data;
   console.log(_userProperties);
-  return { props: { _userProperties} }
+  return { props: { _userProperties,session} }
 }
 export default AccountPropertiesPage

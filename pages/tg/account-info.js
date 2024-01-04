@@ -19,7 +19,7 @@ import FilePondPluginImageResize from 'filepond-plugin-image-resize'
 import FilePondPluginImageTransform from 'filepond-plugin-image-transform'
 import 'filepond/dist/filepond.min.css'
 import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css'
-
+import { useSession,getSession } from 'next-auth/react'
 const AccountInfoPage = () => {
 
   // Register Filepond plugins
@@ -272,5 +272,13 @@ const AccountInfoPage = () => {
     </RealEstatePageLayout>
   )
 }
-
+export async function getServerSideProps(context) {
+  const session = await getSession(context);
+  if (!session) {
+    context.res.writeHead(302, { Location: "/auth/signin" });
+    context.res.end();
+    return { props: {} };
+  }
+  return { props: { session } };
+}
 export default AccountInfoPage

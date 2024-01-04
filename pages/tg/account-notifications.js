@@ -2,7 +2,7 @@ import { useState } from 'react'
 import RealEstatePageLayout from '../../components/partials/RealEstatePageLayout'
 import RealEstateAccountLayout from '../../components/partials/RealEstateAccountLayout'
 import FormCheck from 'react-bootstrap/FormCheck'
-
+import { useSession,getSession } from 'next-auth/react'
 const AccountNotificationsPage = () => {
 
 
@@ -113,5 +113,13 @@ const AccountNotificationsPage = () => {
     </RealEstatePageLayout>
   )
 }
-
+export async function getServerSideProps(context) {
+  const session = await getSession(context);
+  if (!session) {
+    context.res.writeHead(302, { Location: "/auth/signin" });
+    context.res.end();
+    return { props: {} };
+  }
+  return { props: { session } };
+}
 export default AccountNotificationsPage

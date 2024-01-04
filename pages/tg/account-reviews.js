@@ -7,7 +7,7 @@ import Form from 'react-bootstrap/Form'
 import Pagination from 'react-bootstrap/Pagination'
 import Review from '../../components/Review'
 import StarRating from '../../components/StarRating'
-
+import { useSession,getSession } from 'next-auth/react'
 const AccountReviewsPage = () => {
 
   // Reviews about you array
@@ -215,5 +215,13 @@ const AccountReviewsPage = () => {
     </RealEstatePageLayout>
   )
 }
-
+export async function getServerSideProps(context) {
+  const session = await getSession(context);
+  if (!session) {
+    context.res.writeHead(302, { Location: "/auth/signin" });
+    context.res.end();
+    return { props: {} };
+  }
+  return { props: { session } };
+}
 export default AccountReviewsPage

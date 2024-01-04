@@ -8,7 +8,7 @@ import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
 import Dropdown from 'react-bootstrap/Dropdown'
 import PasswordToggle from '../../components/PasswordToggle'
-
+import { useSession,getSession } from 'next-auth/react'
 const AccountSecurityPage = () => {
 
   // Form validation
@@ -120,5 +120,13 @@ const AccountSecurityPage = () => {
     </RealEstatePageLayout>
   )
 }
-
+export async function getServerSideProps(context) {
+  const session = await getSession(context);
+  if (!session) {
+    context.res.writeHead(302, { Location: "/auth/signin" });
+    context.res.end();
+    return { props: {} };
+  }
+  return { props: { session } };
+}
 export default AccountSecurityPage

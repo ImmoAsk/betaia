@@ -10,8 +10,7 @@ import { useQuery } from '@tanstack/react-query'
 import getPropertyFullUrl from '../../utils/getPropertyFullURL'
 import getFirstImageArray from '../../utils/formatFirsImageArray'
 import buildPropertyBadge from '../../utils/buildPropertyBadge'
-import { useSession } from 'next-auth/react'
-
+import { useSession,getSession } from 'next-auth/react'
 const AccountLocationPage = () => {
 
   // Properties array
@@ -144,5 +143,13 @@ const AccountLocationPage = () => {
     </RealEstatePageLayout>
   )
 }
-
+export async function getServerSideProps(context) {
+  const session = await getSession(context);
+  if (!session) {
+    context.res.writeHead(302, { Location: "/auth/signin" });
+    context.res.end();
+    return { props: {} };
+  }
+  return { props: { session } };
+}
 export default AccountLocationPage

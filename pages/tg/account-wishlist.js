@@ -4,7 +4,7 @@ import RealEstateAccountLayout from '../../components/partials/RealEstateAccount
 import Link from 'next/link'
 import Button from 'react-bootstrap/Button'
 import PropertyCard from '../../components/PropertyCard'
-
+import { getSession,useSession } from "next-auth/react";
 const AccountWishlistPage = () => {
 
   // Properties array
@@ -126,5 +126,13 @@ const AccountWishlistPage = () => {
     </RealEstatePageLayout>
   )
 }
-
+export async function getServerSideProps(context) {
+  const session = await getSession(context);
+  if (!session) {
+    context.res.writeHead(302, { Location: "/auth/signin" });
+    context.res.end();
+    return { props: {} };
+  }
+  return { props: { session } };
+}
 export default AccountWishlistPage
