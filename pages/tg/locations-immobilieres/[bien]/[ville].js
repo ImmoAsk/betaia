@@ -41,7 +41,7 @@ const Popup = dynamic(() =>
 )
 import 'leaflet/dist/leaflet.css'
 import RentingList from '../../../../components/iacomponents/RentingList'
-import {buildPropertiesArray} from '../../../../utils/buildPropertiesArray'
+import {buildPropertiesArray} from '../../../../utils/generalUtils'
 import FormSearchOffcanvas from '../../../../components/iacomponents/FormSearchOffcanvas'
 
 

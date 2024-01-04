@@ -22,6 +22,10 @@ import SimpleBar from 'simplebar-react'
 import Nouislider from 'nouislider-react'
 import 'simplebar/dist/simplebar.min.css'
 import 'nouislider/distribute/nouislider.css'
+import 'leaflet/dist/leaflet.css'
+import RentingList from '../../../components/iacomponents/RentingList'
+import {buildPropertiesArray} from '../../../utils/generalUtils'
+import { capitalizeFirstLetter } from '../../../utils/generalUtils'
 
 const MapContainer = dynamic(() => 
   import('react-leaflet').then(mod => mod.MapContainer),
@@ -39,10 +43,7 @@ const Popup = dynamic(() =>
   import('react-leaflet').then(mod => mod.Popup),
   { ssr: false }
 )
-import 'leaflet/dist/leaflet.css'
-import RentingList from '../../../components/iacomponents/RentingList'
-import {buildPropertiesArray} from '../../../utils/buildPropertiesArray'
-import { capitalizeFirstLetter } from '../../../utils/generalUtils'
+
 
 
 
