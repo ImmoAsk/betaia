@@ -4,5 +4,7 @@
       "source": "/(.*)",
       "destination": "/"
     }
-  ]
+  ],
+  "cleanUrls": true,
+  "framework": "nextjs"
 }
