@@ -19,7 +19,7 @@ const AccountInsurancePage = () => {
   const [properties, setProperties] = useState([]);
   
   const { data: session } = useSession();
-  const user_id = session ? session.user.id :0;
+  const user_id = session && session.user?.id;
   useQuery(["RTProperties"],
   ()=> axios.get(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getUserProperties(user_id:${user_id},first:5){data{surface,badge_propriete{badge{badge_name,badge_image}},id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination},visuels{uri}}}}`).
   then((res)=>{
