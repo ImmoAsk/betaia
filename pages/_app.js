@@ -20,7 +20,7 @@ const Finder = ({ Component, pageProps: { session, ...pageProps }}) => {
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>ImmoAsk | Immobilier, Foncier, Tourisme, Décoration, BTP</title>
-        <meta name='description' content='Finder - Directory &amp; Listings React / Next.js Bootstrap Template' />
+        <meta name='description' content='Immobilier au Togo' />
         <meta name='keywords' content='immobilier, foncier, location, vente,gestion, patrimoine' />
         <meta name='author' content='Omnisoft Africa' />
         <link rel='apple-touch-icon' sizes='180x180' href='/favicon/apple-touch-icon.png' />
