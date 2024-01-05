@@ -43,7 +43,7 @@ const Popup = dynamic(() =>
   { ssr: false }
 )
 import 'leaflet/dist/leaflet.css'
-import buildPropertiesArray from '../../../../../utils/generalUtils'
+import {buildPropertiesArray} from '../../../../../utils/generalUtils'
 import FormSearchOffcanvas from '../../../../../components/iacomponents/FormSearchOffcanvas'
 
 

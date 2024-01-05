@@ -1,6 +1,7 @@
 import buildPropertyBadge from "./buildPropertyBadge";
 import getFirstImageArray from "./formatFirsImageArray";
 import getPropertyFullUrl from "./getPropertyFullURL";
+
 function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
@@ -14,8 +15,6 @@ function replaceSpacesWithAny(inputString, anyThing) {
 function toLowerCaseString(inputString) {
     return inputString.toLowerCase();
 }
-
-
 function buildPropertiesArray(properties) {
 
     let tempPropertyArray = [];
