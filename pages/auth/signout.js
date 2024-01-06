@@ -26,12 +26,12 @@ export default function signout() {
               <div class="mb-5">
                 <img className="navbar-brand-img" src="/img/logo-red.svg" height="70rem" alt="..." />
               </div>
-                Sign out
+                Se deconnecter
               </h1>
-              <p className="text-muted text-center mb-5">Are you sure you want to sign out?</p>
+              <p className="text-muted text-center mb-5">Etes vous sur de se déconnecter?</p>
               <input type='hidden' name='csrfToken' value={csrfToken} />
-                <Button className="w-100 mb-3" variant="primary" size="lg"  onClick={() => router.back()}>Go back</Button>
-                <Button className="w-100 mb-3" type='submit' variant='outline-primary' size="lg" >Sign out</Button>
+                <Button className="w-100 mb-3" variant="primary" size="lg"  onClick={() => router.back()}>Revenir en arrière</Button>
+                <Button className="w-100 mb-3" type='submit' variant='outline-primary' size="lg" >Se déconnecter</Button>
             </form>
           </Col>
         </Row>
