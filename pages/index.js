@@ -284,12 +284,4 @@ const IndexPage = () => {
     </main>
   )
 }
-export async function getServerSideProps(context) {
-    return {
-      redirect: {
-        permanent: false,
-        destination: "/tg"
-      }
-    }
-}
 export default IndexPage
