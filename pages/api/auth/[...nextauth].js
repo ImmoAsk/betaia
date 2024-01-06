@@ -7,7 +7,7 @@ import { authService } from "../../../services/auth.service.ts";
 import 'dotenv/config'
 const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 const login = async (username, password) => {
-    console.log(apiUrl);
+
     return axios.get(`${apiUrl}?query=mutation{login(input:{username:"${username}",password:"${password}"}){access_token,token_type,expires_in,refresh_token,user{name,id,email,role{id,description,statut,code}}}}`)
     .then((res) => {
       //console.log(res.data.data);

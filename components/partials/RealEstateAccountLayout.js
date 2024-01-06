@@ -63,7 +63,7 @@ const RealEstateAccountLayout = ({ accountPageTitle, children }) => {
   ];
   const { data: session } = useSession();
   console.log(session);
-  const roleId= Number(session.user.roleId);
+  const roleId= Number(session && session.user?.roleId);
   console.log(roleId);
   const { data:ressources, isLoading, error } = useRessourceByRole(session ? roleId:0);
   console.log(session);
@@ -77,7 +77,7 @@ const RealEstateAccountLayout = ({ accountPageTitle, children }) => {
           <Breadcrumb.Item>Home</Breadcrumb.Item>
         </Link>
         <Link href='/tg/account-info' passHref>
-          <Breadcrumb.Item>Account : {session ? session.user.roleId : ""}</Breadcrumb.Item>
+          <Breadcrumb.Item>Account</Breadcrumb.Item>
         </Link>
         <Breadcrumb.Item active>{accountPageTitle}</Breadcrumb.Item>
       </Breadcrumb>
