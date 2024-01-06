@@ -11,7 +11,7 @@ module.exports = {
       {
         source: '/',
         destination: '/tg',
-        permanent: true,
+        permanent: true
       },
     ];
   },
