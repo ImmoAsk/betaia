@@ -37,7 +37,7 @@ export default function signin({...props}) {
               {query.error && (
                 <>
                   <Alert  variant="danger">
-                    Could not login. Please check your e-mail or password or third-party application.
+                    Connexion impossible. Verifier votre email ou mot de passe!.
                   </Alert>
                 </>
               )}
