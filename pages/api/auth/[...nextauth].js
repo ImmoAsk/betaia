@@ -19,8 +19,8 @@ const login = async (username, password) => {
         accessToken: res.data.data.login.access_token,
         expiredAt: res.data.data.login.expires_in,
       }
-      //console.log(u);
-       return u ;
+      console.log(u);
+      return u ;
     });
     
 };
@@ -60,6 +60,7 @@ export const authOptions = {
         if (url.startsWith("/")) return `${baseUrl}${url}`
         // Allows callback URLs on the same origin
         else if (new URL(url).origin === baseUrl) return url
+        console.log(baseUrl);
         return baseUrl
       }
     },
