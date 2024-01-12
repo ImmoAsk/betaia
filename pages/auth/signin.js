@@ -18,8 +18,10 @@ export default function signin({...props}) {
     if (status !== 'loading') {
       if (await providers === null) {
         setProviders(await getProviders());
+        console.log(providers);
         if (await csrfToken === null) {
           setCsrfToken(await getCsrfToken());
+          console.log(csrfToken)
         }
       }
     }
