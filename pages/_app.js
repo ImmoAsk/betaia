@@ -32,7 +32,7 @@ const Finder = ({ Component, pageProps: { session, ...pageProps }}) => {
         <meta name='theme-color' content='#ffffff' />
       </Head>
       <QueryClientProvider client={queryClient}>
-        <SessionProvider session={session} basePath='/api/auth' baseUrl='http://beta.immoask.com'>
+        <SessionProvider session={session}>
           <Component {...pageProps} />
         </SessionProvider>
       </QueryClientProvider>
