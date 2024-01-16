@@ -10,12 +10,12 @@ export default function signin({...props}) {
   const router = useRouter()
   const { data: session, status } = useSession()
 
-  if (status === 'authenticated') {
+  if (session && status === 'authenticated') {
    router.push('/tg/account-info');
   }
 
   useEffect(async() => {
-    if (status !== 'loading') {
+    if (session && status !== 'loading') {
       if (await providers === null) {
         setProviders(await getProviders());
         console.log(providers);
