@@ -869,7 +869,7 @@ const AddPropertyPage = ({session}) => {
 export async function getServerSideProps(context) {
   const session = await getSession(context);
   if (!session) {
-    context.res.writeHead(302, { Location: "/api/auth/signin" });
+    context.res.writeHead(302, { Location: "/auth/signin" });
     context.res.end();
     return { props: {} };
   }
