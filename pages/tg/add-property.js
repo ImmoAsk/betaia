@@ -54,6 +54,7 @@ const CustomMarker = dynamic(() =>
   { ssr: false }
 )
 import 'leaflet/dist/leaflet.css'
+import { getSessionFromCookie } from '../../utils/getSessionFromCookie';
 
 
 const AddPropertyPage = ({session}) => {
@@ -867,7 +868,7 @@ const AddPropertyPage = ({session}) => {
 
 
 export async function getServerSideProps(context) {
-  const session = await getSession(context);
+  const session = await getSessionFromCookie(context);
   if (!session) {
     context.res.writeHead(302, { Location: "/auth/signin" });
     context.res.end();
