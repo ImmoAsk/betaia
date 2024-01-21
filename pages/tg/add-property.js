@@ -206,11 +206,11 @@ const AddPropertyPage = ({session}) => {
   const [propertyArea, setPropertyArea] = useState(10);
   const [propertyGarden, setPropertyGarden] = useState(0);
   const [imagesProperty, setImagesProperty] = useState([]);
-  const { data: session } = useSession();
+  //const { data: session } = useSession();
   
   const validationSchema = Yup.object().shape({
     propertyTown: Yup.string()
-      .required('Préciser la ville svp'),
+      .required('Preciser la ville svp'),
     propertyOffer: Yup.string()
       .required('Preciser l\'offre immobilière svp'),
     propertyAdress: Yup.string()
