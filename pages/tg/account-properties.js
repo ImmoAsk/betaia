@@ -42,7 +42,7 @@ const AccountPropertiesPage = ({_userProperties}) => {
     <RealEstatePageLayout
       pageTitle='Tableau immobilier'
       activeNav='Account'
-      userLoggedIn
+      userLoggedIn={session ? true : false}
     >
       {
         editPropertyShow && <EditPropertyModal
@@ -154,6 +154,7 @@ const AccountPropertiesPage = ({_userProperties}) => {
 
 export async function getServerSideProps(context) {
   const session = await getSession(context);
+  console.log(session);
   if (!session) {
     context.res.writeHead(302, { Location: "/auth/signin" });
     context.res.end();
@@ -166,6 +167,6 @@ export async function getServerSideProps(context) {
 
   _userProperties = _userProperties.data.getUserProperties.data;
   console.log(_userProperties);
-  return { props: { _userProperties,session} }
+  return { props: { _userProperties} }
 }
 export default AccountPropertiesPage

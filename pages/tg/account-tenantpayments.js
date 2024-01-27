@@ -46,7 +46,7 @@ const AccountTenantPaymentsPage = () => {
     <RealEstatePageLayout
       pageTitle='Assurance immobilière'
       activeNav='Account'
-      userLoggedIn
+      userLoggedIn={session ? true : false}
     >
       <RealEstateAccountLayout accountPageTitle='Assurance immobilière'>
         <div className='d-flex align-items-center justify-content-between mb-3'>

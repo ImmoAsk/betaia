@@ -21,12 +21,12 @@ const AccountSecurityPage = () => {
     }
     setValidated(true);
   }
-
+  const { data: session } = useSession();
   return (
     <RealEstatePageLayout
       pageTitle='Account Password &amp; Security'
       activeNav='Account'
-      userLoggedIn
+      userLoggedIn={session ? true : false}
     >
       <RealEstateAccountLayout accountPageTitle='Mot de passe & Sécurité'>
         <h1 className='h2'>Mot de passe &amp; Sécurité</h1>
