@@ -12,7 +12,7 @@ const EditPropertyModal = ({ property, onSwap, pillButtons, ...props }) => {
   const [propertyModal, setPropertyModal] = useState({});
 
   useQuery(["propertyModal"],
-    () => axios.get(`http://127.0.0.1:8000/api/v2?query={propriete(nuo:${property.nuo}){tarifications{id,mode,currency,montant},id,nuo,garage,est_meuble,titre,descriptif,surface,usage,cuisine,salon,piece,wc_douche_interne,cout_mensuel,nuitee,cout_vente,categorie_propriete{denomination,id},infrastructures{id,denomination,icone},meubles{libelle,icone},badge_propriete{id,date_expiration,badge{id,badge_name,badge_image}},pays{id,code,denomination},ville{denomination,id},quartier{id,denomination},adresse{libelle,id},offre{id,denomination},visuels{uri},user{id}}}`).
+    () => axios.get(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={propriete(nuo:${property.nuo}){tarifications{id,mode,currency,montant},id,nuo,garage,est_meuble,titre,descriptif,surface,usage,cuisine,salon,piece,wc_douche_interne,cout_mensuel,nuitee,cout_vente,categorie_propriete{denomination,id},infrastructures{id,denomination,icone},meubles{libelle,icone},badge_propriete{id,date_expiration,badge{id,badge_name,badge_image}},pays{id,code,denomination},ville{denomination,id},quartier{id,denomination},adresse{libelle,id},offre{id,denomination},visuels{uri},user{id}}}`).
       then((res) => {
         setPropertyModal(res.data.data.propriete);
         console.log(propertyModal);
@@ -38,7 +38,7 @@ const EditPropertyModal = ({ property, onSwap, pillButtons, ...props }) => {
 export async function getServerSideProps(context) {
   let { propertyNuo } = context.query;
   // Fetch data from external API
-  let dataAPIresponse = await fetch(`http://127.0.0.1:8000/api/v2?query={propriete(nuo:${propertyNuo}){tarifications{id,mode,currency,montant},nuo,garage,est_meuble,titre,descriptif,surface,usage,cuisine,salon,piece,wc_douche_interne,cout_mensuel,nuitee,cout_vente,categorie_propriete{denomination,id},infrastructures{denomination,icone},meubles{libelle,icone},badge_propriete{id,date_expiration,badge{id,badge_name,badge_image}},pays{id,code,denomination},ville{denomination,id},quartier{id,denomination},adresse{libelle},offre{denomination},visuels{uri},user{id}}}`)
+  let dataAPIresponse = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={propriete(nuo:${propertyNuo}){tarifications{id,mode,currency,montant},nuo,garage,est_meuble,titre,descriptif,surface,usage,cuisine,salon,piece,wc_douche_interne,cout_mensuel,nuitee,cout_vente,categorie_propriete{denomination,id},infrastructures{denomination,icone},meubles{libelle,icone},badge_propriete{id,date_expiration,badge{id,badge_name,badge_image}},pays{id,code,denomination},ville{denomination,id},quartier{id,denomination},adresse{libelle},offre{denomination},visuels{uri},user{id}}}`)
   let property = await dataAPIresponse.json()
   property = property.data.propriete;
   console.log(property);

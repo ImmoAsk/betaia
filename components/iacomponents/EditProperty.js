@@ -231,7 +231,7 @@ const EditProperty = ({ propriete }) => {
             headers: { 
                 'Content-Type': 'application/json'
             },
-            url: 'http://127.0.0.1:8000/api/v2',
+            url: 'https://immoaskbetaapi.omnisoft.africa/public/api/v2',
             data: updatedData
         };
 

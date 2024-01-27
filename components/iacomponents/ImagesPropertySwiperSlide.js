@@ -11,7 +11,7 @@ export default function ImagesPropertySwiperSlide({ property, session }) {
                 
                 return (
                 <SwiperSlide className='d-flex'>
-                    <ImageLoader className='rounded-3' src={'http://127.0.0.1:8000/storage/uploads/visuels/proprietes/' + imgproperty.uri} width={967} height={545} alt='Image' />
+                    <ImageLoader className='rounded-3' src={'https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/proprietes/' + imgproperty.uri} width={967} height={545} alt='Image' />
                 </SwiperSlide>
                 )
             })
@@ -23,7 +23,7 @@ export default function ImagesPropertySwiperSlide({ property, session }) {
         unauthencicatedImages.map((imgproperty) => {  
             return (
             <SwiperSlide className='d-flex'>
-                <ImageLoader className='rounded-3' src={'http://127.0.0.1:8000/storage/uploads/visuels/proprietes/' + imgproperty} width={967} height={545} alt='Image' />
+                <ImageLoader className='rounded-3' src={'https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/proprietes/' + imgproperty} width={967} height={545} alt='Image' />
             </SwiperSlide>)
         })
     }
