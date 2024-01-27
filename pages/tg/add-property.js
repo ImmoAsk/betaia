@@ -873,6 +873,6 @@ export async function getServerSideProps(context) {
     context.res.end();
     return { props: {} };
   }
-  return { props: { session } };
+  return { props: {} };
 }
 export default AddPropertyPage
