@@ -82,7 +82,7 @@ function SinglePropertyAltPage({ property }) {
   const [recommendProperties, setRecommendProperties] = useState([]);
   const defineThumbNails = () => {
     property && property.visuels.map((imgproperty) => {
-      setThumbnails(thumbnails => [...thumbnails, 'https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/proprietes/' + imgproperty.uri]);
+      setThumbnails(thumbnails => [...thumbnails, 'https://immoask.com/tg/uploads/images_biens/' + imgproperty.uri]);
     })
   }
 
@@ -162,7 +162,7 @@ function SinglePropertyAltPage({ property }) {
                 </li>`
               } else {
                 return `<li class='swiper-thumbnail ${className}'>
-                  <img src=${session ? thumbnails[index] : 'https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/proprietes/' + Unconnectedhumbnails[index]} alt='Thumbnail'/>
+                  <img src=${session ? thumbnails[index] : 'https://immoask.com/tg/uploads/images_biens/' + Unconnectedhumbnails[index]} alt='Thumbnail'/>
                 </li>`
               }
             }
@@ -178,7 +178,7 @@ function SinglePropertyAltPage({ property }) {
 
               return (
                 <SwiperSlide className='d-flex'>
-                  <ImageLoader className='rounded-3' src={'https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/proprietes/' + imgproperty.uri} width={967} height={545} alt='Image' />
+                  <ImageLoader className='rounded-3' src={'https://immoask.com/tg/uploads/images_biens/' + imgproperty.uri} width={967} height={545} alt='Image' />
                 </SwiperSlide>
               )
             })
@@ -187,10 +187,10 @@ function SinglePropertyAltPage({ property }) {
             (
               <>
                 <SwiperSlide className='d-flex'>
-                  <ImageLoader className='rounded-3' src={'https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/proprietes/' + Unconnectedhumbnails[0]} width={967} height={545} alt='Image' />
+                  <ImageLoader className='rounded-3' src={'https://immoask.com/tg/uploads/images_biens/' + Unconnectedhumbnails[0]} width={967} height={545} alt='Image' />
                 </SwiperSlide>
                 <SwiperSlide className='d-flex'>
-                  <ImageLoader className='rounded-3' src={'https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/proprietes/' + Unconnectedhumbnails[1]} width={967} height={545} alt='Image' />
+                  <ImageLoader className='rounded-3' src={'https://immoask.com/tg/uploads/images_biens/' + Unconnectedhumbnails[1]} width={967} height={545} alt='Image' />
                 </SwiperSlide>
 
               </>
