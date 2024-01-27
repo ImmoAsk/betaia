@@ -19,7 +19,7 @@ import Collapse from 'react-bootstrap/Collapse'
 import Alert from 'react-bootstrap/Alert'
 import Modal from 'react-bootstrap/Modal'
 import Badge from 'react-bootstrap/Badge'
-import { getSession,useSession } from "next-auth/react";
+import { getSession, useSession } from "next-auth/react";
 import ImageLoader from '../../components/ImageLoader'
 import ScrollLink from '../../components/ScrollLink'
 import { FilePond, registerPlugin } from 'react-filepond'
@@ -37,33 +37,32 @@ var formData = new FormData();
 import 'filepond/dist/filepond.min.css'
 import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css'
 
-const MapContainer = dynamic(() => 
+const MapContainer = dynamic(() =>
   import('react-leaflet').then(mod => mod.MapContainer),
   { ssr: false }
 )
-const TileLayer = dynamic(() => 
+const TileLayer = dynamic(() =>
   import('react-leaflet').then(mod => mod.TileLayer),
   { ssr: false }
 )
-const Popup = dynamic(() => 
+const Popup = dynamic(() =>
   import('react-leaflet').then(mod => mod.Popup),
   { ssr: false }
 )
-const CustomMarker = dynamic(() => 
+const CustomMarker = dynamic(() =>
   import('../../components/partials/CustomMarker'),
   { ssr: false }
 )
 import 'leaflet/dist/leaflet.css'
-import { getSessionFromCookie } from '../../utils/getSessionFromCookie';
 
 
-const AddPropertyPage = ({session}) => {
+const AddPropertyPage = () => {
 
-  
+
   // Preview modal
   const [previewShow, setPreviewShow] = useState(false);
-  const handlePreviewClose = () => {setPreviewShow(false)};
-  const handlePreviewShow = () => {setPreviewShow(true)}
+  const handlePreviewClose = () => { setPreviewShow(false) };
+  const handlePreviewShow = () => { setPreviewShow(true) }
   // Overview collapse state
   const [overviewOpen, setOverviewOpen] = useState(false);
 
@@ -92,7 +91,7 @@ const AddPropertyPage = ({session}) => {
     ]
   ]
 
- 
+
 
   // Number of bedrooms radios buttons
   const [InsideBathRoomsValue, setInsideBathRooms] = useState('2')
@@ -168,7 +167,7 @@ const AddPropertyPage = ({session}) => {
     FilePondPluginImageResize,
     FilePondPluginImageTransform
   )
-  
+
   // Gallery state
   const [gallery, setGallery] = useState([]);
   const [quartersList, setQuartersList] = useState([]);
@@ -177,7 +176,7 @@ const AddPropertyPage = ({session}) => {
   const [propertyOwner, setPropertyOwner] = useState(session ? session.user.id : 0);
   const [propertyType, setPropertyType] = useState(0);
   const [propertyHouseHold, setPropertyHouseHold] = useState('0');
-  
+
   //1 is realestate agent, 2 is realestate owner
   const [propertyUserRole, setpropertyUserRole] = useState(1);
   const [propertyOffer, setPropertyOffer] = useState(0);
@@ -193,7 +192,7 @@ const AddPropertyPage = ({session}) => {
   const [propertyLivingRooms, setPropertyLivingRooms] = useState(0);
   const [propertyBedRooms, setPropertyBedRooms] = useState(0);
   const [propertyCautionGuarantee, setCautionGuarantee] = useState(0);
-  
+
   const [propertyTerraces, setPropertyTerraces] = useState('0');
   const [propertyBalcony, setPropertyBalcony] = useState('0');
   const [propertyVisitRight, setVisitRight] = useState(0);
@@ -208,7 +207,7 @@ const AddPropertyPage = ({session}) => {
   const [propertyGarden, setPropertyGarden] = useState(0);
   const [imagesProperty, setImagesProperty] = useState([]);
   //const { data: session } = useSession();
-  
+
   const validationSchema = Yup.object().shape({
     propertyTown: Yup.string()
       .required('Preciser la ville svp'),
@@ -225,8 +224,8 @@ const AddPropertyPage = ({session}) => {
   const formOptions = { resolver: yupResolver(validationSchema) };
   const { register, handleSubmit, reset, formState } = useForm(formOptions);
   const { errors } = formState;
+  const { data: session, status } = useSession();
 
-  
   const buildAppendMapFileUpload = (event) => {
     event.stopPropagation();
     event.preventDefault();
@@ -280,24 +279,24 @@ const AddPropertyPage = ({session}) => {
       if (i == imagesProperty.length - 1) { appendMap += "" } else { appendMap += "," }
     }
     formData.append('map', `{${appendMap}}`);
-    
+
     console.log(JSON.stringify(formData));
-    
+
     var config = {
       method: 'post',
       url: 'https://immoaskbetaapi.omnisoft.africa/public/api/v2',
-      data : formData
+      data: formData
     };
-    
+
     axios.request(config)
-    .then((response) => {
-      console.log(JSON.stringify(JSON.parse(response.data)));
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+      .then((response) => {
+        console.log(JSON.stringify(JSON.parse(response.data)));
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }
-  const onSubmit=(data, event)=>{
+  const onSubmit = (data, event) => {
     alert(JSON.stringify(data));
     buildAppendMapFileUpload(event);
   }
@@ -308,7 +307,7 @@ const AddPropertyPage = ({session}) => {
       userLoggedIn={session ? true : false}
     >
       {/* Preview modal */}
-      
+
       {/* Page container */}
       <Container className='py-5 mt-5 mb-md-4'>
         <Row>
@@ -868,7 +867,7 @@ const AddPropertyPage = ({session}) => {
 
 
 export async function getServerSideProps(context) {
-  const session = await getSessionFromCookie(context);
+  const session = await getSession(context);
   if (!session) {
     context.res.writeHead(302, { Location: "/auth/signin" });
     context.res.end();

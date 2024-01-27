@@ -4,28 +4,30 @@ import { useRouter } from "next/router";
 import { Alert } from 'react-bootstrap';
 import SigninLightPage from './signin-light';
 
-export default function signin({...props}) {
+export default function signin({ ...props }) {
   const [providers, setProviders] = useState(null);
   const [csrfToken, setCsrfToken] = useState(null);
-  const router = useRouter()
-  const { data: session, status } = useSession()
+  const router = useRouter();
+  const { data: session, status } = useSession();
 
   if (session && status === 'authenticated') {
-   router.push('/tg/account-info');
+    router.push('/tg/account-info');
   }
 
-  useEffect(async() => {
-    if (session && status !== 'loading') {
-      if (await providers === null) {
+  useEffect(async () => {
+    if (!session && status !== 'loading') {
+      if (providers === null) {
+        console.log(providers);
         setProviders(await getProviders());
         console.log(providers);
-        if (await csrfToken === null) {
+        if (csrfToken === null) {
+          console.log(csrfToken);
           setCsrfToken(await getCsrfToken());
-          console.log(csrfToken)
+          console.log(csrfToken);
         }
       }
     }
-    
+
     return () => {
       // cleanup
     }
@@ -34,19 +36,19 @@ export default function signin({...props}) {
   const { query } = useRouter();
 
   return (
-                    
-      <>
-              {query.error && (
-                <>
-                  <Alert  variant="danger">
-                    Connexion impossible. Verifier votre email ou mot de passe!.
-                  </Alert>
-                </>
-              )}
 
-              <SigninLightPage providers={providers} csrfToken={csrfToken} query={query} signup={props.signup ? true : false} />
-              
-            
+    <>
+      {query.error && (
+        <>
+          <Alert variant="danger">
+            Connexion impossible. Verifier votre email ou mot de passe!.
+          </Alert>
+        </>
+      )}
+
+      <SigninLightPage providers={providers} csrfToken={csrfToken} query={query} signup={props.signup ? true : false} />
+
+
     </>
   )
 }

@@ -18,25 +18,8 @@ const SigninLightPage = ({ ...props }) => {
     document.body.classList.add('bg-secondary')
     return () => body.classList.remove('bg-secondary')
   })
-
-  // Router
-  //const router = useRouter()
-
-  // Form validation
   const [validated, setValidated] = useState(false)
-  /*  const handleSubmit =  (event) => {
-     const form = event.currentTarget
-     if (form.checkValidity() === false) {
-       event.preventDefault()
-       event.stopPropagation()
-     } else {
-       setValidated(true);
-       const userCredential= { username: "kossi@omnisoft.africa", password: "toto2468" }
-       console.log(userCredential);
-       signIn("credentials",userCredential );
-       
-     }
-   } */
+ 
 
   const { data: session, status } = useSession()
 

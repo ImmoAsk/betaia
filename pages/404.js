@@ -28,7 +28,7 @@ const NotFoundPage = () => {
     <>
       {/* Custom page title attribute */}
       <Head>
-        <title>Finder | 404 Not Found</title>
+        <title>ImmoAsk | 404 Not Found</title>
       </Head>
 
       {/* Page content */}
