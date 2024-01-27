@@ -21,8 +21,8 @@ const AccountPropertiesPage = ({_userProperties}) => {
 
   const { data: session } = useSession();
   const userProperties = buildPropertiesArray(_userProperties);
-  const handleEditPropertyModal = (e) => {
-    e.preventDefault();
+  const handleEditPropertyModal = () => {
+    //e.preventDefault();
     if (session) {
       handleEditPropertyShow();
     } else {
@@ -32,7 +32,7 @@ const AccountPropertiesPage = ({_userProperties}) => {
 
   //console.log(properties);
   const deleteAll = (e) => {
-    e.preventDefault()
+    e.preventDefault();
     //userProperties=[];
     //setProperties([])
   }
@@ -58,7 +58,7 @@ const AccountPropertiesPage = ({_userProperties}) => {
           <h1 className='h2 mb-0'>Biens immobiliers de mes mandats</h1>
           <a href='#' className='fw-bold text-decoration-none' onClick={deleteAll}>
             <i className='fi-trash mt-n1 me-2'></i>
-            Delete all
+            Supprimer tout
           </a>
         </div>
         <p className='pt-1 mb-4'>Trouver ici tous vos biens immobiliers mis en location ou vente. Et les mettre à jour aisément</p>
@@ -112,8 +112,9 @@ const AccountPropertiesPage = ({_userProperties}) => {
                 label: 'Editer',
                 props: {
                   onClick: (e) => {
+                    e.preventDefault();
                     setPropertyModal(property); 
-                    handleEditPropertyModal(e);
+                    handleEditPropertyModal();
                   }
                 }
               },

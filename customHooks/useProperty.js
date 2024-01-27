@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import getPropertyByFullUrl from "../remoteAPI/getProperty";
-import 'dotenv/config'
+import 'dotenv/config';
 const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 export default function useProperty(nuo) {
     return useQuery(["Property", nuo],
