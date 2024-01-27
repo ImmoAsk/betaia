@@ -111,8 +111,7 @@ const AccountPropertiesPage = ({_userProperties}) => {
                 icon: 'fi-edit',
                 label: 'Editer',
                 props: {
-                  onClick: (e) => {
-                    e.preventDefault();
+                  onClick: () => {
                     setPropertyModal(property); 
                     handleEditPropertyModal();
                   }
@@ -156,7 +155,7 @@ const AccountPropertiesPage = ({_userProperties}) => {
 export async function getServerSideProps(context) {
   const session = await getSession(context);
   console.log(session);
-  if (!session) {
+  if (session===null) {
     context.res.writeHead(302, { Location: "/auth/signin" });
     context.res.end();
     return { props: {} };
