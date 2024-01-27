@@ -22,7 +22,7 @@ const AccountPropertiesPage = ({_userProperties}) => {
   const { data: session } = useSession();
   const userProperties = buildPropertiesArray(_userProperties);
   const handleEditPropertyModal = (e) => {
-    e.preventDefault()
+    e.preventDefault();
     if (session) {
       handleEditPropertyShow();
     } else {
@@ -42,7 +42,7 @@ const AccountPropertiesPage = ({_userProperties}) => {
     <RealEstatePageLayout
       pageTitle='Tableau immobilier'
       activeNav='Account'
-      userLoggedIn={session ? true : false}
+      userLoggedIn
     >
       {
         editPropertyShow && <EditPropertyModal
@@ -53,7 +53,7 @@ const AccountPropertiesPage = ({_userProperties}) => {
           property={propertyModal}
         />
       }
-      <RealEstateAccountLayout accountPageTitle='Tableau immobilier'>
+      <RealEstateAccountLayout accountPageTitle='Tableau immobilier' >
         <div className='d-flex align-items-center justify-content-between mb-3'>
           <h1 className='h2 mb-0'>Biens immobiliers de mes mandats</h1>
           <a href='#' className='fw-bold text-decoration-none' onClick={deleteAll}>
