@@ -1,6 +1,6 @@
 {
-    "name": "Finder",
-    "short_name": "Finder",
+    "name": "ImmoAsk",
+    "short_name": "ImmoAsk",
     "icons": [
         {
             "src": "/android-chrome-192x192.png",
