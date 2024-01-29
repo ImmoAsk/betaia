@@ -154,6 +154,8 @@ export async function getServerSideProps(context) {
       }
     }
   }
-  return { props: { session } };
+  else{
+    return { props: { session } };
+  }
 }
 export default AccountInsurancePage

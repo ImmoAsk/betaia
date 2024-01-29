@@ -156,6 +156,7 @@ const AccountPropertiesPage = ({ _userProperties }) => {
 
 export async function getServerSideProps(context) {
   const session = await getSession(context);
+  console.log(session);
   if (session) {
     const userid = session ? session.user.id : 0;
     // Fetch data from external API
@@ -163,14 +164,14 @@ export async function getServerSideProps(context) {
     let _userProperties = await dataAPIresponse.json();
 
     _userProperties = _userProperties.data.getUserProperties.data;
-    console.log(_userProperties);
+
     return { props: { _userProperties } }
 
   } else {
     return {
       redirect: {
           destination: '/auth/signin',
-          permanent: false,
+          permanent: true,
       },
   };
   }
