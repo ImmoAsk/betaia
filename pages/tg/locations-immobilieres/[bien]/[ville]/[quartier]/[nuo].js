@@ -349,7 +349,7 @@ function SinglePropertyAltPage({ property }) {
 
               {/* Sidebar with details */}
               <Col as='aside' lg={5}>
-                <div className='ps-lg-5'>
+                <div className='ps-lg-2'>
                   <div className='d-flex align-items-center justify-content-between mb-3'>
                     <div>
                       <Badge bg='success' className='me-2 mb-2'>Vérifié</Badge>
