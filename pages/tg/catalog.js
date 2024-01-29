@@ -1035,7 +1035,7 @@ const CatalogPage = () => {
                     images={property.images}
                     title={property.title}
                     category={property.category}
-                    location={property.location}
+                    location={property.address}
                     price={property.price}
                     badges={property.badges}
                     wishlistButton={{
