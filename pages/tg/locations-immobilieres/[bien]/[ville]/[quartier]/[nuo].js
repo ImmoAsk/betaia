@@ -57,7 +57,7 @@ function SinglePropertyAltPage({ property }) {
   const [rentNegociationShow, setRentNegociationShow] = useState(false)
   const handleRentNegociationClose = () => setRentNegociationShow(false)
   const handleRentNegociationShow = () => setRentNegociationShow(true)
-  
+
 
   const [askNuiteePriceShow, setAskNuiteePriceShow] = useState(false)
   const handleAskNuiteePriceClose = () => setAskNuiteePriceShow(false)
@@ -76,9 +76,9 @@ function SinglePropertyAltPage({ property }) {
 
   const handleRentNegociationModal = (e) => {
     e.preventDefault()
-    if(session){
+    if (session) {
       handleRentNegociationShow();
-    } else{
+    } else {
       handleSignInToUp(e);
     }
   }
@@ -87,7 +87,7 @@ function SinglePropertyAltPage({ property }) {
     e.preventDefault()
     handleAskNuiteePriceShow()
   }
-  
+
   const { data: session } = useSession();
   const router = useRouter()
   const { nuo, bien, quartier, ville } = router.query;
@@ -95,7 +95,7 @@ function SinglePropertyAltPage({ property }) {
   const myQuartier = quartier.charAt(0).toUpperCase() + quartier.slice(1);
   const myVille = ville.charAt(0).toUpperCase() + ville.slice(1);
   const myBien = bien.charAt(0).toUpperCase() + bien.slice(1);
-  
+
 
   const [thumbnails, setThumbnails] = useState([]);
   const [Unconnectedhumbnails, setUnconnectedhumbnails] = useState([]);
@@ -207,10 +207,10 @@ function SinglePropertyAltPage({ property }) {
             (
               <>
                 <SwiperSlide className='d-flex'>
-                  <ImageComponent imageUri={Unconnectedhumbnails[0]}/>
+                  <ImageComponent imageUri={Unconnectedhumbnails[0]} />
                 </SwiperSlide>
                 <SwiperSlide className='d-flex'>
-                <ImageComponent imageUri={Unconnectedhumbnails[1]}/>
+                  <ImageComponent imageUri={Unconnectedhumbnails[1]} />
                 </SwiperSlide>
 
               </>
@@ -229,7 +229,7 @@ function SinglePropertyAltPage({ property }) {
     )
   }
 
- 
+
 
   { !property && <h4 className='mt-5 mb-lg-5 mb-4 pt-5 pb-lg-5'>Ce bien immobilier n'existe pas encore</h4> }
   //{isError && <h4 className='mt-5 mb-lg-5 mb-4 pt-5 pb-lg-5'>Une erreur: {error.message}</h4>}
@@ -394,68 +394,92 @@ function SinglePropertyAltPage({ property }) {
                   </div>
 
                   {/* Price */}
-
-                  <ul className='d-flex mb-4 list-unstyled fs-sm'>
-                  <li className='me-3 pe-3 border-end'>
-                    {!property ? <span className="sr-only">En chargement...</span>
-                    : <>
-                      {property.cout_mensuel > 0 &&
+                  {!property ? <span className="sr-only">En chargement...</span>
+                    : <ul className='d-flex mb-4 list-unstyled fs-sm'>
+                      {property.nuitee <= 0 && property.cout_mensuel > 0 && property.est_meuble === 0 &&
                         <>
-                          <h3 className='h5 mb-2'>Loyer mensuel</h3>
-                          <h2 className='h4 mb-2'>{property && property.cout_mensuel} xof<span className='d-inline-block ms-1 fs-base fw-normal text-body'>/mois</span></h2>
-                          <p className='text-body p'>
-                            Il est recommandé de lire le contrat de location
-                            avant de procéder au paiement
-                          </p>
-                          <Button size='md' className='w-100' variant='outline-primary' onClick={handleRentNegociationModal}>Negocier le loyer</Button>
+                          <li className='me-3 pe-3 border-end'>
+                            <h3 className='h5 mb-2'>Loyer mensuel</h3>
+                            <h2 className='h4 mb-2'>{property && property.cout_mensuel} XOF<span className='d-inline-block ms-1 fs-base fw-normal text-body'>/mois</span></h2>
+                            <p className='text-body p'>
+                              Il est recommandé de lire le contrat de location
+                              avant de procéder au paiement
+                            </p>
+                            <Button size='md' className='w-100' variant='outline-primary' onClick={handleRentNegociationModal}>Negocier le loyer</Button>
+                          </li>
+                          <li className='me-3 pe-3'>
+                            <h3 className='h5 mb-2'>Visite immobiliere</h3>
+                            {property.cout_visite <= 0 && <h2 className='h4 mb-2'>4000 XOF</h2>}
+                            {property.cout_visite > 0 && <h2 className='h4 mb-2'> {property && property.cout_visite} XOF</h2>}
+                            <p className='text-body p'>
+                              Le droit de visite est paye pour supporter la prospection
+                              et tous les risques lies.
+                            </p>
+                            <Button size='md' className='w-100' variant='outline-primary' onClick={handleSigninShow}>Planifier une visite</Button>
+                          </li>
                         </>
                       }
-                    </>
+                    </ul>
                   }
-                  </li>
-                    <li className='me-3 pe-3'>
-                    { !property? <span className="sr-only">En chargement...</span>
-                    :<>
-                    {   property.nuitee > 0 && 
-                        <>
-                        <h3 className='h5 mb-2'>Nuitée</h3>
-                          <h2 className='h4 mb-2'>
-                            {property && property.nuitee} xof
-                            <span className='d-inline-block ms-1 fs-base fw-normal text-body'>/nuitée</span>
-                          </h2>
-                          <p className='text-body p'>
-                            Il est recommandé de lire l'inventaire des meubles
-                            avant de procéder au paiement
-                          </p>
-                          <Button size='md' className='w-100' variant='outline-primary' onClick={handleRentNegociationModal}>Réserver maintenant</Button> 
-                        </> 
-                    }
-                    </>  
-                  }
-                    </li>
-                    <li className='me-3 pe-3'>
-                    { !property? <span className="sr-only">En chargement...</span>
-                    :<>
-                    {   property.nuitee <= 0 && property.est_meuble === 1 && 
-                        <>
-                        <h3 className='h5 mb-2'>Nuitée</h3>
-                        <h2 className='h4 mb-2'>
-                            Sur demande
-                          </h2>
-                          <p className='mb-2 pb-2'>
-                            Le propriétaire n'a pas précisé la nuitée.
-                            Formuler une demande de nuitée en temps.
-                          </p>
-                          <Button size='md' className='w-100' variant='outline-primary' onClick={handleNuiteePriceModal}>Demander la nuitée</Button>    
-                        </> 
-                    }
-                    </>  
-                  }
-                    </li>
-                    
-                  </ul>
-                  
 
+                  {!property ? <span className="sr-only">En chargement...</span>
+                    : <ul className='d-flex mb-4 list-unstyled fs-sm'>
+                      {property.nuitee <= 0 && property.cout_mensuel > 0 && property.est_meuble === 1 &&
+                        <>
+                          <li className='me-3 pe-3 border-end'>
+                            <h3 className='h5 mb-2'>Loyer mensuel</h3>
+                            <h2 className='h4 mb-2'>{property && property.cout_mensuel} XOF<span className='d-inline-block ms-1 fs-base fw-normal text-body'>/mois</span></h2>
+                            <p className='text-body p'>
+                              Il est recommandé de lire le contrat de location
+                              avant de procéder au paiement
+                            </p>
+                            <Button size='md' className='w-100' variant='outline-primary' onClick={handleRentNegociationModal}>Negocier le loyer</Button>
+                          </li>
+                          <li className='me-3 pe-3'>
+                            <h3 className='h5 mb-2'>Nuitée</h3>
+                            <h2 className='h4 mb-2'>
+                              Sur demande
+                            </h2>
+                            <p className='mb-2 pb-2'>
+                              Le propriétaire n'a pas précisé la nuitée.
+                              Formuler une demande de nuitée en temps.
+                            </p>
+                            <Button size='md' className='w-100' variant='outline-primary' onClick={handleNuiteePriceModal}>Demander la nuitée</Button>
+                          </li>
+                        </>
+                      }
+                    </ul>
+                  }
+
+                  {!property ? <span className="sr-only">En chargement...</span>
+                    : <ul className='d-flex mb-4 list-unstyled fs-sm'>
+                      {property.nuitee > 0 && property.cout_mensuel > 0 && property.est_meuble === 1 &&
+                        <>
+                          <li className='me-3 pe-3 border-end'>
+                            <h3 className='h5 mb-2'>Loyer mensuel</h3>
+                            <h2 className='h4 mb-2'>{property && property.cout_mensuel} XOF<span className='d-inline-block ms-1 fs-base fw-normal text-body'>/mois</span></h2>
+                            <p className='text-body p'>
+                              Il est recommandé de lire le contrat de location
+                              avant de procéder au paiement
+                            </p>
+                            <Button size='md' className='w-100' variant='outline-primary' onClick={handleRentNegociationModal}>Negocier le loyer</Button>
+                          </li>
+                          <li className='me-3 pe-3'>
+                            <h3 className='h5 mb-2'>Nuitée</h3>
+                            <h2 className='h4 mb-2'>
+                              {property && property.nuitee} xof
+                              <span className='d-inline-block ms-1 fs-base fw-normal text-body'>/nuitée</span>
+                            </h2>
+                            <p className='text-body p'>
+                              Il est recommandé de lire l'inventaire des meubles
+                              avant de procéder au paiement
+                            </p>
+                            <Button size='md' className='w-100' variant='outline-primary' onClick={handleRentNegociationModal}>Réserver maintenant</Button>
+                          </li>
+                        </>
+                      }
+                    </ul>
+                  }
 
                   {/* Property details card */}
                   <Card className='border-0 bg-secondary mb-4'>
@@ -467,13 +491,11 @@ function SinglePropertyAltPage({ property }) {
                         <li className='mt-2 mb-0'><b>Salon: </b>{property && property.salon}</li>
                         <li className='mt-2 mb-0'><b>Chambres+salon: </b>{property && property.piece}+{property && property.salon}</li>
                         <li className='mt-2 mb-0'><b>Douches: </b>{property && property.wc_douche_interne}</li>
-                        {/* <li className='mt-2 mb-0'><b>Parking places: </b>2</li>
-                        <li className='mt-2 mb-0'><b>Pets allowed: </b>cats only</li> */}
                       </ul>
                     </Card.Body>
                   </Card>
                   <div className='justify-content-between mb-2'>
-                    <Button size='lg' className='w-100' variant='outline-primary' onClick={handleSigninShow}>Planifier une visite avec l'agent immobilier</Button>
+                    <Button size='lg' className='w-100' variant='outline-primary' onClick={handleSigninShow}>Planifier une visite</Button>
                   </div>
                   <div className='justify-content-between mb-2'>
                     <Button size='lg' className='w-100 outline-primary' onClick={handleSignupShow}>Vérifier la disponibilité</Button>
@@ -559,7 +581,7 @@ export async function getServerSideProps(context) {
 
   let { nuo } = context.query;
   // Fetch data from external API
-  let dataAPIresponse = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={propriete(nuo:${nuo}){tarifications{id,mode,currency,montant},nuo,garage,est_meuble,titre,descriptif,surface,usage,cuisine,salon,piece,wc_douche_interne,cout_mensuel,nuitee,cout_vente,categorie_propriete{denomination,id},infrastructures{denomination,icone},meubles{libelle,icone},badge_propriete{id,date_expiration,badge{id,badge_name,badge_image}},pays{id,code,denomination},ville{denomination,id},quartier{id,denomination},adresse{libelle},offre{denomination},visuels{uri},user{id}}}`)
+  let dataAPIresponse = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={propriete(nuo:${nuo}){tarifications{id,mode,currency,montant},cout_visite,nuo,garage,est_meuble,titre,descriptif,surface,usage,cuisine,salon,piece,wc_douche_interne,cout_mensuel,nuitee,cout_vente,categorie_propriete{denomination,id},infrastructures{denomination,icone},meubles{libelle,icone},badge_propriete{id,date_expiration,badge{id,badge_name,badge_image}},pays{id,code,denomination},ville{denomination,id},quartier{id,denomination},adresse{libelle},offre{denomination},visuels{uri},user{id}}}`)
   let property = await dataAPIresponse.json()
   property = property.data.propriete;
   console.log(property);
