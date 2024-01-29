@@ -7,9 +7,9 @@ import Button from 'react-bootstrap/Button'
 import PropertyCard from '../../components/PropertyCard'
 import EditPropertyModal from '../../components/iacomponents/EditPropertyModal'
 import { buildPropertiesArray } from '../../utils/generalUtils'
-import { useSession,getSession } from 'next-auth/react'
+import { useSession, getSession } from 'next-auth/react'
 
-const AccountPropertiesPage = ({_userProperties}) => {
+const AccountPropertiesPage = ({ _userProperties }) => {
 
   // Properties array
   const [editPropertyShow, setEditPropertyShow] = useState(false);
@@ -17,7 +17,7 @@ const AccountPropertiesPage = ({_userProperties}) => {
   const handleEditPropertyShow = () => setEditPropertyShow(true);
 
 
-  const [propertyModal, setPropertyModal]=useState({});
+  const [propertyModal, setPropertyModal] = useState({});
 
   const { data: session } = useSession();
   const userProperties = buildPropertiesArray(_userProperties);
@@ -114,7 +114,7 @@ const AccountPropertiesPage = ({_userProperties}) => {
                   onClick: (event) => {
                     event.stopPropagation();
                     event.preventDefault();
-                    setPropertyModal(property); 
+                    setPropertyModal(property);
                     handleEditPropertyModal();
                   }
                 }
@@ -156,19 +156,24 @@ const AccountPropertiesPage = ({_userProperties}) => {
 
 export async function getServerSideProps(context) {
   const session = await getSession(context);
-  console.log(session);
-  if (!session) {
-    context.res.writeHead(302, { Location: "/auth/signin" });
-    context.res.end();
-    return { props: {} };
-  }
-  const userid = session ? session.user.id : 0;
-  // Fetch data from external API
-  let dataAPIresponse = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getUserProperties(user_id:${userid},first:10,orderBy:{column:NUO,order:DESC}){data{surface,badge_propriete{badge{badge_name,badge_image}},id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination},visuels{uri}}}}`);
-  let _userProperties = await dataAPIresponse.json();
+  if (session) {
+    const userid = session ? session.user.id : 0;
+    // Fetch data from external API
+    let dataAPIresponse = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getUserProperties(user_id:${userid},first:10,orderBy:{column:NUO,order:DESC}){data{surface,badge_propriete{badge{badge_name,badge_image}},id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination},visuels{uri}}}}`);
+    let _userProperties = await dataAPIresponse.json();
 
-  _userProperties = _userProperties.data.getUserProperties.data;
-  console.log(_userProperties);
-  return { props: { _userProperties} }
+    _userProperties = _userProperties.data.getUserProperties.data;
+    console.log(_userProperties);
+    return { props: { _userProperties } }
+
+  } else {
+    return {
+      redirect: {
+          destination: '/auth/signin',
+          permanent: false,
+      },
+  };
+  }
+
 }
 export default AccountPropertiesPage

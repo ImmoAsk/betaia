@@ -534,15 +534,13 @@ const AddProjectPage = (props) => {
 export async function getServerSideProps(context) {
 
   const session = await getSession(context);
-  //const session = null;
-  //console.log(session);
   if (!session) {
-    //if not exists, return a temporary 302 and replace the url with the given in Location.
-    context.res.writeHead(302, { Location: "/auth/signin" });
-    context.res.end();
-
-    //do not return any session.
-    return { props: {} };
+    return {
+      redirect: {
+          destination: '/auth/signin',
+          permanent: false,
+      }
+    }
   }
   return {props:{session}};
 }
