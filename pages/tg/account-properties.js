@@ -166,7 +166,7 @@ export async function getServerSideProps(context) {
     _userProperties = _userProperties.data.getUserProperties.data;
 
     return {
-      props: { session,_userProperties},
+      props: { _userProperties},
     }
 
   } else {
