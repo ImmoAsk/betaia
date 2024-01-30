@@ -157,11 +157,11 @@ const AccountPropertiesPage = ({ _userProperties }) => {
 export async function getServerSideProps(context) {
   const session = await getSession(context);
   console.log(session);
-  if (session) {
+  if (session.user) {
     const userid = session ? session.user.id : 0;
     // Fetch data from external API
-    let dataAPIresponse = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getUserProperties(user_id:${userid},first:10,orderBy:{column:NUO,order:DESC}){data{surface,badge_propriete{badge{badge_name,badge_image}},id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination},visuels{uri}}}}`);
-    let _userProperties = await dataAPIresponse.json();
+    var dataAPIresponse = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getUserProperties(user_id:${userid},first:10,orderBy:{column:NUO,order:DESC}){data{surface,badge_propriete{badge{badge_name,badge_image}},id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination},visuels{uri}}}}`);
+    var _userProperties = await dataAPIresponse.json();
 
     _userProperties = _userProperties.data.getUserProperties.data;
 
@@ -173,7 +173,7 @@ export async function getServerSideProps(context) {
     return {
       redirect: {
           destination: '/auth/signin',
-          permanent: true,
+          permanent: false,
       },
   };
   }

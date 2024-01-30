@@ -11,7 +11,7 @@ export default function signin({ ...props }) {
   const { data: session, status } = useSession();
 
   if (session && status === 'authenticated') {
-    router.push('/tg/account-info');
+    router.push('/tg/account-properties');
   }
 
   useEffect(async () => {
