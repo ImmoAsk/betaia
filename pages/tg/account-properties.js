@@ -167,10 +167,6 @@ export async function getServerSideProps(context) {
 
     return {
       props: { session,_userProperties},
-      redirect: {
-        permanent: false,
-        destination: '/account-properties'
-      }
     }
 
   } else {
