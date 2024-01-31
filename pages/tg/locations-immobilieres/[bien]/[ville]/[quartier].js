@@ -7,6 +7,7 @@ import RealEstatePageLayout from '../../../../../components/partials/RealEstateP
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
+import { useSession } from 'next-auth/react'
 import Offcanvas from 'react-bootstrap/Offcanvas'
 import Nav from 'react-bootstrap/Nav'
 import Form from 'react-bootstrap/Form'
@@ -339,13 +340,14 @@ const CatalogPage = ({_rentingProperties,bienId,villeId,quartierId,soffreId}) =>
   
 
   const [parentData, setParentData] = useState('Aklakou');
-
+  const { data: session } = useSession();
   const handleParentDataChange = (newData) => {
     setParentData(newData);
   };
   return (
     <RealEstatePageLayout
       pageTitle={pageTitle}
+      userLoggedIn={session ? true : false}
       activeNav='Catalog'
     >
 

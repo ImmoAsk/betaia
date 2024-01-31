@@ -22,7 +22,7 @@ import SimpleBar from 'simplebar-react'
 import Nouislider from 'nouislider-react'
 import 'simplebar/dist/simplebar.min.css'
 import 'nouislider/distribute/nouislider.css'
-
+import { useSession } from 'next-auth/react'
 import 'leaflet/dist/leaflet.css'
 import RentingList from '../../../components/iacomponents/RentingList'
 import {buildPropertiesArray} from '../../../utils/generalUtils'
@@ -311,10 +311,12 @@ const CatalogPage = ({_rentingProperties}) => {
     }
   }
   const rentingProperties = buildPropertiesArray(_rentingProperties);
+  const { data: session } = useSession();
   return (
     <RealEstatePageLayout
       pageTitle={"Immeubles en "+categoryParamTitle(categoryParam)}
       activeNav='Catalog'
+      userLoggedIn={session ? true : false}
     >
 
       {/* Page container */}

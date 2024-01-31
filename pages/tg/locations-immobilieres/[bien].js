@@ -23,6 +23,7 @@ import Nouislider from 'nouislider-react'
 import 'simplebar/dist/simplebar.min.css'
 import 'nouislider/distribute/nouislider.css'
 import 'leaflet/dist/leaflet.css'
+import { useSession } from 'next-auth/react'
 import RentingList from '../../../components/iacomponents/RentingList'
 import {buildPropertiesArray} from '../../../utils/generalUtils'
 import { capitalizeFirstLetter } from '../../../utils/generalUtils'
@@ -87,7 +88,7 @@ const CatalogPage = ({_rentingProperties}) => {
     {value: 'Espace co-working', checked: false},
     {value: 'Villa', checked: false}
   ]
-
+  const { data: session } = useSession();
   // Price range slider
   const PriceRange = () => {
     const [minRange, setMinRange] = useState(categoryParam === 'sale' ? 90000 : 1100)
@@ -325,6 +326,7 @@ const CatalogPage = ({_rentingProperties}) => {
     <RealEstatePageLayout
       pageTitle={pageTitle}
       activeNav='Catalog'
+      userLoggedIn={session ? true : false}
     >
 
       {/* Page container */}

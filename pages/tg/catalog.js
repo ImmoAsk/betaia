@@ -46,7 +46,7 @@ import 'leaflet/dist/leaflet.css'
 import getPropertyFullUrl from '../../utils/getPropertyFullURL'
 import buildPropertyBadge from '../../utils/buildPropertyBadge'
 import getFirstImageArray from '../../utils/formatFirsImageArray'
-
+import { useSession } from 'next-auth/react'
 const CatalogPage = () => {
     
   // Add extra class to body
@@ -686,11 +686,12 @@ const CatalogPage = () => {
     //Affect response to function which can build realTimeProperties array
     //Calculate length of response array and send it to numberRespSearch
   }
-
+  const { data: session } = useSession();
   return (
     <RealEstatePageLayout
       pageTitle={"Immeubles en "+categoryParamTitle(categoryParam)}
       activeNav='Catalog'
+      userLoggedIn={session ? true : false}
     >
 
       {/* Page container */}

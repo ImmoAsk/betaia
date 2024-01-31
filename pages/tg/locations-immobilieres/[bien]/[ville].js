@@ -18,7 +18,7 @@ import SimpleBar from 'simplebar-react'
 import Nouislider from 'nouislider-react'
 import 'simplebar/dist/simplebar.min.css'
 import 'nouislider/distribute/nouislider.css'
-
+import { useSession } from 'next-auth/react'
 import RealEstatePageLayout from '../../../../components/partials/RealEstatePageLayout'
 import ImageLoader from '../../../../components/ImageLoader'
 import { capitalizeFirstLetter, toLowerCaseString } from '../../../../utils/generalUtils'
@@ -329,11 +329,12 @@ const CatalogPage = ({_rentingProperties,bienId,soffreId,villeId}) => {
   //const { status, data:propertiesByOCTD, error, isFetching,isLoading,isError }  = usePropertiesByOCTD("1","1","5","2" );
   console.log(_rentingProperties);
   const rentingProperties = buildPropertiesArray(_rentingProperties);
-  
+  const { data: session } = useSession();
   return (
     <RealEstatePageLayout
       pageTitle={pageTitle}
       activeNav='Catalog'
+      userLoggedIn={session ? true : false}
     >
 
       {/* Page container */}
