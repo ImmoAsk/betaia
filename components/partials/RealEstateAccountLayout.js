@@ -62,11 +62,11 @@ const RealEstateAccountLayout = ({ accountPageTitle, children }) => {
     }
   ];
   const { data: session } = useSession();
-  console.log(session);
-  const roleId= Number(session && session.user?.roleId);
-  console.log(roleId);
-  const { data:ressources, isLoading, error } = useRessourceByRole(session ? roleId:0);
-  console.log(session);
+  //console.log(session);
+  const roleId = Number(session && session.user?.roleId);
+  //console.log(roleId);
+  const { data: ressources, isLoading, error } = useRessourceByRole(session ? roleId : 0);
+  //console.log(session);
 
   return (
     <Container className='pt-5 pb-lg-4 mt-5 mb-sm-2'>
@@ -108,19 +108,26 @@ const RealEstateAccountLayout = ({ accountPageTitle, children }) => {
                 </ul>
               </div>
             </div>
+            {
+              roleId === 1 &&
+              <Link href='/tg/add-project' passHref>
+                <Button as='a' size='lg' className='w-100 mb-3'>
+                  <i className='fi-plus me-2'></i>
+                  Lancer un projet immobilier
+                </Button>
+              </Link>
+            }
+            {
+              roleId > 1 &&
+              <Link href='/tg/add-property' passHref>
+                <Button as='a' size='lg' className='w-100 mb-3'>
+                  <i className='fi-plus me-2'></i>
+                  Enroller une propriété
+                </Button>
+              </Link>
+            }
 
-            <Link href='/tg/add-property' passHref>
-              <Button as='a' size='sm' className='w-100 mb-3'>
-                <i className='fi-plus me-2'></i>
-                Enroller une propriété
-              </Button>
-            </Link>
-            <Link href='/tg/add-property' passHref>
-              <Button as='a' size='sm' className='btn-outline-primary w-100 mb-3'>
-                <i className='fi-plus me-2'></i>
-                Lancer un projet immobilier
-              </Button>
-            </Link>
+
 
             {/* Enroller une propriété */}
             <Button
@@ -139,7 +146,7 @@ const RealEstateAccountLayout = ({ accountPageTitle, children }) => {
 
                   {
                     ressources && ressources.map((ressource) => {
-                      
+
                       if (ressource.ressource.statut > 0) {
                         return (<CardNav.Item
                           key={ressource.ressource.id}
