@@ -131,11 +131,11 @@ const AccountLocationPage = () => {
           />
         )) : <div className='text-center pt-2 pt-md-4 pt-lg-5 pb-2 pb-md-0'>
           <i className='fi-home display-6 text-muted mb-4'></i>
-          <h2 className='h5 mb-4'>Vous n'avez aucun bien immobilier enrollé!</h2>
+          <h2 className='h5 mb-4'>Vous n'avez pas loue avec nous...</h2>
           <Link href='/tg/add-property' passHref>
             <Button variant='primary'>
               <i className='fi-plus fs-sm me-2'></i>
-              Enroller un bien immobilier
+              Enroller votre logement actuel
             </Button>
           </Link>
         </div>}
