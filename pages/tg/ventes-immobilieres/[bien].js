@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import RealEstatePageLayout from '../../../components/partials/RealEstatePageLayout'
 import Container from 'react-bootstrap/Container'
+import { useSession } from 'next-auth/react'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Offcanvas from 'react-bootstrap/Offcanvas'
@@ -54,7 +55,7 @@ const CatalogPage = ({_rentingProperties}) => {
     document.body.classList.add('fixed-bottom-btn')
     return () => body.classList.remove('fixed-bottom-btn')
   })
-
+  const { data: session } = useSession();
   // Query param (Switch between Rent and Sale category)
   const router = useRouter()
         // categoryParam = router.query.category === 'sale' ? 'sale' : 'rent'
@@ -323,6 +324,7 @@ const CatalogPage = ({_rentingProperties}) => {
   return (
     <RealEstatePageLayout
       pageTitle={pageTitle}
+      userLoggedIn={session ? true : false}
       activeNav='Catalog'
     >
 
