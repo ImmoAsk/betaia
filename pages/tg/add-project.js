@@ -476,6 +476,7 @@ const AddProjectPage = (props) => {
               files={files}
               onupdatefiles={setFiles}
               allowMultiple={false}
+              required={false}
               dropOnPage
               server={{
                 process: {

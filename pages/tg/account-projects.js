@@ -8,15 +8,21 @@ import PropertyCard from '../../components/PropertyCard'
 import EditPropertyModal from '../../components/iacomponents/EditPropertyModal'
 import { buildPropertiesArray } from '../../utils/generalUtils'
 import { useSession, getSession } from 'next-auth/react'
+import PropertyProjectList from '../../components/iacomponents/PropertyProjectList'
 
-const AccountProjectsPage = ({ _userProperties }) => {
+const AccountProjectsPage = ({ _userProperties, _handledProjets, _handlingProjets }) => {
 
   // Properties array
   const [editPropertyShow, setEditPropertyShow] = useState(false);
   const handleEditPropertyClose = () => setEditPropertyShow(false);
   const handleEditPropertyShow = () => setEditPropertyShow(true);
+  const [newPropertyProjectsTab, setNewPropertyProjectsTab] = useState(false);
+  const handledClickNewPropertyProjectsTab = () => setNewPropertyProjectsTab(true);
 
-
+  const [handlingPropertyProjectsTab, setHandlingPropertyProjectsTab] = useState(false);
+  const handledClickHandlingPropertyProjectsTab = () => setHandlingPropertyProjectsTab(true);
+  const [handledPropertyProjectsTab, setHandledPropertyProjectsTab] = useState(false);
+  const handledClickHandledPropertyProjectsTab = () => setHandledPropertyProjectsTab(true);
   const [propertyModal, setPropertyModal] = useState({});
 
   const { data: session } = useSession();
@@ -36,7 +42,15 @@ const AccountProjectsPage = ({ _userProperties }) => {
     //userProperties=[];
     //setProperties([])
   }
-
+  const getNewPropertyProjects = (projects) => {
+    return (<PropertyProjectList projects={projects} />)
+  }
+  const getHandledPropertyProjects = (projects) => {
+    return (<PropertyProjectList projects={projects} />)
+  }
+  const getHandlingPropertyProjects = (projects) => {
+    return (<PropertyProjectList projects={projects} />)
+  }
 
   return (
     <RealEstatePageLayout
@@ -65,88 +79,86 @@ const AccountProjectsPage = ({ _userProperties }) => {
           comme recherche de logememt, achat....</p>
 
         {/* Nav tabs */}
-        <Nav
+        {/* <Nav
           variant='tabs'
           defaultActiveKey='published'
           className='border-bottom mb-4'
         >
           <Nav.Item className='mb-3'>
-            <Nav.Link eventKey='published'>
+            <Nav.Link eventKey='published' onClick={handledClickNewPropertyProjectsTab}>
               <i className='fi-file fs-base me-2'></i>
               Nouvels non traites
             </Nav.Link>
           </Nav.Item>
           <Nav.Item className='mb-3'>
-            <Nav.Link eventKey='drafts'>
+            <Nav.Link eventKey='drafts' onClick={handledClickHandlingPropertyProjectsTab}>
               <i className='fi-file-clean fs-base me-2'></i>
               En traitement
             </Nav.Link>
           </Nav.Item>
           <Nav.Item className='mb-3'>
-            <Nav.Link eventKey='archived'>
+            <Nav.Link eventKey='archived' onClick={handledClickHandledPropertyProjectsTab}>
               <i className='fi-archive fs-base me-2'></i>
               Deja traite
             </Nav.Link>
           </Nav.Item>
-        </Nav>
+        </Nav> */}
+        
+          <Nav
+            variant='tabs'
+            defaultActiveKey='published'
+            className='border-bottom mb-2'
+          >
+              <Nav.Item className='mb-2'>
+                <Nav.Link eventKey='published'>
+                  <i className='fi-file fs-base me-2'></i>
+                  Nouvels non traites
+                </Nav.Link>
+              </Nav.Item>
+              <Nav.Item className='mb-2'>
+                <Nav.Link eventKey='drafts'>
+                  <i className='fi-archive fs-base me-2'></i>
+                  En traitement
+                </Nav.Link>
+              </Nav.Item>
+              <Nav.Item className='mb-2'>
+                <Nav.Link eventKey='published'>
+                  <i className='fi-file-clean fs-base me-2'></i>
+                  Deja traites
+                </Nav.Link>
+              </Nav.Item>
+          </Nav>
+        
+        <div className='row'>
+          <div className='col-lg-4'>
+            {getNewPropertyProjects(userProperties)}
+
+          </div>
+          <div className='col-lg-4'>
+            {getHandledPropertyProjects(_handledProjets)}
+          </div>
+          <div className='col-lg-4'>
+            {getHandledPropertyProjects(_handlingProjets)}
+          </div>
+        </div>
 
         {/* List of properties or empty state */}
-        {userProperties.length ? userProperties.map((project, indx) => (
-          <div class="pb-2">
-            <div class="card bg-secondary card-hover">
-              <div class="card-body">
-                <div class="d-flex justify-content-between align-items-start mb-2">
-                  <div class="d-flex align-items-center">
-                    <span class="fs-sm text-dark opacity-80 px-1">{project.project_name}</span>
-                    <span class="badge bg-faded-accent rounded-pill fs-sm ms-2">{project.project_category}</span>
-                  </div>
-                  <div class="dropdown content-overlay">
-                    <button type="button" class="btn btn-icon btn-light btn-xs rounded-circle shadow-sm" id="contextMenu" data-bs-toggle="dropdown" aria-expanded="false">
-                      <i class="fi-dots-vertical"></i>
-                    </button>
-                    <ul class="dropdown-menu my-1" aria-labelledby="contextMenu">
-                      <li>
-                        <button type="button" class="dropdown-item">
-                          <i class="fi-heart opacity-60 me-2"></i>
-                          Traiter 
-                        </button>
-                      </li>
-                      <li>
-                        <button type="button" class="dropdown-item">
-                          <i class="fi-x-circle opacity-60 me-2"></i>
-                          Archiver
-                        </button>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-                <h3 class="h6 card-title pt-1 mb-3">
-                  <a href="#" class="text-nav stretched-link text-decoration-none">{project.description}</a>
-                </h3>
-                <div class="fs-sm">
-                  <span class="text-nowrap me-3">
-                    <i class="fi-calendar text-muted me-1"> </i>
-                    {project.start_date}
-                  </span>
-                  <span class="text-nowrap me-3">
-                    <i class="fi-cash fs-base text-muted me-1"></i>
-                    {project.statut}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
+        {/* {newPropertyProjectsTab && getNewPropertyProjects(userProperties)}
+        {handledPropertyProjectsTab && getHandledPropertyProjects(_handledProjets)}
+        {handlingPropertyProjectsTab && getHandlingPropertyProjects(userProperties)} */}
 
-        )) : <div className='text-center pt-2 pt-md-4 pt-lg-5 pb-2 pb-md-0'>
+
+        {/* <div className='text-center pt-2 pt-md-4 pt-lg-5 pb-2 pb-md-0'>
+
           <i className='fi-home display-6 text-muted mb-4'></i>
-          <h2 className='h5 mb-4'>Vous n'avez aucun bien immobilier enrollé!</h2>
+          <h2 className='h5 mb-4'>Vous n'avez pas encore soumis un projet immobilier!</h2>
           <Link href='/tg/add-property' passHref>
             <Button variant='primary'>
               <i className='fi-plus fs-sm me-2'></i>
               Enroller un bien immobilier
             </Button>
           </Link>
-        </div>}
+        </div> */}
       </RealEstateAccountLayout>
     </RealEstatePageLayout>
   )
@@ -162,10 +174,18 @@ export async function getServerSideProps(context) {
     var dataAPIresponse = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getProjectsByKeyWords(statut:2){project_category,project_name,project_document,description,statut,final_date,start_date}}`);
     var _userProperties = await dataAPIresponse.json();
 
+    var handledProjets = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getProjectsByKeyWords(statut:3){project_category,project_name,project_document,description,statut,final_date,start_date}}`);
+    var _handledProjets = await handledProjets.json();
+
+    var handlingProjets = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getProjectsByKeyWords(statut:1){project_category,project_name,project_document,description,statut,final_date,start_date}}`);
+    var _handlingProjets = await handlingProjets.json();
+
     _userProperties = _userProperties.data.getProjectsByKeyWords;
-    console.log(_userProperties);
+    _handledProjets = _handledProjets.data.getProjectsByKeyWords;
+    _handlingProjets = _handlingProjets.data.getProjectsByKeyWords;
+    console.log(_handledProjets);
     return {
-      props: { _userProperties },
+      props: { _userProperties, _handledProjets, _handlingProjets },
     }
 
   } else {
