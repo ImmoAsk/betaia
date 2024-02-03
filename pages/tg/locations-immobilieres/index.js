@@ -26,6 +26,7 @@ import { useSession } from 'next-auth/react'
 import 'leaflet/dist/leaflet.css'
 import RentingList from '../../../components/iacomponents/RentingList'
 import {buildPropertiesArray} from '../../../utils/generalUtils'
+import IAPaginaation from '../../../components/iacomponents/IAPagination'
 const MapContainer = dynamic(() => 
   import('react-leaflet').then(mod => mod.MapContainer),
   { ssr: false }
@@ -623,28 +624,15 @@ const CatalogPage = ({_rentingProperties}) => {
               <hr className='d-none d-sm-block w-100 mx-4' />
               <div className='d-none d-sm-flex align-items-center flex-shrink-0 text-muted'>
                 <i className='fi-check-circle me-2'></i>
-                <span className='fs-sm mt-n1'>148 résultats</span>
+                <span className='fs-sm mt-n1'>{rentingProperties.length} résultats</span>
               </div>
             </div>
 
             {/* Catalog grid */}
-            <Row xs={1} sm={2} xl={3} className='g-4 py-4'>
-              <RentingList rentingProperties={rentingProperties}/>
-            </Row>
+            
 
             {/* Pagination */}
-            <nav className='border-top pb-md-4 pt-4' aria-label='Pagination'>
-              <Pagination className='mb-1'>
-                <Pagination.Item active>{1}</Pagination.Item>
-                <Pagination.Item>{2}</Pagination.Item>
-                <Pagination.Item>{3}</Pagination.Item>
-                <Pagination.Ellipsis />
-                <Pagination.Item>{8}</Pagination.Item>
-                <Pagination.Item>
-                  <i className='fi-chevron-right'></i>
-                </Pagination.Item>
-              </Pagination>
-            </nav>
+            <IAPaginaation dataPagineted={rentingProperties}/>
           </Col>
         </Row>
       </Container>
@@ -661,7 +649,7 @@ const CatalogPage = ({_rentingProperties}) => {
 export async function getServerSideProps(context) {  
   const offreId="1";
   // Fetch data from external API
-  let dataAPIresponse = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getPropertiesByKeyWords(limit:24,orderBy:{column:NUO,order:DESC},offre_id:"${offreId}")
+  let dataAPIresponse = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getPropertiesByKeyWords(limit:800,orderBy:{column:NUO,order:DESC},offre_id:"${offreId}")
   {badge_propriete{badge{badge_name,badge_image}},visuels{uri},surface,lat_long,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination}}}`);
   let _rentingProperties = await dataAPIresponse.json();
   //console.log(_rentingProperties.data.getPropertiesByKeyWords);

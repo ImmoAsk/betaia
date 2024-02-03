@@ -12,6 +12,14 @@ function replaceSpacesWithDots(inputString) {
 function replaceSpacesWithAny(inputString, anyThing) {
     return inputString.replace(/ /g, anyThing);
 }
+
+const getLastPage=(totalItems)=>{
+    var reminder = totalItems%6;
+    var totalPages= totalItems/6;
+    if(reminder===0){ var lastPage=totalPages ;}
+    if(reminder!=0){ var lastPage=Math.floor(totalPages)+1;}
+    return lastPage;
+  }
 function toLowerCaseString(inputString) {
     return inputString.toLowerCase();
 }
@@ -43,4 +51,4 @@ function createPropertyObject(property) {
     }
     return _objetProperty;
 }
-export { buildPropertiesArray,replaceSpacesWithAny,createPropertyObject,capitalizeFirstLetter, replaceSpacesWithDots, toLowerCaseString };
+export { buildPropertiesArray,replaceSpacesWithAny,getLastPage,createPropertyObject,capitalizeFirstLetter, replaceSpacesWithDots, toLowerCaseString };

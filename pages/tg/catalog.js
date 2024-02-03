@@ -47,7 +47,9 @@ import getPropertyFullUrl from '../../utils/getPropertyFullURL'
 import buildPropertyBadge from '../../utils/buildPropertyBadge'
 import getFirstImageArray from '../../utils/formatFirsImageArray'
 import { useSession } from 'next-auth/react'
-const CatalogPage = () => {
+import IAPaginaation from '../../components/iacomponents/IAPagination'
+import { buildPropertiesArray } from '../../utils/generalUtils'
+const CatalogPage = ({_rentingProperties}) => {
     
   // Add extra class to body
   useEffect(() => {
@@ -58,7 +60,7 @@ const CatalogPage = () => {
 
   // Query param (Switch between Rent and Sale category)
   const router = useRouter(),
-        categoryParam = router.query.category === 'sale' ? 'sale' : 'rent'
+        categoryParam = router.query.category
         
         //immeubleType= router.query.type
         // Media query for displaying Offcanvas on screens larger than 991px
@@ -78,7 +80,7 @@ const CatalogPage = () => {
 
   const handleClose = () => setShow(false)
   const handleShow = () => setShow(true)
-  console.log(categoryParam);
+  //console.log(categoryParam);
   // Property type checkboxes
   const propertyType = [
     {value: 'Chambre salon', checked: false},
@@ -296,7 +298,7 @@ const CatalogPage = () => {
   
   
   
-  useQuery(["markers"],
+  /* useQuery(["markers"],
   ()=> axios.get(`${apiUrl}?query={getAllProperties(orderBy:{column:NUO,order:DESC},first:24){data{lat_long,lat_propriete,long_propriete,badge_propriete{badge{badge_name,badge_image}},visuels{uri},surface,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination}}}}`).
   then((res)=>{
     setMarkers(res.data.data.getAllProperties.data.map((property) =>{
@@ -314,10 +316,10 @@ const CatalogPage = () => {
         }
       }
     }));
-  }));
+  })); */
   //console.log(markers);
 
-  useQuery(["RTProperties"],
+  /* useQuery(["RTProperties"],
   ()=> axios.get(`${apiUrl}?query={getAllProperties(orderBy:{column:NUO,order:DESC},first:24){data{badge_propriete{badge{badge_name,badge_image}},visuels{uri},surface,lat_long,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination}}}}`).
   then((res)=>{
     setRealTimeProperties(res.data.data.getAllProperties.data.map((property) =>{
@@ -332,302 +334,11 @@ const CatalogPage = () => {
         amenities: [property.piece, property.wc_douche_interne, property.garage],
       }
     }));
-  }));
+  })); */
   // Properties for rent array
-  const propertiesRent = [
-    {
-      href: '/tg/single-v1',
-      images: [
-        ['/images/tg/catalog/06.jpg', 504, 230, 'Image'],
-        ['/images/tg/catalog/06.jpg', 504, 230, 'Image']
-      ],
-      title: '3-bed Apartment | 67 sq.m',
-      location: '3811 Ditmars Blvd Astoria, NY 11105',
-      price: '$1,650',
-      badges: [['success', 'Verified'], ['info', 'New']],
-      amenities: [3, 2, 1]
-    },
-    {
-      href: '/tg/single-v1',
-      images: [
-        ['/images/tg/catalog/07.jpg', 504, 230, 'Image'],
-        ['/images/tg/catalog/07.jpg', 504, 230, 'Image']
-      ],
-      title: 'Pine Apartments | 56 sq.m',
-      location: '7865 Ditmars Blvd Astoria, NY 11105',
-      price: '$2,000',
-      badges: [['info', 'New']],
-      amenities: [4, 2, 2]
-    },
-    {
-      href: '/tg/single-v1',
-      images: [
-        ['/images/tg/catalog/08.jpg', 504, 230, 'Image'],
-        ['/images/tg/catalog/08.jpg', 504, 230, 'Image']
-      ],
-      title: 'Greenpoint Rentals | 85 sq.m',
-      location: '1510 Castle Hill Ave Bronx, NY 10462',
-      price: '$1,350',
-      badges: [['info', 'New']],
-      amenities: [2, 1, 0]
-    },
-    {
-      href: '/tg/single-v1',
-      images: [
-        ['/images/tg/catalog/09.jpg', 504, 230, 'Image'],
-        ['/images/tg/catalog/09.jpg', 504, 230, 'Image']
-      ],
-      title: 'Terra Nova Apartments | 85 sq.m',
-      location: '21 India St Brooklyn, NY 11222',
-      price: '$2,400',
-      badges: [['success', 'Verified']],
-      amenities: [5, 2, 2]
-    },
-    {
-      href: '/tg/single-v1',
-      images: [
-        ['/images/tg/catalog/10.jpg', 504, 230, 'Image'],
-        ['/images/tg/catalog/10.jpg', 504, 230, 'Image']
-      ],
-      title: 'O’Farrell Rooms | 40 sq.m',
-      location: '460 E Fordham Rd Bronx, NY 10458',
-      price: 'From $550',
-      badges: [['success', 'Verified'], ['danger', 'Featured']],
-      amenities: [2, 1, 0]
-    },
-    {
-      href: '/tg/single-v1',
-      images: [
-        ['/images/tg/catalog/11.jpg', 504, 230, 'Image'],
-        ['/images/tg/catalog/11.jpg', 504, 230, 'Image']
-      ],
-      title: 'Studio | 32 sq.m',
-      location: '140-60 Beech Ave Flushing, NY 11355',
-      price: '$680',
-      badges: [['info', 'New']],
-      amenities: [1, 1, 1]
-    },
-    {
-      href: '/tg/single-v1',
-      images: [
-        ['/images/tg/catalog/12.jpg', 504, 230, 'Image'],
-        ['/images/tg/catalog/12.jpg', 504, 230, 'Image']
-      ],
-      title: 'Mason House | 150 sq.m',
-      location: '557 Grand Concourse Bronx, NY 10451',
-      price: 'From $4,000',
-      badges: [['danger', 'Featured']],
-      amenities: [3, 2, 2]
-    },
-    {
-      href: '/tg/single-v1',
-      images: [
-        ['/images/tg/catalog/13.jpg', 504, 230, 'Image'],
-        ['/images/tg/catalog/13.jpg', 504, 230, 'Image']
-      ],
-      title: 'Office | 320 sq.m',
-      location: '159 20th Street Brooklyn, NY 11232',
-      price: '$8,000',
-      badges: [['success', 'Verified']],
-      amenities: [2, 1, 8]
-    },
-    {
-      href: '/tg/single-v1',
-      images: [
-        ['/images/tg/catalog/14.jpg', 504, 230, 'Image'],
-        ['/images/tg/catalog/14.jpg', 504, 230, 'Image']
-      ],
-      title: 'Lakewood Rentals | 90 sq.m',
-      location: '5 Brewster Street Glen Cove, NY 11542',
-      price: '$1,200',
-      badges: [],
-      amenities: [2, 1, 0]
-    },
-    {
-      href: '/tg/single-v1',
-      images: [
-        ['/images/tg/catalog/15.jpg', 504, 230, 'Image'],
-        ['/images/tg/catalog/15.jpg', 504, 230, 'Image']
-      ],
-      title: 'Crystal Apartment| 60 sq.m',
-      location: '495 Henry St Brooklyn, NY 11231',
-      price: '$1,350',
-      badges: [],
-      amenities: [2, 1, 1]
-    },
-    {
-      href: '/tg/single-v1',
-      images: [
-        ['/images/tg/catalog/16.jpg', 504, 230, 'Image'],
-        ['/images/tg/catalog/16.jpg', 504, 230, 'Image']
-      ],
-      title: 'Family Home | 120 sq.m',
-      location: '67-04 Myrtle Ave Glendale, NY 11385',
-      price: 'From $4,500',
-      badges: [['danger', 'Featured']],
-      amenities: [4, 2, 2]
-    },
-    {
-      href: '/tg/single-v1',
-      images: [
-        ['/images/tg/catalog/17.jpg', 504, 230, 'Image'],
-        ['/images/tg/catalog/17.jpg', 504, 230, 'Image']
-      ],
-      title: 'Tiffany Studio | 35 sq.m',
-      location: '3979 Albany Post Road Hyde Park, NY 12538',
-      price: '$700',
-      badges: [],
-      amenities: [1, 1, 1]
-    }
-  ]
+
 
   // Properties for sale array
-  const propertiesSale = [
-    {
-      href: '/tg/single-v1',
-      images: [
-        ['/images/tg/catalog/18.jpg', 504, 230, 'Image'],
-        ['/images/tg/catalog/18.jpg', 504, 230, 'Image']
-      ],
-      title: 'Ellis Studio | 40 sq.m',
-      location: '3 E Evergreen Rd New City, NY 10956',
-      price: '$50,000',
-      badges: [['success', 'Verified'], ['info', 'New']],
-      amenities: [2, 1, 1]
-    },
-    {
-      href: '/tg/single-v1',
-      images: [
-        ['/images/tg/catalog/19.jpg', 504, 230, 'Image'],
-        ['/images/tg/catalog/19.jpg', 504, 230, 'Image']
-      ],
-      title: 'Country House | 120 sq.m',
-      location: '6954 Grand AveMaspeth, NY 11378',
-      price: '$162,000',
-      badges: [['info', 'New']],
-      amenities: [4, 2, 2]
-    },
-    {
-      href: '/tg/single-v1',
-      images: [
-        ['/images/tg/catalog/20.jpg', 504, 230, 'Image'],
-        ['/images/tg/catalog/20.jpg', 504, 230, 'Image']
-      ],
-      title: 'Condo | 70 sq.m',
-      location: '276 5th Avenue New York, NY 10001',
-      price: '$85,000',
-      badges: [['info', 'New']],
-      amenities: [2, 1, 1]
-    },
-    {
-      href: '/tg/single-v1',
-      images: [
-        ['/images/tg/catalog/21.jpg', 504, 230, 'Image'],
-        ['/images/tg/catalog/21.jpg', 504, 230, 'Image']
-      ],
-      title: 'Luxury Rental Villa | 180 sq.m',
-      location: '118-11 Sutphin Blvd Jamaica, NY 11434',
-      price: '$300,500',
-      badges: [['success', 'Verified']],
-      amenities: [4, 2, 2]
-    },
-    {
-      href: '/tg/single-v1',
-      images: [
-        ['/images/tg/catalog/22.jpg', 504, 230, 'Image'],
-        ['/images/tg/catalog/22.jpg', 504, 230, 'Image']
-      ],
-      title: 'Cottage | 120 sq.m',
-      location: '42 Broadway New York, NY 10004',
-      price: '$184,000',
-      badges: [['success', 'Verified'], ['danger', 'Featured']],
-      amenities: [3, 1, 1]
-    },
-    {
-      href: '/tg/single-v1',
-      images: [
-        ['/images/tg/catalog/23.jpg', 504, 230, 'Image'],
-        ['/images/tg/catalog/23.jpg', 504, 230, 'Image']
-      ],
-      title: 'Modern House | 170 sq.m',
-      location: '82 Nassau St New York, NY 10038',
-      price: '$620,400',
-      badges: [['info', 'New']],
-      amenities: [5, 2, 2]
-    },
-    {
-      href: '/tg/single-v1',
-      images: [
-        ['/images/tg/catalog/24.jpg', 504, 230, 'Image'],
-        ['/images/tg/catalog/24.jpg', 504, 230, 'Image']
-      ],
-      title: 'Duplex with Garage | 200 sq.m',
-      location: '21 Pulaski Road Kings Park, NY 11754',
-      price: 'From $200,670',
-      badges: [['danger', 'Featured']],
-      amenities: [4, 2, 3]
-    },
-    {
-      href: '/tg/single-v1',
-      images: [
-        ['/images/tg/catalog/25.jpg', 504, 230, 'Image'],
-        ['/images/tg/catalog/25.jpg', 504, 230, 'Image']
-      ],
-      title: 'Studio | 40 sq.m',
-      location: '1879 Whitehaven Road Grand Island, NY 14072',
-      price: '$92,000',
-      badges: [['success', 'Verified']],
-      amenities: [1, 1, 1]
-    },
-    {
-      href: '/tg/single-v1',
-      images: [
-        ['/images/tg/catalog/26.jpg', 504, 230, 'Image'],
-        ['/images/tg/catalog/26.jpg', 504, 230, 'Image']
-      ],
-      title: 'Villa with Pool | 85 sq.m',
-      location: '21 India St Brooklyn, NY 11222',
-      price: '$105,000',
-      badges: [],
-      amenities: [2, 1, 2]
-    },
-    {
-      href: '/tg/single-v1',
-      images: [
-        ['/images/tg/catalog/27.jpg', 504, 230, 'Image'],
-        ['/images/tg/catalog/27.jpg', 504, 230, 'Image']
-      ],
-      title: 'Family Home | 200 sq.m',
-      location: '140-60 Beech Ave Flushing, NY 11355',
-      price: '$740,000',
-      badges: [],
-      amenities: [5, 3, 2]
-    },
-    {
-      href: '/tg/single-v1',
-      images: [
-        ['/images/tg/catalog/28.jpg', 504, 230, 'Image'],
-        ['/images/tg/catalog/28.jpg', 504, 230, 'Image']
-      ],
-      title: 'Merry House | 98 sq.m',
-      location: '123-12 Jamaica Ave Queens, NY 11418',
-      price: '$275,800',
-      badges: [],
-      amenities: [3, 1, 2]
-    },
-    {
-      href: '/tg/single-v1',
-      images: [
-        ['/images/tg/catalog/29.jpg', 504, 230, 'Image'],
-        ['/images/tg/catalog/29.jpg', 504, 230, 'Image']
-      ],
-      title: 'White Cottage | 70 sq.m',
-      location: '3979 Albany Post Road Hyde Park, NY 12538',
-      price: '$84,000',
-      badges: [['success', 'Verified'], ['danger', 'Featured']],
-      amenities: [2, 1, 1]
-    }
-  ]
 
   const categoryParamTitle = categoryParam => {
     let titleFromCategory
@@ -687,9 +398,11 @@ const CatalogPage = () => {
     //Calculate length of response array and send it to numberRespSearch
   }
   const { data: session } = useSession();
+  const rentingProperties = buildPropertiesArray(_rentingProperties);
+  //console.log("Catalogue 3:",_rentingProperties);
   return (
     <RealEstatePageLayout
-      pageTitle={"Immeubles en "+categoryParamTitle(categoryParam)}
+      pageTitle={"Catalogue de l'immobilier au Togo"}
       activeNav='Catalog'
       userLoggedIn={session ? true : false}
     >
@@ -910,7 +623,7 @@ const CatalogPage = () => {
                   minZoom={1}
                   attribution={'\u003ca href=\'https://www.maptiler.com/copyright/\' target=\'_blank\'\u003e\u0026copy; MapTiler\u003c/a\u003e \u003ca href=\'https://www.openstreetmap.org/copyright\' target=\'_blank\'\u003e\u0026copy; OpenStreetMap contributors\u003c/a\u003e'}
                 />
-                {markers.map((marker, indx) => {
+                {definedMarkers.map((marker, indx) => {
                   return <CustomMarker
                     key={indx}
                     position={marker.position}
@@ -999,76 +712,15 @@ const CatalogPage = () => {
               <hr className='d-none d-sm-block w-100 mx-4' />
               <div className='d-none d-sm-flex align-items-center flex-shrink-0 text-muted'>
                 <i className='fi-check-circle me-2'></i>
-                <span className='fs-sm mt-n1'>{numberRespSearch} résultats</span>
+                <span className='fs-sm mt-n1'>{rentingProperties.length} résultats</span>
               </div>
             </div>
 
             {/* Catalog grid */}
-            <Row xs={1} sm={2} xl={3} className='g-4 py-4'>
-              {categoryParam === 'sale' ? propertiesSale.map((property, indx) => (
-                <Col key={indx}>
-                  <PropertyCard
-                    href={property.href}
-                    images={property.images}
-                    title={property.title}
-                    category={property.category}
-                    location={property.location}
-                    price={property.price}
-                    badges={property.badges}
-                    wishlistButton={{
-                      tooltip: 'Add to Wishlist',
-                      props: {
-                        onClick: () => console.log('Property added to your Wishlist!')
-                      }
-                    }}
-                    footer={[
-                      ['fi-bed', property.amenities[0]],
-                      ['fi-bath', property.amenities[1]],
-                      ['fi-car', property.amenities[2]]
-                    ]}
-                    className='h-100'
-                  />
-                </Col>
-              )) : realTimeProperties.map((property, indx) => (
-                <Col key={indx}>
-                  <PropertyCard
-                    href={property.href}
-                    images={property.images}
-                    title={property.title}
-                    category={property.category}
-                    location={property.address}
-                    price={property.price}
-                    badges={property.badges}
-                    wishlistButton={{
-                      tooltip: 'Add to Wishlist',
-                      props: {
-                        onClick: () => console.log('Property added to your Wishlist!')
-                      }
-                    }}
-                    footer={[
-                      ['fi-bed', property.amenities[0]],
-                      ['fi-bath', property.amenities[1]],
-                      ['fi-car', property.amenities[2]]
-                    ]}
-                    className='h-100'
-                  />
-                </Col>
-              ))}
-            </Row>
+            
 
             {/* Pagination */}
-            <nav className='border-top pb-md-4 pt-4' aria-label='Pagination'>
-              <Pagination className='mb-1'>
-                <Pagination.Item active>{1}</Pagination.Item>
-                <Pagination.Item>{2}</Pagination.Item>
-                <Pagination.Item>{3}</Pagination.Item>
-                <Pagination.Ellipsis />
-                <Pagination.Item>{8}</Pagination.Item>
-                <Pagination.Item>
-                  <i className='fi-chevron-right'></i>
-                </Pagination.Item>
-              </Pagination>
-            </nav>
+            <IAPaginaation dataPagineted={rentingProperties}/>
           </Col>
         </Row>
       </Container>
@@ -1081,5 +733,11 @@ const CatalogPage = () => {
     </RealEstatePageLayout>
   )
 }
-
+export async function getServerSideProps(context) {
+  // Fetch data from external API
+  let dataAPIresponse = await axios.get(`${apiUrl}?query={getAllProperties(orderBy:{column:NUO,order:DESC},first:972){data{badge_propriete{badge{badge_name,badge_image}},visuels{uri},surface,lat_long,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination}}}}`);
+  let _rentingProperties = await dataAPIresponse.data;
+  _rentingProperties = _rentingProperties.data.getAllProperties.data;
+  return { props: { _rentingProperties} }
+}
 export default CatalogPage

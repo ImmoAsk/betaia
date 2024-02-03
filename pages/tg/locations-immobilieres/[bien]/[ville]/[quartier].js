@@ -23,7 +23,7 @@ import SimpleBar from 'simplebar-react'
 import Nouislider from 'nouislider-react'
 import 'simplebar/dist/simplebar.min.css'
 import 'nouislider/distribute/nouislider.css'
-import { capitalizeFirstLetter, toLowerCaseString } from '../../../../../utils/generalUtils'
+import { capitalizeFirstLetter, getLastPage, toLowerCaseString } from '../../../../../utils/generalUtils'
 import PropertiesList from '../../../../../components/iacomponents/PropertiesList'
 import RentingList from '../../../../../components/iacomponents/RentingList'
 
@@ -46,6 +46,8 @@ const Popup = dynamic(() =>
 import 'leaflet/dist/leaflet.css'
 import {buildPropertiesArray} from '../../../../../utils/generalUtils'
 import FormSearchOffcanvas from '../../../../../components/iacomponents/FormSearchOffcanvas'
+import { useMockPaginate } from '../../../../../customHooks/usePagination'
+import IAPaginaation from '../../../../../components/iacomponents/IAPagination'
 
 
 const CatalogPage = ({_rentingProperties,bienId,villeId,quartierId,soffreId}) => {
@@ -337,8 +339,6 @@ const CatalogPage = ({_rentingProperties,bienId,villeId,quartierId,soffreId}) =>
   //const { status, data:propertiesByOCTD, error, isFetching,isLoading,isError }  = usePropertiesByOCTD("1","1","5","2" );
   console.log(_rentingProperties);
   const rentingProperties = buildPropertiesArray(_rentingProperties);
-  
-
   const [parentData, setParentData] = useState('Aklakou');
   const { data: session } = useSession();
   const handleParentDataChange = (newData) => {
@@ -502,28 +502,17 @@ const CatalogPage = ({_rentingProperties,bienId,villeId,quartierId,soffreId}) =>
               <hr className='d-none d-sm-block w-100 mx-4' />
               <div className='d-none d-sm-flex align-items-center flex-shrink-0 text-muted'>
                 <i className='fi-check-circle me-2'></i>
-                <span className='fs-sm mt-n1'>148 résultats</span>
+                <span className='fs-sm mt-n1'>{rentingProperties.length} résultats</span>
               </div>
             </div>
 
             {/* Catalog grid */}
-            <Row xs={1} sm={2} xl={3} className='g-4 py-4'>
-              <RentingList rentingProperties={rentingProperties}/>
-            </Row>
+            
 
             {/* Pagination */}
-            <nav className='border-top pb-md-4 pt-4' aria-label='Pagination'>
-              <Pagination className='mb-1'>
-                <Pagination.Item active>{1}</Pagination.Item>
-                <Pagination.Item>{2}</Pagination.Item>
-                <Pagination.Item>{3}</Pagination.Item>
-                <Pagination.Ellipsis />
-                <Pagination.Item>{8}</Pagination.Item>
-                <Pagination.Item>
-                  <i className='fi-chevron-right'></i>
-                </Pagination.Item>
-              </Pagination>
-            </nav>
+
+            <IAPaginaation dataPagineted={rentingProperties}/>
+
           </Col>
         </Row>
       </Container>
@@ -569,7 +558,7 @@ export async function getServerSideProps(context) {
   
   const offreId="1";
   // Fetch data from external API
-  let dataAPIresponse = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getPropertiesByKeyWords(limit:10,orderBy:{column:NUO,order:DESC},offre_id:"${offreId}",ville_id:"${villeId.id}",quartier_id:"${quartierId.id}",categorie_id:"${bienId.id}")
+  let dataAPIresponse = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getPropertiesByKeyWords(limit:100,orderBy:{column:NUO,order:DESC},offre_id:"${offreId}",ville_id:"${villeId.id}",quartier_id:"${quartierId.id}",categorie_id:"${bienId.id}")
   {badge_propriete{badge{badge_name,badge_image}},visuels{uri},surface,lat_long,nuo,usage,offre{denomination,id},categorie_propriete{denomination,id},pays{code,id},piece,titre,garage,cout_mensuel,ville{denomination,id},wc_douche_interne,cout_vente,quartier{denomination,id}}}`);
   let _rentingProperties = await dataAPIresponse.json();
   const soffreId = {id:"1",denomination:"louer"};

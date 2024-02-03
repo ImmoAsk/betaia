@@ -285,7 +285,7 @@ const RealEstatePageLayout = (props) => {
                     <Link href='/tg/locations-immobilieres/appartement-meuble' passHref>
                       <Dropdown.Item>Appartements meublés à louer</Dropdown.Item>
                     </Link>
-                    <Link href='/tg/locations-immobilieres/villa-meuble' passHref>
+                    <Link href='/tg/locations-immobilieres/villa-meublee' passHref>
                       <Dropdown.Item>Villas meublées à louer</Dropdown.Item>
                     </Link>
                     <Link href='/tg/locations-immobilieres/studio-meuble' passHref>
