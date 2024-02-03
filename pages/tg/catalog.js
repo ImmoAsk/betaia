@@ -735,7 +735,7 @@ const CatalogPage = ({_rentingProperties}) => {
 }
 export async function getServerSideProps(context) {
   // Fetch data from external API
-  let dataAPIresponse = await axios.get(`${apiUrl}?query={getAllProperties(orderBy:{column:NUO,order:DESC},first:972){data{badge_propriete{badge{badge_name,badge_image}},visuels{uri},surface,lat_long,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination}}}}`);
+  let dataAPIresponse = await axios.get(`${apiUrl}?query={getAllProperties(orderBy:{column:NUO,order:DESC},first:300){data{badge_propriete{badge{badge_name,badge_image}},visuels{uri},surface,lat_long,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination}}}}`);
   let _rentingProperties = await dataAPIresponse.data;
   _rentingProperties = _rentingProperties.data.getAllProperties.data;
   return { props: { _rentingProperties} }
