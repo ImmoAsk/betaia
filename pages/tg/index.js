@@ -195,7 +195,7 @@ const HomePage = () => {
           <Col md={{span: 7, order: 1}} lg={7} xl={7} className='pt-xl-5 pe-lg-0 mb-3 text-md-start text-center'>
             <h1 className='mt-lg-0 mb-md-4 mb-3 pt-md-4 pb-lg-2'>Trouver aisément un logement, et acheter en sécurité un immeuble</h1>
             <p className='display-relative lead me-lg-n5'>
-              Trouver facilement en temps réel des logements urbains ou des baux commerciaux.<br/>
+              Trouver facilement en temps des logements urbains ou des baux commerciaux.<br/>
               Acquérir un immeuble bâti ou non, avec une sécurité foncière garantie.<br/>
               Investir dans des terrains et des appartements en cours de construction.<br/>
               Gérer. Investir. Louer. Vendre  <br/>

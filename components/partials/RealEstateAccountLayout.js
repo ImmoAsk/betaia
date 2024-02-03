@@ -69,15 +69,15 @@ const RealEstateAccountLayout = ({ accountPageTitle, children }) => {
   //console.log(session);
 
   return (
-    <Container className='pt-5 pb-lg-4 mt-5 mb-sm-2'>
+    <Container fluid className='pt-5 pb-lg-4 mt-5 mb-sm-2'>
 
       {/* Breadcrumb */}
       <Breadcrumb className='mb-4 pt-md-3'>
         <Link href='/tg' passHref>
-          <Breadcrumb.Item>Home</Breadcrumb.Item>
+          <Breadcrumb.Item>Accueil</Breadcrumb.Item>
         </Link>
         <Link href='/tg/account-info' passHref>
-          <Breadcrumb.Item>Account</Breadcrumb.Item>
+          <Breadcrumb.Item>Compte</Breadcrumb.Item>
         </Link>
         <Breadcrumb.Item active>{accountPageTitle}</Breadcrumb.Item>
       </Breadcrumb>
@@ -85,7 +85,7 @@ const RealEstateAccountLayout = ({ accountPageTitle, children }) => {
       <Row>
 
         {/* Sidebar (Account nav) */}
-        <Col md={5} lg={4} className='pe-xl-4 mb-5'>
+        <Col md={5} lg={3} className='pe-xl-4 mb-5'>
           <div className='card card-body border-0 shadow-sm pb-1 me-lg-1'>
             <div className='d-flex d-md-block d-lg-flex align-items-start pt-lg-2 mb-4'>
               <Avatar img={{ src: '/images/avatars/03.jpg', alt: 'Annette Black' }} size={[48, 48]} />
@@ -242,7 +242,7 @@ const RealEstateAccountLayout = ({ accountPageTitle, children }) => {
         </Col>
 
         {/* Page content */}
-        <Col md={7} lg={8} className='mb-5'>
+        <Col md={7} lg={9} className='mb-5'>
           {children}
         </Col>
       </Row>
