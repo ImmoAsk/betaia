@@ -201,7 +201,7 @@ const HomePage = () => {
               Gérer. Investir. Louer. Vendre  <br/>
             </p>
             
-              <Link href='/tg/add-property' passHref>
+              <Link href='/tg/add-project' passHref>
                 {/* <Button size='sm' className='order-lg-3 ms-2'>
                   <i className='fi-plus me-2'></i>
                   Lancer <span className='d-none d-sm-inline'>un projet immobilier</span>

@@ -135,7 +135,7 @@ const RealEstatePageLayout = (props) => {
           bg='light'
           className={`fixed-top${props.navbarExtraClass ? ` ${props.navbarExtraClass}` : ''}`}
         >
-          <Container fluid>
+          <Container>
             <Link href='/tg' passHref>
               <Navbar.Brand className='me-3 me-xl-4'>
                 <ImageLoader priority src='/images/logo/logo-dark.png' width={124} height={42} placeholder={false} alt='ImmoAsk' />
@@ -472,7 +472,7 @@ const RealEstatePageLayout = (props) => {
 
       {/* Footer */}
       <footer className='footer bg-secondary pt-5'>
-        <Container fluid className='pt-lg-4 pb-4'>
+        <Container className='pt-lg-4 pb-4'>
           <Row className='mb-5 pb-md-3 pb-lg-4'>
             <Col lg={6} className='mb-lg-0 mb-4'>
               <div className='d-flex flex-sm-row flex-column justify-content-between mx-n2'>

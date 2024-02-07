@@ -171,13 +171,13 @@ export async function getServerSideProps(context) {
   if (session.user) {
     const userid = session ? session.user.id : 0;
     // Fetch data from external API
-    var dataAPIresponse = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getProjectsByKeyWords(statut:2){project_category,project_name,project_document,description,statut,final_date,start_date}}`);
+    var dataAPIresponse = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getProjectsByKeyWords(statut:2,orderBy:{order:DESC,column:ID}){project_category,project_name,project_document,description,statut,final_date,start_date}}`);
     var _userProperties = await dataAPIresponse.json();
 
-    var handledProjets = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getProjectsByKeyWords(statut:3){project_category,project_name,project_document,description,statut,final_date,start_date}}`);
+    var handledProjets = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getProjectsByKeyWords(statut:3,orderBy:{order:DESC,column:ID}){project_category,project_name,project_document,description,statut,final_date,start_date}}`);
     var _handledProjets = await handledProjets.json();
 
-    var handlingProjets = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getProjectsByKeyWords(statut:1){project_category,project_name,project_document,description,statut,final_date,start_date}}`);
+    var handlingProjets = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getProjectsByKeyWords(statut:1,orderBy:{order:DESC,column:ID}){project_category,project_name,project_document,description,statut,final_date,start_date}}`);
     var _handlingProjets = await handlingProjets.json();
 
     _userProperties = _userProperties.data.getProjectsByKeyWords;

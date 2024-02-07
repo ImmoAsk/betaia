@@ -192,7 +192,6 @@ const AddPropertyPage = () => {
   const [propertyLivingRooms, setPropertyLivingRooms] = useState(0);
   const [propertyBedRooms, setPropertyBedRooms] = useState(0);
   const [propertyCautionGuarantee, setCautionGuarantee] = useState(0);
-
   const [propertyTerraces, setPropertyTerraces] = useState('0');
   const [propertyBalcony, setPropertyBalcony] = useState('0');
   const [propertyVisitRight, setVisitRight] = useState(0);
@@ -280,7 +279,7 @@ const AddPropertyPage = () => {
     }
     formData.append('map', `{${appendMap}}`);
 
-    console.log(JSON.stringify(formData));
+    //console.log(JSON.stringify(formData));
 
     var config = {
       method: 'post',
@@ -871,11 +870,11 @@ export async function getServerSideProps(context) {
   if (!session) {
     return {
       redirect: {
-          destination: '/auth/signin',
-          permanent: false,
+        destination: '/auth/signin',
+        permanent: false,
       }
     }
-  }else{
+  } else {
     return { props: { session } };
   }
 }
