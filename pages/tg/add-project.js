@@ -30,6 +30,7 @@ import NumberFormat from 'react-number-format'
 import 'filepond/dist/filepond.min.css'
 import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css'
 import moment from 'moment'
+import { set } from 'nprogress'
 var FormData = require('form-data');
 
 
@@ -52,6 +53,7 @@ const AddProjectPage = (props) => {
   const [dateLivrable, setDateLivrable] = useState("");
   const { data: session, status } = useSession();
   const [validated, setValidated] = useState(false);
+  const [projectNotification, setProjectNotification] = useState(null);
 
   const [sentFile, setSentFile] = useState(null);
 
@@ -59,67 +61,47 @@ const AddProjectPage = (props) => {
 
   const [createObjectURL, setCreateObjectURL] = useState(null);
 
-  const uploadToClient = (event) => {
-    if (event.target.files && event.target.files[0]) {
-      const i = event.target.files[0];
-
-      //setFiles(i);
-      setCreateObjectURL(URL.createObjectURL(i));
-      console.log("Full url of image: ", createObjectURL);
-      console.log(event.target.files[0]);
-    }
-  };
-
 
   //const filePondRef = useRef(null);
   var formData = new FormData();
   //return <input ref={inputRef} ... />
-  
+
   const uploadToServer = async (event) => {
 
     event.stopPropagation();
     event.preventDefault();
 
-    console.log("Image from c to s:", files[0].filename);
+    //console.log("Image from c to s:", files[0].filename);
     //const [createObjectURL, setCreateObjectURL] = useState(null);
-    console.log("Full url: ", createObjectURL);
+    //console.log("Full url: ", createObjectURL);
     //console.log("Description:",descriptionProjet);
-    var projectData = `{user_id:${Number(session ? session.user.id : 0)},final_date:"${dateLivrable}",start_date:"${moment(new Date()).format('YYYY-MM-DD hh:mm:ss')}",statut:1,description:"${descriptionProjet}",project_name:"${categorieProjet.split(",")[1]}",project_category:"${categorieProjet.split(",")[0]}",project_document:""}`
-    /* const handleSubmit = async event => {
-        event.preventDefault();
-        try {
-            // Make an HTTP request to submit the form data
-            const response = await axios.post('your-api-endpoint', formData);
-  
-            // Extract the response data from the server response
-            const responseData = response.data;
-  
-            // Update the state with the response data
-            setResponseData(responseData);
-        } catch (error) {
-            // Handle errors, e.g., show an error message
-            console.error('Error submitting form:', error);
-        }
-    }; */
-
-    let data = JSON.stringify({
-      query: `mutation{createProject(input:${projectData}){id,description}}`,
-      variables: {}
-    });
-
-    formData.append('map', '{"0": ["variables.file"]}');
+    /* formData.append('map', '{"0": ["variables.file"]}');
     formData.append('operations', `{"query":"mutation($file:Upload!){Upload(file: $file)}"}`)
     formData.append("0", files);
 
     await fetch(
       "https://immoaskbetaapi.omnisoft.africa/public/api/v2", { method: "POST", body: formData }).then((response) => response.json())
       .then((response) => {
-        setSentFile(response.data.Upload.hashName);
+        if (response && response.data) {
+          setSentFile(response.data.data.Upload.hashName);
+          console.log("Project file:",sentFile)
+        } else {
+          console.error("Response data or data project is undefined");
+        }
+        
       }).
       catch((error) => {
         console.error('Error:', error)
-      });
+      }); */
 
+    
+
+
+    var projectData = `{user_id:${Number(session ? session.user.id : 0)},final_date:"${moment(dateLivrable).format('YYYY-MM-DD hh:mm:ss')}",start_date:"${moment(new Date()).format('YYYY-MM-DD hh:mm:ss')}",statut:1,description:"${descriptionProjet}",project_name:"${categorieProjet.split(",")[1]}",project_category:"${categorieProjet.split(",")[0]}",project_document:"${sentFile}"}`
+    let data = JSON.stringify({
+      query: `mutation{createProject(input:${projectData}){id,description}}`,
+      variables: {}
+    });
     let config = {
       method: 'post',
       url: 'https://immoaskbetaapi.omnisoft.africa/public/api/v2',
@@ -128,10 +110,19 @@ const AddProjectPage = (props) => {
       },
       data: data
     };
-
     axios.request(config)
       .then((response) => {
-        console.log(JSON.stringify(response.data));
+        //var responseServer = JSON.stringify(response.data.data);
+        if (response && response.data) {
+          //console.log("Actual data:", response.data); // Log the data property
+          var projectNotif = `Votre projet No. ${response.data.data.createProject.id} de ${categorieProjet}  est bien soumis.\nUn de nos commerciaux vous contacte d'ici peu`
+          setProjectNotification(projectNotif);
+        } else {
+          console.error("Response data or data project is undefined");
+        }
+        setDescriptionProjet("");
+        setDateLivrable("");
+        setCategorieProjet("");
       })
       .catch((error) => {
         console.log(error);
@@ -167,6 +158,16 @@ const AddProjectPage = (props) => {
               <div className='d-lg-none pt-3 mb-2'>65% content filled</div>
               <ProgressBar variant='warning' now={65} style={{ height: '.25rem' }} className='d-lg-none mb-4' />
             </div>
+            {projectNotification &&
+              (
+                <>
+                  <Alert variant='success' className='d-flex mb-4'>
+                    <i className='fi-alert-circle me-2 me-sm-3'></i>
+                    <p className='fs-sm mb-1'>{projectNotification}</p>
+                  </Alert>
+                </>
+              )
+            }
             <Form noValidate validated={validated} name="project-form" method="POST" encType="multipart/form-data">
               {/* Property details */}
               <section id='details' className='card card-body border-0 shadow-sm p-4 mb-4'>
@@ -187,6 +188,7 @@ const AddProjectPage = (props) => {
                       <option value="Logement,Location d'appartement">Location d'appartement</option>
                       <option value='Achat,Terrain rural'>Achat d'un terrain rural</option>
                       <option value='Achat,Terrain urbain'>Achat d'un terrain urbain</option>
+                      <option value='Accompagnement,Titre foncier'>Obtention de titre foncier</option>
                     </Form.Select>
                     <Form.Control.Feedback type="invalid">
                       Préciser la catégorie du projet immobilier, svp
@@ -207,10 +209,22 @@ const AddProjectPage = (props) => {
                         data-datepicker-options='{"altInput": true, "altFormat": "F j, Y", "dateFormat": "Y-m-d"}'
                       />
                     </InputGroup> */}
-                    <div class="input-group">
+                    {/* <div class="input-group">
                       <input as={DatePicker} onChange={(e) => { setDateLivrable(e.target.value) }} class="form-control date-picker rounded pe-5" type="text" placeholder="Selectionner une date" data-datepicker-options='{"altInput": true, "altFormat": "F j, Y", "dateFormat": "Y-m-d"}' />
                       <i class="fi-calendar position-absolute top-50 end-0 translate-middle-y me-3"></i>
-                    </div>
+                    </div> */}
+                    <InputGroup className='flex-shrink-0 d-inline-flex align-middle me-3 mb-3 w-100'>
+                      <FormControl
+                        as={DatePicker}
+                        selected={dateLivrable}
+                        minDate={new Date()}
+                        onChange={(date) => setDateLivrable(date)}
+                        placeholderText='Selectionner une date'
+                        size='md'
+                        className='ps-5'
+                      />
+                      <i className='fi-calendar position-absolute top-50 start-0 translate-middle-y ms-3 ps-1'></i>
+                    </InputGroup>
                     <Form.Control.Feedback type="invalid" tooltip>
                       Indiquez nous un délai d'urgence
                     </Form.Control.Feedback>
@@ -225,6 +239,7 @@ const AddProjectPage = (props) => {
                     SVP, décrivez légèrement votre projet immobilier
                   </Form.Control.Feedback>
                 </Form.Group>
+
               </section>
               {/* Photos / video */}
               <section id='photos' className='card card-body border-0 shadow-sm p-4 mb-4'>
@@ -252,38 +267,41 @@ const AddProjectPage = (props) => {
                         return formData;
                       },
                       onload: (response) => {
-                        var jsonResponse= JSON.parse(response);
-                        console.log(jsonResponse);
-                        var jsonStringfy= JSON.stringify(jsonResponse, null, 2);
-                        
-                        console.log(jsonStringfy);
-
-                        //var filename1= jsonStringfy.data.Upload.hashName;
-                        var filename= jsonResponse.data.Upload.hashName;
-                        //console.log('File name 1:',filename1);
-                        console.log('File name:',filename);
+                        console.log("Server:",response);
+                        if (response) {
+                          var parsedData=JSON.parse(response)
+                          var uploadData= JSON.parse(parsedData.data.Upload);
+                          const hashFileNane= uploadData.hashName;
+                          setSentFile(hashFileNane);
+                          console.log("Project file name:",uploadData.hashName)
+                          
+                        } else {
+                          console.error("Response data or data project is undefined");
+                        }
                       },
                     }
                   }}
                   name="files"
                   dropValidation
+                  required={false}
                   labelIdle='<div class="btn btn-primary mb-3"><i class="fi-cloud-upload me-1"></i>Upload photos / video</div><div>or drag them in</div>'
                   //labelIdle={`<span class="filepond--label-action"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24" viewBox="0 0 24 24"><defs><path id="a" d="M24 24H0V0h24v24z"/></defs><clipPath id="b"><use xlink:href="#a" overflow="visible"/></clipPath><path clip-path="url(#b)" d="M3 4V1h2v3h3v2H5v3H3V6H0V4h3zm3 6V7h3V4h7l1.83 2H21c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H5c-1.1 0-2-.9-2-2V10h3zm7 9c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-3.2-5c0 1.77 1.43 3.2 3.2 3.2s3.2-1.43 3.2-3.2-1.43-3.2-3.2-3.2-3.2 1.43-3.2 3.2z"/></svg><span>Add an image</span></span>`}
                   acceptedFileTypes={['image/png', 'image/jpeg', 'video/mp4', 'video/mov']}
                   maxFileSize='2MB'
                   className='file-uploader file-uploader-grid'
                 />
-                {/* <Form.Group className="position-relative mb-3">
-                <Form.Control
-                  type="file"
-                  required
-                  name="image"
-                  onChange={uploadToClient}
-                />
-              </Form.Group> */}
 
               </section>
-
+              {projectNotification &&
+                (
+                  <>
+                    <Alert variant='success' className='d-flex mb-4'>
+                      <i className='fi-alert-circle me-2 me-sm-3'></i>
+                      <p className='fs-sm mb-1'>{projectNotification}</p>
+                    </Alert>
+                  </>
+                )
+              }
 
               {/* Contacts */}
 
