@@ -5,7 +5,7 @@ import Pagination from 'react-bootstrap/Pagination';
 import Row from 'react-bootstrap/Row';
 import RentingList from "./RentingList";
 export default function IAPaginaation({ dataPagineted }) {
-    const { nextPage, prevPage, paginatedData, currentPage } = useMockPaginate(dataPagineted, 6)
+    const { nextPage, prevPage, paginatedData, currentPage } = useMockPaginate(dataPagineted, 9)
     return (
         <>
             <Row xs={1} sm={2} xl={3} className='g-4 py-4'>
