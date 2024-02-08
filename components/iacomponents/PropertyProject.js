@@ -37,7 +37,7 @@ export default function PropertyProject({ project }) {
                     <div className="fs-sm">
                         <span className="text-nowrap me-3">
                             <i className="fi-calendar text-muted me-1"> </i>
-                            {project.start_date}
+                            {project.final_date}
                         </span>
                         <span className="text-nowrap me-3">
                             <i className="fi-cash fs-base text-muted me-1"></i>
