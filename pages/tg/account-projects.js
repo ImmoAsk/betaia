@@ -9,7 +9,7 @@ import EditPropertyModal from '../../components/iacomponents/EditPropertyModal'
 import { buildPropertiesArray } from '../../utils/generalUtils'
 import { useSession, getSession } from 'next-auth/react'
 import PropertyProjectList from '../../components/iacomponents/PropertyProjectList'
-
+import { Row, Col} from 'react-bootstrap';
 const AccountProjectsPage = ({ _userProperties, _handledProjets, _handlingProjets }) => {
 
   // Properties array
@@ -51,7 +51,20 @@ const AccountProjectsPage = ({ _userProperties, _handledProjets, _handlingProjet
   const getHandlingPropertyProjects = (projects) => {
     return (<PropertyProjectList projects={projects} />)
   }
-
+  const columnStyle = {
+    height: '650px', // Adjust the height as needed
+    overflowY: 'scroll', // Enable vertical scrolling
+  };
+  const navComponent = (
+    <Nav variant='tabs' defaultActiveKey='published' className='border-bottom mb-2'>
+      <Nav.Item className='mb-2'>
+        <Nav.Link eventKey='published'>
+          <i className='fi-file fs-base me-2'></i>
+          Nouvels non traites
+        </Nav.Link>
+      </Nav.Item>
+    </Nav>
+  );
   return (
     <RealEstatePageLayout
       pageTitle='Projets immobiliersS'
@@ -103,44 +116,48 @@ const AccountProjectsPage = ({ _userProperties, _handledProjets, _handlingProjet
             </Nav.Link>
           </Nav.Item>
         </Nav> */}
-        
-          <Nav
-            variant='tabs'
-            defaultActiveKey='published'
-            className='border-bottom mb-2'
-          >
-              <Nav.Item className='mb-2'>
-                <Nav.Link eventKey='published'>
-                  <i className='fi-file fs-base me-2'></i>
-                  Nouvels non traites
-                </Nav.Link>
-              </Nav.Item>
-              <Nav.Item className='mb-2'>
-                <Nav.Link eventKey='drafts'>
-                  <i className='fi-archive fs-base me-2'></i>
-                  En traitement
-                </Nav.Link>
-              </Nav.Item>
-              <Nav.Item className='mb-2'>
-                <Nav.Link eventKey='published'>
-                  <i className='fi-file-clean fs-base me-2'></i>
-                  Deja traites
-                </Nav.Link>
-              </Nav.Item>
-          </Nav>
-        
-        <div className='row'>
-          <div className='col-lg-4'>
-            {getNewPropertyProjects(userProperties)}
 
-          </div>
-          <div className='col-lg-4'>
-            {getHandledPropertyProjects(_handledProjets)}
-          </div>
-          <div className='col-lg-4'>
+        <Nav
+          variant='tabs'
+          defaultActiveKey='published'
+          className='border-bottom mb-2'
+        >
+          <Nav.Item className='mb-2' as={Col}>
+            <Nav.Link eventKey='published'>
+              <i className='fi-file fs-base me-2'></i>
+              Nouvels non traites
+            </Nav.Link>
+          </Nav.Item>
+          <Nav.Item className='mb-2' as={Col}>
+            <Nav.Link eventKey='drafts'>
+              <i className='fi-archive fs-base me-2'></i>
+              En traitement
+            </Nav.Link>
+          </Nav.Item>
+          <Nav.Item className='mb-2' as={Col}>
+            <Nav.Link eventKey='published'>
+              <i className='fi-file-clean fs-base me-2'></i>
+              Deja traites
+            </Nav.Link>
+          </Nav.Item>
+        </Nav>
+        <Row>
+          {/* First Column */}
+          <Col style={columnStyle}>
             {getHandledPropertyProjects(_handlingProjets)}
-          </div>
-        </div>
+          </Col>
+
+          {/* Second Column */}
+          <Col style={columnStyle}>
+            {getHandledPropertyProjects(_handledProjets)}
+          </Col>
+
+          {/* Third Column */}
+          <Col style={columnStyle}>
+            {getNewPropertyProjects(userProperties)}
+          </Col>
+        </Row>
+
 
         {/* List of properties or empty state */}
         {/* {newPropertyProjectsTab && getNewPropertyProjects(userProperties)}
