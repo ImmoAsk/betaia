@@ -75,7 +75,7 @@ const RealEstatePageLayout = (props) => {
 
 
   const roleId = Number(session && session.user.roleId);
-  console.log(roleId);
+  //console.log(roleId);
   const { data: ressources, isLoading, error } = useRessourceByRole(session ? roleId : 0);
 
   const OpenSignInOrRedirectToProjectForm = () => {
