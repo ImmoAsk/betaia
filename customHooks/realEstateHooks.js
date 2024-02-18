@@ -15,4 +15,10 @@ function useRessourceByRole(role){
   {ressource{id,ressourceName,ressourceLink,icone,statut}}}`).then(res=>res.data.data.getListRessourcesByUserRole));
 }
 
-export{usePropertiesByOCTD,useRessourceByRole}
+
+function useUserProperties(user){
+  return useQuery(["user_properties",user],
+  ()=> axios.get(`${apiUrl}?query={getUserProperties(user_id:${user},first:50,orderBy:{order:DESC,column:NUO}){data{badge_propriete{badge{badge_name,badge_image}},visuels{uri},surface,lat_long,nuo,usage,offre{denomination,id},categorie_propriete{denomination,id},pays{code,id},piece,titre,garage,cout_mensuel,ville{denomination,id},wc_douche_interne,cout_vente,quartier{denomination,id}}}}`).then(res=>res.data.data.getUserProperties));
+}
+
+export{usePropertiesByOCTD,useRessourceByRole,useUserProperties}
