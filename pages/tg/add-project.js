@@ -249,8 +249,8 @@ const AddProjectPage = (props) => {
                 </h2>
                 <Alert variant='info' className='d-flex mb-4'>
                   <i className='fi-alert-circle me-2 me-sm-3'></i>
-                  <p className='fs-sm mb-1'>The maximum photo size is 8 MB. Formats: jpeg, jpg, png. Put the main picture first.<br />
-                    The maximum video size is 10 MB. Formats: mp4, mov.</p>
+                  <p className='fs-sm mb-1'>Un fichier esquisse du projet. Obligatoire si vous
+                  soumettez un projet immobilier de construction, de suivi de chantier etc...</p>
                 </Alert>
                 <FilePond
                   files={files ? files : []}
