@@ -102,7 +102,7 @@ function SinglePropertyAltPage({ property }) {
   const [recommendProperties, setRecommendProperties] = useState([]);
   const defineThumbNails = () => {
     property && property.visuels.map((imgproperty) => {
-      setThumbnails(thumbnails => [...thumbnails, 'https://immoask.com/tg/uploads/images_biens/' + imgproperty.uri]);
+      setThumbnails(thumbnails => [...thumbnails, 'https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/proprietes/' + imgproperty.uri]);
     })
   }
 
@@ -182,7 +182,7 @@ function SinglePropertyAltPage({ property }) {
                 </li>`
               } else {
                 return `<li class='swiper-thumbnail ${className}'>
-                  <img src=${session ? thumbnails[index] : 'https://immoask.com/tg/uploads/images_biens/' + Unconnectedhumbnails[index]} alt='Thumbnail'/>
+                  <img src=${session ? thumbnails[index] : 'https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/proprietes/' + Unconnectedhumbnails[index]} alt='Thumbnail'/>
                 </li>`
               }
             }
@@ -506,7 +506,7 @@ function SinglePropertyAltPage({ property }) {
                       FAQ
                     </a>
                   </Link>
-                  {property.est_meuble > 0 &&
+                  {property.meubles.length > 0 &&
                     <>
                       <Card className='border-0 bg-secondary mb-4'>
                         <Card.Body>

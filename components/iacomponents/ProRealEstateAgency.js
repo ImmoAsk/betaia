@@ -17,7 +17,7 @@ export default function ProRealEstateAgency({user}) {
     <>
         <h2 className='h5'>Fourni par {organisation.organisation.name_organisation}</h2>
         <Card className='card-horizontal'>
-            <div className='card-img-top bg-size-cover bg-position-center-x' style={{ backgroundImage: `url(http://127.0.0.1:8000/storage/uploads/visuels/organisations/${organisation.organisation.logo})` }}></div>
+            <div className='card-img-top bg-size-cover bg-position-center-x' style={{ backgroundImage: `url(https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/organisations/${organisation.organisation.logo})` }}></div>
             <Card.Body as='blockquote' className='blockquote'>
                 <p>{organisation.organisation.description}</p>
                 <footer className='d-flex justify-content-between'>

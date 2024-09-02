@@ -4,6 +4,7 @@ import RealEstateAccountLayout from '../../components/partials/RealEstateAccount
 import Link from 'next/link'
 import Nav from 'react-bootstrap/Nav'
 import Button from 'react-bootstrap/Button'
+import { Container, Row, Col, Form, Table } from 'react-bootstrap';
 import PropertyCard from '../../components/PropertyCard'
 import axios from 'axios'
 import { useQuery } from '@tanstack/react-query'
@@ -41,7 +42,47 @@ const AccountRentPaymentsPage = () => {
     e.preventDefault()
     setProperties([])
   }
+  const [filters, setFilters] = useState({
+    byMonth: '',
+    status: '',
+    dateOfPayment: ''
+  });
 
+  const [payments, setPayments] = useState([
+    {
+      status: 'Paid',
+      property: 'Apartment A',
+      month: 'January 2024',
+      renter: 'Kossi A.',
+      rentPaid: 45000,
+      rentFront: 0,
+      date: '05-01-2024',
+      action: 'Invoice'
+    },
+    // Add more payment entries here if needed
+  ]);
+
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilters({
+      ...filters,
+      [name]: value
+    });
+  };
+
+  const filteredPayments = payments.filter(payment => {
+    const { byMonth, status, dateOfPayment } = filters;
+    return (
+      (!byMonth || payment.month.includes(byMonth)) &&
+      (!status || payment.status.includes(status)) &&
+      (!dateOfPayment || payment.date.includes(dateOfPayment))
+    );
+  });
+
+  const handleAddPayment = () => {
+    // Logic to add a new rent payment (e.g., show a form)
+    console.log("Add a new rent payment");
+  };
   return (
     <RealEstatePageLayout
       pageTitle='Assurance immobilière'
@@ -51,92 +92,80 @@ const AccountRentPaymentsPage = () => {
       <RealEstateAccountLayout accountPageTitle='Assurance immobilière'>
         <div className='d-flex align-items-center justify-content-between mb-3'>
           <h1 className='h2 mb-0'>Etat de paiements de loyers mensuels</h1>
-          <a href='#' className='fw-bold text-decoration-none' onClick={deleteAll}>
-            <i className='fi-trash mt-n1 me-2'></i>
-            Delete all
-          </a>
         </div>
         <p className='pt-1 mb-4'>Consulter ici tout ce qui concerne mes paiements de loyer</p>
-
-        {/* Nav tabs */}
-        <Nav
-          variant='tabs'
-          defaultActiveKey='published'
-          className='border-bottom mb-4'
-        >
-          <Nav.Item className='mb-3'>
-            <Nav.Link eventKey='published'>
-              <i className='fi-file fs-base me-2'></i>
-              Paiements de loyers à jour
-            </Nav.Link>
-          </Nav.Item>
-          <Nav.Item className='mb-3'>
-            <Nav.Link eventKey='drafts'>
-              <i className='fi-file-clean fs-base me-2'></i>
-              Paiements de loyer en retard
-            </Nav.Link>
-          </Nav.Item>
-        </Nav>
-
         {/* List of properties or empty state */}
-        {properties.length ? properties.map((property, indx) => (
-          <PropertyCard
-            key={indx}
-            href={property.href}
-            images={property.images}
-            category={property.category}
-            title={property.title}
-            location={property.location}
-            price={property.price}
-            badges={property.badges}
-            footer={[
-              ['fi-bed', property.amenities[0]],
-              ['fi-bath', property.amenities[1]],
-              ['fi-car', property.amenities[2]]
-            ]}
-            dropdown={[
-              {
-                // href: '#', // Optionally pass href prop to convert dropdown item to Next link
-                icon: 'fi-edit',
-                label: 'Editer',
-                props: {onClick: () => console.log('Edit property')}
-              },
-              {
-                icon: 'fi-flame',
-                label: 'Promouvoir',
-                props: {onClick: () => console.log('Promote property')}
-              },
-              {
-                icon: 'fi-power',
-                label: 'Rendre invisible',
-                props: {onClick: () => console.log('Deactivate property')}
-              },
-              {
-                icon: 'fi-trash',
-                label: 'Rendre indisponible',
-                props: {
-                  'data-index': indx,
-                  onClick:  (e) => {
-                    let index = e.currentTarget.dataset.index
-                    let newProperties = [...properties]
-                    if (index !== -1) {
-                      newProperties.splice(index, 1)
-                      setProperties(newProperties)
-                    }
-                  }
-                }
-              }
-            ]}
-            horizontal
-            className={indx === properties.length - 1 ? '' : 'mb-4' }
-          />
+        {filteredPayments.length ? filteredPayments.map((payment, indx) => (
+          <>
+          
+          <Row className="mb-4">
+            <Col md={9}>
+              <Form className="d-flex">
+                <Form.Control
+                  type="text"
+                  name="byMonth"
+                  placeholder="By Month"
+                  value={filters.byMonth}
+                  onChange={handleFilterChange}
+                  className="me-2"
+                />
+                <Form.Control
+                  type="text"
+                  name="status"
+                  placeholder="Status"
+                  value={filters.status}
+                  onChange={handleFilterChange}
+                  className="me-2"
+                />
+                <Form.Control
+                  type="text"
+                  name="dateOfPayment"
+                  placeholder="Date of Payment"
+                  value={filters.dateOfPayment}
+                  onChange={handleFilterChange}
+                />
+              </Form>
+            </Col>
+            <Col md={3} className="d-flex justify-content-end">
+              <Button onClick={handleAddPayment}>Add a rent payment</Button>
+            </Col>
+          </Row>
+          <Table bordered hover>
+            <thead>
+              <tr>
+                <th>Status</th>
+                <th>Property</th>
+                <th>Month</th>
+                <th>Renter</th>
+                <th>Rent Paid</th>
+                <th>Rent Front</th>
+                <th>Date</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredPayments.map((payment, index) => (
+                <tr key={index}>
+                  <td>{payment.status}</td>
+                  <td>{payment.property}</td>
+                  <td>{payment.month}</td>
+                  <td>{payment.renter}</td>
+                  <td>{payment.rentPaid}</td>
+                  <td>{payment.rentFront}</td>
+                  <td>{payment.date}</td>
+                  <td>{payment.action}</td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </>
         )) : <div className='text-center pt-2 pt-md-4 pt-lg-5 pb-2 pb-md-0'>
           <i className='fi-home display-6 text-muted mb-4'></i>
-          <h2 className='h5 mb-4'>Vous n'avez aucun bien immobilier enrollé!</h2>
+          <h2 className='h5 mb-4'>Aucun loyer recu pour le moment</h2>
           <Link href='/tg/add-property' passHref>
             <Button variant='primary'>
               <i className='fi-plus fs-sm me-2'></i>
-              Enroller un bien immobilier
+              Ajouter un loyer manuellement
             </Button>
           </Link>
         </div>}

@@ -42,7 +42,7 @@ function createPropertyObject(property) {
         nuo: property.nuo,
         href: getPropertyFullUrl(property.pays.code, property.offre.denomination, property.categorie_propriete.denomination, property.ville.denomination, property.quartier.denomination, property.nuo),
         images: getFirstImageArray(property.visuels),
-        title: 'N°' + property.nuo + ': ' + property.categorie_propriete.denomination + ' à ' + property.offre.denomination + ' | ' + property.surface + 'm²',
+        title: 'N°' + property?.nuo + ': ' + property.categorie_propriete.denomination + ' à ' + property.offre.denomination + ' | ' + property.surface + 'm²',
         category: property.usage,
         location: property.quartier.denomination + ", " + property.ville.denomination,
         price: property.cout_mensuel == 0 ? property.cout_vente : property.cout_mensuel + " XOF",

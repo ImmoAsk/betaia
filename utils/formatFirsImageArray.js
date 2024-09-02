@@ -8,7 +8,7 @@ const getFirstImageArray = (imageArray) => {
   }
   imageArray.map((visuel) => {
     tempImgsArray.push(visuel.uri);
-    firstImage='https://immoask.com/tg/uploads/images_biens/'+tempImgsArray[0];
+    firstImage='https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/proprietes/'+tempImgsArray[0];
   });
   let oneImageArray = [[firstImage, 467, 305, 'Image']];
   return oneImageArray
