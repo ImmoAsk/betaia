@@ -369,7 +369,7 @@ const RealEstatePageLayout = (props) => {
                     <Link href='/tg/locations-immobilieres/appartement' passHref>
                       <Dropdown.Item>Appartements à louer</Dropdown.Item>
                     </Link>
-                   {/*  <Dropdown>
+                    {/*  <Dropdown>
                       <Dropdown.Toggle as={Dropdown.Item}>Blog</Dropdown.Toggle>
                       <Dropdown.Menu renderOnMount>
                         <Link href='/tg/blog' passHref>
@@ -395,7 +395,7 @@ const RealEstatePageLayout = (props) => {
                   </Dropdown.Menu>
                 </Nav.Item>
 
-                {/* Display content depending on user auth satus  */}
+                {/* Display content depending on user auth satus mobilier menu */}
                 {props.userLoggedIn ? <Nav.Item as={Dropdown} className='d-lg-none'>
                   <Dropdown.Toggle as={Nav.Link} className='d-flex align-items-center'>
                     <ImageLoader src='/images/avatars/30.jpg' width={30} height={30} placeholder={false} className='rounded-circle' alt='Annette Black' />
@@ -408,48 +408,41 @@ const RealEstatePageLayout = (props) => {
                         (302) 555-0107<br />annette_black@email.com
                       </div>
                     </div>
+                    {
+                      ressources && ressources.map((ressource) => {
+
+                        if (ressource.ressource.statut > 0) {
+                          return (
+                            <Link href={ressource.ressource.ressourceLink} passHref>
+                              <Dropdown.Item key={ressource.ressource.id}>
+                                <i className={ressource.ressource.icone + ' opacity-60 me-2'}></i>
+                                {ressource.ressource.ressourceName}
+                              </Dropdown.Item>
+                            </Link>
+                          )
+                        }
+
+                      }
+                      )
+                    }
                     <Link href='/tg/account-info' passHref>
                       <Dropdown.Item>
                         <i className='fi-user opacity-60 me-2'></i>
-                        Personal Info
+                        Informations personnelles
                       </Dropdown.Item>
                     </Link>
                     <Link href='/tg/account-security' passHref>
                       <Dropdown.Item>
-                        <i className='fi-heart opacity-60 me-2'></i>
-                        Password &amp; Security
-                      </Dropdown.Item>
-                    </Link>
-                    <Link href='/tg/account-properties' passHref>
-                      <Dropdown.Item>
-                        <i className='fi-home opacity-60 me-2'></i>
-                        My Properties
-                      </Dropdown.Item>
-                    </Link>
-                    <Link href='/tg/account-wishlist' passHref>
-                      <Dropdown.Item>
-                        <i className='fi-heart opacity-60 me-2'></i>
-                        Wishlist
-                      </Dropdown.Item>
-                    </Link>
-                    <Link href='/tg/account-reviews' passHref>
-                      <Dropdown.Item>
-                        <i className='fi-star opacity-60 me-2'></i>
-                        Reviews
-                      </Dropdown.Item>
-                    </Link>
-                    <Link href='/tg/account-notifications' passHref>
-                      <Dropdown.Item>
-                        <i className='fi-bell opacity-60 me-2'></i>
-                        Notifications
+                        <i className='fi-lock opacity-60 me-2'></i>
+                        Mot de passe &amp; Sécurité
                       </Dropdown.Item>
                     </Link>
                     <Dropdown.Divider />
                     <Link href='/tg/help-center' passHref>
-                      <Dropdown.Item>Help</Dropdown.Item>
+                      <Dropdown.Item>Aide</Dropdown.Item>
                     </Link>
                     <Link href='/api/auth/signout' passHref>
-                      <Dropdown.Item>Sign Out</Dropdown.Item>
+                      <Dropdown.Item>Se déconnecter</Dropdown.Item>
                     </Link>
                   </Dropdown.Menu>
                 </Nav.Item> :

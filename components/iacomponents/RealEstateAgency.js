@@ -22,7 +22,7 @@ export default function RealEstateAgency() {
     <>
         <h2 className='h5'>En partenariat avec {organisation.name_organisation}</h2>
         <Card className='card-horizontal'>
-            <div className='card-img-top bg-size-cover bg-position-center-x' style={{ backgroundImage: `url(https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/organisations/${organisation.logo})` }}></div>
+            <div className='card-img-top bg-size-cover bg-position-center-x' style={{ backgroundImage: `url(https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/organisations/${organisation.logo})` }}></div>
             <Card.Body as='blockquote' className='blockquote'>
                 <p>{organisation.description}</p>
                 <footer className='d-flex justify-content-between'>
@@ -35,7 +35,7 @@ export default function RealEstateAgency() {
                     </div>
                     <div>
                         <StarRating rating='4.8' />
-                        <div className='text-muted fs-sm mt-1'>24 reviews</div>
+                        <div className='text-muted fs-sm mt-1'>24 avis</div>
                     </div>
                 </footer>
             </Card.Body>

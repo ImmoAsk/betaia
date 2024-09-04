@@ -13,7 +13,7 @@ export default function ProRealEstateAgency({user}) {
     //console.log(organisation && organisation.organisation);
     if(isLoading) return <LoadingSpinner/>
 
-    if(organisation && organisation.organisation!=null) {return(
+    if(organisation && organisation.organisation!=null && organisation.organisation.status==4) {return(
     <>
         <h2 className='h5'>Fourni par {organisation.organisation.name_organisation}</h2>
         <Card className='card-horizontal'>
@@ -30,7 +30,7 @@ export default function ProRealEstateAgency({user}) {
                     </div>
                     <div>
                         <StarRating rating='4.8' />
-                        <div className='text-muted fs-sm mt-1'>24 reviews</div>
+                        <div className='text-muted fs-sm mt-1'>24 avis</div>
                     </div>
                 </footer>
             </Card.Body>

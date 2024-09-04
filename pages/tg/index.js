@@ -198,7 +198,7 @@ const HomePage = () => {
               Trouver facilement en temps des logements urbains ou des baux commerciaux.<br/>
               Acquérir un immeuble bâti ou non, avec une sécurité foncière garantie.<br/>
               Investir dans des terrains et des appartements en cours de construction.<br/>
-              Gérer. Investir. Louer. Vendre  <br/>
+              <b>Gérer. Investir. Louer. Vendre </b> <br/>
             </p>
             
               <Link href='/tg/add-project' passHref>
@@ -874,7 +874,7 @@ const HomePage = () => {
 
       {/* Top agents (slider) */}
       <Container as='section' className='mb-5 pb-2 pb-lg-4'>
-        <h2 className='h3 mb-0 pb-2 text-center text-md-start'>Témoignages des propriétaires, agents immobiliers et locataires</h2>
+        <h2 className='h3 mb-0 pb-2 text-center text-md-start'>Témoignages des propriétaires, professionnels immobiliers, huissiers et locataires</h2>
         <Swiper
           modules={[Navigation, EffectFade]}
           effect='fade'

@@ -105,6 +105,7 @@ const AccountPropertiesPage = ({ _userProperties }) => {
               ['fi-bath', property.amenities[1]],
               ['fi-car', property.amenities[2]]
             ]}
+            horizontal
             dropdown={[
               {
                 // href: '#', // Optionally pass href prop to convert dropdown item to Next link
@@ -135,7 +136,6 @@ const AccountPropertiesPage = ({ _userProperties }) => {
                 props: { onClick: () => console.log('Deactivate property') }
               }
             ]}
-            horizontal
             className={indx === userProperties.length - 1 ? '' : 'mb-4'}
           />
         )) : <div className='text-center pt-2 pt-md-4 pt-lg-5 pb-2 pb-md-0'>
