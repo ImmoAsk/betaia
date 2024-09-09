@@ -1,7 +1,7 @@
 {
-  "name": "finder-react",
+  "name": "immoask-beta",
   "version": "1.0.0",
-  "description": "Finder - Directory & Listings React / Next.js Bootstrap Template",
+  "description": "ImmoAsk, real estate marketplace empowered by AI.",
   "private": true,
   "scripts": {
     "dev": "next dev",
