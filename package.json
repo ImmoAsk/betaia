@@ -16,6 +16,7 @@
     "axios": "^0.27.2",
     "bcrypt": "^5.1.0",
     "bootstrap": "^5.2.3",
+    "cors": "^2.8.5",
     "feather-icons-react": "^0.6.2",
     "filepond": "^4.30.3",
     "filepond-plugin-file-validate-size": "^2.2.6",
