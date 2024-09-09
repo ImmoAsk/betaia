@@ -3,7 +3,7 @@ module.exports = {
   output: 'standalone',
   //swcMinify: true,
   images: {
-    domains: ['immoask.com','immoaskbetaapi.omnisoft.africa'],
+    domains: ['immoask.com','immoaskbetaapi.omnisoft.africa','omnisoft.africa'],
     imageSizes: [48, 64, 88, 96, 128, 256, 384, 416],
   },
   async redirects() {
