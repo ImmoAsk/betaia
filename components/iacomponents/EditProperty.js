@@ -269,21 +269,28 @@ const EditProperty = ({ propriete }) => {
                             <option value='5'>Chambre salon</option>
                             <option value='6'>Terrain rural</option>
                             <option value='7'>Terrain urbain</option>
-                            <option value='8'>Boutique</option>
+                            <option value='8'>2 chambres salon</option>
                             <option value='9'>Bureau</option>
-                            <option value='10'>Magasin</option>
-                            <option value='11'>Espace coworking</option>
-                            <option value='12'>Immeuble commercial</option>
-                            <option value='13'>Appartement meublé</option>
-                            <option value='14'>Villa meublée</option>
-                            <option value='15'>Studio meublé</option>
-                            <option value='16'>Hotel</option>
-                            <option value='17'>Ecole</option>
-                            <option value='18'>Bar-restaurant</option>
-                            <option value='19'>Mur commercial</option>
-                            <option value='20'>Garage</option>
-                            <option value='21'>Chambre d'hotel</option>
-                            <option value='22'>Immeuble</option>
+                            <option value='10'>Appartement meublé</option>
+                            <option value='11'>3 chambres salon</option>
+                            <option value='12'>Magasin</option>
+                            <option value='13'>Terrain</option>
+                            <option value='14'>Boutique</option>
+                            <option value='15'>Studio</option>
+                            <option value='17'>Studio meublé</option>
+                            <option value='18'>Immeuble</option>
+                            <option value='19'>Immeuble commercial</option>
+                            <option value='20'>Espace coworking</option>
+                            <option value='21'>Villa luxueuse</option>
+                            <option value='22'>Appartement luxueux</option>
+                            <option value='23'>Villa meublée</option>
+                            <option value='24'>Bureau meublé</option>
+                            <option value='25'>Hotel</option>
+                            <option value='26'>Ecole</option>
+                            <option value='27'>Chambre d'hotel</option>
+                            <option value='28'>Bar-restaurant</option>
+                            <option value='29'>Espace commercial</option>
+                            <option value='30'>Garage</option>
                         </Form.Select>
                         <Form.Control.Feedback type="invalid" tooltip>
                             {errors.propertyType?.message}
@@ -295,8 +302,8 @@ const EditProperty = ({ propriete }) => {
                             <option value={propriete.offre && propriete.offre.id}>A {propriete.offre && propriete.offre.denomination}</option>
                             <option value='1'>Mettre en location</option>
                             <option value='2'>Mettre en vente</option>
-                            <option value='3'>Mettre en bail</option>
-                            <option value='4'>Mettre en colocation</option>
+                            <option value='4'>Mettre en bail</option>
+                            <option value='3'>Mettre en investissement</option>
                         </Form.Select>
                         <Form.Control.Feedback type="invalid" tooltip>
                             {errors.propertyOffer?.message}
@@ -362,7 +369,6 @@ const EditProperty = ({ propriete }) => {
                     <i className='fi-edit text-primary fs-5 mt-n1 me-2'></i>
                     Détails sur le bien immobilier
                 </h2>
-
                 <Row>
                     <Form.Group controlId='propertyArea' className='mb-4' as={Col} sm={4}>
                         <Form.Label className='pb-1 mb-2 d-block fw-bold'>Surface en m²</Form.Label>
@@ -476,7 +482,7 @@ const EditProperty = ({ propriete }) => {
                             <option value=''>Choisir le type d'electricité</option>
                             <option value='0'>Pas d'électricité</option>
                             <option value='1'>CEET, Compteur commun</option>
-                            <option value='2'>CEET, COmpteur personel</option>
+                            <option value='2'>CEET, Compteur personel</option>
                         </Form.Select>
                     </Form.Group>
 
