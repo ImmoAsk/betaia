@@ -367,7 +367,7 @@ const HomePage = () => {
                 catalogue de biens immobiliers en vente librement</p>
               </Card.Body>
               <Card.Footer className='pt-0 border-0'>
-                <Link href='/tg/catalog?category=sale' passHref>
+                <Link href='/tg/catalog?offre=2' passHref>
                   <Button variant='outline-primary stretched-link'>Acheter un immeuble</Button>
                 </Link>
               </Card.Footer>
@@ -379,14 +379,14 @@ const HomePage = () => {
                 <ImageLoader src='/images/tg/illustrations/sell.svg' width={256} height={201} alt='Image' />
               </div>
               <Card.Body>
-                <h2 className='h4 card-title'>Enroller un immeuble</h2>
+                <h2 className='h4 card-title'>Lister un immeuble</h2>
                 <p className='card-text fs-sm'>Une maison délabrée, un terrain urbain ou rural, 
                 un appartement moderne ou une villa F1,F2, ou une maison de n chambres salon. Ou les chambres salon, les appartement à mettre en location ?
                 Créer votre mise en vente ou location immobilière.</p>
               </Card.Body>
               <Card.Footer className='pt-0 border-0'>
                 <Link href='/tg/add-property' passHref>
-                  <Button variant='outline-primary stretched-link'>Enroller un immeuble</Button>
+                  <Button variant='outline-primary stretched-link'>Lister un immeuble</Button>
                 </Link>
               </Card.Footer>
             </Card>
@@ -402,7 +402,7 @@ const HomePage = () => {
                 un séjour meublé? Vous recherchez une villa ou appartement spécifique pour habitation? Lancer votre projet immobilier!</p>
               </Card.Body>
               <Card.Footer className='pt-0 border-0'>
-                <Link href='/tg/catalog?category=rent' passHref>
+                <Link href='/tg/add-project' passHref>
                   <Button variant='outline-primary stretched-link'>Lancer un projet immobilier</Button>
                 </Link>
               </Card.Footer>
@@ -436,7 +436,7 @@ const HomePage = () => {
                 dans nos appartements et villas meublés sélectionnés avec soin : moins chers et plus confortables. </p>
               </Card.Body>
               <Card.Footer className='pt-0 border-0'>
-                <Link href='/tg/catalog?category=sale' passHref>
+                <Link href='/tg/catalog?usage=5' passHref>
                   <Button variant='outline-primary stretched-link'>Explorer nos immeubles meublés</Button>
                 </Link>
               </Card.Footer>
@@ -453,7 +453,7 @@ const HomePage = () => {
                 en location. Voulez-vous bailler plutot pour une longue durée? Découvrir les endroits à forte valeur commerciale et choisir le bon emplacement de votre entreprise.</p>
               </Card.Body>
               <Card.Footer className='pt-0 border-0'>
-                <Link href='/tg/add-property' passHref>
+                <Link href='/tg/catalog?usage=3' passHref>
                   <Button variant='outline-primary stretched-link'>Explorer nos immeubles d'entreprise</Button>
                 </Link>
               </Card.Footer>
@@ -471,7 +471,7 @@ const HomePage = () => {
                 Changez d'air. Commencer votre déménagement avec nous et découvrir d'autres quartiers ou villes</p>
               </Card.Body>
               <Card.Footer className='pt-0 border-0'>
-                <Link href='/tg/catalog?category=rent' passHref>
+                <Link href='/tg/catalog?usage=1' passHref>
                   <Button variant='outline-primary stretched-link'>Trouver un logement</Button>
                 </Link>
               </Card.Footer>

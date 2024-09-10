@@ -52,7 +52,7 @@ import IAPaginaation from '../../components/iacomponents/IAPagination'
 import { buildPropertiesArray } from '../../utils/generalUtils'
 
 
-function constructApiUrl(apiUrl, offre, ville, quartier, categorie) {
+function constructApiUrl(apiUrl, offre, ville, quartier, categorie,usage) {
   // Start constructing the query
   let query = `query={getPropertiesByKeyWords(limit:100,orderBy:{column:NUO,order:DESC}`;
 
@@ -66,6 +66,9 @@ function constructApiUrl(apiUrl, offre, ville, quartier, categorie) {
   if (quartier) {
     query += `,quartier_id:"${quartier}"`;
   }
+  if (usage) {
+    query += `,usage:${usage}`;
+  }
   if (categorie) {
     query += `,categorie_id:"${categorie}"`;
   }
@@ -78,7 +81,7 @@ function constructApiUrl(apiUrl, offre, ville, quartier, categorie) {
   
   return fullUrl;
 }
-const CatalogPage = ({ categoryParam, offerParam, townParam, districtParam,_rentingProperties }) => {
+const CatalogPage = ({ categoryParam, offerParam, usageParam,townParam, districtParam,_rentingProperties }) => {
 
   // Add extra class to body
   useEffect(() => {
@@ -93,6 +96,7 @@ const CatalogPage = ({ categoryParam, offerParam, townParam, districtParam,_rent
   console.log('Offer:', offerParam);
   console.log('Town:', townParam);
   console.log('District:', districtParam);
+  console.log('Usage:', usageParam);
   //immeubleType= router.query.type
   // Media query for displaying Offcanvas on screens larger than 991px
 
@@ -770,9 +774,10 @@ export async function getServerSideProps(context) {
   
   // Extract query parameters from the context object
   const { query } = context;
-  const { categorie, offre, ville, quartier } = query;
+  const { categorie, offre, ville, quartier, usage} = query;
   try {
-    const url = constructApiUrl(apiUrl, offre, ville, quartier, categorie);
+    const url = constructApiUrl(apiUrl, offre, ville, quartier, categorie,usage);
+    console.log(url)
     const response = await axios.get(url);
     const _rentingProperties = await response.data;
     // Pass them as props to the component
@@ -781,6 +786,7 @@ export async function getServerSideProps(context) {
       categoryParam: categorie || null,
       offerParam: offre || null,
       townParam: ville || null,
+      usageParam: usage || null,
       districtParam: quartier || null,
       _rentingProperties: _rentingProperties.data.getPropertiesByKeyWords || [],
     },
