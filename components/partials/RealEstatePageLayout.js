@@ -280,7 +280,7 @@ const RealEstatePageLayout = (props) => {
                   </Dropdown.Menu>
                 </Nav.Item> */}
                 <Nav.Item as={Dropdown}>
-                  <Dropdown.Toggle as={Nav.Link} active={props.activeNav === 'Home'}>Expérimenter</Dropdown.Toggle>
+                  <Dropdown.Toggle as={Nav.Link} active={props.activeNav === 'Home'}>Séjourner</Dropdown.Toggle>
                   <Dropdown.Menu renderOnMount>
                     <Link href='/tg/locations-immobilieres/appartement-meuble' passHref>
                       <Dropdown.Item>Appartements meublés à louer</Dropdown.Item>

@@ -39,10 +39,11 @@ import topPropertiesAcquisition from '../../remoteAPI/topPropertiesAcquisition.j
 import topPropertiesEntrepreneuriat from '../../remoteAPI/topPropertiesEntrepreneuriat.json'
 import propertyCategories from '../../remoteAPI/propertyCategories.json'
 import BgParallaxHeroMessage from '../../components/iacomponents/BgParallaxHeroMessage'
+import { useRouter } from 'next/router';
 import 'dotenv/config'
 const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 const HomePage = () => {
-
+  const router = useRouter();
   // Property cost calculator modal
   const [modalShow, setModalShow] = useState(false)
   const handleModalClose = () => setModalShow(false)
@@ -91,6 +92,21 @@ const HomePage = () => {
       }));
     });
   }
+ 
+
+  // Function to handle redirection on button click
+  const handleLogementRedirect = () => {
+    router.push('/tg/catalog?usage=1');
+  };
+  const handleAcquisitionRedirect = () => {
+    router.push('/tg/catalog?usage=7');
+  };
+  const handleEntrepriseRedirect = () => {
+    router.push('/tg/catalog?usage=3');
+  };
+  const handleSejourRedirect = () => {
+    router.push('/tg/catalog?usage=5');
+  };
   useEffect(() => { 
     getRTProperties();
   },[]); 
@@ -487,7 +503,7 @@ const HomePage = () => {
       <Container fluid className='px-xxl-4 pb-lg-4 pb-1 mb-3 mt-3'>
         <div className='d-flex align-items-center justify-content-between mb-3'>
           <h2 className='h3 mb-0'>Des logements uniques en location pour vous</h2>
-          <Link href='/tg/catalog?category=rent' passHref>
+          <Link href='/tg/catalog?usage=1' passHref>
             <Button variant='link fw-normal ms-sm-3 p-0'>
               Consulter tout
               <i className='fi-arrow-long-right ms-2'></i>
@@ -507,8 +523,7 @@ const HomePage = () => {
 
       {/* Appel aux produits LOGEMENTS*/}
       <Container as='section' className='mb-5 mt-n3 mt-lg-0'>
-      <BgParallaxHeroMessage image={'/images/tg/hero-image-v2.jpg'} message={`
-        Il est conseillé de changer d'air et de logements annuellement`} action={handleModalShow} callAction={"Explorer les logements maintenant"}/>
+        <BgParallaxHeroMessage image={'/images/tg/hero-image-v2.jpg'} message={`Il est conseillé de changer d'air et de logements annuellement`} action={handleLogementRedirect} callAction={"Explorer les logements maintenant"}/>
       </Container>
       {/* Appel au produit Expertim */}
       <Container as='section' className='mb-5 pb-2 pb-lg-4'>
@@ -560,7 +575,7 @@ const HomePage = () => {
       </Container>
       <Container as='section' className='mb-5 mt-n3 mt-lg-0'>
       <BgParallaxHeroMessage image={'/images/tg/hero-image-v2.jpg'} message={`
-        C'est le meilleur moment pour commencer un projet d'achat immobiliers.`} action={handleModalShow} callAction={"Consulter les immeubles en vente"}/>
+        C'est le meilleur moment pour commencer un projet d'achat immobiliers.`} action={handleAcquisitionRedirect} callAction={"Consulter les immeubles en vente"}/>
         
       </Container>
       {/* Appel au produit ImmoMag */}
@@ -722,7 +737,7 @@ const HomePage = () => {
         <PropertyListSwiper propertyList={topPropertiesSejour}/>
       </Container>
       <Container as='section' className='mb-5 mt-n3 mt-lg-0'>
-        <BgParallaxHeroMessage image={'/images/tg/hero-image-v2.jpg'} message={`Détente. Excursions. Voyages d'affaires moins chers. De nouvels horizons dans nos meublés.`} action={handleModalShow} callAction={"Faire une expérience meublée"}/>
+        <BgParallaxHeroMessage image={'/images/tg/hero-image-v2.jpg'} message={`Détente. Excursions. Voyages d'affaires moins chers. De nouvels horizons dans nos meublés.`} action={handleSejourRedirect} callAction={"Faire une expérience meublée"}/>
       </Container>
       {/* Appel au produit ImmoAsk Business */}
       <Container as='section' className='mb-5 pb-2 pb-lg-4'>
@@ -773,7 +788,7 @@ const HomePage = () => {
         </div> */}
       </Container>
       <Container as='section' className='mb-5 mt-n3 mt-lg-0'>
-        <BgParallaxHeroMessage image={'/images/tg/hero-image-v2.jpg'} message={`Les bons emplacements pour vos entrepots et bureaus sont ici`} action={handleModalShow} 
+        <BgParallaxHeroMessage image={'/images/tg/hero-image-v2.jpg'} message={`Les bons emplacements pour vos entrepots et bureaus sont ici`} action={handleEntrepriseRedirect} 
         callAction={"Explorer les biens immobiliers d'entreprise"}/>
       </Container>
       {/* Appel au produit LesVoisins */}
