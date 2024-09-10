@@ -217,7 +217,7 @@ const HomePage = () => {
               <Link href='/tg/add-property' passHref>
                 <Button className='outline-primary order-lg-3 ms-2' size='lg'>
                   <i className='fi-plus me-2'></i>
-                  Enroller <span className='d-none d-sm-inline'>un immeuble</span>
+                  Lister <span className='d-none d-sm-inline'>un immeuble</span>
                 </Button>
                
               </Link>
