@@ -217,7 +217,7 @@ const RealEstatePageLayout = (props) => {
             <Link href='/tg/add-property' passHref>
               <Button size='sm' className='order-lg-3 ms-2' onClick={OpenSignInOrRedirectToPropertyForm}>
                 <i className='fi-plus me-2'></i>
-                Enroller <span className='d-none d-sm-inline'>une propriété</span>
+                Lister <span className='d-none d-sm-inline'>un immeuble</span>
               </Button>
             </Link>
 
@@ -280,7 +280,7 @@ const RealEstatePageLayout = (props) => {
                   </Dropdown.Menu>
                 </Nav.Item> */}
                 <Nav.Item as={Dropdown}>
-                  <Dropdown.Toggle as={Nav.Link} active={props.activeNav === 'Home'}>Expérimenter</Dropdown.Toggle>
+                  <Dropdown.Toggle as={Nav.Link} active={props.activeNav === 'Home'}>Séjourner</Dropdown.Toggle>
                   <Dropdown.Menu renderOnMount>
                     <Link href='/tg/locations-immobilieres/appartement-meuble' passHref>
                       <Dropdown.Item>Appartements meublés à louer</Dropdown.Item>

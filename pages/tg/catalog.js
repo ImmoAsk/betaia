@@ -4,7 +4,7 @@ import { useRouter } from 'next/router'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import axios from "axios";
-import { useQuery} from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import RealEstatePageLayout from '../../components/partials/RealEstatePageLayout'
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
@@ -26,19 +26,20 @@ import 'simplebar/dist/simplebar.min.css'
 import 'nouislider/distribute/nouislider.css'
 import 'dotenv/config'
 const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
-const MapContainer = dynamic(() => 
+
+const MapContainer = dynamic(() =>
   import('react-leaflet').then(mod => mod.MapContainer),
   { ssr: false }
 )
-const TileLayer = dynamic(() => 
+const TileLayer = dynamic(() =>
   import('react-leaflet').then(mod => mod.TileLayer),
   { ssr: false }
 )
-const CustomMarker = dynamic(() => 
+const CustomMarker = dynamic(() =>
   import('../../components/partials/CustomMarker'),
   { ssr: false }
 )
-const Popup = dynamic(() => 
+const Popup = dynamic(() =>
   import('react-leaflet').then(mod => mod.Popup),
   { ssr: false }
 )
@@ -49,8 +50,39 @@ import getFirstImageArray from '../../utils/formatFirsImageArray'
 import { useSession } from 'next-auth/react'
 import IAPaginaation from '../../components/iacomponents/IAPagination'
 import { buildPropertiesArray } from '../../utils/generalUtils'
-const CatalogPage = ({_rentingProperties}) => {
-    
+
+
+function constructApiUrl(apiUrl, offre, ville, quartier, categorie,usage) {
+  // Start constructing the query
+  let query = `query={getPropertiesByKeyWords(limit:100,orderBy:{column:NUO,order:DESC}`;
+
+  // Conditionally add each parameter if it is provided
+  if (offre) {
+    query += `,offre_id:"${offre}"`;
+  }
+  if (ville) {
+    query += `,ville_id:"${ville}"`;
+  }
+  if (quartier) {
+    query += `,quartier_id:"${quartier}"`;
+  }
+  if (usage) {
+    query += `,usage:${usage}`;
+  }
+  if (categorie) {
+    query += `,categorie_id:"${categorie}"`;
+  }
+
+  // Close the query string
+  query += `){badge_propriete{badge{badge_name,badge_image}},visuels{uri},surface,lat_long,nuo,usage,offre{denomination,id},categorie_propriete{denomination,id},pays{code,id},piece,titre,garage,cout_mensuel,ville{denomination,id},wc_douche_interne,cout_vente,quartier{denomination,id}}}`;
+
+  // Construct the full URL
+  const fullUrl = `${apiUrl}?${query}`;
+  
+  return fullUrl;
+}
+const CatalogPage = ({ categoryParam, offerParam, usageParam,townParam, districtParam,_rentingProperties }) => {
+
   // Add extra class to body
   useEffect(() => {
     const body = document.querySelector('body')
@@ -59,11 +91,15 @@ const CatalogPage = ({_rentingProperties}) => {
   })
 
   // Query param (Switch between Rent and Sale category)
-  const router = useRouter(),
-        categoryParam = router.query.category
-        
-        //immeubleType= router.query.type
-        // Media query for displaying Offcanvas on screens larger than 991px
+  const router = useRouter();
+  console.log('Category:', categoryParam);
+  console.log('Offer:', offerParam);
+  console.log('Town:', townParam);
+  console.log('District:', districtParam);
+  console.log('Usage:', usageParam);
+  //immeubleType= router.query.type
+  // Media query for displaying Offcanvas on screens larger than 991px
+
   const isDesktop = useMediaQuery({ query: '(min-width: 992px)' })
 
   // Offcanvas container
@@ -71,8 +107,8 @@ const CatalogPage = ({_rentingProperties}) => {
   const [numberRespSearch, setNumberRespSearch] = useState(0)
   const [markers, setMarkers] = useState([]);
   const [filterby, setFilterBy] = useState("DESC");
-  
-  
+
+
 
   const [realTimeProperties, setRealTimeProperties] = useState([]);
   // Offcanvas show/hide
@@ -83,15 +119,15 @@ const CatalogPage = ({_rentingProperties}) => {
   //console.log(categoryParam);
   // Property type checkboxes
   const propertyType = [
-    {value: 'Chambre salon', checked: false},
-    {value: 'Appartement', checked: true},
-    {value: 'Chambre', checked: false},
-    {value: 'Bureau', checked: false},
-    {value: 'Immeuble commercial', checked: false},
-    {value: 'Terrain', checked: false},
-    {value: 'Mur commercial', checked: false},
-    {value: 'Espace co-working', checked: false},
-    {value: 'Villa', checked: false}
+    { value: 'Chambre salon', checked: false },
+    { value: 'Appartement', checked: true },
+    { value: 'Chambre', checked: false },
+    { value: 'Bureau', checked: false },
+    { value: 'Immeuble commercial', checked: false },
+    { value: 'Terrain', checked: false },
+    { value: 'Mur commercial', checked: false },
+    { value: 'Espace co-working', checked: false },
+    { value: 'Villa', checked: false }
   ]
 
   // Price range slider
@@ -108,8 +144,8 @@ const CatalogPage = ({_rentingProperties}) => {
     }
 
     const handleSliderChange = sliderVal => {
-      let sliderMinVal = Math.round(sliderVal[0].replace(/\D/g,''))
-      let sliderMaxVal = Math.round(sliderVal[1].replace(/\D/g,''))
+      let sliderMinVal = Math.round(sliderVal[0].replace(/\D/g, ''))
+      let sliderMaxVal = Math.round(sliderVal[1].replace(/\D/g, ''))
       setMinRange(sliderMinVal)
       setMaxRange(sliderMaxVal)
     }
@@ -117,7 +153,7 @@ const CatalogPage = ({_rentingProperties}) => {
     return (
       <>
         <Nouislider
-          range={{min: categoryParam === 'sale' ? 30000 : 200, max: categoryParam === 'sale' ? 500000 : 5000}}
+          range={{ min: categoryParam === 'sale' ? 30000 : 200, max: categoryParam === 'sale' ? 500000 : 5000 }}
           start={[minRange, maxRange]}
           format={{
             to: value => 'XOF ' + parseInt(value, 10),
@@ -158,46 +194,46 @@ const CatalogPage = ({_rentingProperties}) => {
   // Bedrooms number
   const [bedroomsValue, setBedroomsValue] = useState('')
   const bedrooms = [
-    {name: 'Studio', value: 'studio'},
-    {name: '1', value: '1'},
-    {name: '2', value: '2'},
-    {name: '3', value: '3'},
-    {name: '4+', value: '4+'}
+    { name: 'Studio', value: 'studio' },
+    { name: '1', value: '1' },
+    { name: '2', value: '2' },
+    { name: '3', value: '3' },
+    { name: '4+', value: '4+' }
   ]
 
   // Bathrooms number
   const [bathroomsValue, setBathroomsValue] = useState('')
   const bathrooms = [
-    {name: '1', value: '1'},
-    {name: '2', value: '2'},
-    {name: '3', value: '3'},
-    {name: '4', value: '4'}
+    { name: '1', value: '1' },
+    { name: '2', value: '2' },
+    { name: '3', value: '3' },
+    { name: '4', value: '4' }
   ]
 
   // Amenities checkboxes
   const amenities = [
-    {value: 'Air conditioning', checked: true},
-    {value: 'Balcony', checked: false},
-    {value: 'Garage', checked: true},
-    {value: 'Gym', checked: false},
-    {value: 'Parking', checked: false},
-    {value: 'Pool', checked: false},
-    {value: 'Security cameras', checked: false},
-    {value: 'WiFi', checked: true},
-    {value: 'Laundry', checked: false},
-    {value: 'Dishwasher', checked: false}
+    { value: 'Air conditioning', checked: true },
+    { value: 'Balcony', checked: false },
+    { value: 'Garage', checked: true },
+    { value: 'Gym', checked: false },
+    { value: 'Parking', checked: false },
+    { value: 'Pool', checked: false },
+    { value: 'Security cameras', checked: false },
+    { value: 'WiFi', checked: true },
+    { value: 'Laundry', checked: false },
+    { value: 'Dishwasher', checked: false }
   ]
 
   // Pets checkboxes
   const pets = [
-    {value: 'Cats allowed', checked: false},
-    {value: 'Dogs allowed', checked: false}
+    { value: 'Cats allowed', checked: false },
+    { value: 'Dogs allowed', checked: false }
   ]
 
   // Additional options checkboxes
   const options = [
-    {value: 'Verified', checked: false},
-    {value: 'Featured', checked: false}
+    { value: 'Verified', checked: false },
+    { value: 'Featured', checked: false }
   ]
 
   // Map popup state
@@ -295,9 +331,9 @@ const CatalogPage = ({_rentingProperties}) => {
       }
     }
   ]
-  
-  
-  
+
+
+
   /* useQuery(["markers"],
   ()=> axios.get(`${apiUrl}?query={getAllProperties(orderBy:{column:NUO,order:DESC},first:24){data{lat_long,lat_propriete,long_propriete,badge_propriete{badge{badge_name,badge_image}},visuels{uri},surface,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination}}}}`).
   then((res)=>{
@@ -344,23 +380,23 @@ const CatalogPage = ({_rentingProperties}) => {
     let titleFromCategory
     switch (categoryParam) {
       case 'bailler':
-        titleFromCategory="Baux immobiliers"
+        titleFromCategory = "Baux immobiliers"
         return titleFromCategory
         break
       case 'sale':
-        titleFromCategory="Ventes immobilières"
+        titleFromCategory = "Ventes immobilières"
         return titleFromCategory
         break
       case 'rent':
-        titleFromCategory="Locations immobilières"
+        titleFromCategory = "Locations immobilières"
         return titleFromCategory
         break
       case 'invest':
-        titleFromCategory="Investissements immobiliers"
+        titleFromCategory = "Investissements immobiliers"
         return titleFromCategory
         break
       default:
-        titleFromCategory="Locations immobilières"
+        titleFromCategory = "Locations immobilières"
         return titleFromCategory
         break
     }
@@ -368,13 +404,13 @@ const CatalogPage = ({_rentingProperties}) => {
 
   const getFilterSearch = (filterKeyWord) => {
     console.log(filterKeyWord);
-    useEffect(()=>{
+    useEffect(() => {
       setMarkers(markers);
       setNumberRespSearch(definedMarkers.length);
     }, [])
-    
-    
-    
+
+
+
     //Get Keyword
     //Send keyword to API
     //Affect response to function which can build markers array
@@ -449,8 +485,8 @@ const CatalogPage = ({_rentingProperties}) => {
                       </Nav.Link>
                     </Link>
                   </Nav.Item>
-          
-                <Nav.Item className='mt-1'>
+
+                  <Nav.Item className='mt-1'>
                     <Link href='/tg/catalog?category=invest' passHref>
                       <Nav.Link active={categoryParam === 'invest' ? true : false}>
                         <i className='fi-home fs-base me-2'></i>
@@ -466,7 +502,7 @@ const CatalogPage = ({_rentingProperties}) => {
                       </Nav.Link>
                     </Link>
                   </Nav.Item>
-                  
+
                 </Nav>
               </Offcanvas.Header>
 
@@ -493,14 +529,14 @@ const CatalogPage = ({_rentingProperties}) => {
                 </div>
                 <div className='pb-4 mb-2'>
                   <h3 className='h6'>Type de biens immobiliers</h3>
-                  <SimpleBar autoHide={false} className='simplebar-no-autohide' style={{maxHeight: '11rem'}}>
-                    {propertyType.map(({value, checked}, indx) => (
+                  <SimpleBar autoHide={false} className='simplebar-no-autohide' style={{ maxHeight: '11rem' }}>
+                    {propertyType.map(({ value, checked }, indx) => (
                       <Form.Check
                         key={indx}
                         id={`type-${indx}`}
                         value={value}
                         defaultChecked={checked}
-                        label={<><span className='fs-sm'>{value}</span></>}  
+                        label={<><span className='fs-sm'>{value}</span></>}
                       />
                     ))}
                   </SimpleBar>
@@ -548,18 +584,18 @@ const CatalogPage = ({_rentingProperties}) => {
                     <Form.Control type='number' min={20} max={500} step={10} placeholder='Min' className='w-100' />
                     <div className='mx-2'>&mdash;</div>
                     <Form.Control type='number' min={20} max={500} step={10} placeholder='Max' className='w-100' />
-                  </div> 
+                  </div>
                 </div>
                 <div className='pb-4 mb-2'>
                   <h3 className='h6'>Intérieur & Exterieur</h3>
-                  <SimpleBar autoHide={false} className='simplebar-no-autohide' style={{maxHeight: '11rem'}}>
-                    {amenities.map(({value, checked}, indx) => (
+                  <SimpleBar autoHide={false} className='simplebar-no-autohide' style={{ maxHeight: '11rem' }}>
+                    {amenities.map(({ value, checked }, indx) => (
                       <Form.Check
                         key={indx}
                         id={`amenity-${indx}`}
                         value={value}
                         defaultChecked={checked}
-                        label={<><span className='fs-sm'>{value}</span></>}  
+                        label={<><span className='fs-sm'>{value}</span></>}
                       />
                     ))}
                   </SimpleBar>
@@ -578,13 +614,13 @@ const CatalogPage = ({_rentingProperties}) => {
                 </div> */}
                 <div className='pb-4 mb-2'>
                   <h3 className='h6'>Options additionnelles</h3>
-                  {options.map(({value, checked}, indx) => (
+                  {options.map(({ value, checked }, indx) => (
                     <Form.Check
                       key={indx}
                       id={`options-${indx}`}
                       value={value}
                       defaultChecked={checked}
-                      label={<><span className='fs-sm'>{value}</span></>}  
+                      label={<><span className='fs-sm'>{value}</span></>}
                     />
                   ))}
                 </div>
@@ -603,7 +639,7 @@ const CatalogPage = ({_rentingProperties}) => {
           <Col lg={8} xl={9} className='position-relative overflow-hidden pb-5 pt-4 px-3 px-xl-4 px-xxl-5'>
 
             {/* Map popup */}
-            <div className={`map-popup${showMap ? ' show': ''}`}>
+            <div className={`map-popup${showMap ? ' show' : ''}`}>
               <Button
                 size='sm'
                 variant='light btn-icon shadow-sm rounded-circle'
@@ -612,7 +648,7 @@ const CatalogPage = ({_rentingProperties}) => {
                 <i className='fi-x fs-xs'></i>
               </Button>
               <MapContainer
-                center={isDesktop ? [6.1911634,1.1857059] : [6.1911634,1.1857059]}
+                center={isDesktop ? [6.1911634, 1.1857059] : [6.1911634, 1.1857059]}
                 zoom={15}
                 scrollWheelZoom={false}
               >
@@ -701,7 +737,7 @@ const CatalogPage = ({_rentingProperties}) => {
                   <i className='fi-arrows-sort text-muted mt-n1 me-2'></i>
                   Classer par:
                 </Form.Label>
-                <Form.Select size='sm' name='filterby' onChange={(e)=>setFilterBy(e.target.value)} onBlur={getFilterSearch(filterby)}>
+                <Form.Select size='sm' name='filterby' onChange={(e) => setFilterBy(e.target.value)} onBlur={getFilterSearch(filterby)}>
                   <option value='Newest'>Nouvels</option>
                   <option value='Popularity'>Vérifié</option>
                   <option value='Sponsorise'>Sponsorisé</option>
@@ -717,10 +753,10 @@ const CatalogPage = ({_rentingProperties}) => {
             </div>
 
             {/* Catalog grid */}
-            
+
 
             {/* Pagination */}
-            <IAPaginaation dataPagineted={rentingProperties}/>
+            <IAPaginaation dataPagineted={rentingProperties} />
           </Col>
         </Row>
       </Container>
@@ -735,9 +771,30 @@ const CatalogPage = ({_rentingProperties}) => {
 }
 export async function getServerSideProps(context) {
   // Fetch data from external API
-  let dataAPIresponse = await axios.get(`${apiUrl}?query={getAllProperties(orderBy:{column:NUO,order:DESC},first:300){data{badge_propriete{badge{badge_name,badge_image}},visuels{uri},surface,lat_long,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination}}}}`);
-  let _rentingProperties = await dataAPIresponse.data;
-  _rentingProperties = _rentingProperties.data.getAllProperties.data;
-  return { props: { _rentingProperties} }
+  
+  // Extract query parameters from the context object
+  const { query } = context;
+  const { categorie, offre, ville, quartier, usage} = query;
+  try {
+    const url = constructApiUrl(apiUrl, offre, ville, quartier, categorie,usage);
+    console.log(url)
+    const response = await axios.get(url);
+    const _rentingProperties = await response.data;
+    // Pass them as props to the component
+  return {
+    props: {
+      categoryParam: categorie || null,
+      offerParam: offre || null,
+      townParam: ville || null,
+      usageParam: usage || null,
+      districtParam: quartier || null,
+      _rentingProperties: _rentingProperties.data.getPropertiesByKeyWords || [],
+    },
+  };
+  } catch (error) {
+    console.error('Error fetching data:', error);
+  }
+  
+  
 }
 export default CatalogPage

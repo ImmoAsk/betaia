@@ -39,10 +39,11 @@ import topPropertiesAcquisition from '../../remoteAPI/topPropertiesAcquisition.j
 import topPropertiesEntrepreneuriat from '../../remoteAPI/topPropertiesEntrepreneuriat.json'
 import propertyCategories from '../../remoteAPI/propertyCategories.json'
 import BgParallaxHeroMessage from '../../components/iacomponents/BgParallaxHeroMessage'
+import { useRouter } from 'next/router';
 import 'dotenv/config'
 const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 const HomePage = () => {
-
+  const router = useRouter();
   // Property cost calculator modal
   const [modalShow, setModalShow] = useState(false)
   const handleModalClose = () => setModalShow(false)
@@ -91,6 +92,21 @@ const HomePage = () => {
       }));
     });
   }
+ 
+
+  // Function to handle redirection on button click
+  const handleLogementRedirect = () => {
+    router.push('/tg/catalog?usage=1');
+  };
+  const handleAcquisitionRedirect = () => {
+    router.push('/tg/catalog?usage=7');
+  };
+  const handleEntrepriseRedirect = () => {
+    router.push('/tg/catalog?usage=3');
+  };
+  const handleSejourRedirect = () => {
+    router.push('/tg/catalog?usage=5');
+  };
   useEffect(() => { 
     getRTProperties();
   },[]); 
@@ -217,7 +233,7 @@ const HomePage = () => {
               <Link href='/tg/add-property' passHref>
                 <Button className='outline-primary order-lg-3 ms-2' size='lg'>
                   <i className='fi-plus me-2'></i>
-                  Enroller <span className='d-none d-sm-inline'>un immeuble</span>
+                  Lister <span className='d-none d-sm-inline'>un immeuble</span>
                 </Button>
                
               </Link>
@@ -367,7 +383,7 @@ const HomePage = () => {
                 catalogue de biens immobiliers en vente librement</p>
               </Card.Body>
               <Card.Footer className='pt-0 border-0'>
-                <Link href='/tg/catalog?category=sale' passHref>
+                <Link href='/tg/catalog?offre=2' passHref>
                   <Button variant='outline-primary stretched-link'>Acheter un immeuble</Button>
                 </Link>
               </Card.Footer>
@@ -379,14 +395,14 @@ const HomePage = () => {
                 <ImageLoader src='/images/tg/illustrations/sell.svg' width={256} height={201} alt='Image' />
               </div>
               <Card.Body>
-                <h2 className='h4 card-title'>Enroller un immeuble</h2>
+                <h2 className='h4 card-title'>Lister un immeuble</h2>
                 <p className='card-text fs-sm'>Une maison délabrée, un terrain urbain ou rural, 
                 un appartement moderne ou une villa F1,F2, ou une maison de n chambres salon. Ou les chambres salon, les appartement à mettre en location ?
                 Créer votre mise en vente ou location immobilière.</p>
               </Card.Body>
               <Card.Footer className='pt-0 border-0'>
                 <Link href='/tg/add-property' passHref>
-                  <Button variant='outline-primary stretched-link'>Enroller un immeuble</Button>
+                  <Button variant='outline-primary stretched-link'>Lister un immeuble</Button>
                 </Link>
               </Card.Footer>
             </Card>
@@ -402,7 +418,7 @@ const HomePage = () => {
                 un séjour meublé? Vous recherchez une villa ou appartement spécifique pour habitation? Lancer votre projet immobilier!</p>
               </Card.Body>
               <Card.Footer className='pt-0 border-0'>
-                <Link href='/tg/catalog?category=rent' passHref>
+                <Link href='/tg/add-project' passHref>
                   <Button variant='outline-primary stretched-link'>Lancer un projet immobilier</Button>
                 </Link>
               </Card.Footer>
@@ -436,7 +452,7 @@ const HomePage = () => {
                 dans nos appartements et villas meublés sélectionnés avec soin : moins chers et plus confortables. </p>
               </Card.Body>
               <Card.Footer className='pt-0 border-0'>
-                <Link href='/tg/catalog?category=sale' passHref>
+                <Link href='/tg/catalog?usage=5' passHref>
                   <Button variant='outline-primary stretched-link'>Explorer nos immeubles meublés</Button>
                 </Link>
               </Card.Footer>
@@ -453,7 +469,7 @@ const HomePage = () => {
                 en location. Voulez-vous bailler plutot pour une longue durée? Découvrir les endroits à forte valeur commerciale et choisir le bon emplacement de votre entreprise.</p>
               </Card.Body>
               <Card.Footer className='pt-0 border-0'>
-                <Link href='/tg/add-property' passHref>
+                <Link href='/tg/catalog?usage=3' passHref>
                   <Button variant='outline-primary stretched-link'>Explorer nos immeubles d'entreprise</Button>
                 </Link>
               </Card.Footer>
@@ -471,7 +487,7 @@ const HomePage = () => {
                 Changez d'air. Commencer votre déménagement avec nous et découvrir d'autres quartiers ou villes</p>
               </Card.Body>
               <Card.Footer className='pt-0 border-0'>
-                <Link href='/tg/catalog?category=rent' passHref>
+                <Link href='/tg/catalog?usage=1' passHref>
                   <Button variant='outline-primary stretched-link'>Trouver un logement</Button>
                 </Link>
               </Card.Footer>
@@ -487,7 +503,7 @@ const HomePage = () => {
       <Container fluid className='px-xxl-4 pb-lg-4 pb-1 mb-3 mt-3'>
         <div className='d-flex align-items-center justify-content-between mb-3'>
           <h2 className='h3 mb-0'>Des logements uniques en location pour vous</h2>
-          <Link href='/tg/catalog?category=rent' passHref>
+          <Link href='/tg/catalog?usage=1' passHref>
             <Button variant='link fw-normal ms-sm-3 p-0'>
               Consulter tout
               <i className='fi-arrow-long-right ms-2'></i>
@@ -507,8 +523,7 @@ const HomePage = () => {
 
       {/* Appel aux produits LOGEMENTS*/}
       <Container as='section' className='mb-5 mt-n3 mt-lg-0'>
-      <BgParallaxHeroMessage image={'/images/tg/hero-image-v2.jpg'} message={`
-        Il est conseillé de changer d'air et de logements annuellement`} action={handleModalShow} callAction={"Explorer les logements maintenant"}/>
+        <BgParallaxHeroMessage image={'/images/tg/hero-image-v2.jpg'} message={`Il est conseillé de changer d'air et de logements annuellement`} action={handleLogementRedirect} callAction={"Explorer les logements maintenant"}/>
       </Container>
       {/* Appel au produit Expertim */}
       <Container as='section' className='mb-5 pb-2 pb-lg-4'>
@@ -560,7 +575,7 @@ const HomePage = () => {
       </Container>
       <Container as='section' className='mb-5 mt-n3 mt-lg-0'>
       <BgParallaxHeroMessage image={'/images/tg/hero-image-v2.jpg'} message={`
-        C'est le meilleur moment pour commencer un projet d'achat immobiliers.`} action={handleModalShow} callAction={"Consulter les immeubles en vente"}/>
+        C'est le meilleur moment pour commencer un projet d'achat immobiliers.`} action={handleAcquisitionRedirect} callAction={"Consulter les immeubles en vente"}/>
         
       </Container>
       {/* Appel au produit ImmoMag */}
@@ -722,7 +737,7 @@ const HomePage = () => {
         <PropertyListSwiper propertyList={topPropertiesSejour}/>
       </Container>
       <Container as='section' className='mb-5 mt-n3 mt-lg-0'>
-        <BgParallaxHeroMessage image={'/images/tg/hero-image-v2.jpg'} message={`Détente. Excursions. Voyages d'affaires moins chers. De nouvels horizons dans nos meublés.`} action={handleModalShow} callAction={"Faire une expérience meublée"}/>
+        <BgParallaxHeroMessage image={'/images/tg/hero-image-v2.jpg'} message={`Détente. Excursions. Voyages d'affaires moins chers. De nouvels horizons dans nos meublés.`} action={handleSejourRedirect} callAction={"Faire une expérience meublée"}/>
       </Container>
       {/* Appel au produit ImmoAsk Business */}
       <Container as='section' className='mb-5 pb-2 pb-lg-4'>
@@ -773,7 +788,7 @@ const HomePage = () => {
         </div> */}
       </Container>
       <Container as='section' className='mb-5 mt-n3 mt-lg-0'>
-        <BgParallaxHeroMessage image={'/images/tg/hero-image-v2.jpg'} message={`Les bons emplacements pour vos entrepots et bureaus sont ici`} action={handleModalShow} 
+        <BgParallaxHeroMessage image={'/images/tg/hero-image-v2.jpg'} message={`Les bons emplacements pour vos entrepots et bureaus sont ici`} action={handleEntrepriseRedirect} 
         callAction={"Explorer les biens immobiliers d'entreprise"}/>
       </Container>
       {/* Appel au produit LesVoisins */}

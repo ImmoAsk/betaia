@@ -1,84 +1,84 @@
  [
     [
       {
-        "href": "/tg/catalog?category=rent",
+        "href": "/tg/catalog?categorie=2",
         "media": "fi-apartment",
         "title": "Appartement"
       },
       {
-        "href": "/tg/catalog?category=sale",
+        "href": "/tg/catalog?categorie=1",
         "media": "fi-apartment",
         "title": "Villa"
       },
       {
-        "href": "/tg/catalog?category=rent",
+        "href": "/tg/catalog?categorie=5",
         "media": "fi-shop",
         "title": "Chambre salon"
       },
       {
-        "href": "/tg/catalog?category=rent",
+        "href": "/tg/catalog?categorie=15",
         "media": "fi-rent",
         "title": "Studio"
       },
       {
-        "href": "/tg/catalog?category=sale",
+        "href": "/tg/catalog?categorie=13",
         "media": "fi-rent",
         "title": "Terrains"
       },
       {
-        "href": "/tg/catalog?category=sale",
+        "href": "/tg/catalog?categorie=14",
         "media": "fi-house-chosen",
         "title": "Boutiques"
       },
       {
-        "href": "/tg/catalog?category=sale",
+        "href": "/tg/catalog?categorie=19",
         "media": "fi-house-chosen",
         "title": "Immeuble commercial"
       },
       {
-        "href": "/tg/catalog?category=sale",
+        "href": "/tg/catalog?categorie=12",
         "media": "fi-computer",
         "title": "Magasins"
       },
       {
-        "href": "/tg/catalog?category=rent",
+        "href": "/tg/catalog?categorie=9",
         "media": "fi-single-bed",
         "title": "Bureaux"
       },
       {
-        "href": "/tg/catalog?category=sale",
+        "href": "/tg/catalog?categorie=20",
         "media": "fi-parking",
         "title": "Espaces co-working"
       },
       {
-        "href": "/tg/catalog?category=sale",
+        "href": "/tg/catalog?categorie=29",
         "media": "fi-parking",
-        "title": "Mur commercial"
+        "title": "Espace commercial"
       },
       {
-        "href": "/tg/catalog?category=sale",
+        "href": "/tg/catalog?categorie=4",
         "media": "fi-single-bed",
         "title": "Chambre"
       }
     ],
     [
       {
-        "href": "/tg/catalog?category=rent",
+        "href": "/tg/catalog?categorie=rent",
         "media": "fi-single-bed",
         "title": "Bureau"
       },
       {
-        "href": "/tg/catalog?category=sale",
+        "href": "/tg/catalog?categorie=sale",
         "media": "fi-computer",
         "title": "Magasins"
       },
       {
-        "href": "/tg/catalog?category=rent",
+        "href": "/tg/catalog?categorie=rent",
         "media": "fi-tg-buy",
         "title": "Immeuble commercial"
       },
       {
-        "href": "/tg/catalog?category=sale",
+        "href": "/tg/catalog?categorie=sale",
         "media": "fi-parking",
         "title": "Bureaux co-working"
       }
