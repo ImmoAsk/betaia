@@ -554,7 +554,7 @@ const HomePage = () => {
       <Container fluid className='px-xxl-4 pb-lg-4 pb-1 mb-3 mt-3'>
         <div className='d-flex align-items-center justify-content-between mb-3'>
           <h2 className='h3 mb-0'>Des terrains urbains et moins ruraux à vendre à votre portée</h2>
-          <Link href='/tg/catalog?category=rent' passHref>
+          <Link href='/tg/catalog?usage=7' passHref>
             <Button variant='link fw-normal ms-sm-3 p-0'>
               Consulter tout
               <i className='fi-arrow-long-right ms-2'></i>
@@ -723,8 +723,8 @@ const HomePage = () => {
       {/* Top properties Experience et Sejours*/}
       <Container fluid className='px-xxl-4 pb-lg-4 pb-1 mb-3 mt-3'>
         <div className='d-flex align-items-center justify-content-between mb-3'>
-          <h2 className='h3 mb-0'>Une experience uniques et inoubliable! Un séjour confortable et moins cher.</h2>
-          <Link href='/tg/catalog?category=rent' passHref>
+          <h2 className='h3 mb-0'>Une experience uniques et inoubliable! Un séjour confortable et abordable.</h2>
+          <Link href='/tg/catalog?usage=5' passHref>
             <Button variant='link fw-normal ms-sm-3 p-0'>
               Consulter tout
               <i className='fi-arrow-long-right ms-2'></i>
@@ -732,7 +732,7 @@ const HomePage = () => {
           </Link>
         </div>
         <div className='d-flex align-items-center justify-content-between'>
-          <h3 className='h5'>Séjour meublé | Appartement meublé | Biens immobiliers meublés | Studio meublé </h3>
+          <h3 className='h5'>Séjour meublé | Appartement meublé | Villa meublées | Studio meublé </h3>
         </div>
         <PropertyListSwiper propertyList={topPropertiesSejour}/>
       </Container>
