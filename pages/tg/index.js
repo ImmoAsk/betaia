@@ -526,7 +526,7 @@ const HomePage = () => {
         <BgParallaxHeroMessage image={'/images/tg/hero-image-v2.jpg'} message={`Il est conseillé de changer d'air et de logements annuellement`} action={handleLogementRedirect} callAction={"Explorer les logements maintenant"}/>
       </Container>
       {/* Appel au produit Expertim */}
-      <Container as='section' className='mb-5 pb-2 pb-lg-4'>
+      {/* <Container as='section' className='mb-5 pb-2 pb-lg-4'>
         <Row className='align-items-center'>
           <Col md={5}>
             <div className='d-flex justify-content-center justify-content-md-start mb-md-0 mb-4'>
@@ -548,7 +548,7 @@ const HomePage = () => {
             </Button>
           </Col>
         </Row>
-      </Container>
+      </Container> */}
       
       {/* Top properties ACQuisition */}
       <Container fluid className='px-xxl-4 pb-lg-4 pb-1 mb-3 mt-3'>
@@ -579,7 +579,7 @@ const HomePage = () => {
         
       </Container>
       {/* Appel au produit ImmoMag */}
-      <Container as='section' className='mb-5 pb-2 pb-lg-4'>
+      {/* <Container as='section' className='mb-5 pb-2 pb-lg-4'>
         <Row className='align-items-center'>
           <Col md={5}>
             <div className='d-flex justify-content-center justify-content-md-start mb-md-0 mb-4'>
@@ -602,9 +602,9 @@ const HomePage = () => {
             </Button>
           </Col>
         </Row>
-      </Container>
+      </Container> */}
       {/* Investissements immobiliers */}
-      <Container as='section' className='pb-4 mb-5'>
+      {/* <Container as='section' className='pb-4 mb-5'>
         <div className='d-flex align-items-end align-items-lg-center justify-content-between mb-4 pb-md-2'>
           <div className='d-flex w-100 align-items-center justify-content-between justify-content-lg-start'>
             <h2 className='h3 mb-0 me-md-4'>Placer votre économie en investissant dans des biens immobiliers</h2>
@@ -617,8 +617,6 @@ const HomePage = () => {
             </Button>
           </Link>
         </div>
-
-        {/* Grid of properties */}
         <Row className='g-4'>
           <Col md={6}>
             <PropertyCardOverlay
@@ -687,15 +685,15 @@ const HomePage = () => {
             />
           </Col>
         </Row>
-      </Container>
-      <Container as='section' className='mb-5 mt-n3 mt-lg-0'>
+      </Container> */}
+      {/* <Container as='section' className='mb-5 mt-n3 mt-lg-0'>
         
         <BgParallaxHeroMessage image={'/images/tg/hero-image-v2.jpg'} message={`
         Nous vous offrons plus que ce que les structures bancaires offrent.
               Gagner aumoins 20% sur votre investissement immobilier.`} action={handleModalShow} callAction={"Placer votre investissement immobilier"}/>
-      </Container>
+      </Container> */}
       {/* Appel au produit Timmo */}
-      <Container as='section' className='mb-5 pb-2 pb-lg-4'>
+      {/* <Container as='section' className='mb-5 pb-2 pb-lg-4'>
         <Row className='align-items-center'>
           <Col md={5}>
             <div className='d-flex justify-content-center justify-content-md-start mb-md-0 mb-4'>
@@ -718,7 +716,7 @@ const HomePage = () => {
             </Button>
           </Col>
         </Row>
-      </Container>
+      </Container> */}
       
       {/* Top properties Experience et Sejours*/}
       <Container fluid className='px-xxl-4 pb-lg-4 pb-1 mb-3 mt-3'>
@@ -740,7 +738,7 @@ const HomePage = () => {
         <BgParallaxHeroMessage image={'/images/tg/hero-image-v2.jpg'} message={`Détente. Excursions. Voyages d'affaires moins chers. De nouvels horizons dans nos meublés.`} action={handleSejourRedirect} callAction={"Faire une expérience meublée"}/>
       </Container>
       {/* Appel au produit ImmoAsk Business */}
-      <Container as='section' className='mb-5 pb-2 pb-lg-4'>
+      {/* <Container as='section' className='mb-5 pb-2 pb-lg-4'>
         <Row className='align-items-center'>
           <Col md={5}>
             <div className='d-flex justify-content-center justify-content-md-start mb-md-0 mb-4'>
@@ -763,7 +761,7 @@ const HomePage = () => {
             </Button>
           </Col>
         </Row>
-      </Container>
+      </Container> */}
       
       {/* Biens Entreprise */}
       <Container fluid className='px-xxl-4 pb-lg-4 pb-1 mb-3 mt-3'>
@@ -792,7 +790,7 @@ const HomePage = () => {
         callAction={"Explorer les biens immobiliers d'entreprise"}/>
       </Container>
       {/* Appel au produit LesVoisins */}
-      <Container as='section' className='mb-5 pb-2 pb-lg-4'>
+      {/* <Container as='section' className='mb-5 pb-2 pb-lg-4'>
         <Row className='align-items-center'>
           <Col md={5}>
             <div className='d-flex justify-content-center justify-content-md-start mb-md-0 mb-4'>
@@ -815,13 +813,13 @@ const HomePage = () => {
             </Button>
           </Col>
         </Row>
-      </Container>
+      </Container> */}
 
        {/* Top property offers (carousel) */}
-       <Container as='section' className='mb-5 pb-md-4'>
+       <Container className='px-xxl-4 pb-lg-4 pb-1 mb-3 mt-3'>
         <div className='d-flex align-items-center justify-content-between mb-3'>
           <h2 className='h3 mb-0'>FlashImmo, des biens immobiliers en temps réel!</h2>
-          <Link href='/tg/catalog?category=rent' passHref>
+          <Link href='/tg/flashimmo' passHref>
             <Button variant='link fw-normal ms-sm-3 p-0'>
               Consulter tout
               <i className='fi-arrow-long-right ms-2'></i>

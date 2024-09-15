@@ -122,7 +122,7 @@ const RealEstateAccountLayout = ({ accountPageTitle, children }) => {
               <Link href='/tg/add-property' passHref>
                 <Button as='a' size='lg' className='w-100 mb-3'>
                   <i className='fi-plus me-2'></i>
-                  Enroller une propriété
+                  Lister un immeuble
                 </Button>
               </Link>
             }

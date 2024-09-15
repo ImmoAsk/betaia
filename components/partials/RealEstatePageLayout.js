@@ -340,7 +340,7 @@ const RealEstatePageLayout = (props) => {
                     </Link>
                   </Dropdown.Menu>
                 </Nav.Item>
-                <Nav.Item as={Dropdown}>
+                {/* <Nav.Item as={Dropdown}>
                   <Dropdown.Toggle as={Nav.Link} active={props.activeNav === 'Vendor'}>Investir</Dropdown.Toggle>
                   <Dropdown.Menu renderOnMount>
                     <Link href='/tg/investissements-immobiliers/immeuble-commercial' passHref>
@@ -362,7 +362,7 @@ const RealEstatePageLayout = (props) => {
                       <Dropdown.Item>Investir en projets agricoles</Dropdown.Item>
                     </Link>
                   </Dropdown.Menu>
-                </Nav.Item>
+                </Nav.Item> */}
                 <Nav.Item as={Dropdown}>
                   <Dropdown.Toggle as={Nav.Link} active={props.activeNav === 'Pages'}>Se loger</Dropdown.Toggle>
                   <Dropdown.Menu renderOnMount>
