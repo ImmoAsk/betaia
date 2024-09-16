@@ -313,7 +313,7 @@ const AccountPropertiesPage = ({ _userProperties, _handledProjets, _handlingProj
 
 export async function getServerSideProps(context) {
   const session = await getSession(context);
-  if (session.user) {
+  if (session) {
     const userid = session ? session.user.id : 0;
     // Fetch data from external API
     var dataAPIresponse = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getPropertiesByKeyWords(orderBy:{order:DESC,column:NUO},user_id:1,offre_id:"1",statut:1,limit:150){surface,badge_propriete{badge{badge_name,badge_image}},id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination},visuels{uri}}}`);
@@ -332,7 +332,8 @@ export async function getServerSideProps(context) {
       props: { _userProperties, _handledProjets, _handlingProjets },
     }
 
-  } else {
+  } 
+  if (!session) {
     return {
       redirect: {
         destination: '/auth/signin',
@@ -340,5 +341,7 @@ export async function getServerSideProps(context) {
       },
     };
   }
+  return { props: { session } };
 }
+
 export default AccountPropertiesPage

@@ -970,18 +970,14 @@ const HomePage = () => {
                 <Card className='border-0 shadow-sm ms-sm-n5'>
                   <Card.Body as='blockquote' className='blockquote'>
                     <h4 style={{maxWidth: '22rem'}}>&quot;I don&apos;t say no, I just figure out a way to make it work&quot;</h4>
-                    <p className='d-sm-none d-lg-block'>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip.</p>
+                    <p className='d-sm-none d-lg-block'>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore.</p>
                     <footer className='d-flex justify-content-between'>
                       <div className='pe3'>
-                        <h6 className='mb-0'>Guy Hawkins</h6>
-                        <div className='text-muted fw-normal fs-sm mb-3'>Imperial Property Group Agent</div>
+                        <h6 className='mb-0'>William K.</h6>
+                        <div className='text-muted fw-normal fs-sm mb-3'>Propriétaires de meubles</div>
                         <SocialButton href='#' variant='solid' brand='facebook' roundedCircle className='mb-2 me-2' />
                         <SocialButton href='#' variant='solid' brand='twitter' roundedCircle className='mb-2 me-2' />
                         <SocialButton href='#' variant='solid' brand='linkedin' roundedCircle className='mb-2' />
-                      </div>
-                      <div>
-                        <StarRating rating='4.7' />
-                        <div className='text-muted fs-sm mt-1'>16 reviews</div>
                       </div>
                     </footer>
                   </Card.Body>
@@ -1018,15 +1014,11 @@ const HomePage = () => {
                     <p className='d-sm-none d-lg-block'>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae.</p>
                     <footer className='d-flex justify-content-between'>
                       <div className='pe3'>
-                        <h6 className='mb-0'>Kristin Watson</h6>
-                        <div className='text-muted fw-normal fs-sm mb-3'>Imperial Property Group Agent</div>
+                        <h6 className='mb-0'>Marc G.</h6>
+                        <div className='text-muted fw-normal fs-sm mb-3'>Agent immobilier</div>
                         <SocialButton href='#' variant='solid' brand='facebook' roundedCircle className='mb-2 me-2' />
                         <SocialButton href='#' variant='solid' brand='twitter' roundedCircle className='mb-2 me-2' />
                         <SocialButton href='#' variant='solid' brand='linkedin' roundedCircle className='mb-2' />
-                      </div>
-                      <div>
-                        <StarRating rating='4.8' />
-                        <div className='text-muted fs-sm mt-1'>24 reviews</div>
                       </div>
                     </footer>
                   </Card.Body>
