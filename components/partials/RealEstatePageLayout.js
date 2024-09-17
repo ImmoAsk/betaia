@@ -52,21 +52,21 @@ const RealEstatePageLayout = (props) => {
   // Footer recent blog posts array
   const footerPosts = [
     {
-      href: '/tg/blog-single',
+      href: 'https://www.linkedin.com/pulse/ce-quil-faut-faire-avant-la-mise-en-vente-de-votre-bien-immobilier/',
       img: '/images/tg/blog/th01.jpg',
       category: 'Logement',
-      title: 'Comment trouver un logement rapidement au Togo?',
-      text: 'Je souhaitais une villa de 2 chambres à Lome. Tout avait bien commence...',
-      date: 'Dec 4',
+      title: 'Ce qu\'il faut faire avant la mise en vente de votre bien immobilier...',
+      text: 'Vous avez un terrain ou une maison à vendre, une parcelle au Togo en vente, voici l\'histoire à connaître...',
+      date: 'Mar 10',
       comments: '2'
     },
     {
-      href: '/tg/blog-single',
+      href: 'https://www.linkedin.com/pulse/la-gouvernance-fonci%C3%A8re-au-togo-prend-une-autre-tournure-immoask/?',
       img: '/images/tg/blog/th02.jpg',
-      category: 'Logement',
-      title: 'Quand annoncer la vacance d\'un logement?',
-      text: 'Pourquoi annoncer une disponibilité d\'un logement en tant que locataire...',
-      date: 'Nov 23',
+      category: 'Foncier',
+      title: 'La gouvernance foncière au Togo prend une autre tournure',
+      text: 'Avant d\'acheter un lot sur ImmoAsk ou avec nos propriétaires ou agents immobiliers, il y a cette étape de vérification de la surface...',
+      date: 'Fev 23',
       comments: 'No'
     }
   ]
@@ -549,8 +549,8 @@ const RealEstatePageLayout = (props) => {
               <h4 className='h5'>Nous rejoindre</h4>
               <Nav className='flex-column'>
                 <Nav.Item className='mb-2'>
-                  <Link href='#' passHref>
-                    <Nav.Link className='p-0 fw-normal'>Souscrire à notre chaîne FlashImmo</Nav.Link>
+                  <Link href='https://whatsapp.com/channel/0029Va8UsGT6mYPQ1aIvdm25' passHref>
+                    <Nav.Link className='p-0 fw-normal'>Souscrire à la chaîne FlashImmo</Nav.Link>
                   </Link>
                 </Nav.Item>
                 <Nav.Item className='mb-2'>
@@ -558,11 +558,11 @@ const RealEstatePageLayout = (props) => {
                     <Nav.Link className='p-0 fw-normal'>Rejoindre l'elite des guru immobiliers</Nav.Link>
                   </Link>
                 </Nav.Item>
-                <Nav.Item className='mb-2'>
+                {/* <Nav.Item className='mb-2'>
                   <Link href='#' passHref>
                     <Nav.Link className='p-0 fw-normal'>Assistance client</Nav.Link>
                   </Link>
-                </Nav.Item>
+                </Nav.Item> */}
                 <Nav.Item className='mb-2'>
                   <Link href='#' passHref>
                     <Nav.Link className='p-0 fw-normal'>Devenir membre de LesVoisins</Nav.Link>

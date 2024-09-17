@@ -222,12 +222,12 @@ const EditProperty = ({ propriete }) => {
         event.stopPropagation();
         event.preventDefault();
 
-        var _formData=`{descriptif:"${propertyDescription}",id:${Number(propriete.id)},piece:${Number(propertyBedRooms)},salon:${Number(propertyLivingRooms)},surface:${Number(propertyArea)},cout_mensuel:${Number(propertyMonthPrice)},cout_vente:${Number(propertyBuyPrice)},part_min_investissement:${Number(propertyInvestmentPrice)},garage:${Number(parkingsValue)},nuo:${propriete.nuo},eau:${Number(propertyWater)},electricite:${Number(propertyElectricity)},categorie_id:${Number(propertyType)},offre_id:${Number(propertyOffer)},ville_id:${Number(propertyTown)},quartier_id:${Number(propertyQuarter)},lat_long:"6.12564358,1.1568922",piscine:${Number(propertyPool)},gardien_securite:${Number(propertySecurity)},cuisine:${Number(propertyKitchen)},jardin:${Number(propertyGarden)},menage:${Number(propertyHouseHold)},etage:${Number(propertyFloor)},caution_avance:${Number(propertyCautionGuarantee)},honoraire:${Number(propertyHonorary)},balcon:${Number(propertyBalcony)},terrasse_balcon:${Number(propertyTerraces)},cout_visite:${Number(propertyVisitRight)},wc_douche_interne:${Number(InsideBathRoomsValue)},wc_douche_externe:${Number(OutsideBathRoomsValue)}}`
+        var _formData = `{descriptif:"${propertyDescription}",id:${Number(propriete.id)},piece:${Number(propertyBedRooms)},salon:${Number(propertyLivingRooms)},surface:${Number(propertyArea)},cout_mensuel:${Number(propertyMonthPrice)},cout_vente:${Number(propertyBuyPrice)},part_min_investissement:${Number(propertyInvestmentPrice)},garage:${Number(parkingsValue)},nuo:${propriete.nuo},eau:${Number(propertyWater)},electricite:${Number(propertyElectricity)},categorie_id:${Number(propertyType)},offre_id:${Number(propertyOffer)},ville_id:${Number(propertyTown)},quartier_id:${Number(propertyQuarter)},lat_long:"6.12564358,1.1568922",piscine:${Number(propertyPool)},gardien_securite:${Number(propertySecurity)},cuisine:${Number(propertyKitchen)},jardin:${Number(propertyGarden)},menage:${Number(propertyHouseHold)},etage:${Number(propertyFloor)},caution_avance:${Number(propertyCautionGuarantee)},honoraire:${Number(propertyHonorary)},balcon:${Number(propertyBalcony)},terrasse_balcon:${Number(propertyTerraces)},cout_visite:${Number(propertyVisitRight)},wc_douche_interne:${Number(InsideBathRoomsValue)},wc_douche_externe:${Number(OutsideBathRoomsValue)}}`
         alert(JSON.stringify(_formData));
-        var updatedData = JSON.stringify({query:`mutation{updatePropriete(input:${_formData}){descriptif}}`,variables:{}});
+        var updatedData = JSON.stringify({ query: `mutation{updatePropriete(input:${_formData}){descriptif}}`, variables: {} });
         var config = {
             method: 'POST',
-            headers: { 
+            headers: {
                 'Content-Type': 'application/json',
             },
             url: 'https://immoaskbetaapi.omnisoft.africa/public/api/v2',
@@ -240,8 +240,8 @@ const EditProperty = ({ propriete }) => {
             })
             .catch((error) => {
                 console.log(error);
-            }); 
-   
+            });
+
     }
 
 
