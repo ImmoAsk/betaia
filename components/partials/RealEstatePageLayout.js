@@ -6,6 +6,7 @@ import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Nav from 'react-bootstrap/Nav'
+import { Alert } from 'react-bootstrap';
 import Navbar from 'react-bootstrap/Navbar'
 import Dropdown from 'react-bootstrap/Dropdown'
 import Button from 'react-bootstrap/Button'
@@ -127,12 +128,18 @@ const RealEstatePageLayout = (props) => {
 
       {/* Page wrapper for sticky footer
       Wraps everything except footer to push footer to the bottom of the page if there is little content */}
+      <Alert variant="info" style={{ position: 'fixed', top: 0, width: '100%', zIndex: 1000, textAlign: 'center'}}>
+        Hello! Vous êtes sur une nouvelle version de ImmoAsk! Si vous rencontrez un bogue ou un problème, 
+        merci de nous le signaler sur WhatsApp (+228 7045 3625) ou sur LinkedIn(ImmoAsk).
+      </Alert>
       <main className='page-wrapper'>
 
         {/* Navbar (main site header with branding and navigation) */}
+        
         <Navbar as={StickyNavbar}
           expand='lg'
           bg='light'
+          style={{ marginTop: '40px' }}
           className={`fixed-top${props.navbarExtraClass ? ` ${props.navbarExtraClass}` : ''}`}
         >
           <Container>
@@ -224,61 +231,6 @@ const RealEstatePageLayout = (props) => {
 
             <Navbar.Collapse id='navbarNav' className='order-md-2'>
               <Nav navbarScroll style={{ maxHeight: '35rem' }}>
-                {/* <Nav.Item as={Dropdown} className='me-lg-2'>
-                  <Dropdown.Toggle as={Nav.Link} className='align-items-center pe-lg-4'>
-                    <i className='fi-layers me-2'></i>
-                    FlashImmo
-                    <span className='d-none d-lg-block position-absolute top-50 end-0 translate-middle-y border-end' style={{width: '1px', height: '30px'}}></span>
-                  </Dropdown.Toggle>
-                  <Dropdown.Menu renderOnMount>
-                    <Link href='/tg' passHref>
-                      <Dropdown.Item>
-                        <i className='fi-building fs-base opacity-50 me-2'></i>
-                        Real Estate Demo
-                      </Dropdown.Item>
-                    </Link>
-                    <Dropdown.Divider />
-                    <Link href='/car-finder' passHref>
-                      <Dropdown.Item>
-                        <i className='fi-car fs-base opacity-50 me-2'></i>
-                        Car Finder Demo
-                      </Dropdown.Item>
-                    </Link>
-                    <Dropdown.Divider />
-                    <Link href='/job-board' passHref>
-                      <Dropdown.Item>
-                        <i className='fi-briefcase fs-base opacity-50 me-2'></i>
-                        Job Board Demo
-                      </Dropdown.Item>
-                    </Link>
-                    <Dropdown.Divider />
-                    <Link href='/city-guide' passHref>
-                      <Dropdown.Item>
-                        <i className='fi-map-pin fs-base opacity-50 me-2'></i>
-                        City Guide Demo
-                      </Dropdown.Item>
-                    </Link>
-                    <Dropdown.Divider />
-                    <Link href='/' passHref>
-                      <Dropdown.Item>
-                        <i className='fi-home fs-base opacity-50 me-2'></i>
-                        Main Page
-                      </Dropdown.Item>
-                    </Link>
-                    <Link href='/components/typography' passHref>
-                      <Dropdown.Item>
-                        <i className='fi-list fs-base opacity-50 me-2'></i>
-                        Components
-                      </Dropdown.Item>
-                    </Link>
-                    <Link href='/docs' passHref>
-                      <Dropdown.Item>
-                        <i className='fi-file fs-base opacity-50 me-2'></i>
-                        Documentation
-                      </Dropdown.Item>
-                    </Link>
-                  </Dropdown.Menu>
-                </Nav.Item> */}
                 <Nav.Item as={Dropdown}>
                   <Dropdown.Toggle as={Nav.Link} active={props.activeNav === 'Home'}>Séjourner</Dropdown.Toggle>
                   <Dropdown.Menu renderOnMount>
@@ -340,46 +292,13 @@ const RealEstatePageLayout = (props) => {
                     </Link>
                   </Dropdown.Menu>
                 </Nav.Item>
-                {/* <Nav.Item as={Dropdown}>
-                  <Dropdown.Toggle as={Nav.Link} active={props.activeNav === 'Vendor'}>Investir</Dropdown.Toggle>
-                  <Dropdown.Menu renderOnMount>
-                    <Link href='/tg/investissements-immobiliers/immeuble-commercial' passHref>
-                      <Dropdown.Item>Investir en immeuble commercial</Dropdown.Item>
-                    </Link>
-                    <Link href='/tg/investissements-immobiliers/immeuble-meuble-locatif' passHref>
-                      <Dropdown.Item>Investir en immeuble meublé locatif</Dropdown.Item>
-                    </Link>
-                    <Link href='/tg/investissements-immobiliers/immeuble-acquis' passHref>
-                      <Dropdown.Item>Investir en immeuble d'acquisitions</Dropdown.Item>
-                    </Link>
-                    <Link href='/tg/investissements-immobiliers/immeuble-locatif' passHref>
-                      <Dropdown.Item>Investir en immeuble de logements</Dropdown.Item>
-                    </Link>
-                    <Link href='/tg/investissements-immobiliers/terrain-rural' passHref>
-                      <Dropdown.Item>Investir en terrains ruraux et agricoles</Dropdown.Item>
-                    </Link>
-                    <Link href='/tg/investissements-immobiliers/projet-agricol' passHref>
-                      <Dropdown.Item>Investir en projets agricoles</Dropdown.Item>
-                    </Link>
-                  </Dropdown.Menu>
-                </Nav.Item> */}
+
                 <Nav.Item as={Dropdown}>
                   <Dropdown.Toggle as={Nav.Link} active={props.activeNav === 'Pages'}>Se loger</Dropdown.Toggle>
                   <Dropdown.Menu renderOnMount>
                     <Link href='/tg/locations-immobilieres/appartement' passHref>
                       <Dropdown.Item>Appartements à louer</Dropdown.Item>
                     </Link>
-                    {/*  <Dropdown>
-                      <Dropdown.Toggle as={Dropdown.Item}>Blog</Dropdown.Toggle>
-                      <Dropdown.Menu renderOnMount>
-                        <Link href='/tg/blog' passHref>
-                          <Dropdown.Item>Blog Grid</Dropdown.Item>
-                        </Link>
-                        <Link href='/tg/blog-single' passHref>
-                          <Dropdown.Item>Single Post</Dropdown.Item>
-                        </Link>
-                      </Dropdown.Menu>
-                    </Dropdown> */}
                     <Link href='/tg/locations-immobilieres/villa' passHref>
                       <Dropdown.Item>Villas à louer</Dropdown.Item>
                     </Link>
@@ -394,8 +313,6 @@ const RealEstatePageLayout = (props) => {
                     </Link>
                   </Dropdown.Menu>
                 </Nav.Item>
-
-                {/* Display content depending on user auth satus mobilier menu */}
                 {props.userLoggedIn ? <Nav.Item as={Dropdown} className='d-lg-none'>
                   <Dropdown.Toggle as={Nav.Link} className='d-flex align-items-center'>
                     <ImageLoader src='/images/avatars/30.jpg' width={30} height={30} placeholder={false} className='rounded-circle' alt='Annette Black' />
@@ -405,7 +322,7 @@ const RealEstatePageLayout = (props) => {
                     <div className='ps-3'>
                       <StarRating size='sm' rating={5} />
                       <div className='fs-xs py-2'>
-                        (302) 555-0107<br />annette_black@email.com
+                        (+228) 7045 3625<br />contact@immoask.com
                       </div>
                     </div>
                     {
@@ -455,7 +372,9 @@ const RealEstatePageLayout = (props) => {
                   </Nav.Item>}
               </Nav>
             </Navbar.Collapse>
+            
           </Container>
+          
         </Navbar>
 
         {/* Page content */}
@@ -602,7 +521,7 @@ const RealEstatePageLayout = (props) => {
               ))}
             </Col>
           </Row>
-          <div className='bg-dark rounded-3'>
+          {/* <div className='bg-dark rounded-3'>
             <Col xs={10} md={11} xxl={10} className='d-flex flex-md-row flex-column-reverse align-items-md-end align-items-center mx-auto px-0'>
               <div className='d-flex flex-shrink-0 mt-md-n5 me-md-5'>
                 <ImageLoader
@@ -623,7 +542,7 @@ const RealEstatePageLayout = (props) => {
                 </div>
               </div>
             </Col>
-          </div>
+          </div> */}
         </Container>
       </footer>
 

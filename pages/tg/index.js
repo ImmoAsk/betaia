@@ -248,8 +248,7 @@ const HomePage = () => {
             />
           </Col>
         </Row>
-        <Row className='mt-lg-1'>
-          {/* Search property form group */}
+        {/* <Row className='mt-lg-1'>
           <Col lg={12} xl={2}></Col>
           <Col lg={12} xl={8} className='zindex-2 justify-content-center'>
             <FormGroup className='d-block'>
@@ -332,7 +331,7 @@ const HomePage = () => {
             </FormGroup>
           </Col>
           <Col lg={12} xl={2}></Col>
-        </Row>
+        </Row> */}
       </Container>
 
 

@@ -53,7 +53,7 @@ const AccountTenantPaymentsPage = () => {
           <h1 className='h2 mb-0'>Etat de paiements de loyers mensuels</h1>
           <a href='#' className='fw-bold text-decoration-none' onClick={deleteAll}>
             <i className='fi-trash mt-n1 me-2'></i>
-            Delete all
+            Supprimer tout
           </a>
         </div>
         <p className='pt-1 mb-4'>Consulter ici tout ce qui concerne mes paiements de loyer</p>

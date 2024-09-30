@@ -465,8 +465,6 @@ const CatalogPage = ({ categoryParam, offerParam, usageParam,townParam, district
               <Offcanvas.Header closeButton>
                 <Offcanvas.Title as='h5'>Filtres</Offcanvas.Title>
               </Offcanvas.Header>
-
-              {/* Nav (switch between Rent / Sale) */}
               <Offcanvas.Header className='d-block border-bottom pt-0 pt-lg-4 px-lg-0'>
                 <Nav variant='tabs' className='mb-0'>
                   <Nav.Item>
@@ -506,7 +504,7 @@ const CatalogPage = ({ categoryParam, offerParam, usageParam,townParam, district
                 </Nav>
               </Offcanvas.Header>
 
-              {/* Offcanvas body */}
+         
               <Offcanvas.Body className='py-lg-4'>
                 <div className='pb-4 mb-2'>
                   <h3 className='h6'>Situation géographique</h3>
@@ -600,18 +598,7 @@ const CatalogPage = ({ categoryParam, offerParam, usageParam,townParam, district
                     ))}
                   </SimpleBar>
                 </div>
-                {/* <div className='pb-4 mb-2'>
-                  <h3 className='h6'>Pets</h3>
-                  {pets.map(({value, checked}, indx) => (
-                    <Form.Check
-                      key={indx}
-                      id={`pets-${indx}`}
-                      value={value}
-                      defaultChecked={checked}
-                      label={<><span className='fs-sm'>{value}</span></>}  
-                    />
-                  ))}
-                </div> */}
+
                 <div className='pb-4 mb-2'>
                   <h3 className='h6'>Options additionnelles</h3>
                   {options.map(({ value, checked }, indx) => (
@@ -717,7 +704,7 @@ const CatalogPage = ({ categoryParam, offerParam, usageParam,townParam, district
             {/* Title + Map toggle */}
             <div className='d-sm-flex align-items-center justify-content-between pb-3 pb-sm-4'>
               <h1 className='h2 mb-sm-0'>Catalogue de l'immobilier chez nous...</h1>
-              <a
+              {/* <a
                 href='#'
                 className='d-inline-block fw-bold text-decoration-none py-1'
                 onClick={(e) => {
@@ -727,7 +714,7 @@ const CatalogPage = ({ categoryParam, offerParam, usageParam,townParam, district
               >
                 <i className='fi-map me-2'></i>
                 Vue carte
-              </a>
+              </a> */}
             </div>
 
             {/* Sorting */}

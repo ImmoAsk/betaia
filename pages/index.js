@@ -233,7 +233,7 @@ const IndexPage = () => {
           </Col>
         </Row>
         <Row className='mt-lg-1'>
-          {/* Search property form group */}
+          
           <Col lg={12} xl={2}></Col>
           <Col lg={12} xl={8} className='zindex-2 justify-content-center'>
             <FormGroup className='d-block'>
