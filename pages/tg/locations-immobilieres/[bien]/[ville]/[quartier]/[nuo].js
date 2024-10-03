@@ -278,7 +278,6 @@ function SinglePropertyAltPage({ property }) {
         onHide={handleAskNuiteePriceClose}
         property={property}
       />}
-      {/* Post content */}
       {property && (
         <Container as='section'>
           <Container as='section' className='mt-5 mb-lg-5 mb-4 pt-5 pb-lg-5'>
@@ -369,7 +368,7 @@ function SinglePropertyAltPage({ property }) {
                       <Dropdown className='d-inline-block'>
                         <OverlayTrigger
                           placement='top'
-                          overlay={<Tooltip>Share</Tooltip>}
+                          overlay={<Tooltip>Partager</Tooltip>}
                         >
                           <Dropdown.Toggle variant='icon btn-light-primary btn-xs shadow-sm rounded-circle ms-2 mb-2'>
                             <i className='fi-share'></i>
@@ -581,7 +580,7 @@ export async function getServerSideProps(context) {
 
   let { nuo } = context.query;
   // Fetch data from external API
-  let dataAPIresponse = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={propriete(nuo:${nuo}){tarifications{id,mode,currency,montant},cout_visite,nuo,garage,est_meuble,titre,descriptif,surface,usage,cuisine,salon,piece,wc_douche_interne,cout_mensuel,nuitee,cout_vente,categorie_propriete{denomination,id},infrastructures{denomination,icone},meubles{libelle,icone},badge_propriete{id,date_expiration,badge{id,badge_name,badge_image}},pays{id,code,denomination},ville{denomination,id},quartier{id,denomination},adresse{libelle},offre{denomination},visuels{uri},user{id}}}`)
+  let dataAPIresponse = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={propriete(nuo:${nuo}){tarifications{id,mode,currency,montant},cout_visite,est_disponible,nuo,garage,est_meuble,titre,descriptif,surface,usage,cuisine,salon,piece,wc_douche_interne,cout_mensuel,nuitee,cout_vente,categorie_propriete{denomination,id},infrastructures{denomination,icone},meubles{libelle,icone},badge_propriete{id,date_expiration,badge{id,badge_name,badge_image}},pays{id,code,denomination},ville{denomination,id},quartier{id,denomination},adresse{libelle},offre{denomination},visuels{uri},user{id}}}`)
   let property = await dataAPIresponse.json()
   property = property.data.propriete;
   console.log(property);

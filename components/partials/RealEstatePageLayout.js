@@ -128,14 +128,43 @@ const RealEstatePageLayout = (props) => {
 
       {/* Page wrapper for sticky footer
       Wraps everything except footer to push footer to the bottom of the page if there is little content */}
-      <Alert variant="info" style={{ position: 'fixed', top: 0, width: '100%', zIndex: 1000, textAlign: 'center'}}>
-        Hello! Vous êtes sur une nouvelle version de ImmoAsk! Si vous rencontrez un bogue ou un problème, 
-        merci de nous le signaler sur WhatsApp (+228 7045 3625) ou sur LinkedIn(ImmoAsk).
+      <Alert
+        variant="info"
+        className="alert-text"
+        style={{
+          position: 'fixed',
+          top: 0,
+          width: '100%',
+          zIndex: 1000,
+          textAlign: 'center',
+          padding: '10px 15px',
+          boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
+          overflowWrap: 'break-word'
+        }}
+      >
+        <div className="container-fluid">
+          <p className="mb-0">
+            Hello! Vous êtes sur une nouvelle version de <strong>ImmoAsk</strong>!
+            Si vous rencontrez un bogue ou un problème, merci de nous le signaler sur
+            <a href="https://wa.me/22870453625" target="_blank" rel="noopener noreferrer"> WhatsApp (+228 7045 3625)</a>
+            ou sur <a href="https://linkedin.com/company/immoask" target="_blank" rel="noopener noreferrer"> LinkedIn (ImmoAsk)</a>.
+          </p>
+        </div>
+
+        <style jsx>{`
+    @media (max-width: 576px) {
+      .alert-text {
+        font-size: 0.8rem;  /* Reduced font size for small screens */
+      }
+    }
+  `}</style>
       </Alert>
+
+
       <main className='page-wrapper'>
 
         {/* Navbar (main site header with branding and navigation) */}
-        
+
         <Navbar as={StickyNavbar}
           expand='lg'
           bg='light'
@@ -372,9 +401,9 @@ const RealEstatePageLayout = (props) => {
                   </Nav.Item>}
               </Nav>
             </Navbar.Collapse>
-            
+
           </Container>
-          
+
         </Navbar>
 
         {/* Page content */}
@@ -446,20 +475,20 @@ const RealEstatePageLayout = (props) => {
                   </Link>
                 </Nav.Item>
                 <Nav.Item className='mb-2'>
-                      <Link href='/tg/catalog?usage=3' passHref>
-                        <Nav.Link active={false} className='p-0 fw-normal'>Trouver un emplacement entreprise</Nav.Link>
-                      </Link>
-                    </Nav.Item>
-                    <Nav.Item className='mb-2'>
-                      <Link href='/tg/account-properties' passHref>
-                        <Nav.Link active={false} className='p-0 fw-normal'>Gerer votre bien immobilier</Nav.Link>
-                      </Link>
-                    </Nav.Item>
-                    <Nav.Item className='mb-2'>
-                      <Link href='/tg/account-rentpayments' passHref>
-                        <Nav.Link active={false} className='p-0 fw-normal'>Payer le loyer autrement</Nav.Link>
-                      </Link>
-                    </Nav.Item>
+                  <Link href='/tg/catalog?usage=3' passHref>
+                    <Nav.Link active={false} className='p-0 fw-normal'>Trouver un emplacement entreprise</Nav.Link>
+                  </Link>
+                </Nav.Item>
+                <Nav.Item className='mb-2'>
+                  <Link href='/tg/account-properties' passHref>
+                    <Nav.Link active={false} className='p-0 fw-normal'>Gerer votre bien immobilier</Nav.Link>
+                  </Link>
+                </Nav.Item>
+                <Nav.Item className='mb-2'>
+                  <Link href='/tg/account-rentpayments' passHref>
+                    <Nav.Link active={false} className='p-0 fw-normal'>Payer le loyer autrement</Nav.Link>
+                  </Link>
+                </Nav.Item>
               </Nav>
             </Col>
 
