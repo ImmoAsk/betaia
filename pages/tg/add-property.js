@@ -163,6 +163,7 @@ const AddPropertyPage = () => {
     { value: 'Ventilateur', checked: true },
     { value: 'Fer à repasser', checked: true },
     { value: 'Bar', checked: false },
+    { value: 'Ascenseur', checked: false },
     { value: 'Seche cheveux', checked: true },
     { value: 'Télévision', checked: true },
     { value: 'Salle de gym', checked: false },
@@ -323,6 +324,7 @@ const AddPropertyPage = () => {
       surface: Number(propertyData.area),
       cout_mensuel: Number(propertyData.monthPrice),
       cout_vente: Number(propertyData.buyPrice),
+      nuitee: Number(propertyData.dayPrice),
       part_min_investissement: Number(propertyData.investmentPrice),
       usage: propertyUsage,
       garage: Number(propertyData.parkings),
@@ -1008,7 +1010,6 @@ const AddPropertyPage = () => {
                       onChange={handleChange}
                       min={5000}
                       value={propertyData.dayPrice}
-                      step={5000}
                       className='mb-2 w-50 me-2'
                       required
                     />
