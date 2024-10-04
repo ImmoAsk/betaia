@@ -288,7 +288,7 @@ const AddPropertyPage = () => {
       case '1':
         if (propertyData.furnished === '1') {
           super_categorie = "sejour";
-        } else if (['8', '9', '10', '11', '12', '19', '20'].includes(propertyData.type)) {
+        } else if (['8', '9','11', '12', '19', '29','30'].includes(propertyData.type)) {
           super_categorie = "commercial";
         } else {
           super_categorie = "logement";
@@ -503,18 +503,18 @@ const AddPropertyPage = () => {
                       <option value="7">Terrain urbain</option>
                       <option value="8">Boutique</option>
                       <option value="9">Bureau</option>
-                      <option value="10">Magasin</option>
+                      <option value="12">Magasin</option>
                       <option value="11">Espace coworking</option>
-                      <option value="12">Immeuble commercial</option>
+                      <option value="19">Immeuble commercial</option>
 
-                      <option value="13">Appartement meublé</option>
+                      <option value="10">Appartement meublé</option>
                       <option value="14">Villa meublée</option>
                       <option value="15">Studio meublé</option>
                       <option value="16">Hotel</option>
                       <option value="17">Ecole</option>
                       <option value="18">Bar-restaurant</option>
-                      <option value="19">Mur commercial</option>
-                      <option value="20">Garage</option>
+                      <option value="29">Mur commercial</option>
+                      <option value="30">Garage</option>
                       <option value="21">Chambre d'hotel</option>
                       <option value="22">Immeuble</option>
                     </Form.Select>
