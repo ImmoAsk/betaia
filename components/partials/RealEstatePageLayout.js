@@ -105,6 +105,18 @@ const RealEstatePageLayout = (props) => {
     <>
       <Head>
         <title>{props.pageTitle} | ImmoAsk: Immobilier, Foncier, BTP, Tourisme | Chez vous, c'est ici</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name='description' content={props.pageDescription} />
+        <meta name='keywords' content={props.pageKeywords} />
+        <meta name='author' content='Omnisoft Africa' />
+        <link rel='apple-touch-icon' sizes='180x180' href='/favicon/apple-icon-180x180.png' />
+        <link rel='icon' type='image/png' sizes='32x32' href='/favicon/favicon-32x32.png' />
+        <link rel='icon' type='image/png' sizes='16x16' href='/favicon/favicon-16x16.png' />
+        <link rel='icon' type='image/x-icon' href='/favicon/favicon.ico' />
+        <link rel='manifest' href='/favicon/site.webmanifest' />
+        <link rel='mask-icon' color='#5bbad5' href='/favicon/safari-pinned-tab.svg' />
+        <meta name='msapplication-TileColor' content='#766df4' />
+        <meta name='theme-color' content='#ffffff' />
       </Head>
 
       {/* Sign in modal */}

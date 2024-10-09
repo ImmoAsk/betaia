@@ -33,6 +33,7 @@ import NearestInfrastructureList from '../../../../../../components/iacomponents
 import RecommendPropertyList from '../../../../../../components/iacomponents/RecommendPropertyList'
 import PayVisitModal from '../../../../../../components/iacomponents/PayVisitModal'
 import CheckAvailabilityModal from '../../../../../../components/iacomponents/CheckAvailabilityModal'
+import { getHumanReadablePrice } from '../../../../../../utils/generalUtils'
 
 function SinglePropertyAltPage({ property }) {
   const { data: session } = useSession();
@@ -106,7 +107,7 @@ function SinglePropertyAltPage({ property }) {
             title: 'N°' + propertyr.nuo + ': ' + propertyr.categorie_propriete.denomination + ' à ' + propertyr.offre.denomination + ' | ' + propertyr.surface + 'm²',
             category: propertyr.usage,
             location: propertyr.quartier.denomination + ", " + propertyr.ville.denomination,
-            price: propertyr.cout_mensuel == 0 ? propertyr.cout_vente : propertyr.cout_mensuel + " XOF",
+            price: getHumanReadablePrice(propertyr),
             badges: buildPropertyBadge(propertyr.badge_propriete),
             footer: [propertyr.piece, propertyr.wc_douche_interne, propertyr.garage],
           }
@@ -252,6 +253,9 @@ function SinglePropertyAltPage({ property }) {
     <RealEstatePageLayout
       pageTitle={`${property.categorie_propriete.denomination} à vendre, ${property.ville.denomination}, ${property.quartier.denomination} | No. ${nuo} | Togo`}
       userLoggedIn={session ? true : false}
+      pageDescription={`${property.categorie_propriete.denomination} à louer, ${property.ville.denomination}, ${property.quartier.denomination}, Togo. ${property.descriptif}`}
+      pageKeywords={`vente immobiliere, ${property.categorie_propriete.denomination},immeuble, achat immobilier,foncier,investissemt,acquisition,${property.ville.denomination}, ${property.quartier.denomination},Togo`}
+    
     >
 
 
@@ -542,7 +546,7 @@ export async function getServerSideProps(context) {
 
   let { nuo } = context.query;
   // Fetch data from external API
-  let dataAPIresponse = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={propriete(nuo:${nuo}){tarifications{id,mode,currency,montant},nuo,garage,est_meuble,titre,descriptif,surface,usage,cuisine,salon,piece,wc_douche_interne,cout_mensuel,nuitee,cout_vente,categorie_propriete{denomination,id},infrastructures{denomination,icone},meubles{libelle,icone},badge_propriete{id,date_expiration,badge{id,badge_name,badge_image}},pays{id,code,denomination},ville{denomination,id},quartier{id,denomination},adresse{libelle},offre{denomination},visuels{uri},user{id}}}`)
+  let dataAPIresponse = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={propriete(nuo:${nuo}){tarifications{id,mode,currency,montant},nuo,id,garage,est_meuble,titre,descriptif,surface,usage,cuisine,salon,piece,wc_douche_interne,cout_mensuel,nuitee,cout_vente,categorie_propriete{denomination,id},infrastructures{denomination,icone},meubles{libelle,icone},badge_propriete{id,date_expiration,badge{id,badge_name,badge_image}},pays{id,code,denomination},ville{denomination,id},quartier{id,denomination},adresse{libelle},offre{denomination},visuels{uri,position},user{id}}}`)
   let property = await dataAPIresponse.json()
   property = property.data.propriete;
   console.log(property);

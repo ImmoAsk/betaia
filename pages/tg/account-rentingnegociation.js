@@ -8,19 +8,26 @@ import PropertyCard from '../../components/PropertyCard'
 import EditPropertyModal from '../../components/iacomponents/EditPropertyModal'
 import { buildPropertiesArray } from '../../utils/generalUtils'
 import { useSession, getSession } from 'next-auth/react'
-
-const RentingNegociationPage = ({ _userProperties }) => {
+import PropertyProjectList from '../../components/iacomponents/PropertyProjectList'
+import { Row, Col} from 'react-bootstrap';
+import RentingNegotiationOfferList from '../../components/iacomponents/RentingNegotiationOfferList'
+const RentingNegociationPage = ({ _userProperties, _handledProjets, _handlingProjets }) => {
 
   // Properties array
   const [editPropertyShow, setEditPropertyShow] = useState(false);
   const handleEditPropertyClose = () => setEditPropertyShow(false);
   const handleEditPropertyShow = () => setEditPropertyShow(true);
+  const [newPropertyProjectsTab, setNewPropertyProjectsTab] = useState(false);
+  const handledClickNewPropertyProjectsTab = () => setNewPropertyProjectsTab(true);
 
-
+  const [handlingPropertyProjectsTab, setHandlingPropertyProjectsTab] = useState(false);
+  const handledClickHandlingPropertyProjectsTab = () => setHandlingPropertyProjectsTab(true);
+  const [handledPropertyProjectsTab, setHandledPropertyProjectsTab] = useState(false);
+  const handledClickHandledPropertyProjectsTab = () => setHandledPropertyProjectsTab(true);
   const [propertyModal, setPropertyModal] = useState({});
 
   const { data: session } = useSession();
-  const userProperties = buildPropertiesArray(_userProperties);
+  const userProperties = _userProperties;
   const handleEditPropertyModal = () => {
     //e.preventDefault();
     if (session) {
@@ -36,11 +43,32 @@ const RentingNegociationPage = ({ _userProperties }) => {
     //userProperties=[];
     //setProperties([])
   }
-
-
+  const getNewPropertyProjects = (projects) => {
+    return (<RentingNegotiationOfferList projects={projects} />)
+  }
+  const getHandledPropertyProjects = (projects) => {
+    return (<RentingNegotiationOfferList projects={projects} />)
+  }
+  const getHandlingPropertyProjects = (projects) => {
+    return (<RentingNegotiationOfferList projects={projects} />)
+  }
+  const columnStyle = {
+    height: '650px', // Adjust the height as needed
+    overflowY: 'scroll', // Enable vertical scrolling
+  };
+  const navComponent = (
+    <Nav variant='tabs' defaultActiveKey='published' className='border-bottom mb-2'>
+      <Nav.Item className='mb-2'>
+        <Nav.Link eventKey='published'>
+          <i className='fi-file fs-base me-2'></i>
+          Negociations non traitees
+        </Nav.Link>
+      </Nav.Item>
+    </Nav>
+  );
   return (
     <RealEstatePageLayout
-      pageTitle='Negociations de loyers'
+      pageTitle='Projets immobiliersS'
       activeNav='Account'
       userLoggedIn
     >
@@ -53,7 +81,7 @@ const RentingNegociationPage = ({ _userProperties }) => {
           property={propertyModal}
         />
       }
-      <RealEstateAccountLayout accountPageTitle='Negociations de loyers' >
+      <RealEstateAccountLayout accountPageTitle='Projets immobiliers' >
         <div className='d-flex align-items-center justify-content-between mb-3'>
           <h1 className='h2 mb-0'>Negociations de loyers</h1>
           <a href='#' className='fw-bold text-decoration-none' onClick={deleteAll}>
@@ -61,93 +89,48 @@ const RentingNegociationPage = ({ _userProperties }) => {
             Supprimer tout
           </a>
         </div>
-        <p className='pt-1 mb-4'>Trouver ici les offres de negociation de loyer des biens immobiliers</p>
+        <p className='pt-1 mb-4'>Trouvez ici toutes les propositions de négociation de loyer envoyées par des locataires potentiels pour vos biens en location et séjours immobiliers.</p>
 
-        {/* Nav tabs */}
         <Nav
           variant='tabs'
           defaultActiveKey='published'
-          className='border-bottom mb-4'
+          className='border-bottom mb-2'
         >
-          <Nav.Item className='mb-3'>
+          <Nav.Item className='mb-2' as={Col}>
             <Nav.Link eventKey='published'>
               <i className='fi-file fs-base me-2'></i>
-              Acceptes
+              Negociations non traites
             </Nav.Link>
           </Nav.Item>
-          <Nav.Item className='mb-3'>
+          <Nav.Item className='mb-2' as={Col}>
             <Nav.Link eventKey='drafts'>
-              <i className='fi-file-clean fs-base me-2'></i>
-              Rejectees
+              <i className='fi-archive fs-base me-2'></i>
+              Negociations acceptees
             </Nav.Link>
           </Nav.Item>
-          <Nav.Item className='mb-3'>
-            <Nav.Link eventKey='archived'>
-              <i className='fi-archive fs-base me-2'></i>
-              Mis en indisponibilité
+          <Nav.Item className='mb-2' as={Col}>
+            <Nav.Link eventKey='published'>
+              <i className='fi-file-clean fs-base me-2'></i>
+              Negociations declinees
             </Nav.Link>
           </Nav.Item>
         </Nav>
+        <Row>
+          {/* First Column */}
+          <Col style={columnStyle}>
+            {getHandledPropertyProjects(_handlingProjets)}
+          </Col>
 
-        {/* List of properties or empty state */}
-        {userProperties.length ? userProperties.map((property, indx) => (
-          <PropertyCard
-            key={indx}
-            href={property.href}
-            images={property.images}
-            category={property.category}
-            title={property.title}
-            location={property.location}
-            price={property.price}
-            badges={property.badges}
-            footer={[
-              ['fi-bed', property.amenities[0]],
-              ['fi-bath', property.amenities[1]],
-              ['fi-car', property.amenities[2]]
-            ]}
-            dropdown={[
-              {
-                // href: '#', // Optionally pass href prop to convert dropdown item to Next link
-                icon: 'fi-edit',
-                label: 'Editer',
-                props: {
-                  onClick: (event) => {
-                    event.stopPropagation();
-                    event.preventDefault();
-                    setPropertyModal(property);
-                    handleEditPropertyModal();
-                  }
-                }
-              },
-              {
-                icon: 'fi-flame',
-                label: 'Promouvoir',
-                props: { onClick: () => console.log('Promote property') }
-              },
-              {
-                icon: 'fi-power',
-                label: 'Rendre invisible',
-                props: { onClick: () => console.log('Deactivate property') }
-              },
-              {
-                icon: 'fi-trash',
-                label: 'Rendre indisponible',
-                props: { onClick: () => console.log('Deactivate property') }
-              }
-            ]}
-            horizontal
-            className={indx === userProperties.length - 1 ? '' : 'mb-4'}
-          />
-        )) : <div className='text-center pt-2 pt-md-4 pt-lg-5 pb-2 pb-md-0'>
-          <i className='fi-home display-6 text-muted mb-4'></i>
-          <h2 className='h5 mb-4'>Vous n'avez aucun bien immobilier enrollé!</h2>
-          <Link href='/tg/add-property' passHref>
-            <Button variant='primary'>
-              <i className='fi-plus fs-sm me-2'></i>
-              Enroller un bien immobilier
-            </Button>
-          </Link>
-        </div>}
+          {/* Second Column */}
+          <Col style={columnStyle}>
+            {getHandledPropertyProjects(_handledProjets)}
+          </Col>
+
+          {/* Third Column */}
+          <Col style={columnStyle}>
+            {getNewPropertyProjects(userProperties)}
+          </Col>
+        </Row>
       </RealEstateAccountLayout>
     </RealEstatePageLayout>
   )
@@ -160,23 +143,27 @@ export async function getServerSideProps(context) {
   if (session.user) {
     const userid = session ? session.user.id : 0;
     // Fetch data from external API
-    var dataAPIresponse = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getUserProperties(user_id:${userid},first:10,orderBy:{column:NUO,order:DESC}){data{surface,badge_propriete{badge{badge_name,badge_image}},id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination},visuels{uri}}}}`);
+    var dataAPIresponse = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getNegotiatiionsByKeyWords(statut:2,orderBy:{order:DESC,column:ID}){id,date_negociation,statut,telephone_negociateur,fullname_negociateur,montant}}`);
     var _userProperties = await dataAPIresponse.json();
+    var handledProjets = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getNegotiatiionsByKeyWords(statut:1,orderBy:{order:DESC,column:ID}){id,date_negociation,statut,telephone_negociateur,fullname_negociateur,montant}}`);
+    var _handledProjets = await handledProjets.json();
 
-    _userProperties = _userProperties.data.getUserProperties.data;
-
+    var handlingProjets = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getNegotiatiionsByKeyWords(statut:0,orderBy:{order:DESC,column:ID}){id,date_negociation,statut,telephone_negociateur,fullname_negociateur,montant}}`);
+    var _handlingProjets = await handlingProjets.json();
+    _userProperties = _userProperties.data.getNegotiatiionsByKeyWords;
+    _handledProjets = _handledProjets.data.getNegotiatiionsByKeyWords;
+    _handlingProjets = _handlingProjets.data.getNegotiatiionsByKeyWords;
     return {
-      props: { _userProperties},
+      props: { _userProperties, _handledProjets, _handlingProjets },
     }
 
   } else {
     return {
       redirect: {
-          destination: '/auth/signin',
-          permanent: false,
+        destination: '/auth/signin',
+        permanent: false,
       },
-  };
+    };
   }
-
 }
 export default RentingNegociationPage

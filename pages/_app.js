@@ -8,7 +8,7 @@ import '../scss/theme.scss'
 import { QueryClient,QueryClientProvider,} from '@tanstack/react-query'
 
 const queryClient = new QueryClient();
-const Finder = ({ Component, pageProps: { session, ...pageProps }}) => {
+const ImmoAsk = ({ Component, pageProps: { session, ...pageProps }}) => {
 
   // Bind NProgress to Next Router events (Page loading animation)
   Router.events.on('routeChangeStart', () => NProgress.start())
@@ -48,4 +48,4 @@ const Finder = ({ Component, pageProps: { session, ...pageProps }}) => {
   )
 }
 
-export default Finder
+export default ImmoAsk

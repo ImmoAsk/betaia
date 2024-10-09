@@ -1,7 +1,7 @@
 import buildPropertyBadge from "./buildPropertyBadge";
 import getFirstImageArray from "./formatFirsImageArray";
 import getPropertyFullUrl from "./getPropertyFullURL";
-
+import numeral from "numeral";
 function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
@@ -45,10 +45,23 @@ function createPropertyObject(property) {
         title: 'N°' + property?.nuo + ': ' + property.categorie_propriete.denomination + ' à ' + property.offre.denomination + ' | ' + property.surface + 'm²',
         category: property.usage,
         location: property.quartier.denomination + ", " + property.ville.denomination,
-        price: property.cout_mensuel == 0 ? property.cout_vente : property.cout_mensuel + " XOF",
+        price: getHumanReadablePrice(property),
         badges: buildPropertyBadge(property.badge_propriete),
         amenities: [property.piece, property.wc_douche_interne, property.garage],
     }
     return _objetProperty;
 }
-export { buildPropertiesArray,replaceSpacesWithAny,getLastPage,createPropertyObject,capitalizeFirstLetter, replaceSpacesWithDots, toLowerCaseString };
+
+
+function getHumanReadablePrice(property) {
+    let price = property.cout_mensuel === 0 
+        ? numeral(property.cout_vente).format('0,0') + " XOF/vie" 
+        : numeral(property.cout_mensuel).format('0,0') + " XOF/mois";
+
+    if (property.nuitee > 0) {
+        price = numeral(property.nuitee).format('0,0') + " XOF/nuitée";
+    }
+    
+    return price;
+}
+export { getHumanReadablePrice,buildPropertiesArray,replaceSpacesWithAny,getLastPage,createPropertyObject,capitalizeFirstLetter, replaceSpacesWithDots, toLowerCaseString };

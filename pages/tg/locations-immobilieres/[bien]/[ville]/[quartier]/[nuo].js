@@ -76,11 +76,8 @@ function SinglePropertyAltPage({ property }) {
 
   const handleRentNegociationModal = (e) => {
     e.preventDefault()
-    if (session) {
-      handleRentNegociationShow();
-    } else {
-      handleSignInToUp(e);
-    }
+    handleRentNegociationShow();
+    
   }
 
   const handleNuiteePriceModal = (e) => {
@@ -116,7 +113,7 @@ function SinglePropertyAltPage({ property }) {
     defineUnauthenticatedThumbNails();
   }, []);
   const getRecommendProperties = () => {
-    axios.get(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getRecommendProperties(first:5,offre_id:"1",nuo:${property.nuo},quartier_id:"${property.quartier.id}",categorie_id:"${property.categorie_propriete.id}"){data{surface,badge_propriete{badge{badge_name,badge_image}},id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination},visuels{uri}}}}`).
+    axios.get(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getRecommendProperties(first:5,offre_id:"1",nuo:${property.nuo},quartier_id:"${property.quartier.id}",categorie_id:"${property.categorie_propriete.id}"){data{surface,badge_propriete{badge{badge_name,badge_image}},id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,nuitee,quartier{denomination},visuels{uri,position}}}}`).
       then((res) => {
         setRecommendProperties(res.data.data.getRecommendProperties.data.map((propertyr) => {
           //const { status, data:badges_property, error, isFetching,isLoading,isError }  = usePropertyBadges(property.id);
@@ -238,6 +235,8 @@ function SinglePropertyAltPage({ property }) {
     <RealEstatePageLayout
       pageTitle={`${property.categorie_propriete.denomination} à louer, ${property.ville.denomination}, ${property.quartier.denomination} | No. ${nuo} | Togo`}
       userLoggedIn={session ? true : false}
+      pageDescription={`${property.categorie_propriete.denomination} à louer, ${property.ville.denomination}, ${property.quartier.denomination}, Togo. ${property.descriptif}`}
+      pageKeywords={`location immobiliere, ${property.categorie_propriete.denomination}, logement, sejour, experience,${property.ville.denomination}, ${property.quartier.denomination},Togo`}
     >
 
 
@@ -580,7 +579,7 @@ export async function getServerSideProps(context) {
 
   let { nuo } = context.query;
   // Fetch data from external API
-  let dataAPIresponse = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={propriete(nuo:${nuo}){tarifications{id,mode,currency,montant},cout_visite,est_disponible,nuo,garage,est_meuble,titre,descriptif,surface,usage,cuisine,salon,piece,wc_douche_interne,cout_mensuel,nuitee,cout_vente,categorie_propriete{denomination,id},infrastructures{denomination,icone},meubles{libelle,icone},badge_propriete{id,date_expiration,badge{id,badge_name,badge_image}},pays{id,code,denomination},ville{denomination,id},quartier{id,denomination},adresse{libelle},offre{denomination},visuels{uri},user{id}}}`)
+  let dataAPIresponse = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={propriete(nuo:${nuo}){tarifications{id,mode,currency,montant},id,cout_visite,est_disponible,nuo,garage,est_meuble,titre,descriptif,surface,usage,cuisine,salon,piece,wc_douche_interne,cout_mensuel,nuitee,cout_vente,categorie_propriete{denomination,id},infrastructures{denomination,icone},meubles{libelle,icone},badge_propriete{id,date_expiration,badge{id,badge_name,badge_image}},pays{id,code,denomination},ville{denomination,id},quartier{id,denomination},adresse{libelle},offre{denomination},visuels{uri,position},user{id}}}`)
   let property = await dataAPIresponse.json()
   property = property.data.propriete;
   console.log(property);

@@ -944,7 +944,7 @@ export async function getServerSideProps(context) {
   const offreId="2";
   // Fetch data from external API
   let dataAPIresponse = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getPropertiesByKeyWords(limit:24,orderBy:{column:NUO,order:DESC},offre_id:"${offreId}")
-  {badge_propriete{badge{badge_name,badge_image}},visuels{uri},surface,lat_long,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination}}}`);
+  {badge_propriete{badge{badge_name,badge_image}},visuels{uri,position},id,surface,lat_long,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination}}}`);
   let _rentingProperties = await dataAPIresponse.json();
   //console.log(_rentingProperties.data.getPropertiesByKeyWords);
   _rentingProperties = _rentingProperties.data.getPropertiesByKeyWords;

@@ -41,6 +41,7 @@ import propertyCategories from '../../remoteAPI/propertyCategories.json'
 import BgParallaxHeroMessage from '../../components/iacomponents/BgParallaxHeroMessage'
 import { useRouter } from 'next/router';
 import 'dotenv/config'
+import { getHumanReadablePrice } from '../../utils/generalUtils'
 const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 const HomePage = () => {
   const router = useRouter();
@@ -72,10 +73,10 @@ const HomePage = () => {
   ]
 
   const { data: session } = useSession()
-  console.log(apiUrl);
+  //console.log(apiUrl);
   const getRTProperties = () => {
 
-    axios.get(`${apiUrl}?query={get5Properties(orderBy:{column:NUO,order:DESC},limit:5){surface,badge_propriete{badge{badge_name,badge_image}},id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination},visuels{uri}}}`).
+    axios.get(`${apiUrl}?query={get5Properties(orderBy:{column:NUO,order:DESC},limit:5){surface,badge_propriete{badge{badge_name,badge_image}},nuitee,id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination},visuels{uri,position}}}`).
       then((res) => {
         setRealTimeProperties(res.data.data.get5Properties.map((property) => {
           //const { status, data:badges_property, error, isFetching,isLoading,isError }  = usePropertyBadges(property.id);
@@ -85,7 +86,7 @@ const HomePage = () => {
             title: 'N°' + property.nuo + ': ' + property.categorie_propriete.denomination + ' à ' + property.offre.denomination + ' | ' + property.surface + 'm²',
             category: property.usage,
             location: property.quartier.denomination + ", " + property.ville.denomination,
-            price: property.cout_mensuel == 0 ? property.cout_vente + " XOF" : property.cout_mensuel + " XOF",
+            price: getHumanReadablePrice(property),
             badges: buildPropertyBadge(property.badge_propriete),
             footer: [property.piece, property.wc_douche_interne, property.garage],
           }
