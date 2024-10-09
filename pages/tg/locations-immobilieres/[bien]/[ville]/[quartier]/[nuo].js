@@ -38,6 +38,7 @@ import RentNegociationModal from '../../../../../../components/iacomponents/Rent
 import AskNuiteePriceModal from '../../../../../../components/iacomponents/AskNuiteePriceModal'
 import { createPropertyObject } from '../../../../../../utils/buildPropertiesArray'
 import ImageComponent from '../../../../../../components/iacomponents/ImageComponent'
+import { getHumanReadablePrice } from '../../../../../../utils/generalUtils'
 
 function SinglePropertyAltPage({ property }) {
 
@@ -123,7 +124,7 @@ function SinglePropertyAltPage({ property }) {
             title: 'N°' + propertyr.nuo + ': ' + propertyr.categorie_propriete.denomination + ' à ' + propertyr.offre.denomination + ' | ' + propertyr.surface + 'm²',
             category: propertyr.usage,
             location: propertyr.quartier.denomination + ", " + propertyr.ville.denomination,
-            price: propertyr.cout_mensuel == 0 ? propertyr.cout_vente : propertyr.cout_mensuel + " XOF",
+            price: getHumanReadablePrice(propertyr),
             badges: buildPropertyBadge(propertyr.badge_propriete),
             footer: [propertyr.piece, propertyr.wc_douche_interne, propertyr.garage],
           }
