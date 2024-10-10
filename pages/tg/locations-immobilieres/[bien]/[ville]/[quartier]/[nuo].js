@@ -238,6 +238,8 @@ function SinglePropertyAltPage({ property }) {
       userLoggedIn={session ? true : false}
       pageDescription={`${property.categorie_propriete.denomination} à louer, ${property.ville.denomination}, ${property.quartier.denomination}, Togo. ${property.descriptif}`}
       pageKeywords={`location immobiliere, ${property.categorie_propriete.denomination}, logement, sejour, experience,${property.ville.denomination}, ${property.quartier.denomination},Togo`}
+      pageCoverImage={`https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/proprietes/${property.visuels[0].uri}`}
+      pageUrl={`https://www.immoask.com/tg/locations-immobilieres/${bien}/${ville}/${quartier}/${nuo}`}
     >
 
 

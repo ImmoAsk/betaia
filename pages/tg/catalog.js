@@ -74,7 +74,7 @@ function constructApiUrl(apiUrl, offre, ville, quartier, categorie,usage) {
   }
 
   // Close the query string
-  query += `){badge_propriete{badge{badge_name,badge_image}},visuels{uri},surface,lat_long,nuo,usage,offre{denomination,id},categorie_propriete{denomination,id},pays{code,id},piece,titre,garage,cout_mensuel,ville{denomination,id},wc_douche_interne,cout_vente,quartier{denomination,id}}}`;
+  query += `){badge_propriete{badge{badge_name,badge_image}},visuels{uri,position},surface,lat_long,nuo,usage,offre{denomination,id},categorie_propriete{denomination,id},pays{code,id},id,piece,titre,garage,cout_mensuel,ville{denomination,id},wc_douche_interne,cout_vente,quartier{denomination,id}}}`;
 
   // Construct the full URL
   const fullUrl = `${apiUrl}?${query}`;

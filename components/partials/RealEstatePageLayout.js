@@ -108,6 +108,15 @@ const RealEstatePageLayout = (props) => {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name='description' content={props.pageDescription} />
         <meta name='keywords' content={props.pageKeywords} />
+        <meta name='robots' content='index, follow' />
+        <meta httpEquiv='Content-Type' content='text/html; charset=utf-8' />
+        <meta property="og:title" content={props.pageTitle}/>
+        <meta property="og:description" content={props.pageDescription} />
+        <meta property="og:image" content={props.pageCoverImage} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={props.pageUrl} />
         <meta name='author' content='Omnisoft Africa' />
         <link rel='apple-touch-icon' sizes='180x180' href='/favicon/apple-icon-180x180.png' />
         <link rel='icon' type='image/png' sizes='32x32' href='/favicon/favicon-32x32.png' />

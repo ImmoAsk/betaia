@@ -250,7 +250,8 @@ function SinglePropertyAltPage({ property }) {
       userLoggedIn={session ? true : false}
       pageDescription={`${property.categorie_propriete.denomination} à louer, ${property.ville.denomination}, ${property.quartier.denomination}, Togo. ${property.descriptif}`}
       pageKeywords={`bail immobilier, ${property.categorie_propriete.denomination},immeuble,foncier,investissemt,commerce,${property.ville.denomination}, ${property.quartier.denomination},Togo`}
-    
+      pageCoverImage={`https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/proprietes/${property.visuels[0].uri}`}
+      pageUrl={`https://www.immoask.com/tg/baux-immobiliers/${bien}/${ville}/${quartier}/${nuo}`}
     >
 
 
