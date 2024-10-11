@@ -74,7 +74,7 @@ function constructApiUrl(apiUrl, offre, ville, quartier, categorie,usage) {
   }
 
   // Close the query string
-  query += `){badge_propriete{badge{badge_name,badge_image}},visuels{uri,position},surface,lat_long,nuo,usage,offre{denomination,id},categorie_propriete{denomination,id},pays{code,id},id,piece,titre,garage,cout_mensuel,ville{denomination,id},wc_douche_interne,cout_vente,quartier{denomination,id}}}`;
+  query += `){badge_propriete{badge{badge_name,badge_image}},visuels{uri,position},nuitee,surface,lat_long,nuo,usage,offre{denomination,id},categorie_propriete{denomination,id},pays{code,id},id,piece,titre,garage,cout_mensuel,ville{denomination,id},wc_douche_interne,cout_vente,quartier{denomination,id,minus_denomination}}}`;
 
   // Construct the full URL
   const fullUrl = `${apiUrl}?${query}`;
@@ -762,6 +762,7 @@ export async function getServerSideProps(context) {
   // Extract query parameters from the context object
   const { query } = context;
   const { categorie, offre, ville, quartier, usage} = query;
+  //console.log(quartier);
   try {
     const url = constructApiUrl(apiUrl, offre, ville, quartier, categorie,usage);
     console.log(url)

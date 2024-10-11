@@ -12,8 +12,6 @@ import Tooltip from 'react-bootstrap/Tooltip'
 import Dropdown from 'react-bootstrap/Dropdown'
 import Badge from 'react-bootstrap/Badge'
 import Card from 'react-bootstrap/Card'
-import ImageLoader from '../../../../../../components/ImageLoader'
-import PropertyCard from '../../../../../../components/PropertyCard'
 import { Navigation, Pagination } from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import 'swiper/css'
@@ -21,8 +19,6 @@ import 'swiper/css/navigation'
 import 'swiper/css/pagination'
 import axios from 'axios'
 import { useEffect } from 'react'
-import Modal from 'react-bootstrap/Modal'
-import Form from 'react-bootstrap/Form'
 import getPropertyFullUrl from '../../../../../../utils/getPropertyFullURL'
 import getFirstImageArray from '../../../../../../utils/formatFirsImageArray'
 import buildPropertyBadge from '../../../../../../utils/buildPropertyBadge'
@@ -36,7 +32,6 @@ import PayVisitModal from '../../../../../../components/iacomponents/PayVisitMod
 import CheckAvailabilityModal from '../../../../../../components/iacomponents/CheckAvailabilityModal'
 import RentNegociationModal from '../../../../../../components/iacomponents/RentNegociationModal'
 import AskNuiteePriceModal from '../../../../../../components/iacomponents/AskNuiteePriceModal'
-import { createPropertyObject } from '../../../../../../utils/buildPropertiesArray'
 import ImageComponent from '../../../../../../components/iacomponents/ImageComponent'
 import { getHumanReadablePrice } from '../../../../../../utils/generalUtils'
 
@@ -120,7 +115,7 @@ function SinglePropertyAltPage({ property }) {
           //const { status, data:badges_property, error, isFetching,isLoading,isError }  = usePropertyBadges(property.id);
           return {
             href: getPropertyFullUrl(propertyr.pays.code, propertyr.offre.denomination, propertyr.categorie_propriete.denomination, propertyr.ville.denomination, propertyr.quartier.denomination, propertyr.nuo),
-            images: getFirstImageArray(propertyr.visuels),
+            images: [[getFirstImageArray(propertyr.visuels), 467, 305, 'Image']],
             title: 'N°' + propertyr.nuo + ': ' + propertyr.categorie_propriete.denomination + ' à ' + propertyr.offre.denomination + ' | ' + propertyr.surface + 'm²',
             category: propertyr.usage,
             location: propertyr.quartier.denomination + ", " + propertyr.ville.denomination,
@@ -230,7 +225,6 @@ function SinglePropertyAltPage({ property }) {
 
 
   { !property && <h4 className='mt-5 mb-lg-5 mb-4 pt-5 pb-lg-5'>Ce bien immobilier n'existe pas encore</h4> }
-  //{isError && <h4 className='mt-5 mb-lg-5 mb-4 pt-5 pb-lg-5'>Une erreur: {error.message}</h4>}
 
   return (
     <RealEstatePageLayout
@@ -238,7 +232,7 @@ function SinglePropertyAltPage({ property }) {
       userLoggedIn={session ? true : false}
       pageDescription={`${property.categorie_propriete.denomination} à louer, ${property.ville.denomination}, ${property.quartier.denomination}, Togo. ${property.descriptif}`}
       pageKeywords={`location immobiliere, ${property.categorie_propriete.denomination}, logement, sejour, experience,${property.ville.denomination}, ${property.quartier.denomination},Togo`}
-      pageCoverImage={`https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/proprietes/${property.visuels[0].uri}`}
+      pageCoverImage={`${getFirstImageArray(property.visuels)}`}
       pageUrl={`https://www.immoask.com/tg/locations-immobilieres/${bien}/${ville}/${quartier}/${nuo}`}
     >
 
@@ -582,7 +576,7 @@ export async function getServerSideProps(context) {
 
   let { nuo } = context.query;
   // Fetch data from external API
-  let dataAPIresponse = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={propriete(nuo:${nuo}){tarifications{id,mode,currency,montant},id,cout_visite,est_disponible,nuo,garage,est_meuble,titre,descriptif,surface,usage,cuisine,salon,piece,wc_douche_interne,cout_mensuel,nuitee,cout_vente,categorie_propriete{denomination,id},infrastructures{denomination,icone},meubles{libelle,icone},badge_propriete{id,date_expiration,badge{id,badge_name,badge_image}},pays{id,code,denomination},ville{denomination,id},quartier{id,denomination},adresse{libelle},offre{denomination},visuels{uri,position},user{id}}}`)
+  let dataAPIresponse = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={propriete(nuo:${nuo}){tarifications{id,mode,currency,montant},id,cout_visite,est_disponible,nuo,garage,est_meuble,titre,descriptif,surface,usage,cuisine,id,salon,piece,wc_douche_interne,cout_mensuel,nuitee,cout_vente,categorie_propriete{denomination,id},infrastructures{denomination,icone},meubles{libelle,icone},badge_propriete{id,date_expiration,badge{id,badge_name,badge_image}},pays{id,code,denomination},ville{denomination,id},quartier{id,denomination,minus_denomination},adresse{libelle},offre{denomination},visuels{uri,position},user{id}}}`)
   let property = await dataAPIresponse.json()
   property = property.data.propriete;
   console.log(property);

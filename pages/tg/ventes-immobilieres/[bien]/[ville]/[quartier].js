@@ -539,7 +539,7 @@ export async function getServerSideProps(context) {
   const _jsonville = await _ville.json();
 
   const _quartier = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getDistrictIdByDistrictName(minus_denomination:"${toLowerCaseString(quartier)}")
-  {denomination,id,code}}`);
+  {denomination,id,code,minus_denomination}}`);
   const _jsonquartier=await _quartier.json();
 
   const _bien = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getCategoryIdByCategorieName(minus_denomination:"${toLowerCaseString(bien)}"){denomination,id,code}}`);
@@ -558,7 +558,7 @@ export async function getServerSideProps(context) {
   const offreId="2";
   // Fetch data from external API
   let dataAPIresponse = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getPropertiesByKeyWords(limit:10,orderBy:{column:NUO,order:DESC},offre_id:"${offreId}",ville_id:"${villeId.id}",quartier_id:"${quartierId.id}",categorie_id:"${bienId.id}")
-  {badge_propriete{badge{badge_name,badge_image}},visuels{uri,position},id,surface,lat_long,nuo,usage,offre{denomination,id},categorie_propriete{denomination,id},pays{code,id},piece,titre,garage,cout_mensuel,ville{denomination,id},wc_douche_interne,cout_vente,quartier{denomination,id}}}`);
+  {badge_propriete{badge{badge_name,badge_image}},visuels{uri,position},id,surface,lat_long,nuo,usage,offre{denomination,id},categorie_propriete{denomination,id},pays{code,id},piece,titre,garage,cout_mensuel,ville{denomination,id},wc_douche_interne,cout_vente,quartier{denomination,id,minus_denomination}}}`);
   let _rentingProperties = await dataAPIresponse.json();
   const soffreId = {id:"1",denomination:"louer"};
   _rentingProperties = _rentingProperties.data.getPropertiesByKeyWords;

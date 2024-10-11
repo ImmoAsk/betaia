@@ -13,6 +13,12 @@ function replaceSpacesWithAny(inputString, anyThing) {
     return inputString.replace(/ /g, anyThing);
 }
 
+
+function toLowerCaseString(inputString) {
+    return inputString.toLowerCase();
+}
+
+
 const getLastPage=(totalItems)=>{
     var reminder = totalItems%6;
     var totalPages= totalItems/6;
@@ -20,9 +26,7 @@ const getLastPage=(totalItems)=>{
     if(reminder!=0){ var lastPage=Math.floor(totalPages)+1;}
     return lastPage;
   }
-function toLowerCaseString(inputString) {
-    return inputString.toLowerCase();
-}
+
 function buildPropertiesArray(properties) {
 
     let tempPropertyArray = [];
@@ -40,8 +44,8 @@ function buildPropertiesArray(properties) {
 function createPropertyObject(property) {
     let _objetProperty = {
         nuo: property.nuo,
-        href: getPropertyFullUrl(property.pays.code, property.offre.denomination, property.categorie_propriete.denomination, property.ville.denomination, property.quartier.denomination, property.nuo),
-        images: getFirstImageArray(property.visuels),
+        href: getPropertyFullUrl(property.pays.code, property.offre.denomination, property.categorie_propriete.denomination, property.ville.denomination, property.quartier.minus_denomination, property.nuo),
+        images: [[getFirstImageArray(property.visuels), 467, 305, 'Image']],
         title: 'N°' + property?.nuo + ': ' + property.categorie_propriete.denomination + ' à ' + property.offre.denomination + ' | ' + property.surface + 'm²',
         category: property.usage,
         location: property.quartier.denomination + ", " + property.ville.denomination,

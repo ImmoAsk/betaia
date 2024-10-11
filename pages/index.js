@@ -82,7 +82,7 @@ const IndexPage = () => {
         //const { status, data:badges_property, error, isFetching,isLoading,isError }  = usePropertyBadges(property.id);
         return {
           href: getPropertyFullUrl(property.pays.code,property.offre.denomination,property.categorie_propriete.denomination,property.ville.denomination,property.quartier.denomination,property.nuo),
-          images: getFirstImageArray(property.visuels),
+          images: [[getFirstImageArray(property.visuels), 467, 305, 'Image']],
           title: 'N°'+property.nuo+': '+property.categorie_propriete.denomination+' à '+property.offre.denomination+' | '+property.surface+'m²',
           category: property.usage,
           location: property.quartier.denomination+", "+property.ville.denomination,

@@ -112,7 +112,7 @@ function SinglePropertyAltPage({ property }) {
   const [recommendProperties, setRecommendProperties] = useState([]);
   const defineThumbNails = () => {
     property && property.visuels.map((imgproperty) => {
-      setThumbnails(thumbnails => [...thumbnails, 'http://127.0.0.1:8000/storage/uploads/visuels/proprietes/' + imgproperty.uri]);
+      setThumbnails(thumbnails => [...thumbnails, 'https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/proprietes/' + imgproperty.uri]);
     })
   }
 
@@ -132,7 +132,7 @@ function SinglePropertyAltPage({ property }) {
           //const { status, data:badges_property, error, isFetching,isLoading,isError }  = usePropertyBadges(property.id);
           return {
             href: getPropertyFullUrl(propertyr.pays.code, propertyr.offre.denomination, propertyr.categorie_propriete.denomination, propertyr.ville.denomination, propertyr.quartier.denomination, propertyr.nuo),
-            images: getFirstImageArray(propertyr.visuels),
+            images: [[getFirstImageArray(propertyr.visuels), 467, 305, 'Image']],
             title: 'N°' + propertyr.nuo + ': ' + propertyr.categorie_propriete.denomination + ' à ' + propertyr.offre.denomination + ' | ' + propertyr.surface + 'm²',
             category: propertyr.usage,
             location: propertyr.quartier.denomination + ", " + propertyr.ville.denomination,
@@ -250,7 +250,7 @@ function SinglePropertyAltPage({ property }) {
       userLoggedIn={session ? true : false}
       pageDescription={`${property.categorie_propriete.denomination} à louer, ${property.ville.denomination}, ${property.quartier.denomination}, Togo. ${property.descriptif}`}
       pageKeywords={`bail immobilier, ${property.categorie_propriete.denomination},immeuble,foncier,investissemt,commerce,${property.ville.denomination}, ${property.quartier.denomination},Togo`}
-      pageCoverImage={`https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/proprietes/${property.visuels[0].uri}`}
+      pageCoverImage={`${getFirstImageArray(property.visuels)}`}
       pageUrl={`https://www.immoask.com/tg/baux-immobiliers/${bien}/${ville}/${quartier}/${nuo}`}
     >
 
