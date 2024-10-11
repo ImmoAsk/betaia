@@ -354,6 +354,7 @@ const AddPropertyPage = () => {
       conditions_access: propertyData.otherConditions,
       est_present_bailleur: Number(propertyData.owner),
       super_categorie: propertySuperCategorie,
+      est_meuble: Number(propertyData.furnished),
       url: null,
     };
     console.log(propertyPayload);
