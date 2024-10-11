@@ -55,7 +55,8 @@ const RentNegociationModal = ({ property, onSwap, pillButtons, ...props }) => {
           user_id: session ? session.user.id : 0,
           date_negociation: "2024-09-10 14:40:30",
           montant: Number(formData.offer),
-          propriete_id: property.nuo,
+          propriete_id: Number(property.id),
+          proprietaire_id: Number(property?.user?.id),
           fullname_negociateur: session ? "" : formData.firstName,
         }
       }

@@ -117,7 +117,7 @@ function SinglePropertyAltPage({ property }) {
 
   const defineUnauthenticatedThumbNails = () => {
     setUnconnectedhumbnails([property && property.visuels[0].uri]);
-    setUnconnectedhumbnails(Unconnectedhumbnails => [...Unconnectedhumbnails, 'create-account-more-images.jpg'])
+    setUnconnectedhumbnails(Unconnectedhumbnails => [...Unconnectedhumbnails, 'create-account-more-images.png'])
   }
 
   useEffect(() => {

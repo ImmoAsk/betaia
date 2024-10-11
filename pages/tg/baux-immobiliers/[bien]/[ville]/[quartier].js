@@ -549,7 +549,7 @@ export async function getServerSideProps(context) {
   const _jsonville = await _ville.json();
 
   const _quartier = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getDistrictIdByDistrictName(minus_denomination:"${toLowerCaseString(quartier)}")
-  {denomination,id,code}}`);
+  {denomination,id,code,minus_denomination}}`);
   const _jsonquartier=await _quartier.json();
 
   const _bien = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getCategoryIdByCategorieName(minus_denomination:"${toLowerCaseString(bien)}"){denomination,id,code}}`);
@@ -563,7 +563,7 @@ export async function getServerSideProps(context) {
   //console.log("VilleId: "+ villeId);
   
   const quartierId=_jsonquartier.data.getDistrictIdByDistrictName;
-  //console.log("QuarrtierId: "+ quartierId);
+  console.log("QuarrtierId: "+ quartierId);
   
   const offreId="4";
   // Fetch data from external API

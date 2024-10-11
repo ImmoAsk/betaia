@@ -66,10 +66,6 @@ const CatalogPage = ({_rentingProperties,bienId,villeId,quartierId,soffreId}) =>
   console.log(ooffer);
   console.log(ocategory);
   console.log(_rentingProperties);
-  /* const [bienId, setBienId]=useState(1);
-  const [villeId,setVilleId]=useState(1);
-  const [quartierId,setQuartierId]=useState(1); */
-  // categoryParam = router.query.category === 'sale' ? 'sale' : 'rent'
   const categoryParam = 'rent';
 
   //immeubleType= router.query.type
@@ -328,7 +324,7 @@ const CatalogPage = ({_rentingProperties,bienId,villeId,quartierId,soffreId}) =>
   const humanOfferTitle = categoryParamTitle(categoryParam);
   const pageTitle = capitalizeFirstLetter(bien) + " en " + humanOfferTitle + " , " + capitalizeFirstLetter(quartier) + " , " + capitalizeFirstLetter(ville);
   //const { status, data:propertiesByOCTD, error, isFetching,isLoading,isError }  = usePropertiesByOCTD("1","1","5","2" );
-  console.log(_rentingProperties);
+  //console.log(_rentingProperties);
   const rentingProperties = buildPropertiesArray(_rentingProperties);
   const [parentData, setParentData] = useState('Aklakou');
   const { data: session } = useSession();
@@ -542,7 +538,7 @@ export async function getServerSideProps(context) {
   const villeId = townData?.data?.getTownIdByTownName?.id || null;
 
   // Fetch district ID
-  const districtQuery = `{ getDistrictIdByDistrictName(minus_denomination: "${toLowerCaseString(quartier)}") { denomination, id, code } }`;
+  const districtQuery = `{ getDistrictIdByDistrictName(minus_denomination: "${toLowerCaseString(quartier)}") { denomination, minus_denomination, id, code } }`;
   const districtData = await fetchGraphQL(districtQuery);
   const quartierId = districtData?.data?.getDistrictIdByDistrictName?.id || null;
 
@@ -568,12 +564,12 @@ export async function getServerSideProps(context) {
         categorie_propriete { denomination, id }
         pays { code, id }
         piece, titre, garage, cout_mensuel, ville { denomination, id }
-        wc_douche_interne, cout_vente, quartier { denomination, id }
+        wc_douche_interne, cout_vente, quartier { denomination,minus_denomination, id }
     }}`;
   
   const propertiesData = await fetchGraphQL(propertiesQuery);
   let _rentingProperties = propertiesData?.data?.getPropertiesByKeyWords || [];
-
+  console.log(_rentingProperties);
   // Construct the `soffreId` object
   const soffreId = { id: "1", denomination: "louer" };
 

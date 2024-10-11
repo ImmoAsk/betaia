@@ -44,7 +44,7 @@ function buildPropertiesArray(properties) {
 function createPropertyObject(property) {
     let _objetProperty = {
         nuo: property.nuo,
-        href: getPropertyFullUrl(property.pays.code, property.offre.denomination, property.categorie_propriete.denomination, property.ville.denomination, property.quartier.minus_denomination, property.nuo),
+        href: getPropertyFullUrl(property.pays.code, property.offre.denomination, property.categorie_propriete.denomination, property.ville.denomination, property?.quartier?.minus_denomination, property.nuo),
         images: [[getFirstImageArray(property.visuels), 467, 305, 'Image']],
         title: 'N°' + property?.nuo + ': ' + property.categorie_propriete.denomination + ' à ' + property.offre.denomination + ' | ' + property.surface + 'm²',
         category: property.usage,

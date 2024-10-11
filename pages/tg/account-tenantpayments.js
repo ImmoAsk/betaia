@@ -11,6 +11,7 @@ import getPropertyFullUrl from '../../utils/getPropertyFullURL'
 import getFirstImageArray from '../../utils/formatFirsImageArray'
 import buildPropertyBadge from '../../utils/buildPropertyBadge'
 import { useSession,getSession } from 'next-auth/react'
+import { getHumanReadablePrice } from '../../utils/generalUtils'
 
 const AccountTenantPaymentsPage = () => {
 
@@ -21,16 +22,16 @@ const AccountTenantPaymentsPage = () => {
   const { data: session } = useSession();
   const user_id = session ? session.user.id :0;
   useQuery(["RTProperties"],
-  ()=> axios.get(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getUserProperties(user_id:${user_id},first:5){data{surface,badge_propriete{badge{badge_name,badge_image}},id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination},visuels{uri}}}}`).
+  ()=> axios.get(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getUserProperties(user_id:${user_id},first:5){data{surface,badge_propriete{badge{badge_name,badge_image}},id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{minus_denomination,id,denomination},visuels{id,uri,position}}}}`).
   then((res)=>{
     setProperties(res.data.data.getUserProperties.data.map((property) =>{
       return {
-        href: getPropertyFullUrl(property.pays.code,property.offre.denomination,property.categorie_propriete.denomination,property.ville.denomination,property.quartier.denomination,property.nuo),
-        images: getFirstImageArray(property.visuels),
+        href: getPropertyFullUrl(property.pays.code,property.offre.denomination,property.categorie_propriete.denomination,property.ville.denomination,property.quartier.minus_denomination,property.nuo),
+        images: [[getFirstImageArray(property.visuels), 467, 305, 'Image']],
         title: 'N°'+property.nuo+': '+property.categorie_propriete.denomination+' à '+property.offre.denomination+' | '+property.surface+'m²',
         category: property.usage,
         location: property.quartier.denomination+", "+property.ville.denomination,
-        price: property.cout_mensuel==0 ? property.cout_vente +" XOF":property.cout_mensuel+" XOF",
+        price: getHumanReadablePrice(property),
         badges: buildPropertyBadge(property.badge_propriete),
         amenities: [property.piece, property.wc_douche_interne, property.garage]
       }
