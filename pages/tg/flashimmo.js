@@ -34,7 +34,7 @@ import FlashImmoPagination from '../../components/iacomponents/FlashImmoPaginati
 
 function constructApiUrl(apiUrl, offre, ville, quartier, categorie, usage) {
   // Start constructing the query
-  let query = `query={getPropertiesByKeyWords(limit:900,orderBy:{column:NUO,order:DESC}`;
+  let query = `query={getPropertiesByKeyWords(limit:99,orderBy:{column:NUO,order:DESC}`;
 
   // Conditionally add each parameter if it is provided
   if (offre) {
