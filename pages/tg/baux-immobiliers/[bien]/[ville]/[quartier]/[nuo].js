@@ -228,7 +228,7 @@ function SinglePropertyAltPage({ property }) {
           }
           <SwiperSlide>
             <div className='ratio ratio-16x9'>
-              <iframe src='https://www.youtube.com/embed/ghIfa3dY8ys?autoplay=1' className='rounded-3' allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
+              <iframe src='https://www.youtube.com/embed/1oVncb5hke0?autoplay=1' className='rounded-3' allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
             </div>
           </SwiperSlide>
 
@@ -565,7 +565,7 @@ export async function getServerSideProps(context) {
 
   let { nuo } = context.query;
   // Fetch data from external API
-  let dataAPIresponse = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={propriete(nuo:${nuo}){tarifications{id,mode,currency,montant},nuo,garage,est_meuble,titre,descriptif,surface,usage,cuisine,salon,piece,wc_douche_interne,cout_mensuel,nuitee,cout_vente,categorie_propriete{denomination,id},infrastructures{denomination,icone},meubles{libelle,icone},badge_propriete{id,date_expiration,badge{id,badge_name,badge_image}},id,pays{id,code,denomination},ville{denomination,id},quartier{id,denomination},adresse{libelle},offre{denomination},visuels{uri,position},user{id}}}`)
+  let dataAPIresponse = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={propriete(nuo:${nuo}){tarifications{id,mode,currency,montant},nuo,garage,est_meuble,titre,descriptif,surface,usage,cuisine,salon,piece,wc_douche_interne,cout_mensuel,nuitee,cout_vente,categorie_propriete{denomination,id},infrastructures{denomination,icone},meubles{libelle,icone},badge_propriete{id,date_expiration,badge{id,badge_name,badge_image}},id,pays{id,code,denomination},ville{denomination,id},quartier{id,denomination,minus_denomination},adresse{libelle},offre{denomination},visuels{uri,position},user{id}}}`)
   let property = await dataAPIresponse.json()
   property = property.data.propriete;
   console.log(property);
