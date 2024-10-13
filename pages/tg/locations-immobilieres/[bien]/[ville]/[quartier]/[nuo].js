@@ -266,7 +266,6 @@ function SinglePropertyAltPage({ property }) {
         property={property}
       />}
 
-
       {askNuiteePriceShow && <AskNuiteePriceModal
         centered
         size='lg'

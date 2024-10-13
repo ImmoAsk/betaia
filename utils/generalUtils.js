@@ -41,6 +41,12 @@ function buildPropertiesArray(properties) {
     let propertiesArrayCustomized = tempPropertyArray;
     return propertiesArrayCustomized;
 }
+
+const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const options = { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' };
+    return date.toLocaleDateString('fr-FR', options);
+};
 function createPropertyObject(property) {
     let _objetProperty = {
         nuo: property.nuo,
@@ -68,4 +74,4 @@ function getHumanReadablePrice(property) {
     
     return price;
 }
-export { getHumanReadablePrice,buildPropertiesArray,replaceSpacesWithAny,getLastPage,createPropertyObject,capitalizeFirstLetter, replaceSpacesWithDots, toLowerCaseString };
+export { formatDate,getHumanReadablePrice,buildPropertiesArray,replaceSpacesWithAny,getLastPage,createPropertyObject,capitalizeFirstLetter, replaceSpacesWithDots, toLowerCaseString };
