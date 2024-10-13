@@ -33,7 +33,7 @@ const updateNegotiation = async ({ negociationOffer, statut }) => {
 };
 
 const RentingNegotiationOffer = ({ project }) => {
-    const { text, variant } = getBadgeProps(project.statut);
+    const { text, variant } = getBadgeProps(project?.statut);
 
     // Placeholder functions for the "Accept" and "Decline" buttons
     const handleAccept = async (event) => {
@@ -65,8 +65,8 @@ const RentingNegotiationOffer = ({ project }) => {
                     </div>
                     <h3 className="h6 card-title pt-1 mb-3">
                         <p className="text-nav stretched-link text-decoration-none">
-                            Le locataire <strong>{project.fullname_negociateur}</strong> souhaite négocier la propriété
-                            pour un montant de <strong>{project.montant}</strong>
+                            Le locataire <strong>{project.fullname_negociateur}</strong> souhaite négocier le loyer mensuel de propriété 
+                            No. {project.propriete.nuo} pour un montant de <strong>{project.montant}</strong>
                         </p>
                     </h3>
                     <div className="fs-sm">
