@@ -9,7 +9,10 @@ import { getSession, useSession } from 'next-auth/react'
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import axios from 'axios';
+
 import { useRouter } from 'next/router';
+
+
 const RentNegociationModal = ({ property, onSwap, pillButtons, ...props }) => {
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -106,6 +109,7 @@ const RentNegociationModal = ({ property, onSwap, pillButtons, ...props }) => {
             <h3 className='h4'>
               Vous êtes sur le point de négocier le loyer pour le bien immobilier N° {property.nuo}. Bonne chance !
             </h3>
+              
 
             <Form noValidate validated={validated} onSubmit={handleSubmit}>
               <Form.Group controlId='si-offer' className='mb-2'>

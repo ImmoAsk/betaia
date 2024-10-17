@@ -38,6 +38,8 @@ import RentNegociationModal from '../../../../../../components/iacomponents/Rent
 import AskNuiteePriceModal from '../../../../../../components/iacomponents/AskNuiteePriceModal'
 import { getHumanReadablePrice } from '../../../../../../utils/generalUtils'
 
+
+
 function SinglePropertyAltPage({ property }) {
 
   // Sign in modal
