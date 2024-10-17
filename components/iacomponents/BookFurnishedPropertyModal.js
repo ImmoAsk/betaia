@@ -1,29 +1,49 @@
+import React, { useState, useEffect } from "react";
+import Modal from "react-bootstrap/Modal";
+import Form from "react-bootstrap/Form";
+import Button from "react-bootstrap/Button";
+import CloseButton from "react-bootstrap/CloseButton";
+import CardProperty from "./CardProperty";
+import { createPropertyObject } from "../../utils/buildPropertiesArray";
+import { useSession } from "next-auth/react";
+import { DatePicker } from "antd";
+import moment from "moment";
 
-import React, { useState, useEffect } from 'react';
-import Modal from 'react-bootstrap/Modal';
-import Form from 'react-bootstrap/Form';
-import Button from 'react-bootstrap/Button';
-import CloseButton from 'react-bootstrap/CloseButton';
-import CardProperty from './CardProperty'; // Assuming the CardProperty component is located here
-import { createPropertyObject } from '../../utils/buildPropertiesArray'; // Assuming the utility function is located here
-import { useSession } from 'next-auth/react'; // For authentication check
-import { DatePicker } from 'antd'; // Ant Design for date range picker
-import moment from 'moment'; // Moment.js for date manipulation
+const onChange = (date, dateString) => {
+  console.log(date, dateString);
+};
 
-const { RangePicker } = DatePicker;
-
-const BookFurnishedPropertyModal = ({ property, onSwap, pillButtons, ...props }) => {
-  const [checkIn, setCheckIn] = useState('');
-  const [checkOut, setCheckOut] = useState('');
-  const [guests, setGuests] = useState(1);
+const BookFurnishedPropertyModal = ({
+  property,
+  onSwap,
+  pillButtons,
+  ...props
+}) => {
+  const [checkIn, setCheckIn] = useState("");
+  const [checkOut, setCheckOut] = useState("");
   const [totalCost, setTotalCost] = useState(0);
-  const [error, setError] = useState('');
-  const [bookingNotification, setBookingNotification] = useState(null);
-  const [dateRange, setDateRange] = useState([]);
+  const [error, setError] = useState("");
   const [validated, setValidated] = useState(false);
+  const [numberOfChildren, setNumberOfChildren] = useState("");
+  const [numberOfAdults, setNumberOfAdults] = useState("");
+  const [pickUpLocation, setPickUpLocation] = useState("");
 
-  const { data: session } = useSession(); // Simulating login check
-  const isFormValid = checkIn && checkOut && guests;
+  const { data: session } = useSession();
+  const isFormValid =
+    checkIn &&
+    checkOut &&
+    numberOfAdults !== "" &&
+    numberOfChildren !== "" &&
+    pickUpLocation !== "";
+
+  // Handle date changes for check-in and check-out
+  const handleCheckInChange = (date, dateString) => {
+    setCheckIn(dateString);
+  };
+
+  const handleCheckOutChange = (date, dateString) => {
+    setCheckOut(dateString);
+  };
 
   // Calculate total cost when check-in/out or guests change
   useEffect(() => {
@@ -31,109 +51,141 @@ const BookFurnishedPropertyModal = ({ property, onSwap, pillButtons, ...props })
       const checkInDate = new Date(checkIn);
       const checkOutDate = new Date(checkOut);
       const days = (checkOutDate - checkInDate) / (1000 * 60 * 60 * 24);
-      const costPerDay = 100; // Example rate per night
+      const costPerDay = 100; // Make this dynamic
       if (days > 0) {
         setTotalCost(days * costPerDay);
-        setError(''); // Clear error if dates are valid
+        setError(""); // Clear error if dates are valid
       } else {
         setTotalCost(0);
-        setError('Check-out date must be after the check-in date.');
+        setError("Check-out date must be after the check-in date.");
       }
     }
-  }, [checkIn, checkOut, guests]);
+  }, [checkIn, checkOut]);
 
   // Handle form submission
   const handleSubmit = async (event) => {
     event.preventDefault();
 
+    // Redirect to sign-in page if user is not authenticated
     if (!session) {
-      alert('Please sign in to book a room');
-      // Redirect to sign-in/sign-up page logic
+      alert("You need to sign in to book a room.");
+      signIn(); 
       return;
     }
 
     if (!isFormValid || error) {
       setValidated(true);
-      alert('Please fix errors before submitting.');
+      alert("Please fix errors before submitting.");
       return;
     }
 
     const formData = {
       checkInDate: checkIn,
       checkOutDate: checkOut,
-      guests,
+      numberOfAdults: numberOfAdults,
+      numberOfChildren: numberOfChildren,
       userId: session.user.id, // User ID from the session
     };
 
-    // Display form data (you can send this data to your backend)
     console.log(formData);
 
     // For now, saving reservation to local storage
-    localStorage.setItem('reservation', JSON.stringify(formData));
-    alert('Booking successful!');
+    localStorage.setItem("reservation", JSON.stringify(formData));
+    alert("Booking successful!");
   };
 
   // Restrict date selection to today or later
-  const today = new Date().toISOString().split('T')[0];
+  const disabledDate = (current) => {
+    return current && current < moment().endOf("day");
+  };
 
   // Create property card object for CardProperty component
   const propertyCard = createPropertyObject(property);
 
   return (
-    <Modal {...props} className='signin-modal'>
-      <Modal.Body className='px-0 py-2 py-sm-0'>
+    <Modal {...props} className="signin-modal">
+      <Modal.Body className="px-0 py-2 py-sm-0">
         <CloseButton
           onClick={props.onHide}
-          aria-label='Close modal'
-          className='position-absolute top-0 end-0 mt-3 me-3'
+          aria-label="Close modal"
+          className="position-absolute top-0 end-0 mt-3 me-3"
         />
-        <div className='row mx-0'>
-          <div className='col-md-6 border-end-md p-4 p-sm-5'>
-            <h2 className='h3 mb-2 mb-sm-2'>Book a Property</h2>
-            <div className='d-flex align-items-center py-3 mb-3'>
+        <div className="row mx-0">
+          <div className="col-md-6 border-end-md p-4 p-sm-5">
+            <h2 className="h3 mb-2 mb-sm-2">Book a Property</h2>
+            <div className="d-flex align-items-center py-3 mb-3">
               <CardProperty property={propertyCard} />
             </div>
-            <div className='mt-2 mt-sm-2'>
-              Before booking, <a href='#' onClick={onSwap}>check availability</a>.
+            <div className="mt-2 mt-sm-2">
+              Before booking,{" "}
+              <a href="#" onClick={onSwap}>
+                check availability
+              </a>
+              .
             </div>
           </div>
 
-          <div className='col-md-6 p-4 p-sm-5'>
-            <h3 className='h4'>Make a Reservation</h3>
-            
-            <Form onSubmit={handleSubmit}>
-              <Form.Group controlId='formDateRange'>
-                <Form.Label>Choose Date Range</Form.Label>
-                <RangePicker
-                  getPopupContainer={(trigger) => trigger.parentNode}
-                  onChange={(dates) => {
-                    setDateRange(dates);
-                    if (dates) {
-                      setCheckIn(dates[0].format('YYYY-MM-DD'));
-                      setCheckOut(dates[1].format('YYYY-MM-DD'));
-                    }
-                  }}
-                  format='YYYY-MM-DD'
-                  disabledDate={(current) => current && current < moment().endOf('day')}
-                />
-              </Form.Group>
+          <div className="col-md-6 p-4 p-sm-5">
+            <h3 className="h4">Make a Reservation</h3>
 
-              <Form.Group controlId='formGuests'>
-                <Form.Label>Number of Guests:</Form.Label>
-                <Form.Control
-                  type="number"
-                  value={guests}
-                  onChange={(e) => setGuests(e.target.value)}
-                  min="1"
-                  max="5" // Max limit to 5 guests
+            <Form onSubmit={handleSubmit}>
+              <Form.Group controlId="formCheckIn">
+                <Form.Label>Check-In Date</Form.Label>
+                <DatePicker
+                  className="mb-2"
+                  getPopupContainer={(trigger) => trigger.parentNode}
+                  onChange={handleCheckInChange}
+                  disabledDate={disabledDate}
                   required
                 />
               </Form.Group>
-
-              {error && <p style={{ color: 'red' }}>{error}</p>} {/* Error display */}
+              <Form.Group controlId="formCheckOut" >
+                <Form.Label>Check-Out Date</Form.Label>
+                <DatePicker
+                  className="mb-2"
+                  getPopupContainer={(trigger) => trigger.parentNode}
+                  onChange={handleCheckOutChange}
+                  disabledDate={disabledDate}
+                  required
+                />
+              </Form.Group>
+              <Form.Group controlId="formNumberOfAdults">
+                <Form.Label>Number of Adults:</Form.Label>
+                <Form.Control
+                  type="number"
+                  name="numberOfAdults"
+                  value={numberOfAdults}
+                  placeholder="Adults"
+                  onChange={(e) => setNumberOfAdults(e.target.value)}
+                  min="1"
+                  required
+                />
+              </Form.Group>
+              <Form.Group controlId="formNumberOfChildren" className="mb-2">
+                <Form.Label>Number of Children</Form.Label>
+                <Form.Control
+                  type="number"
+                  name="numberOfChildren"
+                  placeholder="Children"
+                  value={numberOfChildren}
+                  onChange={(e) => setNumberOfChildren(e.target.value)}
+                  required
+                />
+              </Form.Group>
+              <Form.Group controlId="formPickUpLocation" className="mb-2">
+                <Form.Label>Pick Up Location</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="pickUpLocation"
+                  placeholder="Location"
+                  value={pickUpLocation}
+                  onChange={(e) => setPickUpLocation(e.target.value)}
+                  required
+                />
+              </Form.Group>
+              {error && <p style={{ color: "red" }}>{error}</p>}
               <h3>Total Cost: ${totalCost}</h3>
-
-              <Button variant='primary' type='submit' className='mt-3'>
+              <Button variant="primary" type="submit" className="mt-3">
                 Book Now
               </Button>
             </Form>

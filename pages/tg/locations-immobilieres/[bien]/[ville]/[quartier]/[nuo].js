@@ -35,6 +35,7 @@ import AskNuiteePriceModal from "../../../../../../components/iacomponents/AskNu
 import ImageComponent from "../../../../../../components/iacomponents/ImageComponent";
 import { getHumanReadablePrice } from "../../../../../../utils/generalUtils";
 import BookFurnishedPropertyModal from "../../../../../../components/iacomponents/BookFurnishedPropertyModal";
+import { Book } from "feather-icons-react/build/IconComponents";
 
 function SinglePropertyAltPage({ property }) {
   // Sign in modal
@@ -54,12 +55,12 @@ function SinglePropertyAltPage({ property }) {
   const handleRentNegociationClose = () => setRentNegociationShow(false);
   const handleRentNegociationShow = () => setRentNegociationShow(true);
 
-
-  const [bookFurnishedPropertyShow, setBookFurnishedPropertyShow] = useState(false);
-  const handleBookFurnishedPropertyClose = () => setBookFurnishedPropertyShow(false);
-  const handleBookFurnishedPropertyShow = () => setBookFurnishedPropertyShow(true);
-
-
+  const [bookFurnishedPropertyShow, setBookFurnishedPropertyShow] =
+    useState(false);
+  const handleBookFurnishedPropertyClose = () =>
+    setBookFurnishedPropertyShow(false);
+  const handleBookFurnishedPropertyShow = () =>
+    setBookFurnishedPropertyShow(true);
 
   const [askNuiteePriceShow, setAskNuiteePriceShow] = useState(false);
   const handleAskNuiteePriceClose = () => setAskNuiteePriceShow(false);
@@ -79,6 +80,11 @@ function SinglePropertyAltPage({ property }) {
   const handleRentNegociationModal = (e) => {
     e.preventDefault();
     handleRentNegociationShow();
+  };
+
+  const handleBookFurnishedPropertyModal = (e) => {
+    e.preventDefault();
+    handleBookFurnishedPropertyShow();
   };
 
   const handleNuiteePriceModal = (e) => {
@@ -240,7 +246,6 @@ function SinglePropertyAltPage({ property }) {
                 <SwiperSlide className="d-flex">
                   <ImageComponent imageUri={imgproperty.uri} />
                 </SwiperSlide>
-<<<<<<< HEAD
               );
             })}
           {!session && (
@@ -253,35 +258,9 @@ function SinglePropertyAltPage({ property }) {
               </SwiperSlide>
             </>
           )}
-          <SwiperSlide>
-            <div className="ratio ratio-16x9">
-              <iframe
-                src="https://www.youtube.com/embed/1oVncb5hke0?autoplay=1"
-                className="rounded-3"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              ></iframe>
-=======
-              )
-            })
-          }
-          {!session &&
-            (
-              <>
-                <SwiperSlide className='d-flex'>
-                  <ImageComponent imageUri={Unconnectedhumbnails[0]} />
-                </SwiperSlide>
-                <SwiperSlide className='d-flex'>
-                  <ImageComponent imageUri={Unconnectedhumbnails[1]} />
-                </SwiperSlide>
-
-              </>
-            )
-          }
           {/* <SwiperSlide>
             <div className='ratio ratio-16x9'>
               <iframe src='https://www.youtube.com/embed/1oVncb5hke0?autoplay=1' className='rounded-3' allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
->>>>>>> 1579814bed83eee6672492a3d2ea94ad0522cde5
             </div>
           </SwiperSlide> */}
 
@@ -344,7 +323,6 @@ function SinglePropertyAltPage({ property }) {
         />
       )}
 
-<<<<<<< HEAD
       {bookFurnishedPropertyShow && (
         <BookFurnishedPropertyModal
           centered
@@ -364,15 +342,6 @@ function SinglePropertyAltPage({ property }) {
           property={property}
         />
       )}
-=======
-      {askNuiteePriceShow && <AskNuiteePriceModal
-        centered
-        size='lg'
-        show={askNuiteePriceShow}
-        onHide={handleAskNuiteePriceClose}
-        property={property}
-      />}
->>>>>>> 1579814bed83eee6672492a3d2ea94ad0522cde5
       {property && (
         <Container as="section">
           <Container as="section" className="mt-5 mb-lg-5 mb-4 pt-5 pb-lg-5">
@@ -666,7 +635,7 @@ function SinglePropertyAltPage({ property }) {
                                 size="md"
                                 className="w-100"
                                 variant="outline-primary"
-                                onClick={handleBookFurnishedPropertyShow}
+                                onClick={handleBookFurnishedPropertyModal}
                               >
                                 Réserver maintenant
                               </Button>
