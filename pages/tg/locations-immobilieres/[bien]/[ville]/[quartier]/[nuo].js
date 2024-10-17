@@ -240,6 +240,7 @@ function SinglePropertyAltPage({ property }) {
                 <SwiperSlide className="d-flex">
                   <ImageComponent imageUri={imgproperty.uri} />
                 </SwiperSlide>
+<<<<<<< HEAD
               );
             })}
           {!session && (
@@ -260,8 +261,29 @@ function SinglePropertyAltPage({ property }) {
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
               ></iframe>
+=======
+              )
+            })
+          }
+          {!session &&
+            (
+              <>
+                <SwiperSlide className='d-flex'>
+                  <ImageComponent imageUri={Unconnectedhumbnails[0]} />
+                </SwiperSlide>
+                <SwiperSlide className='d-flex'>
+                  <ImageComponent imageUri={Unconnectedhumbnails[1]} />
+                </SwiperSlide>
+
+              </>
+            )
+          }
+          {/* <SwiperSlide>
+            <div className='ratio ratio-16x9'>
+              <iframe src='https://www.youtube.com/embed/1oVncb5hke0?autoplay=1' className='rounded-3' allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
+>>>>>>> 1579814bed83eee6672492a3d2ea94ad0522cde5
             </div>
-          </SwiperSlide>
+          </SwiperSlide> */}
 
           <SlidesCount />
         </Swiper>
@@ -322,6 +344,7 @@ function SinglePropertyAltPage({ property }) {
         />
       )}
 
+<<<<<<< HEAD
       {bookFurnishedPropertyShow && (
         <BookFurnishedPropertyModal
           centered
@@ -341,6 +364,15 @@ function SinglePropertyAltPage({ property }) {
           property={property}
         />
       )}
+=======
+      {askNuiteePriceShow && <AskNuiteePriceModal
+        centered
+        size='lg'
+        show={askNuiteePriceShow}
+        onHide={handleAskNuiteePriceClose}
+        property={property}
+      />}
+>>>>>>> 1579814bed83eee6672492a3d2ea94ad0522cde5
       {property && (
         <Container as="section">
           <Container as="section" className="mt-5 mb-lg-5 mb-4 pt-5 pb-lg-5">

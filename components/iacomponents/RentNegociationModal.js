@@ -22,7 +22,7 @@ const RentNegociationModal = ({ property, onSwap, pillButtons, ...props }) => {
   const [negotiationNotification, setNegotiationNotification] = useState(null);
 
   // Check if the form is valid
-  const isFormValid = email && phone && offer && firstName;
+  const isFormValid = (email && phone && offer && firstName);
   const { data: session } = useSession();
   // Form submission handler
   const handleSubmit = async (event) => {

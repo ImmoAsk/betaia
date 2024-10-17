@@ -197,11 +197,11 @@ function SinglePropertyAltPage({ property }) {
               </>
             )
           }
-          <SwiperSlide>
+          {/* <SwiperSlide>
             <div className='ratio ratio-16x9'>
               <iframe src='https://www.youtube.com/embed/1oVncb5hke0?autoplay=1' className='rounded-3' allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
             </div>
-          </SwiperSlide>
+          </SwiperSlide> */}
 
           <SlidesCount />
         </Swiper>
