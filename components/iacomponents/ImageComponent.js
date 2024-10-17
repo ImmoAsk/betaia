@@ -25,9 +25,11 @@ const ImageComponent = ({ imageUri }) => {
   return (
     <>
       {imageError ? (
-        <ImageLoader className='rounded-3' src={'https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/proprietes/' + imageUri} width={967} height={545} alt='Image' />
+        //<ImageLoader className='rounded-3' src={'https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/proprietes/' + imageUri} width={967} height={545} alt='Image' />
+        <img className='rounded-3' src={'https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/proprietes/' + imageUri} width={967} height={545} alt='Bien immobilier ImmoAsk'/>
       ) : (
-        <ImageLoader className='rounded-3' src={'https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/proprietes/' + imageUri} width={967} height={545} alt='Image' />
+        //<ImageLoader className='rounded-3' src={'https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/proprietes/' + imageUri} width={967} height={545} alt='Image' />
+        <img className='rounded-3' src={'https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/proprietes/' + imageUri} width={967} height={545} alt='Bien immobilier ImmoAsk'/>
       )}
     </>
   );
