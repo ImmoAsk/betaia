@@ -1,0 +1,39 @@
+[
+    {
+      "_id": "1",
+      "name": "Villa de Luxe",
+      "address": "Rue du Grand Marché, Lomé, Togo",
+      "price": 35000000,
+      "bedrooms": 5,
+      "bathrooms": 4,
+      "description": "Une villa spacieuse et moderne près du Grand Marché."
+    },
+    {
+      "_id": "2",
+      "name": "Maison Familiale",
+      "address": "Avenue des Palmiers, Lomé, Togo",
+      "price": 15000000,
+      "bedrooms": 3,
+      "bathrooms": 2,
+      "description": "Maison confortable idéale pour les familles, avec un grand jardin."
+    },
+    {
+      "_id": "3",
+      "name": "Appartement Moderne",
+      "address": "Boulevard du 13 Janvier, Lomé, Togo",
+      "price": 8000000,
+      "bedrooms": 2,
+      "bathrooms": 1,
+      "description": "Appartement moderne avec vue sur la ville, parfait pour les jeunes professionnels."
+    },
+    {
+      "_id": "4",
+      "name": "Bungalow au Bord de la Mer",
+      "address": "Route de la Plage, Lomé, Togo",
+      "price": 20000000,
+      "bedrooms": 4,
+      "bathrooms": 3,
+      "description": "Bungalow de luxe avec accès direct à la plage et vue panoramique sur l'océan."
+    }
+  ]
+  
