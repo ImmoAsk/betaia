@@ -131,17 +131,18 @@ const BookFurnishedPropertyModal = ({
             <Form onSubmit={handleSubmit}>
               <Form.Group controlId="formCheckIn">
                 <Form.Label>Check-In Date</Form.Label>
-                <DatePicker
-                  className="mb-2"
-                  getPopupContainer={(trigger) => trigger.parentNode}
-                  onChange={handleCheckInChange}
-                  disabledDate={disabledDate}
-                  required
+                <Form.Control as={DatePicker}
+                className="mb-2"
+                getPopupContainer={(trigger) => trigger.parentNode}
+                onChange={handleCheckInChange}
+                disabledDate={disabledDate}
+                required
                 />
+              
               </Form.Group>
               <Form.Group controlId="formCheckOut" >
                 <Form.Label>Check-Out Date</Form.Label>
-                <DatePicker
+                <Form.Control as={DatePicker}
                   className="mb-2"
                   getPopupContainer={(trigger) => trigger.parentNode}
                   onChange={handleCheckOutChange}
