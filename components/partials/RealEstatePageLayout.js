@@ -6,6 +6,7 @@ import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Nav from 'react-bootstrap/Nav'
+import { Alert } from 'react-bootstrap';
 import Navbar from 'react-bootstrap/Navbar'
 import Dropdown from 'react-bootstrap/Dropdown'
 import Button from 'react-bootstrap/Button'
@@ -52,21 +53,21 @@ const RealEstatePageLayout = (props) => {
   // Footer recent blog posts array
   const footerPosts = [
     {
-      href: '/tg/blog-single',
+      href: 'https://www.linkedin.com/pulse/ce-quil-faut-faire-avant-la-mise-en-vente-de-votre-bien-immobilier/',
       img: '/images/tg/blog/th01.jpg',
-      category: 'Home Improvement',
-      title: 'Your Guide to a Smart Apartment Searching',
-      text: 'Mi justo, varius vitae cursus ipsum sem massa amet pellentesque. Ipsum enim sit nulla ridiculus semper nam...',
-      date: 'Dec 4',
+      category: 'Logement',
+      title: 'Ce qu\'il faut faire avant la mise en vente de votre bien immobilier...',
+      text: 'Vous avez un terrain ou une maison à vendre, une parcelle au Togo en vente, voici l\'histoire à connaître...',
+      date: 'Mar 10',
       comments: '2'
     },
     {
-      href: '/tg/blog-single',
+      href: 'https://www.linkedin.com/pulse/la-gouvernance-fonci%C3%A8re-au-togo-prend-une-autre-tournure-immoask/?',
       img: '/images/tg/blog/th02.jpg',
-      category: 'Tips & Advice',
-      title: 'Top 10 Ways to Refresh Your Space',
-      text: 'Volutpat, orci, vitae arcu feugiat vestibulum ultricies nisi, aenean eget. Vitae enim, tellus tempor consequat mi vitae...',
-      date: 'Nov 23',
+      category: 'Foncier',
+      title: 'La gouvernance foncière au Togo prend une autre tournure',
+      text: 'Avant d\'acheter un lot sur ImmoAsk ou avec nos propriétaires ou agents immobiliers, il y a cette étape de vérification de la surface...',
+      date: 'Fev 23',
       comments: 'No'
     }
   ]
@@ -104,6 +105,27 @@ const RealEstatePageLayout = (props) => {
     <>
       <Head>
         <title>{props.pageTitle} | ImmoAsk: Immobilier, Foncier, BTP, Tourisme | Chez vous, c'est ici</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name='description' content={props.pageDescription} />
+        <meta name='keywords' content={props.pageKeywords} />
+        <meta name='robots' content='index, follow' />
+        <meta httpEquiv='Content-Type' content='text/html; charset=utf-8' />
+        <meta property="og:title" content={props.pageTitle}/>
+        <meta property="og:description" content={props.pageDescription} />
+        <meta property="og:image" content={props.pageCoverImage} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={props.pageUrl} />
+        <meta name='author' content='Omnisoft Africa' />
+        <link rel='apple-touch-icon' sizes='180x180' href='/favicon/apple-icon-180x180.png' />
+        <link rel='icon' type='image/png' sizes='32x32' href='/favicon/favicon-32x32.png' />
+        <link rel='icon' type='image/png' sizes='16x16' href='/favicon/favicon-16x16.png' />
+        <link rel='icon' type='image/x-icon' href='/favicon/favicon.ico' />
+        <link rel='manifest' href='/favicon/site.webmanifest' />
+        <link rel='mask-icon' color='#5bbad5' href='/favicon/safari-pinned-tab.svg' />
+        <meta name='msapplication-TileColor' content='#766df4' />
+        <meta name='theme-color' content='#ffffff' />
       </Head>
 
       {/* Sign in modal */}
@@ -127,12 +149,47 @@ const RealEstatePageLayout = (props) => {
 
       {/* Page wrapper for sticky footer
       Wraps everything except footer to push footer to the bottom of the page if there is little content */}
+      <Alert
+        variant="info"
+        className="alert-text"
+        style={{
+          position: 'fixed',
+          top: 0,
+          width: '100%',
+          zIndex: 1000,
+          textAlign: 'center',
+          padding: '10px 15px',
+          boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
+          overflowWrap: 'break-word'
+        }}
+      >
+        <div className="container-fluid">
+          <p className="mb-0">
+            Hello! Vous êtes sur une nouvelle version de <strong>ImmoAsk</strong>!
+            Si vous rencontrez un bogue ou un problème, merci de nous le signaler sur
+            <a href="https://wa.me/22870453625" target="_blank" rel="noopener noreferrer"> WhatsApp (+228 7045 3625)</a>
+            ou sur <a href="https://linkedin.com/company/immoask" target="_blank" rel="noopener noreferrer"> LinkedIn (ImmoAsk)</a>.
+          </p>
+        </div>
+
+        <style jsx>{`
+    @media (max-width: 576px) {
+      .alert-text {
+        font-size: 0.8rem;  /* Reduced font size for small screens */
+      }
+    }
+  `}</style>
+      </Alert>
+
+
       <main className='page-wrapper'>
 
         {/* Navbar (main site header with branding and navigation) */}
+
         <Navbar as={StickyNavbar}
           expand='lg'
           bg='light'
+          style={{ marginTop: '40px' }}
           className={`fixed-top${props.navbarExtraClass ? ` ${props.navbarExtraClass}` : ''}`}
         >
           <Container>
@@ -224,61 +281,6 @@ const RealEstatePageLayout = (props) => {
 
             <Navbar.Collapse id='navbarNav' className='order-md-2'>
               <Nav navbarScroll style={{ maxHeight: '35rem' }}>
-                {/* <Nav.Item as={Dropdown} className='me-lg-2'>
-                  <Dropdown.Toggle as={Nav.Link} className='align-items-center pe-lg-4'>
-                    <i className='fi-layers me-2'></i>
-                    FlashImmo
-                    <span className='d-none d-lg-block position-absolute top-50 end-0 translate-middle-y border-end' style={{width: '1px', height: '30px'}}></span>
-                  </Dropdown.Toggle>
-                  <Dropdown.Menu renderOnMount>
-                    <Link href='/tg' passHref>
-                      <Dropdown.Item>
-                        <i className='fi-building fs-base opacity-50 me-2'></i>
-                        Real Estate Demo
-                      </Dropdown.Item>
-                    </Link>
-                    <Dropdown.Divider />
-                    <Link href='/car-finder' passHref>
-                      <Dropdown.Item>
-                        <i className='fi-car fs-base opacity-50 me-2'></i>
-                        Car Finder Demo
-                      </Dropdown.Item>
-                    </Link>
-                    <Dropdown.Divider />
-                    <Link href='/job-board' passHref>
-                      <Dropdown.Item>
-                        <i className='fi-briefcase fs-base opacity-50 me-2'></i>
-                        Job Board Demo
-                      </Dropdown.Item>
-                    </Link>
-                    <Dropdown.Divider />
-                    <Link href='/city-guide' passHref>
-                      <Dropdown.Item>
-                        <i className='fi-map-pin fs-base opacity-50 me-2'></i>
-                        City Guide Demo
-                      </Dropdown.Item>
-                    </Link>
-                    <Dropdown.Divider />
-                    <Link href='/' passHref>
-                      <Dropdown.Item>
-                        <i className='fi-home fs-base opacity-50 me-2'></i>
-                        Main Page
-                      </Dropdown.Item>
-                    </Link>
-                    <Link href='/components/typography' passHref>
-                      <Dropdown.Item>
-                        <i className='fi-list fs-base opacity-50 me-2'></i>
-                        Components
-                      </Dropdown.Item>
-                    </Link>
-                    <Link href='/docs' passHref>
-                      <Dropdown.Item>
-                        <i className='fi-file fs-base opacity-50 me-2'></i>
-                        Documentation
-                      </Dropdown.Item>
-                    </Link>
-                  </Dropdown.Menu>
-                </Nav.Item> */}
                 <Nav.Item as={Dropdown}>
                   <Dropdown.Toggle as={Nav.Link} active={props.activeNav === 'Home'}>Séjourner</Dropdown.Toggle>
                   <Dropdown.Menu renderOnMount>
@@ -340,46 +342,13 @@ const RealEstatePageLayout = (props) => {
                     </Link>
                   </Dropdown.Menu>
                 </Nav.Item>
-                <Nav.Item as={Dropdown}>
-                  <Dropdown.Toggle as={Nav.Link} active={props.activeNav === 'Vendor'}>Investir</Dropdown.Toggle>
-                  <Dropdown.Menu renderOnMount>
-                    <Link href='/tg/investissements-immobiliers/immeuble-commercial' passHref>
-                      <Dropdown.Item>Investir en immeuble commercial</Dropdown.Item>
-                    </Link>
-                    <Link href='/tg/investissements-immobiliers/immeuble-meuble-locatif' passHref>
-                      <Dropdown.Item>Investir en immeuble meublé locatif</Dropdown.Item>
-                    </Link>
-                    <Link href='/tg/investissements-immobiliers/immeuble-acquis' passHref>
-                      <Dropdown.Item>Investir en immeuble d'acquisitions</Dropdown.Item>
-                    </Link>
-                    <Link href='/tg/investissements-immobiliers/immeuble-locatif' passHref>
-                      <Dropdown.Item>Investir en immeuble de logements</Dropdown.Item>
-                    </Link>
-                    <Link href='/tg/investissements-immobiliers/terrain-rural' passHref>
-                      <Dropdown.Item>Investir en terrains ruraux et agricoles</Dropdown.Item>
-                    </Link>
-                    <Link href='/tg/investissements-immobiliers/projet-agricol' passHref>
-                      <Dropdown.Item>Investir en projets agricoles</Dropdown.Item>
-                    </Link>
-                  </Dropdown.Menu>
-                </Nav.Item>
+
                 <Nav.Item as={Dropdown}>
                   <Dropdown.Toggle as={Nav.Link} active={props.activeNav === 'Pages'}>Se loger</Dropdown.Toggle>
                   <Dropdown.Menu renderOnMount>
                     <Link href='/tg/locations-immobilieres/appartement' passHref>
                       <Dropdown.Item>Appartements à louer</Dropdown.Item>
                     </Link>
-                    {/*  <Dropdown>
-                      <Dropdown.Toggle as={Dropdown.Item}>Blog</Dropdown.Toggle>
-                      <Dropdown.Menu renderOnMount>
-                        <Link href='/tg/blog' passHref>
-                          <Dropdown.Item>Blog Grid</Dropdown.Item>
-                        </Link>
-                        <Link href='/tg/blog-single' passHref>
-                          <Dropdown.Item>Single Post</Dropdown.Item>
-                        </Link>
-                      </Dropdown.Menu>
-                    </Dropdown> */}
                     <Link href='/tg/locations-immobilieres/villa' passHref>
                       <Dropdown.Item>Villas à louer</Dropdown.Item>
                     </Link>
@@ -394,8 +363,6 @@ const RealEstatePageLayout = (props) => {
                     </Link>
                   </Dropdown.Menu>
                 </Nav.Item>
-
-                {/* Display content depending on user auth satus mobilier menu */}
                 {props.userLoggedIn ? <Nav.Item as={Dropdown} className='d-lg-none'>
                   <Dropdown.Toggle as={Nav.Link} className='d-flex align-items-center'>
                     <ImageLoader src='/images/avatars/30.jpg' width={30} height={30} placeholder={false} className='rounded-circle' alt='Annette Black' />
@@ -405,7 +372,7 @@ const RealEstatePageLayout = (props) => {
                     <div className='ps-3'>
                       <StarRating size='sm' rating={5} />
                       <div className='fs-xs py-2'>
-                        (302) 555-0107<br />annette_black@email.com
+                        (+228) 7045 3625<br />contact@immoask.com
                       </div>
                     </div>
                     {
@@ -455,28 +422,203 @@ const RealEstatePageLayout = (props) => {
                   </Nav.Item>}
               </Nav>
             </Navbar.Collapse>
+
           </Container>
+
         </Navbar>
 
         {/* Page content */}
         {props.children}
       </main>
 
-
       {/* Footer */}
       <footer className='footer bg-secondary pt-5'>
         <Container className='pt-lg-4 pb-4'>
           <Row className='mb-5 pb-md-3 pb-lg-4'>
-            <Col lg={6} className='mb-lg-0 mb-4'>
+            {/* Column 1: Logo + Contacts */}
+            <Col md={3} className='mb-lg-0 mb-4'>
+              <div className='mb-sm-0 mb-4'>
+                <Link href='/tg'>
+                  <a className='d-inline-flex mb-4'>
+                    <ImageLoader
+                      priority
+                      src='/images/logo/immoask-logo-removebg.png'
+                      width={116}
+                      height={112}
+                      placeholder={false}
+                      alt='ImmoAsk'
+                    />
+                  </a>
+                </Link>
+                <p>ImmoAsk est un marketplace immobilier et foncier avec un CRM de gestion immobiliere boosté par une intelligence artificielle.</p>
+                <Nav className='flex-column mb-sm-4 mb-2'>
+                  <Nav.Item className='mb-2'>
+                    <Nav.Link href='mailto:contact@immoask.com' className='p-0 fw-normal'>
+                      <i className='fi-mail me-2 align-middle opacity-70'></i>contact@immoask.com
+                    </Nav.Link>
+                  </Nav.Item>
+                  <Nav.Item>
+                    <Nav.Link href='tel:0022870453625' className='p-0 fw-normal'>
+                      <i className='fi-device-mobile me-2 align-middle opacity-70'></i>(+228) 7045-3625
+                    </Nav.Link>
+                  </Nav.Item>
+                </Nav>
+                <div className='pt-2'>
+                  <SocialButton href='https://facebook.com/immoask' variant='solid' brand='facebook' roundedCircle className='me-2 mb-2' />
+                  <SocialButton href='https://twitter.com/immoask' variant='solid' brand='twitter' roundedCircle className='me-2 mb-2' />
+                  <SocialButton href='https://linkedin.com/in/immoask' variant='solid' brand='linkedin' roundedCircle className='mb-2' />
+                </div>
+              </div>
+            </Col>
+
+            {/* Column 2: Quick Links */}
+            <Col md={3} className='mb-lg-0 mb-4'>
+              <h4 className='h5'>Produits</h4>
+              <Nav className='flex-column'>
+                <Nav.Item className='mb-2'>
+                  <Link href='/tg/catalog?usage=3' passHref>
+                    <Nav.Link className='p-0 fw-normal'>Acquérir un immeuble en securite</Nav.Link>
+                  </Link>
+                </Nav.Item>
+                <Nav.Item className='mb-2'>
+                  <Link href='/tg/add-property' passHref>
+                    <Nav.Link className='p-0 fw-normal'>Lister un bien immobilier</Nav.Link>
+                  </Link>
+                </Nav.Item>
+                <Nav.Item className='mb-2'>
+                  <Link href='/tg/catalog?usage=1' passHref>
+                    <Nav.Link className='p-0 fw-normal'>Trouver un logement en temps</Nav.Link>
+                  </Link>
+                </Nav.Item>
+                <Nav.Item className='mb-2'>
+                  <Link href='/tg/catalog?usage=5' passHref>
+                    <Nav.Link className='p-0 fw-normal'>Reserver un séjour meublé</Nav.Link>
+                  </Link>
+                </Nav.Item>
+                <Nav.Item className='mb-2'>
+                  <Link href='/tg/catalog?usage=3' passHref>
+                    <Nav.Link active={false} className='p-0 fw-normal'>Trouver un emplacement entreprise</Nav.Link>
+                  </Link>
+                </Nav.Item>
+                <Nav.Item className='mb-2'>
+                  <Link href='/tg/account-properties' passHref>
+                    <Nav.Link active={false} className='p-0 fw-normal'>Gerer votre bien immobilier</Nav.Link>
+                  </Link>
+                </Nav.Item>
+                <Nav.Item className='mb-2'>
+                  <Link href='/tg/account-rentpayments' passHref>
+                    <Nav.Link active={false} className='p-0 fw-normal'>Payer le loyer autrement</Nav.Link>
+                  </Link>
+                </Nav.Item>
+              </Nav>
+            </Col>
+
+            {/* Column 3: About Links */}
+            <Col md={3} className='mb-lg-0 mb-4'>
+              <h4 className='h5'>Nous rejoindre</h4>
+              <Nav className='flex-column'>
+                <Nav.Item className='mb-2'>
+                  <Link href='https://whatsapp.com/channel/0029Va8UsGT6mYPQ1aIvdm25' passHref>
+                    <Nav.Link className='p-0 fw-normal'>Souscrire à la chaîne FlashImmo</Nav.Link>
+                  </Link>
+                </Nav.Item>
+                <Nav.Item className='mb-2'>
+                  <Link href='#' passHref>
+                    <Nav.Link className='p-0 fw-normal'>Rejoindre l'elite des guru immobiliers</Nav.Link>
+                  </Link>
+                </Nav.Item>
+                {/* <Nav.Item className='mb-2'>
+                  <Link href='#' passHref>
+                    <Nav.Link className='p-0 fw-normal'>Assistance client</Nav.Link>
+                  </Link>
+                </Nav.Item> */}
+                <Nav.Item className='mb-2'>
+                  <Link href='#' passHref>
+                    <Nav.Link className='p-0 fw-normal'>Devenir membre de LesVoisins</Nav.Link>
+                  </Link>
+                </Nav.Item>
+              </Nav>
+            </Col>
+
+            {/* Column 4: Recent Posts */}
+            <Col md={3}>
+              <h4 className='h5'>Notre blog immobilier</h4>
+              {footerPosts.map((post, indx) => (
+                <div key={indx}>
+                  <article className='d-flex align-items-start'>
+                    <Link href={post.href}>
+                      <a className='d-none d-sm-flex flex-shrink-0 mb-sm-0 mb-3' style={{ width: '100px', height: '100px' }}>
+                        <ImageLoader src={post.img} width={200} height={200} className='rounded-3' alt='Thumbnail' />
+                      </a>
+                    </Link>
+                    <div className='ps-sm-4'>
+                      <h6 className='mb-1 fs-xs fw-normal text-uppercase text-primary'>{post.category}</h6>
+                      <h5 className='mb-2 fs-base'>
+                        <Link href={post.href}>
+                          <a className='nav-link'>{post.title}</a>
+                        </Link>
+                      </h5>
+                      <p className='mb-2 fs-sm'>{post.text}</p>
+                      <Link href='#'>
+                        <a className='nav-link nav-link-muted d-inline-block me-3 p-0 fs-xs fw-normal'>
+                          <i className='fi-calendar mt-n1 me-1 fs-sm align-middle opacity-70'></i>{post.date}
+                        </a>
+                      </Link>
+                    </div>
+                  </article>
+                  {indx < footerPosts.length - 1 && <hr className='text-dark opacity-10 my-4' />}
+                </div>
+              ))}
+            </Col>
+          </Row>
+          {/* <div className='bg-dark rounded-3'>
+            <Col xs={10} md={11} xxl={10} className='d-flex flex-md-row flex-column-reverse align-items-md-end align-items-center mx-auto px-0'>
+              <div className='d-flex flex-shrink-0 mt-md-n5 me-md-5'>
+                <ImageLoader
+                  priority
+                  src='/images/tg/illustrations/mobile.svg'
+                  width={240}
+                  height={237}
+                  alt='Illustration' />
+              </div>
+              <div className='align-self-center d-flex flex-lg-row flex-column align-items-lg-center pt-md-3 pt-5 ps-xxl-4 text-md-start text-center'>
+                <div className='me-md-5'>
+                  <h4 className='text-light'>Télécharger notre appli</h4>
+                  <p className='mb-lg-0 text-light'>Se loger, Investir, Acquérir, Experimenter</p>
+                </div>
+                <div className='flex-shrink-0'>
+                  <MarketButton href='#' market='apple' className='mx-2 ms-sm-0 me-sm-4 mb-3' />
+                  <MarketButton href='#' market='google' className='mb-3' />
+                </div>
+              </div>
+            </Col>
+          </div> */}
+        </Container>
+      </footer>
+
+
+    </>
+  )
+}
+
+export default RealEstatePageLayout
+{/* Footer */ }
+{/* <footer className='footer bg-secondary pt-5'>
+        <Container className='pt-lg-4 pb-4'>
+          <Row className='mb-5 pb-md-3 pb-lg-4'>
+            <Col lg={4} className='mb-lg-0 mb-4'>
               <div className='d-flex flex-sm-row flex-column justify-content-between mx-n2'>
 
-                {/* Logo + contacts */}
+               
                 <div className='mb-sm-0 mb-4 px-2'>
                   <Link href='/tg'>
                     <a className='d-inline-flex mb-4'>
                       <ImageLoader priority src='/images/logo/immoask-logo-removebg.png' width={116} height={112} placeholder={false} alt='ImmoAsk' />
                     </a>
                   </Link>
+                  <div className='pt-2'>
+                    ImmoAsk est un marketplace immobilier et foncier avec un CRM de gestion immobiliere booste par une intelligence artificielle.
+                  </div>
                   <Nav className='flex-column mb-sm-4 mb-2'>
                     <Nav.Item className='mb-2'>
                       <Nav.Link href='mailto:example@email.com' active={false} className='p-0 fw-normal'>
@@ -485,84 +627,88 @@ const RealEstatePageLayout = (props) => {
                       </Nav.Link>
                     </Nav.Item>
                     <Nav.Item>
-                      <Nav.Link href='tel:4065550120' active={false} className='p-0 fw-normal'>
+                      <Nav.Link href='tel:0022870453625' active={false} className='p-0 fw-normal'>
                         <i className='fi-device-mobile me-2 align-middle opacity-70'></i>
-                        (228) 7045-3625
+                        (+228) 7045-3625
                       </Nav.Link>
                     </Nav.Item>
                   </Nav>
                   <div className='pt-2'>
-                    <SocialButton href='#' variant='solid' brand='facebook' roundedCircle className='me-2 mb-2' />
-                    <SocialButton href='#' variant='solid' brand='twitter' roundedCircle className='me-2 mb-2' />
-                    {/* <SocialButton href='#' variant='solid' brand='viber' roundedCircle className='me-2 mb-2' /> */}
-                    <SocialButton href='#' variant='solid' brand='telegram' roundedCircle className='mb-2' />
+                    <SocialButton href='https://facebook.com/immoask' variant='solid' brand='facebook' roundedCircle className='me-2 mb-2' />
+                    <SocialButton href='https://twitter.com/immoask' variant='solid' brand='twitter' roundedCircle className='me-2 mb-2' />
+                    <SocialButton href='https://linkedin.com/in/immoask' variant='solid' brand='linkedin' roundedCircle className='mb-2' />
                   </div>
                 </div>
 
-                {/* Quick links */}
+                
                 <div className='mb-sm-0 mb-4 px-2'>
-                  <h4 className='h5'>Quick Links</h4>
+                  <h4 className='h5'>Produits</h4>
                   <Nav className='flex-column'>
                     <Nav.Item className='mb-2'>
-                      <Link href='#' passHref>
-                        <Nav.Link active={false} className='p-0 fw-normal'>Acheter un immeuble</Nav.Link>
+                      <Link href='/tg/catalog?usage=3' passHref>
+                        <Nav.Link active={false} className='p-0 fw-normal'>Acquérir un immeuble en securite</Nav.Link>
                       </Link>
                     </Nav.Item>
                     <Nav.Item className='mb-2'>
-                      <Link href='#' passHref>
-                        <Nav.Link active={false} className='p-0 fw-normal'>Vendre un bien immobilier</Nav.Link>
+                      <Link href='/tg/add-property' passHref>
+                        <Nav.Link active={false} className='p-0 fw-normal'>Lister un bien immobilier</Nav.Link>
                       </Link>
                     </Nav.Item>
                     <Nav.Item className='mb-2'>
-                      <Link href='#' passHref>
-                        <Nav.Link active={false} className='p-0 fw-normal'>Louer un bien immobilier</Nav.Link>
+                      <Link href='/tg/catalog?usage=1' passHref>
+                        <Nav.Link active={false} className='p-0 fw-normal'>Trouver un logement en temps</Nav.Link>
                       </Link>
                     </Nav.Item>
                     <Nav.Item className='mb-2'>
-                      <Link href='#' passHref>
-                        <Nav.Link active={false} className='p-0 fw-normal'>Calculate  your property</Nav.Link>
+                      <Link href='/tg/catalog?usage=5' passHref>
+                        <Nav.Link active={false} className='p-0 fw-normal'>Reserver un sejour meublé</Nav.Link>
                       </Link>
                     </Nav.Item>
                     <Nav.Item className='mb-2'>
-                      <Link href='#' passHref>
-                        <Nav.Link active={false} className='p-0 fw-normal'>Top offers</Nav.Link>
+                      <Link href='/tg/catalog?usage=3' passHref>
+                        <Nav.Link active={false} className='p-0 fw-normal'>Trouver un emplacement entreprise</Nav.Link>
                       </Link>
                     </Nav.Item>
                     <Nav.Item className='mb-2'>
-                      <Link href='#' passHref>
-                        <Nav.Link active={false} className='p-0 fw-normal'>Top cities</Nav.Link>
+                      <Link href='/tg/account-properties' passHref>
+                        <Nav.Link active={false} className='p-0 fw-normal'>Gerer votre bien immobilier</Nav.Link>
+                      </Link>
+                    </Nav.Item>
+                    <Nav.Item className='mb-2'>
+                      <Link href='/tg/account-rentpayments' passHref>
+                        <Nav.Link active={false} className='p-0 fw-normal'>Payer le loyer autrement</Nav.Link>
                       </Link>
                     </Nav.Item>
                   </Nav>
                 </div>
 
-                {/* About links */}
+               
                 <div className='px-2'>
-                  <h4 className='h5'>About</h4>
+                  <h4 className='h5'>Nous rejoindre</h4>
                   <Nav className='flex-column'>
                     <Nav.Item className='mb-2'>
                       <Link href='#' passHref>
-                        <Nav.Link active={false} className='p-0 fw-normal'>About us</Nav.Link>
+                        <Nav.Link active={false} className='p-0 fw-normal'>Souscrire a notre chaine FlashImmo</Nav.Link>
                       </Link>
                     </Nav.Item>
                     <Nav.Item className='mb-2'>
                       <Link href='#' passHref>
-                        <Nav.Link active={false} className='p-0 fw-normal'>Our agents</Nav.Link>
+                        <Nav.Link active={false} className='p-0 fw-normal'>Rejoindre notre reseau de professionnels immobiliers</Nav.Link>
                       </Link>
                     </Nav.Item>
                     <Nav.Item className='mb-2'>
                       <Link href='#' passHref>
-                        <Nav.Link active={false} className='p-0 fw-normal'>Help &amp; support</Nav.Link>
+                        <Nav.Link active={false} className='p-0 fw-normal'>Assistance client</Nav.Link>
                       </Link>
                     </Nav.Item>
                     <Nav.Item className='mb-2'>
                       <Link href='#' passHref>
-                        <Nav.Link active={false} className='p-0 fw-normal'>Contacts</Nav.Link>
+                        <Nav.Link active={false} className='p-0 fw-normal'>A propos de nous</Nav.Link>
                       </Link>
                     </Nav.Item>
                     <Nav.Item className='mb-2'>
                       <Link href='#' passHref>
-                        <Nav.Link active={false} className='p-0 fw-normal'>News</Nav.Link>
+                        <Nav.Link active={false} className='p-0 fw-normal'>Soumettre un projet immobilier</Nav.Link>
                       </Link>
                     </Nav.Item>
                   </Nav>
@@ -570,9 +716,9 @@ const RealEstatePageLayout = (props) => {
               </div>
             </Col>
 
-            {/* Recent posts */}
-            <Col lg={6} xl={{ span: 5, offset: 1 }}>
-              <h4 className='h5'>Recent Posts</h4>
+            
+            <Col lg={4} xl={{ span: 5, offset: 1 }}>
+              <h4 className='h5'>Notre blog immobilier</h4>
               {footerPosts.map((post, indx) => (
                 <div key={indx}>
                   <article className='d-flex align-items-start' style={{ maxWidth: '640px' }}>
@@ -609,7 +755,7 @@ const RealEstatePageLayout = (props) => {
             </Col>
           </Row>
 
-          {/* Mobile app CTA */}
+          
           <div className='bg-dark rounded-3'>
             <Col xs={10} md={11} xxl={10} className='d-flex flex-md-row flex-column-reverse align-items-md-end align-items-center mx-auto px-0'>
               <div className='d-flex flex-shrink-0 mt-md-n5 me-md-5'>
@@ -633,12 +779,7 @@ const RealEstatePageLayout = (props) => {
             </Col>
           </div>
 
-          {/* Copyright */}
+          
 
         </Container>
-      </footer>
-    </>
-  )
-}
-
-export default RealEstatePageLayout
+      </footer> */}

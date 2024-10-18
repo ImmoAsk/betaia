@@ -8,7 +8,7 @@ import '../scss/theme.scss'
 import { QueryClient,QueryClientProvider,} from '@tanstack/react-query'
 
 const queryClient = new QueryClient();
-const Finder = ({ Component, pageProps: { session, ...pageProps }}) => {
+const ImmoAsk = ({ Component, pageProps: { session, ...pageProps }}) => {
 
   // Bind NProgress to Next Router events (Page loading animation)
   Router.events.on('routeChangeStart', () => NProgress.start())
@@ -19,13 +19,14 @@ const Finder = ({ Component, pageProps: { session, ...pageProps }}) => {
     <SSRProvider>
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>ImmoAsk | Immobilier, Foncier, Tourisme, Décoration, BTP</title>
-        <meta name='description' content='Immobilier au Togo' />
-        <meta name='keywords' content='immobilier, foncier, location, vente,gestion, patrimoine' />
+        <title>ImmoAsk | Immobilier, Foncier, Tourisme, Décoration, BTP au Togo</title>
+        <meta name='description' content='Découvrez les meilleures offres immobilières au Togo. Trouvez facilement un logement urbain ou rural à louer, ainsi que des terrains et immeubles à acheter en toute sécurité. ImmoAsk vous accompagne dans l&rsquo;achat, la vente, la location et la gestion de patrimoine immobilier.' />
+        <meta name='keywords' content='immobilier Togo, foncier, location, vente, gestion de patrimoine, agent immobilier IA, tourisme, décoration, BTP' />
         <meta name='author' content='Omnisoft Africa' />
-        <link rel='apple-touch-icon' sizes='180x180' href='/favicon/apple-touch-icon.png' />
+        <link rel='apple-touch-icon' sizes='180x180' href='/favicon/apple-icon-180x180.png' />
         <link rel='icon' type='image/png' sizes='32x32' href='/favicon/favicon-32x32.png' />
         <link rel='icon' type='image/png' sizes='16x16' href='/favicon/favicon-16x16.png' />
+        <link rel='icon' type='image/x-icon' href='/favicon/favicon.ico' />
         <link rel='manifest' href='/favicon/site.webmanifest' />
         <link rel='mask-icon' color='#5bbad5' href='/favicon/safari-pinned-tab.svg' />
         <meta name='msapplication-TileColor' content='#766df4' />
@@ -47,4 +48,4 @@ const Finder = ({ Component, pageProps: { session, ...pageProps }}) => {
   )
 }
 
-export default Finder
+export default ImmoAsk

@@ -8,24 +8,15 @@ import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import { useSession } from 'next-auth/react'
-import Offcanvas from 'react-bootstrap/Offcanvas'
-import Nav from 'react-bootstrap/Nav'
 import Form from 'react-bootstrap/Form'
 import InputGroup from 'react-bootstrap/InputGroup'
 import Button from 'react-bootstrap/Button'
-import ButtonGroup from 'react-bootstrap/ButtonGroup'
-import ToggleButton from 'react-bootstrap/ToggleButton'
 import Breadcrumb from 'react-bootstrap/Breadcrumb'
-import Pagination from 'react-bootstrap/Pagination'
 import ImageLoader from '../../../../../components/ImageLoader'
-import PropertyCard from '../../../../../components/PropertyCard'
-import SimpleBar from 'simplebar-react'
 import Nouislider from 'nouislider-react'
 import 'simplebar/dist/simplebar.min.css'
 import 'nouislider/distribute/nouislider.css'
-import { capitalizeFirstLetter, getLastPage, toLowerCaseString } from '../../../../../utils/generalUtils'
-import PropertiesList from '../../../../../components/iacomponents/PropertiesList'
-import RentingList from '../../../../../components/iacomponents/RentingList'
+import { capitalizeFirstLetter,toLowerCaseString } from '../../../../../utils/generalUtils'
 
 const MapContainer = dynamic(() =>
   import('react-leaflet').then(mod => mod.MapContainer),
@@ -75,10 +66,6 @@ const CatalogPage = ({_rentingProperties,bienId,villeId,quartierId,soffreId}) =>
   console.log(ooffer);
   console.log(ocategory);
   console.log(_rentingProperties);
-  /* const [bienId, setBienId]=useState(1);
-  const [villeId,setVilleId]=useState(1);
-  const [quartierId,setQuartierId]=useState(1); */
-  // categoryParam = router.query.category === 'sale' ? 'sale' : 'rent'
   const categoryParam = 'rent';
 
   //immeubleType= router.query.type
@@ -337,7 +324,7 @@ const CatalogPage = ({_rentingProperties,bienId,villeId,quartierId,soffreId}) =>
   const humanOfferTitle = categoryParamTitle(categoryParam);
   const pageTitle = capitalizeFirstLetter(bien) + " en " + humanOfferTitle + " , " + capitalizeFirstLetter(quartier) + " , " + capitalizeFirstLetter(ville);
   //const { status, data:propertiesByOCTD, error, isFetching,isLoading,isError }  = usePropertiesByOCTD("1","1","5","2" );
-  console.log(_rentingProperties);
+  //console.log(_rentingProperties);
   const rentingProperties = buildPropertiesArray(_rentingProperties);
   const [parentData, setParentData] = useState('Aklakou');
   const { data: session } = useSession();
@@ -526,44 +513,76 @@ const CatalogPage = ({_rentingProperties,bienId,villeId,quartierId,soffreId}) =>
   )
 }
 
+// Utility to handle fetch requests and errors
+async function fetchGraphQL(query) {
+  try {
+    const response = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query=${query}`);
+    const data = await response.json();
+    if (data.errors) {
+      console.error('GraphQL error:', data.errors);
+      return null;
+    }
+    return data;
+  } catch (error) {
+    console.error('Fetch error:', error);
+    return null;
+  }
+}
 
 export async function getServerSideProps(context) {
+  const { nuo, bien, ville, quartier } = context.query;
 
-  let { nuo } = context.query;
-  const { bien } = context.query;
-  const { ville } = context.query;
-  const { quartier } = context.query;
+  // Fetch town ID
+  const townQuery = `{ getTownIdByTownName(minus_denomination: "${toLowerCaseString(ville)}") { denomination, id, code } }`;
+  const townData = await fetchGraphQL(townQuery);
+  const villeId = townData?.data?.getTownIdByTownName?.id || null;
+
+  // Fetch district ID
+  const districtQuery = `{ getDistrictIdByDistrictName(minus_denomination: "${toLowerCaseString(quartier)}") { denomination, minus_denomination, id, code } }`;
+  const districtData = await fetchGraphQL(districtQuery);
+  const quartierId = districtData?.data?.getDistrictIdByDistrictName?.id || null;
+
+  // Fetch property category ID
+  const categoryQuery = `{ getCategoryIdByCategorieName(minus_denomination: "${toLowerCaseString(bien)}") { denomination, id, code } }`;
+  const categoryData = await fetchGraphQL(categoryQuery);
+  const bienId = categoryData?.data?.getCategoryIdByCategorieName?.id || null;
+
+  // If any of the IDs are missing, handle the error gracefully
+  if (!villeId || !quartierId || !bienId) {
+    console.error('Error fetching IDs for ville, quartier, or bien');
+    return { props: { _rentingProperties: [], soffreId: { id: "1", denomination: "louer" }, quartierId, villeId, bienId } };
+  }
+
+  // Fetch properties by keywords
+  const propertiesQuery = `
+    { getPropertiesByKeyWords(limit: 100, orderBy: { column: NUO, order: DESC }, 
+      offre_id: "1", ville_id: "${villeId}", quartier_id: "${quartierId}", categorie_id: "${bienId}") {
+        badge_propriete { badge { badge_name, badge_image } }
+        visuels { uri, position }
+        id, surface, nuitee, lat_long, nuo, usage
+        offre { denomination, id }
+        categorie_propriete { denomination, id }
+        pays { code, id }
+        piece, titre, garage, cout_mensuel, ville { denomination, id }
+        wc_douche_interne, cout_vente, quartier { denomination,minus_denomination, id }
+    }}`;
   
+  const propertiesData = await fetchGraphQL(propertiesQuery);
+  let _rentingProperties = propertiesData?.data?.getPropertiesByKeyWords || [];
+  console.log(_rentingProperties);
+  // Construct the `soffreId` object
+  const soffreId = { id: "1", denomination: "louer" };
 
-  const _ville = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getTownIdByTownName(minus_denomination:"${toLowerCaseString(ville)}")
-  {denomination,id,code}}`);
-  const _jsonville = await _ville.json();
-
-  const _quartier = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getDistrictIdByDistrictName(minus_denomination:"${toLowerCaseString(quartier)}")
-  {denomination,id,code}}`);
-  const _jsonquartier=await _quartier.json();
-
-  const _bien = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getCategoryIdByCategorieName(minus_denomination:"${toLowerCaseString(bien)}"){denomination,id,code}}`);
-  const _jsonbien= await _bien.json();
-
-  const bienId=_jsonbien.data.getCategoryIdByCategorieName;
-  //console.log("BienId: "+ bienId.id);
-
-  const villeId=_jsonville.data.getTownIdByTownName;
-  
-  //console.log("VilleId: "+ villeId);
-  
-  const quartierId=_jsonquartier.data.getDistrictIdByDistrictName;
-  //console.log("QuarrtierId: "+ quartierId);
-  
-  const offreId="1";
-  // Fetch data from external API
-  let dataAPIresponse = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getPropertiesByKeyWords(limit:100,orderBy:{column:NUO,order:DESC},offre_id:"${offreId}",ville_id:"${villeId.id}",quartier_id:"${quartierId.id}",categorie_id:"${bienId.id}")
-  {badge_propriete{badge{badge_name,badge_image}},visuels{uri},surface,lat_long,nuo,usage,offre{denomination,id},categorie_propriete{denomination,id},pays{code,id},piece,titre,garage,cout_mensuel,ville{denomination,id},wc_douche_interne,cout_vente,quartier{denomination,id}}}`);
-  let _rentingProperties = await dataAPIresponse.json();
-  const soffreId = {id:"1",denomination:"louer"};
-  _rentingProperties = _rentingProperties.data.getPropertiesByKeyWords;
-  
-  return { props: { _rentingProperties,soffreId, quartierId,villeId,bienId} }
+  // Return props
+  return { 
+    props: { 
+      _rentingProperties, 
+      soffreId, 
+      quartierId, 
+      villeId, 
+      bienId 
+    } 
+  };
 }
+
 export default CatalogPage

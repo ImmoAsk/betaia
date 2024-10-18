@@ -1,4 +1,4 @@
-import { useState,useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import RealEstatePageLayout from '../../components/partials/RealEstatePageLayout'
 import Link from 'next/link'
 import Container from 'react-bootstrap/Container'
@@ -41,6 +41,7 @@ import propertyCategories from '../../remoteAPI/propertyCategories.json'
 import BgParallaxHeroMessage from '../../components/iacomponents/BgParallaxHeroMessage'
 import { useRouter } from 'next/router';
 import 'dotenv/config'
+import { getHumanReadablePrice } from '../../utils/generalUtils'
 const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 const HomePage = () => {
   const router = useRouter();
@@ -64,35 +65,35 @@ const HomePage = () => {
   // Number of rooms radios buttons (Cost calculator modal)
   const [roomsValue, setRoomsValue] = useState('')
   const rooms = [
-    {name: '1', value: '1'},
-    {name: '2', value: '2'},
-    {name: '3', value: '3'},
-    {name: '4', value: '4'},
-    {name: '5+', value: '5+'}
+    { name: '1', value: '1' },
+    { name: '2', value: '2' },
+    { name: '3', value: '3' },
+    { name: '4', value: '4' },
+    { name: '5+', value: '5+' }
   ]
 
   const { data: session } = useSession()
-  console.log(apiUrl);
-  const getRTProperties = () =>{
+  //console.log(apiUrl);
+  const getRTProperties = () => {
 
-    axios.get(`${apiUrl}?query={get5Properties(orderBy:{column:NUO,order:DESC},limit:5){surface,badge_propriete{badge{badge_name,badge_image}},id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination},visuels{uri}}}`).
-    then((res)=>{
-      setRealTimeProperties(res.data.data.get5Properties.map((property) =>{
-        //const { status, data:badges_property, error, isFetching,isLoading,isError }  = usePropertyBadges(property.id);
-        return {
-          href: getPropertyFullUrl(property.pays.code,property.offre.denomination,property.categorie_propriete.denomination,property.ville.denomination,property.quartier.denomination,property.nuo),
-          images: getFirstImageArray(property.visuels),
-          title: 'N°'+property.nuo+': '+property.categorie_propriete.denomination+' à '+property.offre.denomination+' | '+property.surface+'m²',
-          category: property.usage,
-          location: property.quartier.denomination+", "+property.ville.denomination,
-          price: property.cout_mensuel==0 ? property.cout_vente+" XOF" :property.cout_mensuel+" XOF",
-          badges: buildPropertyBadge(property.badge_propriete),
-          footer: [property.piece, property.wc_douche_interne, property.garage],
-        }
-      }));
-    });
+    axios.get(`${apiUrl}?query={get5Properties(orderBy:{column:NUO,order:DESC},limit:5){surface,badge_propriete{badge{badge_name,badge_image}},nuitee,id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination},visuels{uri,position}}}`).
+      then((res) => {
+        setRealTimeProperties(res.data.data.get5Properties.map((property) => {
+          //const { status, data:badges_property, error, isFetching,isLoading,isError }  = usePropertyBadges(property.id);
+          return {
+            href: getPropertyFullUrl(property.pays.code, property.offre.denomination, property.categorie_propriete.denomination, property.ville.denomination, property.quartier.denomination, property.nuo),
+            images: [[getFirstImageArray(property.visuels), 467, 305, 'Image']],
+            title: 'N°' + property.nuo + ': ' + property.categorie_propriete.denomination + ' à ' + property.offre.denomination + ' | ' + property.surface + 'm²',
+            category: property.usage,
+            location: property.quartier.denomination + ", " + property.ville.denomination,
+            price: getHumanReadablePrice(property),
+            badges: buildPropertyBadge(property.badge_propriete),
+            footer: [property.piece, property.wc_douche_interne, property.garage],
+          }
+        }));
+      });
   }
- 
+
 
   // Function to handle redirection on button click
   const handleLogementRedirect = () => {
@@ -107,17 +108,17 @@ const HomePage = () => {
   const handleSejourRedirect = () => {
     router.push('/tg/catalog?usage=5');
   };
-  useEffect(() => { 
+  useEffect(() => {
     getRTProperties();
-  },[]); 
-    
-  
+  }, []);
+
+
 
   return (
     <RealEstatePageLayout
       pageTitle='Trouver aisément un logement urbain ou rural et acheter en sécurité les terrains et immeubles'
       activeNav='Home'
-      userLoggedIn={session?true:false}
+      userLoggedIn={session ? true : false}
     >
 
       {/* Property cost calculator modal */}
@@ -174,20 +175,20 @@ const HomePage = () => {
             </Form.Group>
             <Form.Group className='pt-2 mb-3'>
               <Form.Label className='d-block fw-bold mb-2'>Number of rooms</Form.Label>
-                <ButtonGroup>
-                  {rooms.map((room, indx) => (
-                    <ToggleButton
-                      key={indx}
-                      type='radio'
-                      id={`rooms-${indx}`}
-                      name='rooms'
-                      value={room.value}
-                      checked={roomsValue === room.value}
-                      onChange={(e) => setRoomsValue(e.currentTarget.value)}
-                      variant='outline-secondary'
-                    >{room.name}</ToggleButton>
-                  ))}
-                </ButtonGroup>
+              <ButtonGroup>
+                {rooms.map((room, indx) => (
+                  <ToggleButton
+                    key={indx}
+                    type='radio'
+                    id={`rooms-${indx}`}
+                    name='rooms'
+                    value={room.value}
+                    checked={roomsValue === room.value}
+                    onChange={(e) => setRoomsValue(e.currentTarget.value)}
+                    variant='outline-secondary'
+                  >{room.name}</ToggleButton>
+                ))}
+              </ButtonGroup>
             </Form.Group>
             <Form.Group controlId='property-area' className='pt-2 mb-4'>
               <Form.Label className='fw-bold mb-2'>Total area, sq.m.</Form.Label>
@@ -208,38 +209,38 @@ const HomePage = () => {
       {/* Hero */}
       <Container as='section' className='pt-5 my-5 pb-lg-4'>
         <Row className='pt-0 pt-md-2 pt-lg-0'>
-          <Col md={{span: 7, order: 1}} lg={7} xl={7} className='pt-xl-5 pe-lg-0 mb-3 text-md-start text-center'>
+          <Col md={{ span: 7, order: 1 }} lg={7} xl={7} className='pt-xl-5 pe-lg-0 mb-3 text-md-start text-center'>
             <h1 className='mt-lg-0 mb-md-4 mb-3 pt-md-4 pb-lg-2'>Trouver aisément un logement, et acheter en sécurité un immeuble</h1>
             <p className='display-relative lead me-lg-n5'>
-              Trouver facilement en temps des logements urbains ou des baux commerciaux.<br/>
-              Acquérir un immeuble bâti ou non, avec une sécurité foncière garantie.<br/>
-              Investir dans des terrains et des appartements en cours de construction.<br/>
-              <b>Gérer. Investir. Louer. Vendre </b> <br/>
+              Trouver facilement en temps des logements urbains ou des baux commerciaux.<br />
+              Acquérir un immeuble bâti ou non, avec une sécurité foncière garantie.<br />
+              Investir dans des terrains et des appartements en cours de construction.<br />
+              <b>Gérer. Investir. Louer. Vendre </b> <br />
             </p>
-            
-              <Link href='/tg/add-project' passHref>
-                {/* <Button size='sm' className='order-lg-3 ms-2'>
+
+            <Link href='/tg/add-project' passHref>
+              {/* <Button size='sm' className='order-lg-3 ms-2'>
                   <i className='fi-plus me-2'></i>
                   Lancer <span className='d-none d-sm-inline'>un projet immobilier</span>
                 </Button> */}
-                <Button variant='outline-primary' size='lg'>
-                  <i className='fi-plus me-2'></i>
-                  Lancer <span className='d-none d-sm-inline'>un projet immobilier</span>
-                </Button>
-               
-              </Link>
-              {/* <span className='d-none d-lg-block position-absolute top-50 end-0 translate-middle-y border-end' style={{width: '1px', height: '30px'}}></span> */}
-              
-              <Link href='/tg/add-property' passHref>
-                <Button className='outline-primary order-lg-3 ms-2' size='lg'>
-                  <i className='fi-plus me-2'></i>
-                  Lister <span className='d-none d-sm-inline'>un immeuble</span>
-                </Button>
-               
-              </Link>
-            
+              <Button variant='outline-primary' size='lg'>
+                <i className='fi-plus me-2'></i>
+                Lancer <span className='d-none d-sm-inline'>un projet immobilier</span>
+              </Button>
+
+            </Link>
+            {/* <span className='d-none d-lg-block position-absolute top-50 end-0 translate-middle-y border-end' style={{width: '1px', height: '30px'}}></span> */}
+
+            <Link href='/tg/add-property' passHref>
+              <Button className='outline-primary order-lg-3 ms-2' size='lg'>
+                <i className='fi-plus me-2'></i>
+                Lister <span className='d-none d-sm-inline'>un immeuble</span>
+              </Button>
+
+            </Link>
+
           </Col>
-          <Col md={{span: 5, order: 2}} lg={5} xl={5} className='mb-1 mb-lg-3'>
+          <Col md={{ span: 5, order: 2 }} lg={5} xl={5} className='mb-1 mb-lg-3'>
             <ImageLoader
               src='/images/tg/hero-image.jpg'
               width={600}
@@ -248,33 +249,32 @@ const HomePage = () => {
             />
           </Col>
         </Row>
-        <Row className='mt-lg-1'>
-          {/* Search property form group */}
+        {/* <Row className='mt-lg-1'>
           <Col lg={12} xl={2}></Col>
           <Col lg={12} xl={8} className='zindex-2 justify-content-center'>
             <FormGroup className='d-block'>
               <Row className='g-0 ms-sm-n2'>
                 <Col md={8} className='d-sm-flex align-items-center'>
                   <DropdownSelect
-                      defaultValue='Type du bien immobilier'
-                      icon='fi-list'
-                      options={[
-                        [null, 'Maison'],
-                        [null, 'Apartement'],
-                        [null, 'Immeuble commercial'],
-                        [null, 'Studio meublé'],
-                        [null, 'Chambre salon'],
-                        [null, 'Chambre(Pièce)'],
-                        [null, 'Appartement meublé'],
-                        [null, 'Villa meublée'],
-                        [null, 'Terrain'],
-                        [null, 'Boutique'],
-                        [null, 'Bureau'],
-                        [null, 'Espace-coworking'],
-                        [null, 'Magasins'],
-                      ]}
-                      variant='link ps-2 ps-sm-3'
-                      className='w-sm-50 border-end-md'
+                    defaultValue='Type du bien immobilier'
+                    icon='fi-list'
+                    options={[
+                      [null, 'Maison'],
+                      [null, 'Apartement'],
+                      [null, 'Immeuble commercial'],
+                      [null, 'Studio meublé'],
+                      [null, 'Chambre salon'],
+                      [null, 'Chambre(Pièce)'],
+                      [null, 'Appartement meublé'],
+                      [null, 'Villa meublée'],
+                      [null, 'Terrain'],
+                      [null, 'Boutique'],
+                      [null, 'Bureau'],
+                      [null, 'Espace-coworking'],
+                      [null, 'Magasins'],
+                    ]}
+                    variant='link ps-2 ps-sm-3'
+                    className='w-sm-50 border-end-md'
                   />
                   <hr className='d-sm-none my-2' />
                   <DropdownSelect
@@ -311,7 +311,7 @@ const HomePage = () => {
                     <span className='text-muted'>Budget</span>
                     <div className='range-slider pe-0 pe-sm-3'>
                       <Nouislider
-                        range={{min: 20000, max: 1500000000}}
+                        range={{ min: 20000, max: 1500000000 }}
                         start={1000}
                         format={{
                           to: value => 'XOF' + parseInt(value, 10),
@@ -332,7 +332,7 @@ const HomePage = () => {
             </FormGroup>
           </Col>
           <Col lg={12} xl={2}></Col>
-        </Row>
+        </Row> */}
       </Container>
 
 
@@ -379,8 +379,8 @@ const HomePage = () => {
               <Card.Body>
                 <h2 className='h4 card-title'>Acheter un immeuble</h2>
                 <p className='card-text fs-sm'>Un terrain rural ou urbain à acheter? Une maison ou villa à acquérir? Trouver
-                des villas, des appartements F3, F4, F5 avec jardin ou piscine biens construits et modernes en vente. Explorer notre 
-                catalogue de biens immobiliers en vente librement</p>
+                  des villas, des appartements F3, F4, F5 avec jardin ou piscine biens construits et modernes en vente. Explorer notre
+                  catalogue de biens immobiliers en vente librement</p>
               </Card.Body>
               <Card.Footer className='pt-0 border-0'>
                 <Link href='/tg/catalog?offre=2' passHref>
@@ -396,9 +396,9 @@ const HomePage = () => {
               </div>
               <Card.Body>
                 <h2 className='h4 card-title'>Lister un immeuble</h2>
-                <p className='card-text fs-sm'>Une maison délabrée, un terrain urbain ou rural, 
-                un appartement moderne ou une villa F1,F2, ou une maison de n chambres salon. Ou les chambres salon, les appartement à mettre en location ?
-                Créer votre mise en vente ou location immobilière.</p>
+                <p className='card-text fs-sm'>Une maison délabrée, un terrain urbain ou rural,
+                  un appartement moderne ou une villa F1,F2, ou une maison de n chambres salon. Ou les chambres salon, les appartement à mettre en location ?
+                  Créer votre mise en vente ou location immobilière.</p>
               </Card.Body>
               <Card.Footer className='pt-0 border-0'>
                 <Link href='/tg/add-property' passHref>
@@ -415,7 +415,7 @@ const HomePage = () => {
               <Card.Body>
                 <h2 className='h4 card-title'>Lancer un projet immobilier</h2>
                 <p className='card-text fs-sm'>Suivre l'exécution d'un chantier immobilier... Un projet de logement ou d'achat immobilier, Souhaitez vous
-                un séjour meublé? Vous recherchez une villa ou appartement spécifique pour habitation? Lancer votre projet immobilier!</p>
+                  un séjour meublé? Vous recherchez une villa ou appartement spécifique pour habitation? Lancer votre projet immobilier!</p>
               </Card.Body>
               <Card.Footer className='pt-0 border-0'>
                 <Link href='/tg/add-project' passHref>
@@ -424,7 +424,7 @@ const HomePage = () => {
               </Card.Footer>
             </Card>
           </SwiperSlide>
-          
+
         </Swiper>
         <div id='paginationServices1' className='swiper-pagination position-relative bottom-0 d-md-none mt-2'></div>
         <Swiper
@@ -449,7 +449,7 @@ const HomePage = () => {
               <Card.Body>
                 <h2 className='h4 card-title'>Créer de l'experience</h2>
                 <p className='card-text fs-sm'>Sejours, excursion ou voyages ou lunes de miel cette semaine ou ce weekend? Commencer votre experience
-                dans nos appartements et villas meublés sélectionnés avec soin : moins chers et plus confortables. </p>
+                  dans nos appartements et villas meublés sélectionnés avec soin : moins chers et plus confortables. </p>
               </Card.Body>
               <Card.Footer className='pt-0 border-0'>
                 <Link href='/tg/catalog?usage=5' passHref>
@@ -466,7 +466,7 @@ const HomePage = () => {
               <Card.Body>
                 <h2 className='h4 card-title'>Lancer une entreprise</h2>
                 <p className='card-text fs-sm'>Les entreprises se lancent ici. Vos bureaux, magasins et entrepots, et Boutiques
-                en location. Voulez-vous bailler plutot pour une longue durée? Découvrir les endroits à forte valeur commerciale et choisir le bon emplacement de votre entreprise.</p>
+                  en location. Voulez-vous bailler plutot pour une longue durée? Découvrir les endroits à forte valeur commerciale et choisir le bon emplacement de votre entreprise.</p>
               </Card.Body>
               <Card.Footer className='pt-0 border-0'>
                 <Link href='/tg/catalog?usage=3' passHref>
@@ -482,9 +482,9 @@ const HomePage = () => {
               </div>
               <Card.Body>
                 <h2 className='h4 card-title'>Trouver un logement</h2>
-                <p className='card-text fs-sm'>Logement ancien ou moderne ? 
-                Chambres salon, Villas, Appartements ou une chambre en location vous attendent.. 
-                Changez d'air. Commencer votre déménagement avec nous et découvrir d'autres quartiers ou villes</p>
+                <p className='card-text fs-sm'>Logement ancien ou moderne ?
+                  Chambres salon, Villas, Appartements ou une chambre en location vous attendent..
+                  Changez d'air. Commencer votre déménagement avec nous et découvrir d'autres quartiers ou villes</p>
               </Card.Body>
               <Card.Footer className='pt-0 border-0'>
                 <Link href='/tg/catalog?usage=1' passHref>
@@ -493,7 +493,7 @@ const HomePage = () => {
               </Card.Footer>
             </Card>
           </SwiperSlide>
-          
+
         </Swiper>
 
         {/* External pagination (bullets) */}
@@ -513,7 +513,7 @@ const HomePage = () => {
         <div className='d-flex align-items-center justify-content-between'>
           <h3 className='h5'>Villas | Chambres salon | Appartements | Chambres </h3>
         </div>
-        <PropertyListSwiper propertyList={topPropertiesLogement}/>
+        <PropertyListSwiper propertyList={topPropertiesLogement} />
         {/* External Prev/Next buttons */}
         <div className='d-flex justify-content-center py-md-2 mt-4'>
           <Button id='prevProprties' variant='prev position-relative mx-2' />
@@ -523,10 +523,10 @@ const HomePage = () => {
 
       {/* Appel aux produits LOGEMENTS*/}
       <Container as='section' className='mb-5 mt-n3 mt-lg-0'>
-        <BgParallaxHeroMessage image={'/images/tg/hero-image-v2.jpg'} message={`Il est conseillé de changer d'air et de logements annuellement`} action={handleLogementRedirect} callAction={"Explorer les logements maintenant"}/>
+        <BgParallaxHeroMessage image={'/images/tg/hero-image-v2.jpg'} message={`Il est conseillé de changer d'air et de logements annuellement`} action={handleLogementRedirect} callAction={"Explorer les logements maintenant"} />
       </Container>
       {/* Appel au produit Expertim */}
-      <Container as='section' className='mb-5 pb-2 pb-lg-4'>
+      {/* <Container as='section' className='mb-5 pb-2 pb-lg-4'>
         <Row className='align-items-center'>
           <Col md={5}>
             <div className='d-flex justify-content-center justify-content-md-start mb-md-0 mb-4'>
@@ -548,13 +548,13 @@ const HomePage = () => {
             </Button>
           </Col>
         </Row>
-      </Container>
-      
+      </Container> */}
+
       {/* Top properties ACQuisition */}
       <Container fluid className='px-xxl-4 pb-lg-4 pb-1 mb-3 mt-3'>
         <div className='d-flex align-items-center justify-content-between mb-3'>
           <h2 className='h3 mb-0'>Des terrains urbains et moins ruraux à vendre à votre portée</h2>
-          <Link href='/tg/catalog?category=rent' passHref>
+          <Link href='/tg/catalog?usage=7' passHref>
             <Button variant='link fw-normal ms-sm-3 p-0'>
               Consulter tout
               <i className='fi-arrow-long-right ms-2'></i>
@@ -564,9 +564,9 @@ const HomePage = () => {
         <div className='d-flex align-items-center justify-content-between'>
           <h3 className='h5'>Terrains | Villas | Appartements | Maisons | Immeubles</h3>
         </div>
-        
-        <PropertyListSwiper propertyList={topPropertiesAcquisition}/>
-        
+
+        <PropertyListSwiper propertyList={topPropertiesAcquisition} />
+
         {/* External Prev/Next buttons */}
         {/* <div className='d-flex justify-content-center py-md-2 mt-4'>
           <Button id='prevProprties' variant='prev position-relative mx-2' />
@@ -574,12 +574,12 @@ const HomePage = () => {
         </div> */}
       </Container>
       <Container as='section' className='mb-5 mt-n3 mt-lg-0'>
-      <BgParallaxHeroMessage image={'/images/tg/hero-image-v2.jpg'} message={`
-        C'est le meilleur moment pour commencer un projet d'achat immobiliers.`} action={handleAcquisitionRedirect} callAction={"Consulter les immeubles en vente"}/>
-        
+        <BgParallaxHeroMessage image={'/images/tg/hero-image-v2.jpg'} message={`
+        C'est le meilleur moment pour commencer un projet d'achat immobiliers.`} action={handleAcquisitionRedirect} callAction={"Consulter les immeubles en vente"} />
+
       </Container>
       {/* Appel au produit ImmoMag */}
-      <Container as='section' className='mb-5 pb-2 pb-lg-4'>
+      {/* <Container as='section' className='mb-5 pb-2 pb-lg-4'>
         <Row className='align-items-center'>
           <Col md={5}>
             <div className='d-flex justify-content-center justify-content-md-start mb-md-0 mb-4'>
@@ -602,9 +602,9 @@ const HomePage = () => {
             </Button>
           </Col>
         </Row>
-      </Container>
+      </Container> */}
       {/* Investissements immobiliers */}
-      <Container as='section' className='pb-4 mb-5'>
+      {/* <Container as='section' className='pb-4 mb-5'>
         <div className='d-flex align-items-end align-items-lg-center justify-content-between mb-4 pb-md-2'>
           <div className='d-flex w-100 align-items-center justify-content-between justify-content-lg-start'>
             <h2 className='h3 mb-0 me-md-4'>Placer votre économie en investissant dans des biens immobiliers</h2>
@@ -617,8 +617,6 @@ const HomePage = () => {
             </Button>
           </Link>
         </div>
-
-        {/* Grid of properties */}
         <Row className='g-4'>
           <Col md={6}>
             <PropertyCardOverlay
@@ -687,15 +685,15 @@ const HomePage = () => {
             />
           </Col>
         </Row>
-      </Container>
-      <Container as='section' className='mb-5 mt-n3 mt-lg-0'>
+      </Container> */}
+      {/* <Container as='section' className='mb-5 mt-n3 mt-lg-0'>
         
         <BgParallaxHeroMessage image={'/images/tg/hero-image-v2.jpg'} message={`
         Nous vous offrons plus que ce que les structures bancaires offrent.
               Gagner aumoins 20% sur votre investissement immobilier.`} action={handleModalShow} callAction={"Placer votre investissement immobilier"}/>
-      </Container>
+      </Container> */}
       {/* Appel au produit Timmo */}
-      <Container as='section' className='mb-5 pb-2 pb-lg-4'>
+      {/* <Container as='section' className='mb-5 pb-2 pb-lg-4'>
         <Row className='align-items-center'>
           <Col md={5}>
             <div className='d-flex justify-content-center justify-content-md-start mb-md-0 mb-4'>
@@ -718,13 +716,13 @@ const HomePage = () => {
             </Button>
           </Col>
         </Row>
-      </Container>
-      
+      </Container> */}
+
       {/* Top properties Experience et Sejours*/}
       <Container fluid className='px-xxl-4 pb-lg-4 pb-1 mb-3 mt-3'>
         <div className='d-flex align-items-center justify-content-between mb-3'>
-          <h2 className='h3 mb-0'>Une experience uniques et inoubliable! Un séjour confortable et moins cher.</h2>
-          <Link href='/tg/catalog?category=rent' passHref>
+          <h2 className='h3 mb-0'>Une experience uniques et inoubliable! Un séjour confortable et abordable.</h2>
+          <Link href='/tg/catalog?usage=5' passHref>
             <Button variant='link fw-normal ms-sm-3 p-0'>
               Consulter tout
               <i className='fi-arrow-long-right ms-2'></i>
@@ -732,15 +730,15 @@ const HomePage = () => {
           </Link>
         </div>
         <div className='d-flex align-items-center justify-content-between'>
-          <h3 className='h5'>Séjour meublé | Appartement meublé | Biens immobiliers meublés | Studio meublé </h3>
+          <h3 className='h5'>Séjour meublé | Appartement meublé | Villa meublées | Studio meublé </h3>
         </div>
-        <PropertyListSwiper propertyList={topPropertiesSejour}/>
+        <PropertyListSwiper propertyList={topPropertiesSejour} />
       </Container>
       <Container as='section' className='mb-5 mt-n3 mt-lg-0'>
-        <BgParallaxHeroMessage image={'/images/tg/hero-image-v2.jpg'} message={`Détente. Excursions. Voyages d'affaires moins chers. De nouvels horizons dans nos meublés.`} action={handleSejourRedirect} callAction={"Faire une expérience meublée"}/>
+        <BgParallaxHeroMessage image={'/images/tg/hero-image-v2.jpg'} message={`Détente. Excursions. Voyages d'affaires moins chers. De nouvels horizons dans nos meublés.`} action={handleSejourRedirect} callAction={"Faire une expérience meublée"} />
       </Container>
       {/* Appel au produit ImmoAsk Business */}
-      <Container as='section' className='mb-5 pb-2 pb-lg-4'>
+      {/* <Container as='section' className='mb-5 pb-2 pb-lg-4'>
         <Row className='align-items-center'>
           <Col md={5}>
             <div className='d-flex justify-content-center justify-content-md-start mb-md-0 mb-4'>
@@ -763,8 +761,8 @@ const HomePage = () => {
             </Button>
           </Col>
         </Row>
-      </Container>
-      
+      </Container> */}
+
       {/* Biens Entreprise */}
       <Container fluid className='px-xxl-4 pb-lg-4 pb-1 mb-3 mt-3'>
         <div className='d-flex align-items-center justify-content-between mb-3'>
@@ -779,7 +777,7 @@ const HomePage = () => {
         <div className='d-flex align-items-center justify-content-between'>
           <h3 className='h5'>Bureaux | Magasins | Terrains à bailler | Espaces co-working</h3>
         </div>
-        <PropertyListSwiper propertyList={topPropertiesEntrepreneuriat}/>
+        <PropertyListSwiper propertyList={topPropertiesEntrepreneuriat} />
 
         {/* External Prev/Next buttons */}
         {/* <div className='d-flex justify-content-center py-md-2 mt-4'>
@@ -788,11 +786,11 @@ const HomePage = () => {
         </div> */}
       </Container>
       <Container as='section' className='mb-5 mt-n3 mt-lg-0'>
-        <BgParallaxHeroMessage image={'/images/tg/hero-image-v2.jpg'} message={`Les bons emplacements pour vos entrepots et bureaus sont ici`} action={handleEntrepriseRedirect} 
-        callAction={"Explorer les biens immobiliers d'entreprise"}/>
+        <BgParallaxHeroMessage image={'/images/tg/hero-image-v2.jpg'} message={`Les bons emplacements pour vos entrepots et bureaus sont ici`} action={handleEntrepriseRedirect}
+          callAction={"Explorer les biens immobiliers d'entreprise"} />
       </Container>
       {/* Appel au produit LesVoisins */}
-      <Container as='section' className='mb-5 pb-2 pb-lg-4'>
+      {/* <Container as='section' className='mb-5 pb-2 pb-lg-4'>
         <Row className='align-items-center'>
           <Col md={5}>
             <div className='d-flex justify-content-center justify-content-md-start mb-md-0 mb-4'>
@@ -815,13 +813,13 @@ const HomePage = () => {
             </Button>
           </Col>
         </Row>
-      </Container>
+      </Container> */}
 
-       {/* Top property offers (carousel) */}
-       <Container as='section' className='mb-5 pb-md-4'>
+      {/* Top property offers (carousel) */}
+      <Container className='px-xxl-4 pb-lg-4 pb-1 mb-3 mt-3'>
         <div className='d-flex align-items-center justify-content-between mb-3'>
           <h2 className='h3 mb-0'>FlashImmo, des biens immobiliers en temps réel!</h2>
-          <Link href='/tg/catalog?category=rent' passHref>
+          <Link href='/tg/flashimmo' passHref>
             <Button variant='link fw-normal ms-sm-3 p-0'>
               Consulter tout
               <i className='fi-arrow-long-right ms-2'></i>
@@ -926,12 +924,14 @@ const HomePage = () => {
               <Col sm={8} md={7} xl={4} className='px-4 px-sm-3 px-md-0 ms-md-n4 mt-n5 mt-sm-0 py-3'>
                 <Card className='border-0 shadow-sm ms-sm-n5'>
                   <Card.Body as='blockquote' className='blockquote'>
-                    <h4 style={{maxWidth: '22rem'}}>&quot;I will select the best accommodation for you&quot;</h4>
-                    <p className='d-sm-none d-lg-block'>Amet libero morbi venenatis ut est. Iaculis leo ultricies nunc id ante adipiscing. Vel metus odio at faucibus ac. Neque id placerat et id ut. Scelerisque eu mi ullamcorper sit urna. Est volutpat dignissim elementum nec.</p>
+                    <h4 style={{ maxWidth: '22rem' }}>ImmoAsk a facilité mon paiement des cautions</h4>
+                    <p className='d-sm-none d-lg-block'>
+                      Grâce à ImmoAsk, j'ai pu sélectionner facilement les logements directement depuis mon téléphone. Après les visites, et malgré mes horaires de travail chargés, l'équipe commerciale d'ImmoAsk m'a aidé à finaliser rapidement le paiement des cautions.
+                    </p>
                     <footer className='d-flex justify-content-between'>
                       <div className='pe3'>
-                        <h6 className='mb-0'>Floyd Miles</h6>
-                        <div className='text-muted fw-normal fs-sm mb-3'>Imperial Property Group Agent</div>
+                        <h6 className='mb-0'>E. Kossi</h6>
+                        <div className='text-muted fw-normal fs-sm mb-3'>Locataire</div>
                         <SocialButton href='#' variant='solid' brand='facebook' roundedCircle className='mb-2 me-2' />
                         <SocialButton href='#' variant='solid' brand='twitter' roundedCircle className='mb-2 me-2' />
                         <SocialButton href='#' variant='solid' brand='linkedin' roundedCircle className='mb-2' />
@@ -971,19 +971,18 @@ const HomePage = () => {
               <Col sm={8} md={7} xl={4} className='px-4 px-sm-3 px-md-0 ms-md-n4 mt-n5 mt-sm-0 py-3'>
                 <Card className='border-0 shadow-sm ms-sm-n5'>
                   <Card.Body as='blockquote' className='blockquote'>
-                    <h4 style={{maxWidth: '22rem'}}>&quot;I don&apos;t say no, I just figure out a way to make it work&quot;</h4>
-                    <p className='d-sm-none d-lg-block'>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip.</p>
+                    <h4 style={{ maxWidth: '22rem' }}>ImmoAsk, la meilleure solution en gestion immobilière</h4>
+                    <p className='d-sm-none d-lg-block'>
+                      Nous avons fait confiance à ImmoAsk pour la gestion complète de notre parc immobilier, et en moins d'un an, notre chiffre d'affaires a augmenté de 20%.
+                    </p>
+
                     <footer className='d-flex justify-content-between'>
                       <div className='pe3'>
-                        <h6 className='mb-0'>Guy Hawkins</h6>
-                        <div className='text-muted fw-normal fs-sm mb-3'>Imperial Property Group Agent</div>
+                        <h6 className='mb-0'>William K.</h6>
+                        <div className='text-muted fw-normal fs-sm mb-3'>Propriétaires de meubles</div>
                         <SocialButton href='#' variant='solid' brand='facebook' roundedCircle className='mb-2 me-2' />
                         <SocialButton href='#' variant='solid' brand='twitter' roundedCircle className='mb-2 me-2' />
                         <SocialButton href='#' variant='solid' brand='linkedin' roundedCircle className='mb-2' />
-                      </div>
-                      <div>
-                        <StarRating rating='4.7' />
-                        <div className='text-muted fs-sm mt-1'>16 reviews</div>
                       </div>
                     </footer>
                   </Card.Body>
@@ -1016,19 +1015,18 @@ const HomePage = () => {
               <Col sm={8} md={7} xl={4} className='px-4 px-sm-3 px-md-0 ms-md-n4 mt-n5 mt-sm-0 py-3'>
                 <Card className='border-0 shadow-sm ms-sm-n5'>
                   <Card.Body as='blockquote' className='blockquote'>
-                    <h4 style={{maxWidth: '22rem'}}>&quot;Over 10 years of experience as a real estate agent&quot;</h4>
-                    <p className='d-sm-none d-lg-block'>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae.</p>
+                    <h4 style={{ maxWidth: '22rem' }}>ImmoAsk, une plateforme immobilière complète</h4>
+                    <p className='d-sm-none d-lg-block'>
+                      Nous recevons des centaines de demandes immobilières chaque jour, et ImmoAsk nous a aidés à automatiser notre support client grâce à Realiti AI, offrant ainsi un service plus rapide et efficace.
+                    </p>
+
                     <footer className='d-flex justify-content-between'>
                       <div className='pe3'>
-                        <h6 className='mb-0'>Kristin Watson</h6>
-                        <div className='text-muted fw-normal fs-sm mb-3'>Imperial Property Group Agent</div>
+                        <h6 className='mb-0'>Marc G.</h6>
+                        <div className='text-muted fw-normal fs-sm mb-3'>Agent immobilier</div>
                         <SocialButton href='#' variant='solid' brand='facebook' roundedCircle className='mb-2 me-2' />
                         <SocialButton href='#' variant='solid' brand='twitter' roundedCircle className='mb-2 me-2' />
                         <SocialButton href='#' variant='solid' brand='linkedin' roundedCircle className='mb-2' />
-                      </div>
-                      <div>
-                        <StarRating rating='4.8' />
-                        <div className='text-muted fs-sm mt-1'>24 reviews</div>
                       </div>
                     </footer>
                   </Card.Body>

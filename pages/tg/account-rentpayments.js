@@ -2,7 +2,7 @@ import { useState } from 'react';
 import RealEstatePageLayout from '../../components/partials/RealEstatePageLayout';
 import RealEstateAccountLayout from '../../components/partials/RealEstateAccountLayout';
 import Link from 'next/link';
-import { Button, Modal, Form, Table, Row, Col } from 'react-bootstrap';
+import { Button, Modal, Form, Table, Row, Col,Card } from 'react-bootstrap';
 import { useSession, getSession } from 'next-auth/react';
 import Nav from 'react-bootstrap/Nav'
 import PropertyCard from '../../components/PropertyCard'
@@ -22,29 +22,29 @@ const AccountRentPaymentsPage = () => {
 
   const { data: session } = useSession();
 
-  const user_id = session ? session.user.id :0;
+  const user_id = session ? session.user.id : 0;
   useQuery(["RTProperties"],
-  ()=> axios.get(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getUserProperties(user_id:${user_id},first:5){data{surface,badge_propriete{badge{badge_name,badge_image}},id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination},visuels{uri}}}}`).
-  then((res)=>{
-    setProperties(res.data.data.getUserProperties.data.map((property) =>{
-      return {
-        href: getPropertyFullUrl(property.pays.code,property.offre.denomination,property.categorie_propriete.denomination,property.ville.denomination,property.quartier.denomination,property.nuo),
-        images: getFirstImageArray(property.visuels),
-        title: 'N°'+property.nuo+': '+property.categorie_propriete.denomination+' à '+property.offre.denomination+' | '+property.surface+'m²',
-        category: property.usage,
-        location: property.quartier.denomination+", "+property.ville.denomination,
-        price: property.cout_mensuel==0 ? property.cout_vente +" XOF":property.cout_mensuel+" XOF",
-        badges: buildPropertyBadge(property.badge_propriete),
-        amenities: [property.piece, property.wc_douche_interne, property.garage]
-      }
-    }));
-  }));
+    () => axios.get(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getUserProperties(user_id:${user_id},first:5){data{surface,badge_propriete{badge{badge_name,badge_image}},id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination},visuels{uri}}}}`).
+      then((res) => {
+        setProperties(res.data.data.getUserProperties.data.map((property) => {
+          return {
+            href: getPropertyFullUrl(property.pays.code, property.offre.denomination, property.categorie_propriete.denomination, property.ville.denomination, property.quartier.denomination, property.nuo),
+            images: getFirstImageArray(property.visuels),
+            title: 'N°' + property.nuo + ': ' + property.categorie_propriete.denomination + ' à ' + property.offre.denomination + ' | ' + property.surface + 'm²',
+            category: property.usage,
+            location: property.quartier.denomination + ", " + property.ville.denomination,
+            price: property.cout_mensuel == 0 ? property.cout_vente + " XOF" : property.cout_mensuel + " XOF",
+            badges: buildPropertyBadge(property.badge_propriete),
+            amenities: [property.piece, property.wc_douche_interne, property.garage]
+          }
+        }));
+      }));
   console.log(properties);
   const deleteAll = (e) => {
     e.preventDefault()
     setProperties([])
   }
-  
+
   const [payments, setPayments] = useState([
     {
       status: 'Paid',
@@ -55,7 +55,7 @@ const AccountRentPaymentsPage = () => {
       rentFront: 0,
       date: '05-01-2024',
       action: 'Invoice',
-  },{
+    }, {
       status: 'Paid',
       property: 'Apartment A',
       month: 'January 2024',
@@ -147,14 +147,14 @@ const AccountRentPaymentsPage = () => {
       return;
     }
 
-  // Retrieve existing payments from localStorage
-  const existingPayments = JSON.parse(localStorage.getItem('payments')) || [];
+    // Retrieve existing payments from localStorage
+    const existingPayments = JSON.parse(localStorage.getItem('payments')) || [];
 
-  // Add the new payment to the existing list
-  const updatedPayments = [...existingPayments, newPayment];
+    // Add the new payment to the existing list
+    const updatedPayments = [...existingPayments, newPayment];
 
-  // Store the updated payment list in localStorage
-  localStorage.setItem('payments', JSON.stringify(updatedPayments));
+    // Store the updated payment list in localStorage
+    localStorage.setItem('payments', JSON.stringify(updatedPayments));
 
     // Add the new payment to the existing list
     setPayments([...payments, newPayment]);
@@ -170,7 +170,7 @@ const AccountRentPaymentsPage = () => {
       date: '',
       action: '',
     });
-    
+
     // Close modal after adding
     setShowAddPaymentModal(false);
   };
@@ -218,7 +218,7 @@ const AccountRentPaymentsPage = () => {
         </Row>
 
         {/* Payment Table */}
-        <Table bordered hover>
+        {/* <Table bordered hover>
           <thead>
             <tr>
               <th>Status</th>
@@ -253,7 +253,47 @@ const AccountRentPaymentsPage = () => {
               </tr>
             )}
           </tbody>
-        </Table>
+        </Table> */}
+        <Card className="shadow-sm p-3 mb-5 bg-white rounded">
+          <Card.Body>
+            <Table bordered hover className="text-center table-sm" responsive>
+              <thead className="thead-dark">
+                <tr>
+                  <th>Status</th>
+                  <th>Property</th>
+                  <th>Month</th>
+                  <th>Renter</th>
+                  <th>Rent Paid</th>
+                  <th>Rent Front</th>
+                  <th>Date</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredPayments.length ? (
+                  filteredPayments.map((payment, index) => (
+                    <tr key={index} className={payment.status === 'Paid' ? 'table-success' : 'table-warning'}>
+                      <td>{payment.status}</td>
+                      <td>{payment.property}</td>
+                      <td>{payment.month}</td>
+                      <td>{payment.renter}</td>
+                      <td>{payment.rentPaid}</td>
+                      <td>{payment.rentFront}</td>
+                      <td>{payment.date}</td>
+                      <td>{payment.action}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="8" className="text-center">
+                      No rent payments found.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </Table>
+          </Card.Body>
+        </Card>
 
         {/* Modal for Adding New Payment */}
         <Modal show={showAddPaymentModal} onHide={() => setShowAddPaymentModal(false)}>

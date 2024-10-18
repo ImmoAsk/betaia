@@ -6,11 +6,11 @@ import Nav from 'react-bootstrap/Nav'
 import Button from 'react-bootstrap/Button'
 import PropertyCard from '../../components/PropertyCard'
 import EditPropertyModal from '../../components/iacomponents/EditPropertyModal'
-import { buildPropertiesArray } from '../../utils/generalUtils'
+import { buildPropertiesArray, getHumanReadablePrice } from '../../utils/generalUtils'
 import { useSession, getSession } from 'next-auth/react'
-import PropertyProjectList from '../../components/iacomponents/PropertyProjectList'
 import { Row, Col } from 'react-bootstrap';
 import PropertiesList from '../../components/iacomponents/PropertiesList'
+import { get } from 'http'
 const AccountPropertiesPage = ({ _userProperties, _handledProjets, _handlingProjets }) => {
 
   // Properties array
@@ -313,16 +313,16 @@ const AccountPropertiesPage = ({ _userProperties, _handledProjets, _handlingProj
 
 export async function getServerSideProps(context) {
   const session = await getSession(context);
-  if (session.user) {
+  if (session) {
     const userid = session ? session.user.id : 0;
     // Fetch data from external API
-    var dataAPIresponse = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getPropertiesByKeyWords(orderBy:{order:DESC,column:NUO},user_id:1,offre_id:"1",statut:1,limit:150){surface,badge_propriete{badge{badge_name,badge_image}},id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination},visuels{uri}}}`);
+    var dataAPIresponse = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getPropertiesByKeyWords(orderBy:{order:DESC,column:NUO},user_id:1,offre_id:"1",statut:1,limit:150){surface,badge_propriete{badge{badge_name,badge_image}},id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,nuitee,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{id,denomination,minus_denomination},visuels{uri,position}}}`);
     var _userProperties = await dataAPIresponse.json();
 
-    var handledProjets = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getPropertiesByKeyWords(orderBy:{order:DESC,column:NUO},user_id:1,offre_id:"2",statut:1,limit:150){surface,badge_propriete{badge{badge_name,badge_image}},id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination},visuels{uri}}}`);
+    var handledProjets = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getPropertiesByKeyWords(orderBy:{order:DESC,column:NUO},user_id:1,offre_id:"2",statut:1,limit:150){surface,badge_propriete{badge{badge_name,badge_image}},id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,nuitee,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination,id,minus_denomination},visuels{uri,position}}}`);
     var _handledProjets = await handledProjets.json();
 
-    var handlingProjets = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getPropertiesByKeyWords(orderBy:{order:DESC,column:NUO},user_id:1,statut:2,limit:150){surface,badge_propriete{badge{badge_name,badge_image}},id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination},visuels{uri}}}`);
+    var handlingProjets = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getPropertiesByKeyWords(orderBy:{order:DESC,column:NUO},user_id:1,statut:2,limit:150){surface,badge_propriete{badge{badge_name,badge_image}},id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,nuitee,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination,id,minus_denomination},visuels{uri,position}}}`);
     var _handlingProjets = await handlingProjets.json();
 
     _userProperties = _userProperties.data.getPropertiesByKeyWords;
@@ -332,7 +332,8 @@ export async function getServerSideProps(context) {
       props: { _userProperties, _handledProjets, _handlingProjets },
     }
 
-  } else {
+  } 
+  if (!session) {
     return {
       redirect: {
         destination: '/auth/signin',
@@ -340,5 +341,7 @@ export async function getServerSideProps(context) {
       },
     };
   }
+  return { props: { session } };
 }
+
 export default AccountPropertiesPage

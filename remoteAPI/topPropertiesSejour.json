@@ -1,67 +1,44 @@
 [
     [
         {
-            "href": "/tg/single-v2",
+            "href": "/tg/catalog?usage=5&quartier=3",
             "img": "/images/tg/top-properties/01.jpg",
-            "category": "121 disponibles",
-            "title": "Min. 55 000 XOF/mois",
-            "location": "Agoè, Lomé, Togo"
+            "category": "10 en tout",
+            "title": "Min. 250 000 XOF/mois",
+            "location": "Baguida, Lomé, Togo"
         },
         {
-            "href": "/tg/single-v2",
+            "href": "/tg/catalog?usage=5&quartier=305",
             "img": ["/images/tg/top-properties/08.jpg", 735, 389],
-            "category": "121 disponibles",
-            "title": "Min. 55 000 XOF/mois",
-            "location": "Agoè, Lomé, Togo"
+            "category": "3 en tout",
+            "title": "Min. 300 000 XOF/mois",
+            "location": "Kodjoviakope, Lomé, Togo"
         },
         {
-            "href": "/tg/single-v2",
+            "href": "/tg/catalog?usage=5&quartier=268",
             "img": ["/images/tg/top-properties/08.jpg", 735, 389],
-            "category": "121 disponibles",
-            "title": "Min. 55 000 XOF/mois",
-            "location": "Agoè, Lomé, Togo"
+            "category": "33 disponibles",
+            "title": "Min. 120 000 XOF/mois",
+            "location": "Tokoin, Lomé, Togo"
         }
     ],
     [
         {
-            "href": "/tg/single-v2",
+            "href": "/tg/catalog?usage=5&quartier=3",
             "img": "/images/tg/top-properties/04.jpg",
             "category": "45 disponibles",
             "title": "Min. 50 000 XOF/mois",
-            "location": "Décon, Lomé, Togo"
+            "location": "Totsi, Lomé, Togo"
         },
         {
-            "href": "/tg/single-v2",
+            "href": "/tg/catalog?usage=5&quartier=3",
             "img": ["/images/tg/top-properties/08.jpg", 735, 389],
             "category": "121 disponibles",
             "title": "Min. 55 000 XOF/mois",
-            "location": "Agoè, Lomé, Togo"
+            "location": "Adidogome, Lomé, Togo"
         },
         {
-            "href": "/tg/single-v2",
-            "img": ["/images/tg/top-properties/08.jpg", 735, 389],
-            "category": "121 disponibles",
-            "title": "Min. 55 000 XOF/mois",
-            "location": "Agoè, Lomé, Togo"
-        }
-    ],
-    [
-        {
-            "href": "/tg/single-v2",
-            "img": "/images/tg/top-properties/01.jpg",
-            "category": "121 disponibles",
-            "title": "Min. 55 000 XOF/mois",
-            "location": "Agoè, Lomé, Togo"
-        },
-        {
-            "href": "/tg/single-v2",
-            "img": ["/images/tg/top-properties/08.jpg", 735, 389],
-            "category": "121 disponibles",
-            "title": "Min. 55 000 XOF/mois",
-            "location": "Agoè, Lomé, Togo"
-        },
-        {
-            "href": "/tg/single-v2",
+            "href": "/tg/catalog?usage=5&quartier=3",
             "img": ["/images/tg/top-properties/08.jpg", 735, 389],
             "category": "121 disponibles",
             "title": "Min. 55 000 XOF/mois",
