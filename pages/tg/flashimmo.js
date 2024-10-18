@@ -2,26 +2,9 @@ import { useRef, useEffect, useState } from 'react'
 import { useMediaQuery } from 'react-responsive'
 import { useRouter } from 'next/router'
 import dynamic from 'next/dynamic'
-import Link from 'next/link'
 import axios from "axios";
-import { useQuery } from '@tanstack/react-query'
 import RealEstatePageLayout from '../../components/partials/RealEstatePageLayout'
 import Container from 'react-bootstrap/Container'
-import Row from 'react-bootstrap/Row'
-import Col from 'react-bootstrap/Col'
-import Offcanvas from 'react-bootstrap/Offcanvas'
-import Nav from 'react-bootstrap/Nav'
-import Form from 'react-bootstrap/Form'
-import InputGroup from 'react-bootstrap/InputGroup'
-import Button from 'react-bootstrap/Button'
-import ButtonGroup from 'react-bootstrap/ButtonGroup'
-import ToggleButton from 'react-bootstrap/ToggleButton'
-import Breadcrumb from 'react-bootstrap/Breadcrumb'
-import Pagination from 'react-bootstrap/Pagination'
-import ImageLoader from '../../components/ImageLoader'
-import PropertyCard from '../../components/PropertyCard'
-import SimpleBar from 'simplebar-react'
-import Nouislider from 'nouislider-react'
 import 'simplebar/dist/simplebar.min.css'
 import 'nouislider/distribute/nouislider.css'
 import 'dotenv/config'
@@ -44,18 +27,14 @@ const Popup = dynamic(() =>
   { ssr: false }
 )
 import 'leaflet/dist/leaflet.css'
-import getPropertyFullUrl from '../../utils/getPropertyFullURL'
-import buildPropertyBadge from '../../utils/buildPropertyBadge'
-import getFirstImageArray from '../../utils/formatFirsImageArray'
 import { useSession } from 'next-auth/react'
-import IAPaginaation from '../../components/iacomponents/IAPagination'
 import { buildPropertiesArray } from '../../utils/generalUtils'
 import FlashImmoPagination from '../../components/iacomponents/FlashImmoPagination'
 
 
-function constructApiUrl(apiUrl, offre, ville, quartier, categorie,usage) {
+function constructApiUrl(apiUrl, offre, ville, quartier, categorie, usage) {
   // Start constructing the query
-  let query = `query={getPropertiesByKeyWords(limit:81,orderBy:{column:NUO,order:DESC}`;
+  let query = `query={getPropertiesByKeyWords(limit:99,orderBy:{column:NUO,order:DESC}`;
 
   // Conditionally add each parameter if it is provided
   if (offre) {
@@ -75,14 +54,14 @@ function constructApiUrl(apiUrl, offre, ville, quartier, categorie,usage) {
   }
 
   // Close the query string
-  query += `){badge_propriete{badge{badge_name,badge_image}},visuels{uri},surface,lat_long,nuo,usage,offre{denomination,id},categorie_propriete{denomination,id},pays{code,id},piece,titre,garage,cout_mensuel,ville{denomination,id},wc_douche_interne,cout_vente,quartier{denomination,id}}}`;
+  query += `){badge_propriete{badge{badge_name,badge_image}},visuels{uri,position},surface,lat_long,nuo,usage,offre{denomination,id},categorie_propriete{denomination,id},pays{code,id},piece,titre,garage,cout_mensuel,ville{denomination,id},wc_douche_interne,id,nuitee,cout_vente,quartier{denomination,id,minus_denomination}}}`;
 
   // Construct the full URL
   const fullUrl = `${apiUrl}?${query}`;
-  
+
   return fullUrl;
 }
-const FlashImmoPage = ({ categoryParam, offerParam, usageParam,townParam, districtParam,_rentingProperties }) => {
+const FlashImmoPage = ({ categoryParam, offerParam, usageParam, townParam, districtParam, _rentingProperties }) => {
 
   // Add extra class to body
   useEffect(() => {
@@ -105,46 +84,43 @@ const FlashImmoPage = ({ categoryParam, offerParam, usageParam,townParam, distri
   //console.log("Catalogue 3:",_rentingProperties);
   return (
     <RealEstatePageLayout
-      pageTitle={"FlashImmo : Immobilier en temps réel"}
+      pageTitle={"FlashImmo : Immobilier au Togo en temps réel"}
       activeNav='flashimmo'
       userLoggedIn={session ? true : false}
     >
       {/* Page container */}
       <Container className='mt-5 pt-5 p-0'>
-       
-            {/* Pagination */}
-            <FlashImmoPagination dataPagineted={rentingProperties} />
-          
+        <FlashImmoPagination dataPagineted={rentingProperties} />
       </Container>
     </RealEstatePageLayout>
   )
 }
 export async function getServerSideProps(context) {
   // Fetch data from external API
-  
+
   // Extract query parameters from the context object
   const { query } = context;
-  const { categorie, offre, ville, quartier, usage} = query;
+  const { categorie, offre, ville, quartier, usage } = query;
   try {
-    const url = constructApiUrl(apiUrl, offre, ville, quartier, categorie,usage);
+    const url = constructApiUrl(apiUrl, offre, ville, quartier, categorie, usage);
     console.log(url)
     const response = await axios.get(url);
     const _rentingProperties = await response.data;
     // Pass them as props to the component
-  return {
-    props: {
-      categoryParam: categorie || null,
-      offerParam: offre || null,
-      townParam: ville || null,
-      usageParam: usage || null,
-      districtParam: quartier || null,
-      _rentingProperties: _rentingProperties.data.getPropertiesByKeyWords || [],
-    },
-  };
+    return {
+      props: {
+        categoryParam: categorie || null,
+        offerParam: offre || null,
+        townParam: ville || null,
+        usageParam: usage || null,
+        districtParam: quartier || null,
+        _rentingProperties: _rentingProperties.data.getPropertiesByKeyWords || [],
+      },
+    };
   } catch (error) {
     console.error('Error fetching data:', error);
   }
-  
-  
+
+
 }
 export default FlashImmoPage
