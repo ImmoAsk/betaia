@@ -1,331 +1,417 @@
-import { useState } from 'react'
-import RealEstatePageLayout from '../../../../../../components/partials/RealEstatePageLayout'
-import Link from 'next/link'
-import { useRouter } from 'next/router'
-import Container from 'react-bootstrap/Container'
-import Row from 'react-bootstrap/Row'
-import Col from 'react-bootstrap/Col'
-import Breadcrumb from 'react-bootstrap/Breadcrumb'
-import Button from 'react-bootstrap/Button'
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
-import Tooltip from 'react-bootstrap/Tooltip'
-import Dropdown from 'react-bootstrap/Dropdown'
-import Badge from 'react-bootstrap/Badge'
-import Card from 'react-bootstrap/Card'
-import ImageLoader from '../../../../../../components/ImageLoader'
-import PropertyCard from '../../../../../../components/PropertyCard'
-import { Navigation, Pagination } from 'swiper'
-import { Swiper, SwiperSlide } from 'swiper/react'
-import 'swiper/css'
-import 'swiper/css/navigation'
-import 'swiper/css/pagination'
-import axios from 'axios'
-import { useEffect } from 'react'
-import Modal from 'react-bootstrap/Modal'
-import Form from 'react-bootstrap/Form'
-import getPropertyFullUrl from '../../../../../../utils/getPropertyFullURL'
-import getFirstImageArray from '../../../../../../utils/formatFirsImageArray'
-import buildPropertyBadge from '../../../../../../utils/buildPropertyBadge'
-import { useSession } from 'next-auth/react'
-import ProRealEstateAgency from '../../../../../../components/iacomponents/ProRealEstateAgency'
-import FurnishedEquipmentList from '../../../../../../components/iacomponents/FurnishedEquipmentList'
-import NearestInfrastructureList from '../../../../../../components/iacomponents/NearestInfrastructureList'
-import RecommendPropertyList from '../../../../../../components/iacomponents/RecommendPropertyList'
+import { useState } from "react";
+import RealEstatePageLayout from "../../../../../../components/partials/RealEstatePageLayout";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import Container from "react-bootstrap/Container";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import Breadcrumb from "react-bootstrap/Breadcrumb";
+import Button from "react-bootstrap/Button";
+import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import Tooltip from "react-bootstrap/Tooltip";
+import Dropdown from "react-bootstrap/Dropdown";
+import Badge from "react-bootstrap/Badge";
+import Card from "react-bootstrap/Card";
+import { Navigation, Pagination } from "swiper";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import axios from "axios";
+import { useEffect } from "react";
+import getPropertyFullUrl from "../../../../../../utils/getPropertyFullURL";
+import getFirstImageArray from "../../../../../../utils/formatFirsImageArray";
+import buildPropertyBadge from "../../../../../../utils/buildPropertyBadge";
+import { useSession } from "next-auth/react";
+import ProRealEstateAgency from "../../../../../../components/iacomponents/ProRealEstateAgency";
+import FurnishedEquipmentList from "../../../../../../components/iacomponents/FurnishedEquipmentList";
+import NearestInfrastructureList from "../../../../../../components/iacomponents/NearestInfrastructureList";
+import RecommendPropertyList from "../../../../../../components/iacomponents/RecommendPropertyList";
 
-import PayVisitModal from '../../../../../../components/iacomponents/PayVisitModal'
-import CheckAvailabilityModal from '../../../../../../components/iacomponents/CheckAvailabilityModal'
-import RentNegociationModal from '../../../../../../components/iacomponents/RentNegociationModal'
-import AskNuiteePriceModal from '../../../../../../components/iacomponents/AskNuiteePriceModal'
-import { createPropertyObject } from '../../../../../../utils/buildPropertiesArray'
-import ImageComponent from '../../../../../../components/iacomponents/ImageComponent'
+import PayVisitModal from "../../../../../../components/iacomponents/PayVisitModal";
+import CheckAvailabilityModal from "../../../../../../components/iacomponents/CheckAvailabilityModal";
+import RentNegociationModal from "../../../../../../components/iacomponents/RentNegociationModal";
+import AskNuiteePriceModal from "../../../../../../components/iacomponents/AskNuiteePriceModal";
+import ImageComponent from "../../../../../../components/iacomponents/ImageComponent";
+import { getHumanReadablePrice } from "../../../../../../utils/generalUtils";
+import BookFurnishedPropertyModal from "../../../../../../components/iacomponents/BookFurnishedPropertyModal";
+import { Book } from "feather-icons-react/build/IconComponents";
 
 function SinglePropertyAltPage({ property }) {
-
   // Sign in modal
   //const propertyCard= createPropertyObject(property);
-  const [signinShow, setSigninShow] = useState(false)
+  const [signinShow, setSigninShow] = useState(false);
 
-  const handleSigninClose = () => setSigninShow(false)
-  const handleSigninShow = () => setSigninShow(true)
+  const handleSigninClose = () => setSigninShow(false);
+  const handleSigninShow = () => setSigninShow(true);
 
   // Sign up modal
-  const [signupShow, setSignupShow] = useState(false)
+  const [signupShow, setSignupShow] = useState(false);
 
-  const handleSignupClose = () => setSignupShow(false)
-  const handleSignupShow = () => setSignupShow(true)
+  const handleSignupClose = () => setSignupShow(false);
+  const handleSignupShow = () => setSignupShow(true);
 
-  const [rentNegociationShow, setRentNegociationShow] = useState(false)
-  const handleRentNegociationClose = () => setRentNegociationShow(false)
-  const handleRentNegociationShow = () => setRentNegociationShow(true)
+  const [rentNegociationShow, setRentNegociationShow] = useState(false);
+  const handleRentNegociationClose = () => setRentNegociationShow(false);
+  const handleRentNegociationShow = () => setRentNegociationShow(true);
 
+  const [bookFurnishedPropertyShow, setBookFurnishedPropertyShow] =
+    useState(false);
+  const handleBookFurnishedPropertyClose = () =>
+    setBookFurnishedPropertyShow(false);
+  const handleBookFurnishedPropertyShow = () =>
+    setBookFurnishedPropertyShow(true);
 
-  const [askNuiteePriceShow, setAskNuiteePriceShow] = useState(false)
-  const handleAskNuiteePriceClose = () => setAskNuiteePriceShow(false)
-  const handleAskNuiteePriceShow = () => setAskNuiteePriceShow(true)
+  const [askNuiteePriceShow, setAskNuiteePriceShow] = useState(false);
+  const handleAskNuiteePriceClose = () => setAskNuiteePriceShow(false);
+  const handleAskNuiteePriceShow = () => setAskNuiteePriceShow(true);
   // Swap modals
   const handleSignInToUp = (e) => {
-    e.preventDefault()
-    setSigninShow(false)
-    setSignupShow(true)
-  }
+    e.preventDefault();
+    setSigninShow(false);
+    setSignupShow(true);
+  };
   const handleSignUpToIn = (e) => {
-    e.preventDefault()
-    setSigninShow(true)
-    setSignupShow(false)
-  }
+    e.preventDefault();
+    setSigninShow(true);
+    setSignupShow(false);
+  };
 
   const handleRentNegociationModal = (e) => {
-    e.preventDefault()
-    if (session) {
-      handleRentNegociationShow();
-    } else {
-      handleSignInToUp(e);
-    }
-  }
+    e.preventDefault();
+    handleRentNegociationShow();
+  };
+
+  const handleBookFurnishedPropertyModal = (e) => {
+    e.preventDefault();
+    handleBookFurnishedPropertyShow();
+  };
 
   const handleNuiteePriceModal = (e) => {
-    e.preventDefault()
-    handleAskNuiteePriceShow()
-  }
+    e.preventDefault();
+    handleAskNuiteePriceShow();
+  };
 
   const { data: session } = useSession();
-  const router = useRouter()
+  const router = useRouter();
   const { nuo, bien, quartier, ville } = router.query;
 
   const myQuartier = quartier.charAt(0).toUpperCase() + quartier.slice(1);
   const myVille = ville.charAt(0).toUpperCase() + ville.slice(1);
   const myBien = bien.charAt(0).toUpperCase() + bien.slice(1);
 
-
   const [thumbnails, setThumbnails] = useState([]);
   const [Unconnectedhumbnails, setUnconnectedhumbnails] = useState([]);
   const [recommendProperties, setRecommendProperties] = useState([]);
   const defineThumbNails = () => {
-    property && property.visuels.map((imgproperty) => {
-      setThumbnails(thumbnails => [...thumbnails, 'https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/proprietes/' + imgproperty.uri]);
-    })
-  }
+    property &&
+      property.visuels.map((imgproperty) => {
+        setThumbnails((thumbnails) => [
+          ...thumbnails,
+          "https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/proprietes/" +
+            imgproperty.uri,
+        ]);
+      });
+  };
 
   const defineUnauthenticatedThumbNails = () => {
     setUnconnectedhumbnails([property && property.visuels[0].uri]);
-    setUnconnectedhumbnails(Unconnectedhumbnails => [...Unconnectedhumbnails, 'create-account-more-images.jpg'])
-  }
+    setUnconnectedhumbnails((Unconnectedhumbnails) => [
+      ...Unconnectedhumbnails,
+      "create-account-more-images.png",
+    ]);
+  };
 
   useEffect(() => {
     defineThumbNails();
     defineUnauthenticatedThumbNails();
   }, []);
   const getRecommendProperties = () => {
-    axios.get(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getRecommendProperties(first:5,offre_id:"1",nuo:${property.nuo},quartier_id:"${property.quartier.id}",categorie_id:"${property.categorie_propriete.id}"){data{surface,badge_propriete{badge{badge_name,badge_image}},id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination},visuels{uri}}}}`).
-      then((res) => {
-        setRecommendProperties(res.data.data.getRecommendProperties.data.map((propertyr) => {
-          //const { status, data:badges_property, error, isFetching,isLoading,isError }  = usePropertyBadges(property.id);
-          return {
-            href: getPropertyFullUrl(propertyr.pays.code, propertyr.offre.denomination, propertyr.categorie_propriete.denomination, propertyr.ville.denomination, propertyr.quartier.denomination, propertyr.nuo),
-            images: getFirstImageArray(propertyr.visuels),
-            title: 'N°' + propertyr.nuo + ': ' + propertyr.categorie_propriete.denomination + ' à ' + propertyr.offre.denomination + ' | ' + propertyr.surface + 'm²',
-            category: propertyr.usage,
-            location: propertyr.quartier.denomination + ", " + propertyr.ville.denomination,
-            price: propertyr.cout_mensuel == 0 ? propertyr.cout_vente : propertyr.cout_mensuel + " XOF",
-            badges: buildPropertyBadge(propertyr.badge_propriete),
-            footer: [propertyr.piece, propertyr.wc_douche_interne, propertyr.garage],
-          }
-        }));
+    axios
+      .get(
+        `https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getRecommendProperties(first:5,offre_id:"1",nuo:${property.nuo},quartier_id:"${property.quartier.id}",categorie_id:"${property.categorie_propriete.id}"){data{surface,badge_propriete{badge{badge_name,badge_image}},id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,nuitee,quartier{denomination},visuels{uri,position}}}}`
+      )
+      .then((res) => {
+        setRecommendProperties(
+          res.data.data.getRecommendProperties.data.map((propertyr) => {
+            //const { status, data:badges_property, error, isFetching,isLoading,isError }  = usePropertyBadges(property.id);
+            return {
+              href: getPropertyFullUrl(
+                propertyr.pays.code,
+                propertyr.offre.denomination,
+                propertyr.categorie_propriete.denomination,
+                propertyr.ville.denomination,
+                propertyr.quartier.denomination,
+                propertyr.nuo
+              ),
+              images: [
+                [getFirstImageArray(propertyr.visuels), 467, 305, "Image"],
+              ],
+              title:
+                "N°" +
+                propertyr.nuo +
+                ": " +
+                propertyr.categorie_propriete.denomination +
+                " à " +
+                propertyr.offre.denomination +
+                " | " +
+                propertyr.surface +
+                "m²",
+              category: propertyr.usage,
+              location:
+                propertyr.quartier.denomination +
+                ", " +
+                propertyr.ville.denomination,
+              price: getHumanReadablePrice(propertyr),
+              badges: buildPropertyBadge(propertyr.badge_propriete),
+              footer: [
+                propertyr.piece,
+                propertyr.wc_douche_interne,
+                propertyr.garage,
+              ],
+            };
+          })
+        );
       });
-  }
-
+  };
 
   useEffect(() => {
     getRecommendProperties();
   }, []);
-  // Gallery component (Swiper slider with custom thumbnails and slides count)  
+  // Gallery component (Swiper slider with custom thumbnails and slides count)
   const SwiperGallery = () => {
-
     const [currentSlide, setCurrentSlide] = useState();
     const [totalSlides, setTotalSlides] = useState();
     const thumbnailSize = property.visuels.length;
     const unconnectedThumbnailSize = Unconnectedhumbnails.length;
     const SlidesCount = () => (
-      <div className='swiper-slides-count text-light'>
-        <i className='fi-image fs-lg me-2'></i>
-        <div className='fs-5 fw-bold ps-1'>
+      <div className="swiper-slides-count text-light">
+        <i className="fi-image fs-lg me-2"></i>
+        <div className="fs-5 fw-bold ps-1">
           <span>{currentSlide}</span>
           <span>/</span>
           <span>{totalSlides}</span>
         </div>
       </div>
-    )
+    );
 
     return (
       <>
         <Swiper
           modules={[Navigation, Pagination]}
           onSlideChange={(swiper) => {
-            setCurrentSlide(swiper.realIndex + 1)
+            setCurrentSlide(swiper.realIndex + 1);
           }}
           onInit={(swiper) => {
-            setCurrentSlide(swiper.realIndex + 1)
-            setTotalSlides(swiper.slides.length - 2)
+            setCurrentSlide(swiper.realIndex + 1);
+            setTotalSlides(swiper.slides.length - 2);
           }}
           pagination={{
-            el: '.swiper-thumbnails',
+            el: ".swiper-thumbnails",
             clickable: true,
             renderBullet: (index, className) => {
               //console.log("Index: " + index)
-              session ? thumbnailSize = thumbnailSize : thumbnailSize = unconnectedThumbnailSize;
+              session
+                ? (thumbnailSize = thumbnailSize)
+                : (thumbnailSize = unconnectedThumbnailSize);
               if (index === thumbnailSize) {
                 return `<li class='swiper-thumbnail ${className}'>
                   <div class='d-flex flex-column align-items-center justify-content-center h-100'>
                     <i class='fi-play-circle fs-4 mb-1'></i>
                     <span>Lancer la vidéo</span>
                   </div>
-                </li>`
+                </li>`;
               } else {
                 return `<li class='swiper-thumbnail ${className}'>
-                  <img src=${session ? thumbnails[index] : 'https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/proprietes/' + Unconnectedhumbnails[index]} alt='Thumbnail'/>
-                </li>`
+                  <img src=${
+                    session
+                      ? thumbnails[index]
+                      : "https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/proprietes/" +
+                        Unconnectedhumbnails[index]
+                  } alt='Thumbnail'/>
+                </li>`;
               }
-            }
+            },
           }}
           navigation
           spaceBetween={12}
           loop
           grabCursor
-          className='swiper-nav-onhover rounded-3'
+          className="swiper-nav-onhover rounded-3"
         >
-          {
-            session && property && property.visuels.map((imgproperty) => {
-
+          {session &&
+            property &&
+            property.visuels.map((imgproperty) => {
               return (
-                <SwiperSlide className='d-flex'>
+                <SwiperSlide className="d-flex">
                   <ImageComponent imageUri={imgproperty.uri} />
                 </SwiperSlide>
-              )
-            })
-          }
-          {!session &&
-            (
-              <>
-                <SwiperSlide className='d-flex'>
-                  <ImageComponent imageUri={Unconnectedhumbnails[0]} />
-                </SwiperSlide>
-                <SwiperSlide className='d-flex'>
-                  <ImageComponent imageUri={Unconnectedhumbnails[1]} />
-                </SwiperSlide>
-
-              </>
-            )
-          }
-          <SwiperSlide>
+              );
+            })}
+          {!session && (
+            <>
+              <SwiperSlide className="d-flex">
+                <ImageComponent imageUri={Unconnectedhumbnails[0]} />
+              </SwiperSlide>
+              <SwiperSlide className="d-flex">
+                <ImageComponent imageUri={Unconnectedhumbnails[1]} />
+              </SwiperSlide>
+            </>
+          )}
+          {/* <SwiperSlide>
             <div className='ratio ratio-16x9'>
-              <iframe src='https://www.youtube.com/embed/ghIfa3dY8ys?autoplay=1' className='rounded-3' allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
+              <iframe src='https://www.youtube.com/embed/1oVncb5hke0?autoplay=1' className='rounded-3' allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
             </div>
-          </SwiperSlide>
+          </SwiperSlide> */}
 
           <SlidesCount />
         </Swiper>
-        <ul className='swiper-thumbnails'></ul>
+        <ul className="swiper-thumbnails"></ul>
       </>
-    )
+    );
+  };
+
+  {
+    !property && (
+      <h4 className="mt-5 mb-lg-5 mb-4 pt-5 pb-lg-5">
+        Ce bien immobilier n'existe pas encore
+      </h4>
+    );
   }
-
-
-
-  { !property && <h4 className='mt-5 mb-lg-5 mb-4 pt-5 pb-lg-5'>Ce bien immobilier n'existe pas encore</h4> }
-  //{isError && <h4 className='mt-5 mb-lg-5 mb-4 pt-5 pb-lg-5'>Une erreur: {error.message}</h4>}
 
   return (
     <RealEstatePageLayout
       pageTitle={`${property.categorie_propriete.denomination} à louer, ${property.ville.denomination}, ${property.quartier.denomination} | No. ${nuo} | Togo`}
       userLoggedIn={session ? true : false}
+      pageDescription={`${property.categorie_propriete.denomination} à louer, ${property.ville.denomination}, ${property.quartier.denomination}, Togo. ${property.descriptif}`}
+      pageKeywords={`location immobiliere, ${property.categorie_propriete.denomination}, logement, sejour, experience,${property.ville.denomination}, ${property.quartier.denomination},Togo`}
+      pageCoverImage={`${getFirstImageArray(property.visuels)}`}
+      pageUrl={`https://www.immoask.com/tg/locations-immobilieres/${bien}/${ville}/${quartier}/${nuo}`}
     >
-
-
       {/* Sign in modal */}
-      {signinShow && <PayVisitModal
-        centered
-        size='lg'
-        show={signinShow}
-        onHide={handleSigninClose}
-        onSwap={handleSignInToUp}
-        property={property}
-      />}
+      {signinShow && (
+        <PayVisitModal
+          centered
+          size="lg"
+          show={signinShow}
+          onHide={handleSigninClose}
+          onSwap={handleSignInToUp}
+          property={property}
+        />
+      )}
 
       {/* Sign up modal */}
-      {signupShow && <CheckAvailabilityModal
-        centered
-        size='lg'
-        show={signupShow}
-        onHide={handleSignupClose}
-        onSwap={handleSignUpToIn}
-        property={property}
-      />}
+      {signupShow && (
+        <CheckAvailabilityModal
+          centered
+          size="lg"
+          show={signupShow}
+          onHide={handleSignupClose}
+          onSwap={handleSignUpToIn}
+          property={property}
+        />
+      )}
 
       {/* Sign up modal */}
-      {rentNegociationShow && <RentNegociationModal
-        centered
-        size='lg'
-        show={rentNegociationShow}
-        onHide={handleRentNegociationClose}
-        property={property}
-      />}
+      {rentNegociationShow && (
+        <RentNegociationModal
+          centered
+          size="lg"
+          show={rentNegociationShow}
+          onHide={handleRentNegociationClose}
+          property={property}
+        />
+      )}
 
+      {bookFurnishedPropertyShow && (
+        <BookFurnishedPropertyModal
+          centered
+          size="lg"
+          show={bookFurnishedPropertyShow}
+          onHide={handleBookFurnishedPropertyClose}
+          property={property}
+        />
+      )}
 
-      {askNuiteePriceShow && <AskNuiteePriceModal
-        centered
-        size='lg'
-        show={askNuiteePriceShow}
-        onHide={handleAskNuiteePriceClose}
-        property={property}
-      />}
-      {/* Post content */}
+      {askNuiteePriceShow && (
+        <AskNuiteePriceModal
+          centered
+          size="lg"
+          show={askNuiteePriceShow}
+          onHide={handleAskNuiteePriceClose}
+          property={property}
+        />
+      )}
       {property && (
-        <Container as='section'>
-          <Container as='section' className='mt-5 mb-lg-5 mb-4 pt-5 pb-lg-5'>
+        <Container as="section">
+          <Container as="section" className="mt-5 mb-lg-5 mb-4 pt-5 pb-lg-5">
             {/* Breadcrumb */}
-            <Breadcrumb className='mb-3 pt-md-3'>
-              <Link href='/tg/catalog' passHref>
+            <Breadcrumb className="mb-3 pt-md-3">
+              <Link href="/tg/catalog" passHref>
                 <Breadcrumb.Item>Catalogue immobilier</Breadcrumb.Item>
               </Link>
-              <Link href='/tg/locations-immobilieres' passHref>
+              <Link href="/tg/locations-immobilieres" passHref>
                 <Breadcrumb.Item>{"Locations immobilières"}</Breadcrumb.Item>
               </Link>
               <Link href={`/tg/locations-immobilieres/${bien}`} passHref>
-                <Breadcrumb.Item>{property.categorie_propriete.denomination}</Breadcrumb.Item>
+                <Breadcrumb.Item>
+                  {property.categorie_propriete.denomination}
+                </Breadcrumb.Item>
               </Link>
-              <Link href={`/tg/locations-immobilieres/${bien}/${ville}`} passHref>
+              <Link
+                href={`/tg/locations-immobilieres/${bien}/${ville}`}
+                passHref
+              >
                 <Breadcrumb.Item>{property.ville.denomination}</Breadcrumb.Item>
               </Link>
-              <Link href={`/tg/locations-immobilieres/${bien}/${ville}/${quartier}`} passHref>
-                <Breadcrumb.Item>{property.quartier.denomination}</Breadcrumb.Item>
+              <Link
+                href={`/tg/locations-immobilieres/${bien}/${ville}/${quartier}`}
+                passHref
+              >
+                <Breadcrumb.Item>
+                  {property.quartier.denomination}
+                </Breadcrumb.Item>
               </Link>
               <Breadcrumb.Item active>{nuo}</Breadcrumb.Item>
             </Breadcrumb>
             <Row>
-              <Col lg={7} className='pt-lg-2 mb-5 mb-lg-0'>
-                <div className='d-flex flex-column'>
-
+              <Col lg={7} className="pt-lg-2 mb-5 mb-lg-0">
+                <div className="d-flex flex-column">
                   {/* Gallery */}
-                  <div className='order-lg-1 order-2'>
+                  <div className="order-lg-1 order-2">
                     <SwiperGallery />
                   </div>
 
                   {/* Page title + Amenities */}
-                  <div className='order-lg-2 order-1 pt-lg-2'>
-                    <h1 className='h2 mb-2'> No. {property.nuo} | {property.categorie_propriete.denomination} à louer, {property.ville.denomination}, {property.quartier.denomination} {" "}{property && property.titre == 'undefined' ? '' : property.titre}</h1>
-                    <p className='mb-2 pb-1 fs-lg'>{property && property.adresse.libelle}</p>
-                    <ul className='d-flex mb-4 pb-lg-2 list-unstyled'>
-                      <li className='me-3 pe-3 border-end'>
-                        <b className='me-1'>{property && property.piece}+{property && property.salon}</b>
-                        <i className='fi-bed mt-n1 lead align-middle text-muted'></i>
+                  <div className="order-lg-2 order-1 pt-lg-2">
+                    <h1 className="h2 mb-2">
+                      {" "}
+                      No. {property.nuo} |{" "}
+                      {property.categorie_propriete.denomination} à louer,{" "}
+                      {property.ville.denomination},{" "}
+                      {property.quartier.denomination}{" "}
+                      {property && property.titre == "undefined"
+                        ? ""
+                        : property.titre}
+                    </h1>
+                    <p className="mb-2 pb-1 fs-lg">
+                      {property && property.adresse.libelle}
+                    </p>
+                    <ul className="d-flex mb-4 pb-lg-2 list-unstyled">
+                      <li className="me-3 pe-3 border-end">
+                        <b className="me-1">
+                          {property && property.piece}+
+                          {property && property.salon}
+                        </b>
+                        <i className="fi-bed mt-n1 lead align-middle text-muted"></i>
                       </li>
-                      <li className='me-3 pe-3 border-end'>
-                        <b className='me-1'>{property && property.piece}</b>
-                        <i className='fi-bath mt-n1 lead align-middle text-muted'></i>
+                      <li className="me-3 pe-3 border-end">
+                        <b className="me-1">{property && property.piece}</b>
+                        <i className="fi-bath mt-n1 lead align-middle text-muted"></i>
                       </li>
-                      <li className='me-3 pe-3 border-end'>
-                        <b className='me-1'>{property && property.garage}</b>
-                        <i className='fi-car mt-n1 lead align-middle text-muted'></i>
+                      <li className="me-3 pe-3 border-end">
+                        <b className="me-1">{property && property.garage}</b>
+                        <i className="fi-car mt-n1 lead align-middle text-muted"></i>
                       </li>
                       <li>
                         <b>{property && property.surface} </b>
@@ -336,56 +422,58 @@ function SinglePropertyAltPage({ property }) {
                 </div>
 
                 {/* Overview */}
-                <h2 className='h5'>Descriptif immobilier</h2>
-                <p className='mb-4 pb-2'>
-
-                  {property && property.descriptif}
-
-                </p>
+                <h2 className="h5">Descriptif immobilier</h2>
+                <p className="mb-4 pb-2">{property && property.descriptif}</p>
 
                 <ProRealEstateAgency user={property.user.id} />
               </Col>
 
-
               {/* Sidebar with details */}
-              <Col as='aside' lg={5}>
-                <div className='ps-lg-2'>
-                  <div className='d-flex align-items-center justify-content-between mb-3'>
+              <Col as="aside" lg={5}>
+                <div className="ps-lg-2">
+                  <div className="d-flex align-items-center justify-content-between mb-3">
                     <div>
-                      <Badge bg='success' className='me-2 mb-2'>Vérifié</Badge>
-                      <Badge bg='info' className='me-2 mb-2'>Nouvel</Badge>
+                      <Badge bg="success" className="me-2 mb-2">
+                        Vérifié
+                      </Badge>
+                      <Badge bg="info" className="me-2 mb-2">
+                        Nouvel
+                      </Badge>
                     </div>
 
                     {/* Wishlist + Sharing */}
-                    <div className='text-nowrap'>
+                    <div className="text-nowrap">
                       <OverlayTrigger
-                        placement='top'
+                        placement="top"
                         overlay={<Tooltip>Ajouter aux biens à visiter</Tooltip>}
                       >
-                        <Button size='xs' variant='icon btn-light-primary shadow-sm rounded-circle ms-2 mb-2'>
-                          <i className='fi-heart'></i>
+                        <Button
+                          size="xs"
+                          variant="icon btn-light-primary shadow-sm rounded-circle ms-2 mb-2"
+                        >
+                          <i className="fi-heart"></i>
                         </Button>
                       </OverlayTrigger>
-                      <Dropdown className='d-inline-block'>
+                      <Dropdown className="d-inline-block">
                         <OverlayTrigger
-                          placement='top'
-                          overlay={<Tooltip>Share</Tooltip>}
+                          placement="top"
+                          overlay={<Tooltip>Partager</Tooltip>}
                         >
-                          <Dropdown.Toggle variant='icon btn-light-primary btn-xs shadow-sm rounded-circle ms-2 mb-2'>
-                            <i className='fi-share'></i>
+                          <Dropdown.Toggle variant="icon btn-light-primary btn-xs shadow-sm rounded-circle ms-2 mb-2">
+                            <i className="fi-share"></i>
                           </Dropdown.Toggle>
                         </OverlayTrigger>
-                        <Dropdown.Menu align='end' className='my-1'>
-                          <Dropdown.Item as='button'>
-                            <i className='fi-facebook fs-base opacity-75 me-2'></i>
+                        <Dropdown.Menu align="end" className="my-1">
+                          <Dropdown.Item as="button">
+                            <i className="fi-facebook fs-base opacity-75 me-2"></i>
                             Facebook
                           </Dropdown.Item>
-                          <Dropdown.Item as='button'>
-                            <i className='fi-twitter fs-base opacity-75 me-2'></i>
+                          <Dropdown.Item as="button">
+                            <i className="fi-twitter fs-base opacity-75 me-2"></i>
                             Twitter
                           </Dropdown.Item>
-                          <Dropdown.Item as='button'>
-                            <i className='fi-instagram fs-base opacity-75 me-2'></i>
+                          <Dropdown.Item as="button">
+                            <i className="fi-instagram fs-base opacity-75 me-2"></i>
                             Instagram
                           </Dropdown.Item>
                         </Dropdown.Menu>
@@ -394,147 +482,268 @@ function SinglePropertyAltPage({ property }) {
                   </div>
 
                   {/* Price */}
-                  {!property ? <span className="sr-only">En chargement...</span>
-                    : <ul className='d-flex mb-4 list-unstyled fs-sm'>
-                      {property.nuitee <= 0 && property.cout_mensuel > 0 && property.est_meuble === 0 &&
-                        <>
-                          <li className='me-3 pe-3 border-end'>
-                            <h3 className='h5 mb-2'>Loyer mensuel</h3>
-                            <h2 className='h4 mb-2'>{property && property.cout_mensuel} XOF<span className='d-inline-block ms-1 fs-base fw-normal text-body'>/mois</span></h2>
-                            <p className='text-body p'>
-                              Il est recommandé de lire le contrat de location
-                              avant de procéder au paiement
-                            </p>
-                            <Button size='md' className='w-100' variant='outline-primary' onClick={handleRentNegociationModal}>Negocier le loyer</Button>
-                          </li>
-                          <li className='me-3 pe-3'>
-                            <h3 className='h5 mb-2'>Visite immobiliere</h3>
-                            {property.cout_visite <= 0 && <h2 className='h4 mb-2'>4000 XOF</h2>}
-                            {property.cout_visite > 0 && <h2 className='h4 mb-2'> {property && property.cout_visite} XOF</h2>}
-                            <p className='text-body p'>
-                              Le droit de visite est paye pour supporter la prospection
-                              et tous les risques lies.
-                            </p>
-                            <Button size='md' className='w-100' variant='outline-primary' onClick={handleSigninShow}>Planifier une visite</Button>
-                          </li>
-                        </>
-                      }
+                  {!property ? (
+                    <span className="sr-only">En chargement...</span>
+                  ) : (
+                    <ul className="d-flex mb-4 list-unstyled fs-sm">
+                      {property.nuitee <= 0 &&
+                        property.cout_mensuel > 0 &&
+                        property.est_meuble === 0 && (
+                          <>
+                            <li className="me-3 pe-3 border-end">
+                              <h3 className="h5 mb-2">Loyer mensuel</h3>
+                              <h2 className="h4 mb-2">
+                                {property && property.cout_mensuel} XOF
+                                <span className="d-inline-block ms-1 fs-base fw-normal text-body">
+                                  /mois
+                                </span>
+                              </h2>
+                              <p className="text-body p">
+                                Il est recommandé de lire le contrat de location
+                                avant de procéder au paiement
+                              </p>
+                              <Button
+                                size="md"
+                                className="w-100"
+                                variant="outline-primary"
+                                onClick={handleRentNegociationModal}
+                              >
+                                Negocier le loyer
+                              </Button>
+                            </li>
+                            <li className="me-3 pe-3">
+                              <h3 className="h5 mb-2">Visite immobiliere</h3>
+                              {property.cout_visite <= 0 && (
+                                <h2 className="h4 mb-2">4000 XOF</h2>
+                              )}
+                              {property.cout_visite > 0 && (
+                                <h2 className="h4 mb-2">
+                                  {" "}
+                                  {property && property.cout_visite} XOF
+                                </h2>
+                              )}
+                              <p className="text-body p">
+                                Le droit de visite est paye pour supporter la
+                                prospection et tous les risques lies.
+                              </p>
+                              <Button
+                                size="md"
+                                className="w-100"
+                                variant="outline-primary"
+                                onClick={handleSigninShow}
+                              >
+                                Planifier une visite
+                              </Button>
+                            </li>
+                          </>
+                        )}
                     </ul>
-                  }
+                  )}
 
-                  {!property ? <span className="sr-only">En chargement...</span>
-                    : <ul className='d-flex mb-4 list-unstyled fs-sm'>
-                      {property.nuitee <= 0 && property.cout_mensuel > 0 && property.est_meuble === 1 &&
-                        <>
-                          <li className='me-3 pe-3 border-end'>
-                            <h3 className='h5 mb-2'>Loyer mensuel</h3>
-                            <h2 className='h4 mb-2'>{property && property.cout_mensuel} XOF<span className='d-inline-block ms-1 fs-base fw-normal text-body'>/mois</span></h2>
-                            <p className='text-body p'>
-                              Il est recommandé de lire le contrat de location
-                              avant de procéder au paiement
-                            </p>
-                            <Button size='md' className='w-100' variant='outline-primary' onClick={handleRentNegociationModal}>Negocier le loyer</Button>
-                          </li>
-                          <li className='me-3 pe-3'>
-                            <h3 className='h5 mb-2'>Nuitée</h3>
-                            <h2 className='h4 mb-2'>
-                              Sur demande
-                            </h2>
-                            <p className='mb-2 pb-2'>
-                              Le propriétaire n'a pas précisé la nuitée.
-                              Formuler une demande de nuitée en temps.
-                            </p>
-                            <Button size='md' className='w-100' variant='outline-primary' onClick={handleNuiteePriceModal}>Demander la nuitée</Button>
-                          </li>
-                        </>
-                      }
+                  {!property ? (
+                    <span className="sr-only">En chargement...</span>
+                  ) : (
+                    <ul className="d-flex mb-4 list-unstyled fs-sm">
+                      {property.nuitee <= 0 &&
+                        property.cout_mensuel > 0 &&
+                        property.est_meuble === 1 && (
+                          <>
+                            <li className="me-3 pe-3 border-end">
+                              <h3 className="h5 mb-2">Loyer mensuel</h3>
+                              <h2 className="h4 mb-2">
+                                {property && property.cout_mensuel} XOF
+                                <span className="d-inline-block ms-1 fs-base fw-normal text-body">
+                                  /mois
+                                </span>
+                              </h2>
+                              <p className="text-body p">
+                                Il est recommandé de lire le contrat de location
+                                avant de procéder au paiement
+                              </p>
+                              <Button
+                                size="md"
+                                className="w-100"
+                                variant="outline-primary"
+                                onClick={handleRentNegociationModal}
+                              >
+                                Negocier le loyer
+                              </Button>
+                            </li>
+                            <li className="me-3 pe-3">
+                              <h3 className="h5 mb-2">Nuitée</h3>
+                              <h2 className="h4 mb-2">Sur demande</h2>
+                              <p className="mb-2 pb-2">
+                                Le propriétaire n'a pas précisé la nuitée.
+                                Formuler une demande de nuitée en temps.
+                              </p>
+                              <Button
+                                size="md"
+                                className="w-100"
+                                variant="outline-primary"
+                                onClick={handleNuiteePriceModal}
+                              >
+                                Demander la nuitée
+                              </Button>
+                            </li>
+                          </>
+                        )}
                     </ul>
-                  }
+                  )}
 
-                  {!property ? <span className="sr-only">En chargement...</span>
-                    : <ul className='d-flex mb-4 list-unstyled fs-sm'>
-                      {property.nuitee > 0 && property.cout_mensuel > 0 && property.est_meuble === 1 &&
-                        <>
-                          <li className='me-3 pe-3 border-end'>
-                            <h3 className='h5 mb-2'>Loyer mensuel</h3>
-                            <h2 className='h4 mb-2'>{property && property.cout_mensuel} XOF<span className='d-inline-block ms-1 fs-base fw-normal text-body'>/mois</span></h2>
-                            <p className='text-body p'>
-                              Il est recommandé de lire le contrat de location
-                              avant de procéder au paiement
-                            </p>
-                            <Button size='md' className='w-100' variant='outline-primary' onClick={handleRentNegociationModal}>Negocier le loyer</Button>
-                          </li>
-                          <li className='me-3 pe-3'>
-                            <h3 className='h5 mb-2'>Nuitée</h3>
-                            <h2 className='h4 mb-2'>
-                              {property && property.nuitee} xof
-                              <span className='d-inline-block ms-1 fs-base fw-normal text-body'>/nuitée</span>
-                            </h2>
-                            <p className='text-body p'>
-                              Il est recommandé de lire l'inventaire des meubles
-                              avant de procéder au paiement
-                            </p>
-                            <Button size='md' className='w-100' variant='outline-primary' onClick={handleRentNegociationModal}>Réserver maintenant</Button>
-                          </li>
-                        </>
-                      }
+                  {!property ? (
+                    <span className="sr-only">En chargement...</span>
+                  ) : (
+                    <ul className="d-flex mb-4 list-unstyled fs-sm">
+                      {property.nuitee > 0 &&
+                        property.cout_mensuel > 0 &&
+                        property.est_meuble === 1 && (
+                          <>
+                            <li className="me-3 pe-3 border-end">
+                              <h3 className="h5 mb-2">Loyer mensuel</h3>
+                              <h2 className="h4 mb-2">
+                                {property && property.cout_mensuel} XOF
+                                <span className="d-inline-block ms-1 fs-base fw-normal text-body">
+                                  /mois
+                                </span>
+                              </h2>
+                              <p className="text-body p">
+                                Il est recommandé de lire le contrat de location
+                                avant de procéder au paiement
+                              </p>
+                              <Button
+                                size="md"
+                                className="w-100"
+                                variant="outline-primary"
+                                onClick={handleRentNegociationModal}
+                              >
+                                Negocier le loyer
+                              </Button>
+                            </li>
+                            <li className="me-3 pe-3">
+                              <h3 className="h5 mb-2">Nuitée</h3>
+                              <h2 className="h4 mb-2">
+                                {property && property.nuitee} xof
+                                <span className="d-inline-block ms-1 fs-base fw-normal text-body">
+                                  /nuitée
+                                </span>
+                              </h2>
+                              <p className="text-body p">
+                                Il est recommandé de lire l'inventaire des
+                                meubles avant de procéder au paiement
+                              </p>
+                              <Button
+                                size="md"
+                                className="w-100"
+                                variant="outline-primary"
+                                onClick={handleBookFurnishedPropertyModal}
+                              >
+                                Réserver maintenant
+                              </Button>
+                            </li>
+                          </>
+                        )}
                     </ul>
-                  }
+                  )}
 
                   {/* Property details card */}
-                  <Card className='border-0 bg-secondary mb-4'>
+                  <Card className="border-0 bg-secondary mb-4">
                     <Card.Body>
-                      <h5 className='mb-0 pb-3'>Détails clés du bien immobilier</h5>
-                      <ul className='list-unstyled mt-n2 mb-0'>
-                        <li className='mt-2 mb-0'><b>Type: </b>{property && property.categorie_propriete.denomination}</li>
-                        <li className='mt-2 mb-0'><b>Surface: </b>{property && property.surface} m²</li>
-                        <li className='mt-2 mb-0'><b>Salon: </b>{property && property.salon}</li>
-                        <li className='mt-2 mb-0'><b>Chambres+salon: </b>{property && property.piece}+{property && property.salon}</li>
-                        <li className='mt-2 mb-0'><b>Douches: </b>{property && property.wc_douche_interne}</li>
+                      <h5 className="mb-0 pb-3">
+                        Détails clés du bien immobilier
+                      </h5>
+                      <ul className="list-unstyled mt-n2 mb-0">
+                        <li className="mt-2 mb-0">
+                          <b>Type: </b>
+                          {property &&
+                            property.categorie_propriete.denomination}
+                        </li>
+                        <li className="mt-2 mb-0">
+                          <b>Surface: </b>
+                          {property && property.surface} m²
+                        </li>
+                        <li className="mt-2 mb-0">
+                          <b>Salon: </b>
+                          {property && property.salon}
+                        </li>
+                        <li className="mt-2 mb-0">
+                          <b>Chambres+salon: </b>
+                          {property && property.piece}+
+                          {property && property.salon}
+                        </li>
+                        <li className="mt-2 mb-0">
+                          <b>Douches: </b>
+                          {property && property.wc_douche_interne}
+                        </li>
                       </ul>
                     </Card.Body>
                   </Card>
-                  <div className='justify-content-between mb-2'>
-                    <Button size='lg' className='w-100' variant='outline-primary' onClick={handleSigninShow}>Planifier une visite</Button>
+                  <div className="justify-content-between mb-2">
+                    <Button
+                      size="lg"
+                      className="w-100"
+                      variant="outline-primary"
+                      onClick={handleSigninShow}
+                    >
+                      Planifier une visite
+                    </Button>
                   </div>
-                  <div className='justify-content-between mb-2'>
-                    <Button size='lg' className='w-100 outline-primary' onClick={handleSignupShow}>Vérifier la disponibilité</Button>
+                  <div className="justify-content-between mb-2">
+                    <Button
+                      size="lg"
+                      className="w-100 outline-primary"
+                      onClick={handleSignupShow}
+                    >
+                      Vérifier la disponibilité
+                    </Button>
                   </div>
-                  <Link href='#'>
-                    <a className='d-inline-block mb-4 pb-2 text-decoration-none'>
-                      <i className='fi-help me-2 mt-n1 align-middle'></i>
+                  <Link href="#">
+                    <a className="d-inline-block mb-4 pb-2 text-decoration-none">
+                      <i className="fi-help me-2 mt-n1 align-middle"></i>
                       FAQ
                     </a>
                   </Link>
-                  {property.meubles.length > 0 &&
+                  {property.meubles.length > 0 && (
                     <>
-                      <Card className='border-0 bg-secondary mb-4'>
+                      <Card className="border-0 bg-secondary mb-4">
                         <Card.Body>
                           <h5>Interieur & Extérieur</h5>
-                          <Row as='ul' xs={1} md={2} className='list-unstyled gy-2 mb-0 text-nowrap'>
-                            <FurnishedEquipmentList furnishedEquipments={property.meubles} />
+                          <Row
+                            as="ul"
+                            xs={1}
+                            md={2}
+                            className="list-unstyled gy-2 mb-0 text-nowrap"
+                          >
+                            <FurnishedEquipmentList
+                              furnishedEquipments={property.meubles}
+                            />
                           </Row>
                         </Card.Body>
                       </Card>
                     </>
-                  }
+                  )}
                   {/* Amenities card */}
-
 
                   {/*Infrastructures card */}
 
-                  {property.infrastructures.length > 0 &&
+                  {property.infrastructures.length > 0 && (
                     <>
-                      <Card className='border-0 bg-secondary mb-4'>
+                      <Card className="border-0 bg-secondary mb-4">
                         <Card.Body>
                           <h5>Infrastructures proches</h5>
-                          <Row as='ul' xs={1} md={2} className='list-unstyled gy-2 mb-0 text-nowrap'>
-                            <NearestInfrastructureList nearestinfrastructures={property.infrastructures} />
+                          <Row
+                            as="ul"
+                            xs={1}
+                            md={2}
+                            className="list-unstyled gy-2 mb-0 text-nowrap"
+                          >
+                            <NearestInfrastructureList
+                              nearestinfrastructures={property.infrastructures}
+                            />
                           </Row>
                         </Card.Body>
                       </Card>
                     </>
-                  }
+                  )}
 
                   {/* Post meta */}
                   {/* <ul className='d-flex mb-4 list-unstyled fs-sm'>
@@ -547,9 +756,11 @@ function SinglePropertyAltPage({ property }) {
             </Row>
           </Container>
           {/* Recently viewed properties (carousel) */}
-          <Container as='section' className='mb-5 pb-2 pb-lg-4'>
-            <div className='d-flex align-items-center justify-content-between mb-3'>
-              <h2 className='h3 mb-0'>Autour du quartier, voici nos recommandations</h2>
+          <Container as="section" className="mb-5 pb-2 pb-lg-4">
+            <div className="d-flex align-items-center justify-content-between mb-3">
+              <h2 className="h3 mb-0">
+                Autour du quartier, voici nos recommandations
+              </h2>
               {/* <Link href='/tg/catalog?category=rent' passHref>
                 <Button variant='link fw-normal p-0'>
                   Consulter tout
@@ -559,33 +770,44 @@ function SinglePropertyAltPage({ property }) {
             </div>
 
             {/* Swiper slider */}
-            <div className='position-relative'>
+            <div className="position-relative">
               <RecommendPropertyList propertyList={recommendProperties} />
 
               {/* External Prev/Next buttons */}
-              <Button id='prevProperties' variant='prev' className='d-none d-xxl-block mt-n5 ms-n5' />
-              <Button id='nextProperties' variant='next' className='d-none d-xxl-block mt-n5 me-n5' />
+              <Button
+                id="prevProperties"
+                variant="prev"
+                className="d-none d-xxl-block mt-n5 ms-n5"
+              />
+              <Button
+                id="nextProperties"
+                variant="next"
+                className="d-none d-xxl-block mt-n5 me-n5"
+              />
             </div>
 
             {/* External pagination (bullets) buttons */}
-            <div id='paginationProperties' className='swiper-pagination position-relative bottom-0 py-2 mt-1'></div>
+            <div
+              id="paginationProperties"
+              className="swiper-pagination position-relative bottom-0 py-2 mt-1"
+            ></div>
           </Container>
-
-        </Container>)}
-
+        </Container>
+      )}
     </RealEstatePageLayout>
-  )
+  );
 }
 
 export async function getServerSideProps(context) {
-
   let { nuo } = context.query;
   // Fetch data from external API
-  let dataAPIresponse = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={propriete(nuo:${nuo}){tarifications{id,mode,currency,montant},cout_visite,nuo,garage,est_meuble,titre,descriptif,surface,usage,cuisine,salon,piece,wc_douche_interne,cout_mensuel,nuitee,cout_vente,categorie_propriete{denomination,id},infrastructures{denomination,icone},meubles{libelle,icone},badge_propriete{id,date_expiration,badge{id,badge_name,badge_image}},pays{id,code,denomination},ville{denomination,id},quartier{id,denomination},adresse{libelle},offre{denomination},visuels{uri},user{id}}}`)
-  let property = await dataAPIresponse.json()
+  let dataAPIresponse = await fetch(
+    `https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={propriete(nuo:${nuo}){tarifications{id,mode,currency,montant},id,cout_visite,est_disponible,nuo,garage,est_meuble,titre,descriptif,surface,usage,cuisine,id,salon,piece,wc_douche_interne,cout_mensuel,nuitee,cout_vente,categorie_propriete{denomination,id},infrastructures{denomination,icone},meubles{libelle,icone},badge_propriete{id,date_expiration,badge{id,badge_name,badge_image}},pays{id,code,denomination},ville{denomination,id},quartier{id,denomination},adresse{libelle},offre{denomination},visuels{uri,position},user{id}}}`
+  );
+  let property = await dataAPIresponse.json();
   property = property.data.propriete;
   console.log(property);
   // Pass data to the page via props
-  return { props: { property } }
+  return { props: { property } };
 }
-export default SinglePropertyAltPage
+export default SinglePropertyAltPage;

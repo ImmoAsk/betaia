@@ -37,6 +37,6 @@ export default function ProRealEstateAgency({user}) {
         </Card>
     </>
     )}
-    if(!organisation || organisation.organisation===null) return (<RealEstateAgency/>)
+    if(!organisation || organisation.organisation===null || organisation.organisation.status!=4) return (<RealEstateAgency/>)
 }
 

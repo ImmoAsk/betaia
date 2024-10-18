@@ -36,6 +36,9 @@ import PayVisitModal from '../../../../../../components/iacomponents/PayVisitMod
 import CheckAvailabilityModal from '../../../../../../components/iacomponents/CheckAvailabilityModal'
 import RentNegociationModal from '../../../../../../components/iacomponents/RentNegociationModal'
 import AskNuiteePriceModal from '../../../../../../components/iacomponents/AskNuiteePriceModal'
+import { getHumanReadablePrice } from '../../../../../../utils/generalUtils'
+
+
 
 function SinglePropertyAltPage({ property }) {
 
@@ -111,13 +114,13 @@ function SinglePropertyAltPage({ property }) {
   const [recommendProperties, setRecommendProperties] = useState([]);
   const defineThumbNails = () => {
     property && property.visuels.map((imgproperty) => {
-      setThumbnails(thumbnails => [...thumbnails, 'http://127.0.0.1:8000/storage/uploads/visuels/proprietes/' + imgproperty.uri]);
+      setThumbnails(thumbnails => [...thumbnails, 'https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/proprietes/' + imgproperty.uri]);
     })
   }
 
   const defineUnauthenticatedThumbNails = () => {
     setUnconnectedhumbnails([property && property.visuels[0].uri]);
-    setUnconnectedhumbnails(Unconnectedhumbnails => [...Unconnectedhumbnails, 'create-account-more-images.jpg'])
+    setUnconnectedhumbnails(Unconnectedhumbnails => [...Unconnectedhumbnails, 'create-account-more-images.png'])
   }
 
   useEffect(() => {
@@ -131,11 +134,11 @@ function SinglePropertyAltPage({ property }) {
           //const { status, data:badges_property, error, isFetching,isLoading,isError }  = usePropertyBadges(property.id);
           return {
             href: getPropertyFullUrl(propertyr.pays.code, propertyr.offre.denomination, propertyr.categorie_propriete.denomination, propertyr.ville.denomination, propertyr.quartier.denomination, propertyr.nuo),
-            images: getFirstImageArray(propertyr.visuels),
+            images: [[getFirstImageArray(propertyr.visuels), 467, 305, 'Image']],
             title: 'N°' + propertyr.nuo + ': ' + propertyr.categorie_propriete.denomination + ' à ' + propertyr.offre.denomination + ' | ' + propertyr.surface + 'm²',
             category: propertyr.usage,
             location: propertyr.quartier.denomination + ", " + propertyr.ville.denomination,
-            price: propertyr.cout_mensuel == 0 ? propertyr.cout_vente : propertyr.cout_mensuel + " XOF",
+            price: getHumanReadablePrice(propertyr),
             badges: buildPropertyBadge(propertyr.badge_propriete),
             footer: [propertyr.piece, propertyr.wc_douche_interne, propertyr.garage],
           }
@@ -227,7 +230,7 @@ function SinglePropertyAltPage({ property }) {
           }
           <SwiperSlide>
             <div className='ratio ratio-16x9'>
-              <iframe src='https://www.youtube.com/embed/ghIfa3dY8ys?autoplay=1' className='rounded-3' allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
+              <iframe src='https://www.youtube.com/embed/1oVncb5hke0?autoplay=1' className='rounded-3' allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
             </div>
           </SwiperSlide>
 
@@ -247,6 +250,10 @@ function SinglePropertyAltPage({ property }) {
     <RealEstatePageLayout
       pageTitle={`${property.categorie_propriete.denomination} à louer, ${property.ville.denomination}, ${property.quartier.denomination} | No. ${nuo} | Togo`}
       userLoggedIn={session ? true : false}
+      pageDescription={`${property.categorie_propriete.denomination} à louer, ${property.ville.denomination}, ${property.quartier.denomination}, Togo. ${property.descriptif}`}
+      pageKeywords={`bail immobilier, ${property.categorie_propriete.denomination},immeuble,foncier,investissemt,commerce,${property.ville.denomination}, ${property.quartier.denomination},Togo`}
+      pageCoverImage={`${getFirstImageArray(property.visuels)}`}
+      pageUrl={`https://www.immoask.com/tg/baux-immobiliers/${bien}/${ville}/${quartier}/${nuo}`}
     >
 
 
@@ -560,7 +567,7 @@ export async function getServerSideProps(context) {
 
   let { nuo } = context.query;
   // Fetch data from external API
-  let dataAPIresponse = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={propriete(nuo:${nuo}){tarifications{id,mode,currency,montant},nuo,garage,est_meuble,titre,descriptif,surface,usage,cuisine,salon,piece,wc_douche_interne,cout_mensuel,nuitee,cout_vente,categorie_propriete{denomination,id},infrastructures{denomination,icone},meubles{libelle,icone},badge_propriete{id,date_expiration,badge{id,badge_name,badge_image}},pays{id,code,denomination},ville{denomination,id},quartier{id,denomination},adresse{libelle},offre{denomination},visuels{uri},user{id}}}`)
+  let dataAPIresponse = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={propriete(nuo:${nuo}){tarifications{id,mode,currency,montant},nuo,garage,est_meuble,titre,descriptif,surface,usage,cuisine,salon,piece,wc_douche_interne,cout_mensuel,nuitee,cout_vente,categorie_propriete{denomination,id},infrastructures{denomination,icone},meubles{libelle,icone},badge_propriete{id,date_expiration,badge{id,badge_name,badge_image}},id,pays{id,code,denomination},ville{denomination,id},quartier{id,denomination,minus_denomination},adresse{libelle},offre{denomination},visuels{uri,position},user{id}}}`)
   let property = await dataAPIresponse.json()
   property = property.data.propriete;
   console.log(property);
