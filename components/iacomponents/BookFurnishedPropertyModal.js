@@ -87,6 +87,44 @@ const BookFurnishedPropertyModal = ({
       userId: session.user.id, // User ID from the session
     };
 
+    // Prepare GraphQL mutation for rent negotiation
+    
+    const booking_data = {
+      query: `mutation BookFurnishedProperty($input: BookingInput!) {
+        createReservation(input: $input) {
+          id
+        }
+      }`,
+      variables: {
+        input: {
+          //email_reservateur: session ? "" : formData.,
+          //phone_negociateur: session ? "" : formData.phone,
+          //user_id: session ? session.user.id : 0,
+          //date_arrive: "2024-09-10 14:40:30",
+          //date_depart: Number(formData.offer),
+          //propriete_id: Number(property.id),
+          //proprietaire_id: Number(property?.user?.id),
+          //fullname_reservateur: session ? "" : formData.firstName,
+          //adulte:1,
+          //enfant:1,
+          //pickup_place:""
+        }
+      }
+    };
+    console.log(bookin_data);
+    try {
+      const response = await axios.post('https://immoaskbetaapi.omnisoft.africa/public/api/v2', negotiation_data, {
+        headers: { 'Content-Type': 'application/json' }
+      });
+
+      if (Number(response.data?.data?.createReservation?.id)>= 1) {
+        setBookingNotification("Votre négociation a été envoyée avec succès. Vous serez contacté sous peu.");
+        // Redirect or perform any other actions needed
+        //router.push("/thank-you");
+      }
+    } catch (error) {
+      console.error("Error during negotiation:", error);
+    }
     console.log(formData);
 
     // For now, saving reservation to local storage

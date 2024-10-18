@@ -8,8 +8,7 @@ import FormControl from 'react-bootstrap/FormControl';
 import { createPropertyObject } from '../../utils/buildPropertiesArray'
 import { getSession, useSession } from 'next-auth/react'
 import PhoneInput from 'react-phone-input-2';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
+import { DatePicker } from "antd";
 import 'react-phone-input-2/lib/style.css';
 import axios from 'axios';
 import { useRouter } from 'next/router';
@@ -121,8 +120,9 @@ const PayVisitModal = ({ property, onSwap, pillButtons, ...props }) => {
                   selected={visitDate}
                   minDate={new Date()}
                   onChange={(date) => setVisitDate(date)}
+                  getPopupContainer={(trigger) => trigger.parentNode}
                   placeholderText='Selectionner une date'
-                  className='form-control'
+                  className=''
                 />
                 <Form.Control.Feedback type="invalid">
                   Veuillez saisir une offre valide.
@@ -131,9 +131,10 @@ const PayVisitModal = ({ property, onSwap, pillButtons, ...props }) => {
 
               <Form.Group controlId='si-offer' className='mb-2'>
                 <Form.Label>A quelle heure voulez-vous visiter ?</Form.Label>
-                <FormControl
+                <Form.Control
                   as={DatePicker}
                   selected={hourVisit}
+                  getPopupContainer={(trigger) => trigger.parentNode}
                   minDate={new Date()}
                   onChange={(date) => setHourVisit(date)}
                   placeholderText='Selectionner une date'
