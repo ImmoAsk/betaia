@@ -5,13 +5,10 @@ import Button from 'react-bootstrap/Button'
 import CloseButton from 'react-bootstrap/CloseButton'
 import CardProperty from './CardProperty'
 import { createPropertyObject } from '../../utils/buildPropertiesArray'
-import { getSession, useSession } from 'next-auth/react'
+import { useSession } from 'next-auth/react'
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import axios from 'axios';
-
-import { useRouter } from 'next/router';
-
 
 const RentNegociationModal = ({ property, onSwap, pillButtons, ...props }) => {
   const [email, setEmail] = useState('');
@@ -21,9 +18,11 @@ const RentNegociationModal = ({ property, onSwap, pillButtons, ...props }) => {
   const [validated, setValidated] = useState(false);
   const [negotiationNotification, setNegotiationNotification] = useState(null);
 
-  // Check if the form is valid
-  const isFormValid = (email && phone && offer && firstName);
   const { data: session } = useSession();
+
+  // Adjust validation logic based on session
+  const isFormValid = session ? offer : (email && phone && offer && firstName);
+
   // Form submission handler
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -42,9 +41,9 @@ const RentNegociationModal = ({ property, onSwap, pillButtons, ...props }) => {
       offer,
       firstName
     };
-
+    console.log("Before Mutation: ", formData)
     // Prepare GraphQL mutation for rent negotiation
-    
+    const currentDate = new Date().toISOString().slice(0, 19).replace('T', ' ');
     const negotiation_data = {
       query: `mutation RentNegotiation($input: NegotiationInput!) {
         createNegotiation(input: $input) {
@@ -55,8 +54,8 @@ const RentNegociationModal = ({ property, onSwap, pillButtons, ...props }) => {
         input: {
           email_negociateur: session ? "" : formData.email,
           telephone_negociateur: session ? "" : formData.phone,
-          user_id: session ? session.user.id : 0,
-          date_negociation: "2024-09-10 14:40:30",
+          user_id: session ? Number(session.user?.id) : 0,
+          date_negociation: currentDate,
           montant: Number(formData.offer),
           propriete_id: Number(property.id),
           proprietaire_id: Number(property?.user?.id),
@@ -64,16 +63,14 @@ const RentNegociationModal = ({ property, onSwap, pillButtons, ...props }) => {
         }
       }
     };
-    console.log(negotiation_data);
+    console.log("Before Mutation: ", negotiation_data)
     try {
       const response = await axios.post('https://immoaskbetaapi.omnisoft.africa/public/api/v2', negotiation_data, {
         headers: { 'Content-Type': 'application/json' }
       });
 
-      if (Number(response.data?.data?.createNegotiation?.id)>= 1) {
+      if (Number(response.data?.data?.createNegotiation?.id) >= 1) {
         setNegotiationNotification("Votre négociation a été envoyée avec succès. Vous serez contacté sous peu.");
-        // Redirect or perform any other actions needed
-        //router.push("/thank-you");
       }
     } catch (error) {
       console.error("Error during negotiation:", error);
@@ -83,7 +80,6 @@ const RentNegociationModal = ({ property, onSwap, pillButtons, ...props }) => {
   };
 
   const propertyCard = createPropertyObject(property);
-  
 
   return (
     <Modal {...props} className='signin-modal'>
@@ -109,7 +105,6 @@ const RentNegociationModal = ({ property, onSwap, pillButtons, ...props }) => {
             <h3 className='h4'>
               Vous êtes sur le point de négocier le loyer pour le bien immobilier N° {property.nuo}. Bonne chance !
             </h3>
-              
 
             <Form noValidate validated={validated} onSubmit={handleSubmit}>
               <Form.Group controlId='si-offer' className='mb-2'>

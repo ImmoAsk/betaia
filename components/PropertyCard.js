@@ -74,7 +74,7 @@ const PropertyCard = ({
         </Dropdown.Menu></Dropdown>}
         {category && <div className='mb-1 fs-xs text-uppercase text-primary'>{category}</div>}
         {title && <h3 className='h6 mb-2 fs-base'>
-          {href ? <Link href={href}>
+          {href ? <Link href={href} target="_blank">
             <a className={light ? 'nav-link-light stretched-link' : 'nav-link stretched-link'}>
               {title}
             </a>

@@ -12,7 +12,7 @@ const getBadgeProps = (statut) => {
         case 2:
             return { text: "Refusée", variant: "faded-accent danger" };
         default:
-            return { text: "Negociation", variant: "faded-accent" };
+            return { text: "Visite", variant: "faded-accent" };
     }
 };
 
@@ -44,7 +44,7 @@ const updateNegotiation = async ({ negociationOffer, statut }) => {
 };
 
 
-const RentingNegotiationOffer = ({ project }) => {
+const PropertyVisit = ({ project }) => {
     const { text, variant } = getBadgeProps(project?.statut);
     const { data: session } = useSession();
     const role = session?.user?.roleId
@@ -81,35 +81,37 @@ const RentingNegotiationOffer = ({ project }) => {
                     </div>
                     <h3 className="h6 card-title pt-1 mb-3">
                         <p className="text-nav stretched-link text-decoration-none">
-                            Le locataire <strong>{project.fullname_negociateur}</strong> {role === '1200'&& <>{"+" +project.telephone_negociateur}</>} souhaite négocier le loyer mensuel de propriété
-                            No. {project.propriete.nuo} pour un montant de <strong>{project.montant}</strong>
+                            <strong>
+                                {project.fullname_visitor ? project.fullname_visitor : project.visiteur?.name}
+                            </strong> {role === '1200' && (project.telephone_visitor ? "+" + project.telephone_visitor : "")}
+                            souhaite visiter la propriété No. {project.propriete.nuo} le <strong>{formatDate(project.date_visite)}</strong> a <strong>{project.heure_visite}</strong>
                         </p>
                     </h3>
                     <div className="fs-sm">
                         <span className="text-nowrap me-3">
                             <i className="fi-calendar text-muted me-1"></i>
-                            {formatDate(project.date_negociation)}
+                            {formatDate(project.date_visite)}
                         </span>
                     </div>
 
                     {/* Show Accept and Decline buttons when project.statut === 0 */}
                     {(role === '1230' || role === '1200') && project.statut === 0 && (
                         <div className="d-flex justify-content-center mt-3">
-                            <Link href='#' passHref onClick={(e)=>handleDecline(e)}>
+                            <Link href='#' passHref onClick={(e) => console.log("Reporter la visite")}>
                                 <Button
                                     variant="outline-secondary"
                                     className="me-2 flex-grow-1"
                                 >
 
-                                    Decliner l'offre
+                                    Reporter la visite
                                 </Button>
                             </Link>
-                            <Link href='#' passHref onClick={(e)=>handleAccept(e)}>
+                            <Link href='#' passHref onClick={(e) => console.log("Confirmer la visite")}>
                                 <Button
                                     variant="primary"
                                     className="flex-grow-1"
                                 >
-                                    Accepter l'offre
+                                    Confirmer la visite
                                 </Button>
                             </Link>
 
@@ -121,4 +123,4 @@ const RentingNegotiationOffer = ({ project }) => {
     );
 };
 
-export default RentingNegotiationOffer;
+export default PropertyVisit;

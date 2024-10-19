@@ -14,8 +14,6 @@ import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
 import Alert from 'react-bootstrap/Alert'
 import DatePicker from 'react-datepicker'
-import ImageLoader from '../../components/ImageLoader'
-import ScrollLink from '../../components/ScrollLink'
 //Use of FIlePond
 import { FilePond, registerPlugin } from 'react-filepond'
 import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type'
