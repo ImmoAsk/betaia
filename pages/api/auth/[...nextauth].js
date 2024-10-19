@@ -7,7 +7,7 @@ const login = async (username, password) => {
 
     return axios.get(`${apiUrl}?query=mutation{login(input:{username:"${username}",password:"${password}"}){access_token,token_type,expires_in,refresh_token,user{name,id,email,role{id,description,statut,code}}}}`)
     .then((res) => {
-      console.log(res.data.data);
+      //console.log(res.data.data);
       const u = {
         username: res.data.data.login.user.name,
         //avatar: res.data.login.avatar,
@@ -16,7 +16,7 @@ const login = async (username, password) => {
         accessToken: res.data.data.login.access_token,
         expiredAt: res.data.data.login.expires_in,
       }
-      console.log(u);
+      //console.log(u);
       return u ;
     });
     
