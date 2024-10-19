@@ -112,19 +112,19 @@ const BookFurnishedPropertyModal = ({
       }
     };
     console.log(booking_data);
-    try {
+    /* try {
       const response = await axios.post('https://immoaskbetaapi.omnisoft.africa/public/api/v2', negotiation_data, {
         headers: { 'Content-Type': 'application/json' }
       });
 
       if (Number(response.data?.data?.createReservation?.id)>= 1) {
-        setBookingNotification("Votre négociation a été envoyée avec succès. Vous serez contacté sous peu.");
+        setBookingNotification("Votre reservation a été envoyée avec succès. Vous serez contacté sous peu.");
         // Redirect or perform any other actions needed
         //router.push("/thank-you");
       }
     } catch (error) {
       console.error("Error during negotiation:", error);
-    }
+    } */
     console.log(formData);
     // For now, saving reservation to local storage
     localStorage.setItem("reservation", JSON.stringify(formData));
@@ -149,25 +149,25 @@ const BookFurnishedPropertyModal = ({
         />
         <div className="row mx-0">
           <div className="col-md-6 border-end-md p-4 p-sm-5">
-            <h2 className="h3 mb-2 mb-sm-2">Book a Property</h2>
+            <h2 className="h3 mb-2 mb-sm-2">Reservation d'un sejour</h2>
             <div className="d-flex align-items-center py-3 mb-3">
               <CardProperty property={propertyCard} />
             </div>
             <div className="mt-2 mt-sm-2">
-              Before booking,{" "}
+              Avant de reserver,{" "}
               <a href="#" onClick={onSwap}>
-                check availability
+                Verifier la disponibilite
               </a>
               .
             </div>
           </div>
 
           <div className="col-md-6 p-4 p-sm-5">
-            <h3 className="h4">Make a Reservation</h3>
+            <h3 className="h4">Faire une reservation</h3>
 
             <Form onSubmit={handleSubmit}>
               <Form.Group controlId="formCheckIn">
-                <Form.Label>Check-In Date</Form.Label>
+                <Form.Label>Date d'arrivee</Form.Label>
                 <Form.Control as={DatePicker}
                 className="mb-2"
                 getPopupContainer={(trigger) => trigger.parentNode}
@@ -178,7 +178,7 @@ const BookFurnishedPropertyModal = ({
               
               </Form.Group>
               <Form.Group controlId="formCheckOut" >
-                <Form.Label>Check-Out Date</Form.Label>
+                <Form.Label>Date de depart</Form.Label>
                 <Form.Control as={DatePicker}
                   className="mb-2"
                   getPopupContainer={(trigger) => trigger.parentNode}
@@ -188,7 +188,7 @@ const BookFurnishedPropertyModal = ({
                 />
               </Form.Group>
               <Form.Group controlId="formNumberOfAdults">
-                <Form.Label>Number of Adults:</Form.Label>
+                <Form.Label>Nombre d'adultes:</Form.Label>
                 <Form.Control
                   type="number"
                   name="numberOfAdults"
@@ -200,7 +200,7 @@ const BookFurnishedPropertyModal = ({
                 />
               </Form.Group>
               <Form.Group controlId="formNumberOfChildren" className="mb-2">
-                <Form.Label>Number of Children</Form.Label>
+                <Form.Label>Nombre d'enfants</Form.Label>
                 <Form.Control
                   type="number"
                   name="numberOfChildren"
@@ -211,20 +211,20 @@ const BookFurnishedPropertyModal = ({
                 />
               </Form.Group>
               <Form.Group controlId="formPickUpLocation" className="mb-2">
-                <Form.Label>Pick Up Location</Form.Label>
+                <Form.Label>Ou viendrons-nous vous chercher?</Form.Label>
                 <Form.Control
                   type="text"
                   name="pickUpLocation"
-                  placeholder="Location"
+                  placeholder="Ou viendrons-nous vous chercher"
                   value={pickUpLocation}
                   onChange={(e) => setPickUpLocation(e.target.value)}
                   required
                 />
               </Form.Group>
               {error && <p style={{ color: "red" }}>{error}</p>}
-              <h3>Total Cost: ${totalCost}</h3>
+              {/* <h3>Total Cost: ${totalCost}</h3> */}
               <Button variant="primary" type="submit" className="mt-3">
-                Book Now
+                Reserver maintenant
               </Button>
             </Form>
           </div>
