@@ -1,4 +1,4 @@
-import { visitations } from "../../models/Visitation";
+/* import { visitations } from "../../models/Visitation";
 import nodemailer from 'nodemailer';
 
 const transporter = nodemailer.createTransport({
@@ -34,3 +34,4 @@ export default function handler(req, res) {
     res.status(404).json({ error: "Visitation not found" });
   }
 }
+ */
