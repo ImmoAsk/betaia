@@ -111,7 +111,7 @@ const BookFurnishedPropertyModal = ({
         }
       }
     };
-    console.log(bookin_data);
+    console.log(booking_data);
     try {
       const response = await axios.post('https://immoaskbetaapi.omnisoft.africa/public/api/v2', negotiation_data, {
         headers: { 'Content-Type': 'application/json' }
@@ -126,7 +126,6 @@ const BookFurnishedPropertyModal = ({
       console.error("Error during negotiation:", error);
     }
     console.log(formData);
-
     // For now, saving reservation to local storage
     localStorage.setItem("reservation", JSON.stringify(formData));
     alert("Booking successful!");

@@ -110,7 +110,7 @@ const RealEstatePageLayout = (props) => {
         <meta name='keywords' content={props.pageKeywords} />
         <meta name='robots' content='index, follow' />
         <meta httpEquiv='Content-Type' content='text/html; charset=utf-8' />
-        <meta property="og:title" content={props.pageTitle}/>
+        <meta property="og:title" content={props.pageTitle} />
         <meta property="og:description" content={props.pageDescription} />
         <meta property="og:image" content={props.pageCoverImage} />
         <meta property="og:image:width" content="1200" />
@@ -120,12 +120,23 @@ const RealEstatePageLayout = (props) => {
         <meta name='author' content='Omnisoft Africa' />
         <link rel='apple-touch-icon' sizes='180x180' href='/favicon/apple-icon-180x180.png' />
         <link rel='icon' type='image/png' sizes='32x32' href='/favicon/favicon-32x32.png' />
-        <link rel='icon' type='image/png' sizes='16x16' href='/favicon/favicon-16x16.png' />
         <link rel='icon' type='image/x-icon' href='/favicon/favicon.ico' />
         <link rel='manifest' href='/favicon/site.webmanifest' />
         <link rel='mask-icon' color='#5bbad5' href='/favicon/safari-pinned-tab.svg' />
         <meta name='msapplication-TileColor' content='#766df4' />
         <meta name='theme-color' content='#ffffff' />
+        <meta property="og:site_name" content="ImmoAsk" />
+        <meta property="fb:app_id" content="2049277298731648" />
+        <meta property="fb:pages" content="431591890524770,322098734581229" />
+        <meta property="og:locale" content="fr_TG" />
+        <meta property="og:rich_attachment" content="true" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:site" content="@immoask" />
+        <meta name="twitter:creator" content="@immoask" />
+        <meta name="twitter:title" content={props.pageTitle} />
+        <meta name="twitter:url" content={props.pageUrl} />
+        <meta name="twitter:description" content={props.pageDescription} />
+        <meta name="twitter:image" content={props.pageCoverImage} />
       </Head>
 
       {/* Sign in modal */}

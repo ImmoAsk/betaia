@@ -11,32 +11,50 @@ import PhoneInput from 'react-phone-input-2';
 import { DatePicker } from "antd";
 import 'react-phone-input-2/lib/style.css';
 import axios from 'axios';
+import moment from 'moment';
 import { useRouter } from 'next/router';
-import { set } from 'nprogress'
+import { now } from 'moment/moment'
+
 const PayVisitModal = ({ property, onSwap, pillButtons, ...props }) => {
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
-  const [visitDate, setVisitDate] = useState('');
+  const [visitDate, setVisitDate] = useState(moment());
   const [hourVisit, setHourVisit] = useState('');
   const [firstName, setFirstName] = useState('');
   const [validated, setValidated] = useState(false);
   const [visiteNotification, setVisiteNotification] = useState(null);
 
-  // Check if the form is valid
-  const isFormValid = (email && phone && visitDate && firstName);
   const { data: session } = useSession();
-  // Form submission handler
+
+
+  const handleVisitDateTimeChange = (date) => {
+    if (date) {
+        // Extract the date and time separately
+        const selectedDate = date.format('YYYY-MM-DD'); // Get only the date
+        const selectedTime = date.format('HH:mm:ss'); // Get only the time
+
+        setVisitDate(selectedDate); // Update state with date
+        setHourVisit(selectedTime); // Update state with time
+
+        console.log("Selected Date:", selectedDate);
+        console.log("Selected Time:", selectedTime);
+    }
+};
+ 
+  // Adjust validation based on session status
+  const isFormValid = session 
+    ? visitDate && hourVisit  // Only date and hour if session is valid
+    : email && phone && visitDate && hourVisit && firstName;  // Require all fields for non-session users
+
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    // Validate form inputs
     if (!isFormValid) {
       console.log("Le formulaire n'est pas valide. Veuillez vérifier les champs.");
       setValidated(true);
       return;
     }
 
-    // Collect form data
     const formData = {
       email,
       phone,
@@ -44,9 +62,7 @@ const PayVisitModal = ({ property, onSwap, pillButtons, ...props }) => {
       hourVisit,
       firstName
     };
-
-    // Prepare GraphQL mutation for rent visite
-
+    console.log("Visite: ", formData)
     const visite_data = {
       query: `mutation PayVisite($input: VisiteInput!) {
         createVisite(input: $input) {
@@ -57,7 +73,7 @@ const PayVisitModal = ({ property, onSwap, pillButtons, ...props }) => {
         input: {
           email_visitor: session ? "" : formData.email,
           telephone_visitor: session ? "" : formData.phone,
-          user_id: session ? session.user.id : 0,
+          user_id: session ? Number(session.user.id) : 0,
           date_visite: formData.visitDate,
           heure_visite: formData.hourVisit,
           propriete_id: Number(property.id),
@@ -66,7 +82,7 @@ const PayVisitModal = ({ property, onSwap, pillButtons, ...props }) => {
         }
       }
     };
-    console.log(visite_data);
+    console.log("Visite: ", visite_data)
     try {
       const response = await axios.post('https://immoaskbetaapi.omnisoft.africa/public/api/v2', visite_data, {
         headers: { 'Content-Type': 'application/json' }
@@ -74,8 +90,6 @@ const PayVisitModal = ({ property, onSwap, pillButtons, ...props }) => {
 
       if (Number(response.data?.data?.createVisite?.id) >= 1) {
         setVisiteNotification("Votre visite a été envoyée avec succès. Vous serez contacté sous peu.");
-        // Redirect or perform any other actions needed
-        //router.push("/thank-you");
       }
     } catch (error) {
       console.error("Error during visite:", error);
@@ -85,7 +99,6 @@ const PayVisitModal = ({ property, onSwap, pillButtons, ...props }) => {
   };
 
   const propertyCard = createPropertyObject(property);
-
 
   return (
     <Modal {...props} className='signin-modal'>
@@ -114,37 +127,20 @@ const PayVisitModal = ({ property, onSwap, pillButtons, ...props }) => {
 
             <Form noValidate validated={validated} onSubmit={handleSubmit}>
               <Form.Group controlId='si-offer' className='mb-2'>
-                <Form.Label>Quand voulez-vous visiter ?</Form.Label>
+                <Form.Label>Date et Heure de visite ?</Form.Label>
                 <Form.Control
                   as={DatePicker}
+                  showTime
                   selected={visitDate}
-                  minDate={new Date()}
-                  onChange={(date) => setVisitDate(date)}
+                  minDate={moment(now)}
+                  onChange={handleVisitDateTimeChange}
                   getPopupContainer={(trigger) => trigger.parentNode}
-                  placeholderText='Selectionner une date'
-                  className=''
-                />
-                <Form.Control.Feedback type="invalid">
-                  Veuillez saisir une offre valide.
-                </Form.Control.Feedback>
-              </Form.Group>
-
-              <Form.Group controlId='si-offer' className='mb-2'>
-                <Form.Label>A quelle heure voulez-vous visiter ?</Form.Label>
-                <Form.Control
-                  as={DatePicker}
-                  selected={hourVisit}
-                  getPopupContainer={(trigger) => trigger.parentNode}
-                  minDate={new Date()}
-                  onChange={(date) => setHourVisit(date)}
                   placeholderText='Selectionner une date'
                 />
                 <Form.Control.Feedback type="invalid">
-                  Veuillez saisir une offre valide.
+                  Preciser une date svp.
                 </Form.Control.Feedback>
               </Form.Group>
-
-
 
               {!session && (
                 <>
@@ -205,7 +201,7 @@ const PayVisitModal = ({ property, onSwap, pillButtons, ...props }) => {
                 size='lg'
                 variant={`primary ${pillButtons ? 'rounded-pill' : ''} w-100`}
               >
-                Négocier le loyer
+                Planifier la visite
               </Button>
               {visiteNotification && <div className="alert alert-success mt-3">{visiteNotification}</div>}
             </Form>

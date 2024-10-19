@@ -1,9 +1,6 @@
 import axios from 'axios';
-import { compare, hash } from 'bcrypt'
-import { GraphQLClient, gql } from 'graphql-request'
 import NextAuth from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
-import { authService } from "../../../services/auth.service.ts";
 import 'dotenv/config'
 const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 const login = async (username, password) => {

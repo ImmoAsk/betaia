@@ -541,14 +541,52 @@ function SinglePropertyAltPage({ property }) {
 }
 
 export async function getServerSideProps(context) {
-
   let { nuo } = context.query;
-  // Fetch data from external API
-  let dataAPIresponse = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={propriete(nuo:${nuo}){tarifications{id,mode,currency,montant},nuo,garage,est_meuble,titre,descriptif,surface,usage,cuisine,id,salon,piece,wc_douche_interne,cout_mensuel,nuitee,cout_vente,categorie_propriete{denomination,id},infrastructures{denomination,icone},meubles{libelle,icone},ville{denomination,id},quartier{id,denomination},adresse{libelle},offre{denomination},visuels{uri,position},user{id}}}`)
-  let property = await dataAPIresponse.json()
-  property = property.data.propriete;
-  console.log(property);
-  // Pass data to the page via props
-  return { props: { property } }
+
+  // Check if nuo is provided
+  if (!nuo) {
+    return {
+      notFound: true, // Return 404 if `nuo` is missing
+    };
+  }
+
+  try {
+    // Fetch data from external API
+    const dataAPIresponse = await fetch(
+      `https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={propriete(nuo:${nuo}){tarifications{id,mode,currency,montant},id,cout_visite,est_disponible,nuo,garage,est_meuble,titre,descriptif,surface,usage,cuisine,salon,piece,wc_douche_interne,cout_mensuel,nuitee,cout_vente,categorie_propriete{denomination,id},infrastructures{denomination,icone},meubles{libelle,icone},badge_propriete{id,date_expiration,badge{id,badge_name,badge_image}},pays{id,code,denomination},ville{denomination,id},quartier{id,denomination,minus_denomination},adresse{libelle},offre{denomination},visuels{uri,position},user{id}}}`
+    );
+
+    // Check if the response is OK (status 200-299)
+    if (!dataAPIresponse.ok) {
+      console.error("Failed to fetch data:", dataAPIresponse.statusText);
+      return {
+        notFound: true, // Return 404 if API call fails
+      };
+    }
+
+    // Parse the JSON data
+    const jsonResponse = await dataAPIresponse.json();
+    console.log("Propriete en JSON: ", jsonResponse);
+    // Check if property data exists
+    const property = jsonResponse?.data?.propriete;
+    if (!property) {
+      console.error("Property data not found in the response.");
+      return {
+        notFound: true, // Return 404 if property is not found
+      };
+    }
+
+    // Log the property for debugging
+    console.log("Propriete:", property);
+
+    // Pass data to the page via props
+    return { props: { property } };
+  } catch (error) {
+    // Handle any errors during fetch or JSON parsing
+    console.error("Error fetching property data:", error);
+    return {
+      props: { property: null }, // Pass null property if there's an error
+    };
+  }
 }
 export default SinglePropertyAltPage
