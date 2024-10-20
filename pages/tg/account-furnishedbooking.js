@@ -4,29 +4,29 @@ import RealEstateAccountLayout from '../../components/partials/RealEstateAccount
 import Nav from 'react-bootstrap/Nav';
 import { useSession, getSession } from 'next-auth/react';
 import { Row, Col } from 'react-bootstrap';
-import PropertyVisitList from '../../components/iacomponents/PropertyVisitList';
+import FurnishedBookingList from '../../components/iacomponents/FurnishedBookingList';
 
 // Helper function to fetch negotiations by statut for property owner
 async function fetchNegotiationsByStatut(statut, proprietaireID) {
   const dataAPIresponse = await fetch(
-    `https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getVisitationsByKeyWords(statut:${statut},proprietaire_id:${proprietaireID},orderBy:{order:DESC,column:ID}){id,visiteur{name,id},date_visite,heure_visite,statut,telephone_visitor,fullname_visitor,propriete{id,nuo}}}`
+    `https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getReservationsByKeyWords(statut:${statut},proprietaire_id:${proprietaireID},orderBy:{order:DESC,column:ID}){id,date_arrive,date_depart,pickup_place,email_reservateur,statut,phone_reservateur,fullname_reservateur,propriete{id,nuo},client{id,name}}}`
   );
   const responseData = await dataAPIresponse.json();
   console.log(responseData)
-  return responseData.data ? responseData.data.getVisitationsByKeyWords : [];
+  return responseData.data ? responseData.data.getReservationsByKeyWords : [];
 }
 
 // Helper function to fetch negotiations by statut for admin
 async function fetchNegotiationsByStatutByRole(statut) {
   const dataAPIresponse = await fetch(
-    `https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getVisitationsByKeyWords(statut:${statut},orderBy:{order:DESC,column:ID}){id,visiteur{name,id},date_visite,heure_visite,statut,telephone_visitor,fullname_visitor,propriete{id,nuo}}}`
+    `https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getReservationsByKeyWords(statut:${statut},orderBy:{order:DESC,column:ID}){id,date_arrive,date_depart,pickup_place,email_reservateur,statut,phone_reservateur,fullname_reservateur,propriete{id,nuo},client{id,name}}}`
   );
   const responseData = await dataAPIresponse.json();
   console.log(responseData)
-  return responseData.data ? responseData.data.getVisitationsByKeyWords : [];
+  return responseData.data ? responseData.data.getReservationsByKeyWords : [];
 }
 
-const VisitPropertiesPage = ({ _newNegotiations, _acceptedNegotiations, _declinedNegotiations }) => {
+const FurnishedBookingPage = ({ _newNegotiations, _acceptedNegotiations, _declinedNegotiations }) => {
   const [editPropertyShow, setEditPropertyShow] = useState(false);
   const [activeTab, setActiveTab] = useState('published');
   const [propertyModal, setPropertyModal] = useState({});
@@ -64,7 +64,7 @@ const VisitPropertiesPage = ({ _newNegotiations, _acceptedNegotiations, _decline
   };
 
   const getHandledNegotiationRentOffers = (projects) => {
-    return <PropertyVisitList projects={projects} />;
+    return <FurnishedBookingList projects={projects} />;
   };
 
   const columnStyle = {
@@ -73,35 +73,36 @@ const VisitPropertiesPage = ({ _newNegotiations, _acceptedNegotiations, _decline
   };
 
   return (
-    <RealEstatePageLayout pageTitle='Visite de biens immobiliers' activeNav='VisitProperties' userLoggedIn>
+    <RealEstatePageLayout pageTitle='Reservation de sejours' activeNav='FurnishedBooking' userLoggedIn>
       {/* {editPropertyShow && (
         <EditPropertyModal centered size='lg' show={editPropertyShow} onHide={() => setEditPropertyShow(false)} property={propertyModal} />
       )} */}
 
-      <RealEstateAccountLayout accountPageTitle='Visite de biens immobiliers'>
+      <RealEstateAccountLayout accountPageTitle='Reservation de sejours' activeNav='FurnishedBooking'>
         <div className='d-flex align-items-center justify-content-between mb-3'>
-          <h1 className='h2 mb-0'>Visites de biens immobiliers</h1>
+          <h1 className='h2 mb-0'>Reservations de meubles</h1>
         </div>
         <p className='pt-1 mb-4'>
-          Consulter ici toutes les visites de biens immobiliers et se preparer au rendez-vous.
+          Trouvez ici toutes les reservations de sejours envoyées par des locataires potentiels pour vos biens en location et séjours
+          immobiliers.
         </p>
         <Nav variant='tabs' defaultActiveKey='published' onSelect={handleTabChange} className='border-bottom mb-2'>
           <Nav.Item as={Col}>
             <Nav.Link eventKey='published'>
               <i className='fi-file fs-base me-2'></i>
-              Nouvelles visites
+              Reservations nouvelles
             </Nav.Link>
           </Nav.Item>
           <Nav.Item as={Col}>
             <Nav.Link eventKey='accepted'>
               <i className='fi-archive fs-base me-2'></i>
-              Visites en cours
+              Reservations en cours
             </Nav.Link>
           </Nav.Item>
           <Nav.Item as={Col}>
             <Nav.Link eventKey='declined'>
               <i className='fi-file-clean fs-base me-2'></i>
-              Visites deja faites
+              Reservations effectuees
             </Nav.Link>
           </Nav.Item>
         </Nav>
@@ -157,7 +158,7 @@ export async function getServerSideProps(context) {
       },
     };
   }
-  console.log("Session data:", session);
+
   let _newNegotiations, _acceptedNegotiations, _declinedNegotiations;
 
   // Check if the user is an admin or property owner
@@ -180,4 +181,4 @@ export async function getServerSideProps(context) {
   };
 }
 
-export default VisitPropertiesPage;
+export default FurnishedBookingPage;

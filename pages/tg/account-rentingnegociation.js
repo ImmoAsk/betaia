@@ -72,12 +72,12 @@ const RentingNegociationPage = ({ _newNegotiations, _acceptedNegotiations, _decl
   };
 
   return (
-    <RealEstatePageLayout pageTitle='Negotiations immobilières' activeNav='Account' userLoggedIn>
+    <RealEstatePageLayout pageTitle='Negociation de loyers' activeNav='Account' userLoggedIn>
       {/* {editPropertyShow && (
         <EditPropertyModal centered size='lg' show={editPropertyShow} onHide={() => setEditPropertyShow(false)} property={propertyModal} />
       )} */}
 
-      <RealEstateAccountLayout accountPageTitle='Negotiations immobilières'>
+      <RealEstateAccountLayout accountPageTitle='Negociation de loyers'>
         <div className='d-flex align-items-center justify-content-between mb-3'>
           <h1 className='h2 mb-0'>Negociations de loyers</h1>
         </div>
