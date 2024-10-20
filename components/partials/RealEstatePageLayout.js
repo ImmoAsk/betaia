@@ -203,7 +203,7 @@ const RealEstatePageLayout = (props) => {
           style={{ marginTop: '40px' }}
           className={`fixed-top${props.navbarExtraClass ? ` ${props.navbarExtraClass}` : ''}`}
         >
-          <Container>
+          <Container fluid>
             <Link href='/tg' passHref>
               <Navbar.Brand className='me-3 me-xl-4'>
                 <ImageLoader priority src='/images/logo/logo-dark.png' width={124} height={42} placeholder={false} alt='ImmoAsk' />

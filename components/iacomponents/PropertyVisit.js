@@ -83,8 +83,7 @@ const PropertyVisit = ({ project }) => {
                         <p className="text-nav stretched-link text-decoration-none">
                             <strong>
                                 {project.fullname_visitor ? project.fullname_visitor : project.visiteur?.name}
-                            </strong> {role === '1200' && (project.telephone_visitor ? "+" + project.telephone_visitor : "")}
-                            souhaite visiter la propriété No. {project.propriete.nuo} le <strong>{formatDate(project.date_visite)}</strong> a <strong>{project.heure_visite}</strong>
+                            </strong> {role === '1200' && (project.telephone_visitor ? "+" + project.telephone_visitor : "")} souhaite visiter la propriété No. {project.propriete.nuo} le <strong>{formatDate(project.date_visite)}</strong> a <strong>{project.heure_visite}</strong>
                         </p>
                     </h3>
                     <div className="fs-sm">
@@ -103,7 +102,7 @@ const PropertyVisit = ({ project }) => {
                                     className="me-2 flex-grow-1"
                                 >
 
-                                    Reporter la visite
+                                    Reporter
                                 </Button>
                             </Link>
                             <Link href='#' passHref onClick={(e) => console.log("Confirmer la visite")}>
@@ -111,7 +110,7 @@ const PropertyVisit = ({ project }) => {
                                     variant="primary"
                                     className="flex-grow-1"
                                 >
-                                    Confirmer la visite
+                                    Confirmer
                                 </Button>
                             </Link>
 

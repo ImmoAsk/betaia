@@ -101,7 +101,7 @@ const RentingNegotiationOffer = ({ project }) => {
                                     className="me-2 flex-grow-1"
                                 >
 
-                                    Decliner l'offre
+                                    Decliner
                                 </Button>
                             </Link>
                             <Link href='#' passHref onClick={(e)=>handleAccept(e)}>
@@ -109,7 +109,7 @@ const RentingNegotiationOffer = ({ project }) => {
                                     variant="primary"
                                     className="flex-grow-1"
                                 >
-                                    Accepter l'offre
+                                    Accepter
                                 </Button>
                             </Link>
 
