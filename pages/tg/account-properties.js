@@ -313,6 +313,8 @@ const AccountPropertiesPage = ({ _userProperties, _handledProjets, _handlingProj
 export async function getServerSideProps(context) {
   const session = await getSession(context);
 
+  console.log("Session data:", session); // Check if the session data is correct
+
   if (!session) {
     return {
       redirect: {
