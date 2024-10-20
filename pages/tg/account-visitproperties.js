@@ -157,7 +157,7 @@ export async function getServerSideProps(context) {
       },
     };
   }
-  onsole.log("Session data:", session);
+  console.log("Session data:", session);
   let _newNegotiations, _acceptedNegotiations, _declinedNegotiations;
 
   // Check if the user is an admin or property owner
