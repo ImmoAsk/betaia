@@ -88,21 +88,21 @@ const RealEstateAccountLayout = ({ accountPageTitle, children }) => {
         <Col md={5} lg={3} className='pe-xl-4 mb-5'>
           <div className='card card-body border-0 shadow-sm pb-1 me-lg-1'>
             <div className='d-flex d-md-block d-lg-flex align-items-start pt-lg-2 mb-4'>
-              <Avatar img={{ src: '/images/avatars/03.jpg', alt: 'Annette Black' }} size={[48, 48]} />
+              <Avatar img={{ src: '/images/avatars/45.jpg', alt: 'ImmoAsk' }} size={[48, 48]} />
               <div className='pt-md-2 pt-lg-0 ps-3 ps-md-0 ps-lg-3'>
                 <h2 className='fs-lg mb-0'>{session ? session.user.name : " "}</h2>
                 <StarRating rating={4.8} />
                 <ul className='list-unstyled fs-sm mt-3 mb-0'>
                   <li>
-                    <a href='tel:3025550107' className='nav-link fw-normal p-0'>
+                    <a href='tel:+22870453625' className='nav-link fw-normal p-0'>
                       <i className='fi-phone opacity-60 me-2'></i>
-                      (302) 555-0107
+                      (+228) 7045 3625
                     </a>
                   </li>
                   <li>
-                    <a href='mailto:annette_black@email.com' className='nav-link fw-normal p-0'>
+                    <a href='mailto:contact@immoask.com' className='nav-link fw-normal p-0'>
                       <i className='fi-mail opacity-60 me-2'></i>
-                      annette_black@email.com
+                      contact@immoask.com
                     </a>
                   </li>
                 </ul>

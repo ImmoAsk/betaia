@@ -216,17 +216,17 @@ const RealEstatePageLayout = (props) => {
               <Dropdown className='d-none d-lg-block order-lg-3 my-n2 me-3'>
                 <Link href='/tg/account-info' passHref>
                   <Dropdown.Toggle as={Nav.Link} className='dropdown-toggle-flush d-flex py-1 px-0' style={{ width: '40px' }}>
-                    <ImageLoader src='/images/avatars/30.jpg' width={80} height={80} placeholder={false} className='rounded-circle' alt='Annette Black' />
+                    <ImageLoader src='/images/avatars/45.jpg' width={80} height={80} placeholder={false} className='rounded-circle' alt='ImmoAsk' />
                   </Dropdown.Toggle>
                 </Link>
                 <Dropdown.Menu renderOnMount align='end'>
                   <div className='d-flex align-items-start border-bottom px-3 py-1 mb-2' style={{ width: '16rem' }}>
-                    <ImageLoader src='/images/avatars/03.jpg' width={48} height={48} placeholder={false} className='rounded-circle' alt='Annette Black' />
+                    <ImageLoader src='/images/avatars/45.jpg' width={48} height={48} placeholder={false} className='rounded-circle' alt='ImmoAsk' />
                     <div className='ps-2'>
                       <h6 className='fs-base mb-0'>{session ? session.user.name : " "}</h6>
                       <StarRating size='sm' rating={5} />
                       <div className='fs-xs py-2'>
-                        (302) 555-0107<br />annette_black@email.com
+                        (+228) 7045 3625<br />contact@immoask.com
                       </div>
                     </div>
                   </div>
@@ -370,14 +370,17 @@ const RealEstatePageLayout = (props) => {
                       <Dropdown.Item>Chambres salon à louer</Dropdown.Item>
                     </Link>
                     <Link href='/tg/locations-immobilieres/studio' passHref>
-                      <Dropdown.Item>Studio(Chambre ou pièce) à loeur</Dropdown.Item>
+                      <Dropdown.Item>Studio à louer</Dropdown.Item>
+                    </Link>
+                    <Link href='/tg/locations-immobilieres/chambre' passHref>
+                      <Dropdown.Item>Chambre à louer</Dropdown.Item>
                     </Link>
                   </Dropdown.Menu>
                 </Nav.Item>
                 {props.userLoggedIn ? <Nav.Item as={Dropdown} className='d-lg-none'>
                   <Dropdown.Toggle as={Nav.Link} className='d-flex align-items-center'>
-                    <ImageLoader src='/images/avatars/30.jpg' width={30} height={30} placeholder={false} className='rounded-circle' alt='Annette Black' />
-                    <span className='ms-2'>{session ? true : false}</span>
+                    <ImageLoader src='/images/avatars/45.jpg' width={30} height={30} placeholder={false} className='rounded-circle' alt='ImmoAsk' />
+                    <span className='ms-2'>{session ? session.user.name : "Connectez-vous"}</span>
                   </Dropdown.Toggle>
                   <Dropdown.Menu>
                     <div className='ps-3'>
