@@ -21,7 +21,7 @@ const CheckAvailabilityModal = ({ property, onSwap, pillButtons, ...props }) => 
   const { data: session } = useSession();
 
   // Adjust validation logic based on session
-  const isFormValid = session ? requestAvailability : (email && phone && requestAvailability && firstName);
+  const isFormValid = session ? true : (email && phone  && firstName);
 
   // Form submission handler
   const handleSubmit = async (event) => {
@@ -38,28 +38,24 @@ const CheckAvailabilityModal = ({ property, onSwap, pillButtons, ...props }) => 
     const formData = {
       email,
       phone,
-      requestAvailability,
       firstName
     };
     console.log("Before Mutation: ", formData)
     // Prepare GraphQL mutation for rent disponibilite
-    const currentDate = new Date().toISOString().slice(0, 19).replace('T', ' ');
-    /* const disponibilite_data = {
-      query: `mutation CheckAvailability($input: ProjectInput!) {
-        createProject(input: $input) {
+    const disponibilite_data = {
+      query: `mutation CheckAvailability($input: VerificationDisponibiliteInput!) {
+        createVerificationDisponibilite(input: $input) {
           id
         }
       }`,
       variables: {
         input: {
           user_id: session ? Number(session.user?.id) : 0,
-          final_date: currentDate,
-          start_date: currentDate,
-          statut: 0,
-          description: formData.requestAvailability,
-          project_name: "Disponibilité du bien immobilier N° " + property.nuo,
-          project_category: "Disponibilité",
-          project_document: ""
+          email_verificateur: formData.email,
+          telephone_verificateur: formData.phone,
+          propriete_id: Number(property.id),
+          proprietaire_id: Number(property?.user?.id),
+          fullname_verificateur: formData.firstName,
         }
       }
     };
@@ -69,12 +65,12 @@ const CheckAvailabilityModal = ({ property, onSwap, pillButtons, ...props }) => 
         headers: { 'Content-Type': 'application/json' }
       });
 
-      if (Number(response.data?.data?.createProject?.id) >= 1) {
-        setDisponibiliteNotification("Votre négociation a été envoyée avec succès. Vous serez contacté sous peu.");
+      if (Number(response.data?.data?.createVerificationDisponibilite?.id) >= 1) {
+        setDisponibiliteNotification("La verification de disponibilité a été envoyée avec succès. Le propritaire vous confirme sous peu.");
       }
     } catch (error) {
       console.error("Error during disponibilite:", error);
-    } */
+    }
 
     setValidated(true);
   };
@@ -107,22 +103,6 @@ const CheckAvailabilityModal = ({ property, onSwap, pillButtons, ...props }) => 
             </h3>
 
             <Form noValidate validated={validated} onSubmit={handleSubmit}>
-              <Form.Group controlId='si-requestAvailability' className='mb-2'>
-                <Form.Label>Requete de disponibilité ?</Form.Label>
-                <Form.Control
-                  type='text'
-                  name='requestAvailability'
-                  required
-                  defaultValue={"Je veux connaitre la disponibilité du bien immobilier N° " + property.nuo}
-                  value={requestAvailability}
-                  placeholder={"Je veux connaitre la disponibilité du bien immobilier N° " + property.nuo}
-                  onChange={(e) => setRequestAvailability(e.target.value)}
-                />
-                <Form.Control.Feedback type="invalid">
-                  Veuillez saisir une offre valide.
-                </Form.Control.Feedback>
-              </Form.Group>
-
               {!session && (
                 <>
                   <Form.Group className='mb-2'>
