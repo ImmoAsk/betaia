@@ -172,6 +172,7 @@ const BookFurnishedPropertyModal = ({
                 <Form.Label>Date d'arrivée</Form.Label>
                 <Form.Control as={DatePicker}
                   className="mb-2"
+                  showTime
                   getPopupContainer={(trigger) => trigger.parentNode}
                   onChange={handleCheckInChange}
                   disabledDate={disabledDate}
@@ -183,6 +184,7 @@ const BookFurnishedPropertyModal = ({
                 <Form.Label>Date de départ</Form.Label>
                 <Form.Control as={DatePicker}
                   className="mb-2"
+                  showTime
                   getPopupContainer={(trigger) => trigger.parentNode}
                   onChange={handleCheckOutChange}
                   disabledDate={disabledDate}
