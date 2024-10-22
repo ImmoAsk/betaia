@@ -7,6 +7,8 @@ import Button from 'react-bootstrap/Button';
 import ImageLoader from '../components/ImageLoader';
 import PasswordToggle from '../components/PasswordToggle';
 import Alert from 'react-bootstrap/Alert';
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css';
 import axios from 'axios';
 
 const SignupLightPage = () => {
@@ -16,6 +18,7 @@ const SignupLightPage = () => {
   // Form state management
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [termsChecked, setTermsChecked] = useState(false);
@@ -23,7 +26,7 @@ const SignupLightPage = () => {
   const [accountCreatedNotification, setAccountCreatedNotification] = useState(null);
 
   // Check if the form is valid
-  const isFormValid = name && email && password && confirmPassword && password === confirmPassword && termsChecked;
+  const isFormValid = phone && name && email && password && confirmPassword && password === confirmPassword && termsChecked;
 
   // Form submission handler
   const handleSubmit = async (event) => {
@@ -42,7 +45,8 @@ const SignupLightPage = () => {
       email,
       password,
       confirmPassword,
-      termsChecked
+      termsChecked,
+      phone
     };
 
     // Prepare GraphQL mutation
@@ -59,6 +63,7 @@ const SignupLightPage = () => {
         input: {
           name: formData.name,
           email: formData.email,
+          phone: formData.phone,
           password: formData.password,
           password_confirmation: formData.confirmPassword
         }
@@ -151,6 +156,24 @@ const SignupLightPage = () => {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                     />
+                  </Form.Group>
+                  <Form.Group className='mb-2'>
+                    <Form.Label>Numéro de téléphone</Form.Label>
+                    <PhoneInput
+                      country={'tg'}
+                      value={phone}
+                      onChange={(phone) => setPhone(phone)}
+                      enableSearch={true}
+                      inputProps={{
+                        name: 'phone',
+                        required: true,
+                        autoFocus: true,
+                        className: 'form-control w-100 form-control-lg',
+                      }}
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      Veuillez saisir un numéro de téléphone valide.
+                    </Form.Control.Feedback>
                   </Form.Group>
                   <Form.Group className="mb-4">
                     <Form.Label htmlFor="su-password">Mot de passe <span className="fs-sm text-muted">min. 8 caracteres</span></Form.Label>

@@ -43,7 +43,7 @@ const CheckAvailabilityModal = ({ property, onSwap, pillButtons, ...props }) => 
     console.log("Before Mutation: ", formData)
     // Prepare GraphQL mutation for rent disponibilite
     const disponibilite_data = {
-      query: `mutation CheckAvailability($input: VerificationDisponibiliteInput!) {
+      query: `mutation CheckAvailability($input: Verification_disponibiliteInput!) {
         createVerificationDisponibilite(input: $input) {
           id
         }
