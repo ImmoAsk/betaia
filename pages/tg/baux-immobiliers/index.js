@@ -2,6 +2,7 @@ import { useRef, useEffect, useState } from 'react'
 import { useMediaQuery } from 'react-responsive'
 import { useRouter } from 'next/router'
 import dynamic from 'next/dynamic'
+import { useSession } from 'next-auth/react'
 import Link from 'next/link'
 import RealEstatePageLayout from '../../../components/partials/RealEstatePageLayout'
 import Container from 'react-bootstrap/Container'
@@ -42,6 +43,7 @@ const Popup = dynamic(() =>
 import 'leaflet/dist/leaflet.css'
 import RentingList from '../../../components/iacomponents/RentingList'
 import {buildPropertiesArray} from '../../../utils/generalUtils'
+import IAPaginaation from '../../../components/iacomponents/IAPagination'
 
 const CatalogPage = ({_rentingProperties}) => {
     
@@ -51,7 +53,7 @@ const CatalogPage = ({_rentingProperties}) => {
     document.body.classList.add('fixed-bottom-btn')
     return () => body.classList.remove('fixed-bottom-btn')
   })
-
+  const { data: session } = useSession();
   // Query param (Switch between Rent and Sale category)
   const router = useRouter(),
         // categoryParam = router.query.category === 'sale' ? 'sale' : 'rent'
@@ -609,6 +611,7 @@ const CatalogPage = ({_rentingProperties}) => {
     <RealEstatePageLayout
       pageTitle={"Immeubles en "+categoryParamTitle(categoryParam)}
       activeNav='Catalog'
+      userLoggedIn={session ? true : false}
     >
 
       {/* Page container */}
@@ -915,28 +918,15 @@ const CatalogPage = ({_rentingProperties}) => {
               <hr className='d-none d-sm-block w-100 mx-4' />
               <div className='d-none d-sm-flex align-items-center flex-shrink-0 text-muted'>
                 <i className='fi-check-circle me-2'></i>
-                <span className='fs-sm mt-n1'>148 résultats</span>
+                <span className='fs-sm mt-n1'>{rentingProperties.length} résultats</span>
               </div>
             </div>
 
             {/* Catalog grid */}
-            <Row xs={1} sm={2} xl={3} className='g-4 py-4'>
-              <RentingList rentingProperties={rentingProperties}/>
-            </Row>
+           
 
             {/* Pagination */}
-            <nav className='border-top pb-md-4 pt-4' aria-label='Pagination'>
-              <Pagination className='mb-1'>
-                <Pagination.Item active>{1}</Pagination.Item>
-                <Pagination.Item>{2}</Pagination.Item>
-                <Pagination.Item>{3}</Pagination.Item>
-                <Pagination.Ellipsis />
-                <Pagination.Item>{8}</Pagination.Item>
-                <Pagination.Item>
-                  <i className='fi-chevron-right'></i>
-                </Pagination.Item>
-              </Pagination>
-            </nav>
+            <IAPaginaation dataPagineted={rentingProperties}/>
           </Col>
         </Row>
       </Container>

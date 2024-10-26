@@ -15,6 +15,8 @@ const login = async (username, password) => {
         roleId:res.data.data.login.user.role.id,
         accessToken: res.data.data.login.access_token,
         expiredAt: res.data.data.login.expires_in,
+        userEmail:res.data.data.login.user.email,
+        userPhone: null
       }
       console.log(u);
       return u ;
@@ -32,11 +34,15 @@ export const authOptions = {
                 id:(await u).id,
                 name: (await u).username,
                 roleId:(await u).roleId,
+                email:(await u).userEmail,
+                phone:(await u).userPhone,
                 access_token:(await u).accessToken // <-- retrive JWT token from Drupal response
               };
               return {
                 token: user.access_token,
                 name:user.name,
+                email:user.email,
+                phone:user.phone,
                 id:user.id,
                 roleId:user.roleId,
               };

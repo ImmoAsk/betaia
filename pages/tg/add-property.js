@@ -469,8 +469,8 @@ const AddPropertyPage = () => {
                       <option value="">Choisir l'offre</option>
                       <option value="1">Mettre en location</option>
                       <option value="2">Mettre en vente</option>
-                      <option value="3">Mettre en bail</option>
-                      <option value="4">Mettre en colocation</option>
+                      <option value="4">Mettre en bail</option>
+                      <option value="3">Mettre en colocation</option>
                     </Form.Select>
 
                     {errors.offer ? (

@@ -226,7 +226,7 @@ const RealEstatePageLayout = (props) => {
                       <h6 className='fs-base mb-0'>{session ? session.user.name : " "}</h6>
                       <StarRating size='sm' rating={5} />
                       <div className='fs-xs py-2'>
-                        (+228) 7045 3625<br />contact@immoask.com
+                      {session ? session.user?.phone : "(+228) 7045 3625"}<br />{session ? session.user.email : "contact@immoask.com"}
                       </div>
                     </div>
                   </div>

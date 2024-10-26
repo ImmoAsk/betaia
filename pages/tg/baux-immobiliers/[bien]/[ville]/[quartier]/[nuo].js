@@ -31,18 +31,19 @@ import ProRealEstateAgency from '../../../../../../components/iacomponents/ProRe
 import FurnishedEquipmentList from '../../../../../../components/iacomponents/FurnishedEquipmentList'
 import NearestInfrastructureList from '../../../../../../components/iacomponents/NearestInfrastructureList'
 import RecommendPropertyList from '../../../../../../components/iacomponents/RecommendPropertyList'
-
 import PayVisitModal from '../../../../../../components/iacomponents/PayVisitModal'
 import CheckAvailabilityModal from '../../../../../../components/iacomponents/CheckAvailabilityModal'
-import RentNegociationModal from '../../../../../../components/iacomponents/RentNegociationModal'
-import AskNuiteePriceModal from '../../../../../../components/iacomponents/AskNuiteePriceModal'
 import { getHumanReadablePrice } from '../../../../../../utils/generalUtils'
 
-
-
 function SinglePropertyAltPage({ property }) {
+  const { data: session } = useSession();
+  const router = useRouter()
+  const { nuo, bien, quartier, ville } = router.query;
 
+ 
+  // Message modal state
   // Sign in modal
+  //const propertyCard= createPropertyObject(property);
   const [signinShow, setSigninShow] = useState(false)
 
   const handleSigninClose = () => setSigninShow(false)
@@ -54,14 +55,9 @@ function SinglePropertyAltPage({ property }) {
   const handleSignupClose = () => setSignupShow(false)
   const handleSignupShow = () => setSignupShow(true)
 
-  const [rentNegociationShow, setRentNegociationShow] = useState(false)
-  const handleRentNegociationClose = () => setRentNegociationShow(false)
-  const handleRentNegociationShow = () => setRentNegociationShow(true)
-  
 
-  const [askNuiteePriceShow, setAskNuiteePriceShow] = useState(false)
-  const handleAskNuiteePriceClose = () => setAskNuiteePriceShow(false)
-  const handleAskNuiteePriceShow = () => setAskNuiteePriceShow(true)
+
+
   // Swap modals
   const handleSignInToUp = (e) => {
     e.preventDefault()
@@ -73,33 +69,6 @@ function SinglePropertyAltPage({ property }) {
     setSigninShow(true)
     setSignupShow(false)
   }
-
-  const handleRentNegociationModal = (e) => {
-    e.preventDefault()
-    if(session){
-      handleRentNegociationShow();
-    } else{
-      handleSignInToUp(e);
-    }
-  }
-
-  const handleNuiteePriceModal = (e) => {
-    e.preventDefault()
-    handleAskNuiteePriceShow()
-  }
-  
-  const { data: session } = useSession();
-  const router = useRouter()
-  const { nuo, bien, quartier, ville } = router.query;
-
-  const myQuartier = quartier.charAt(0).toUpperCase() + quartier.slice(1);
-  const myVille = ville.charAt(0).toUpperCase() + ville.slice(1);
-  const myBien = bien.charAt(0).toUpperCase() + bien.slice(1);
-  // Message modal state
-  const [messageModalShow, setMessageModalShow] = useState(false)
-  const handleMessageModalClose = () => setMessageModalShow(false)
-  const handleMessageModalShow = () => setMessageModalShow(true)
-  const [messageValidated, setMessageValidated] = useState(false)
   const handleMessageSubmit = (event) => {
     const form = event.currentTarget
     if (form.checkValidity() === false) {
@@ -128,12 +97,12 @@ function SinglePropertyAltPage({ property }) {
     defineUnauthenticatedThumbNails();
   }, []);
   const getRecommendProperties = () => {
-    axios.get(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getRecommendProperties(first:5,offre_id:"1",nuo:${property.nuo},quartier_id:"${property.quartier.id}",categorie_id:"${property.categorie_propriete.id}"){data{surface,badge_propriete{badge{badge_name,badge_image}},id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination},visuels{uri}}}}`).
+    axios.get(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getRecommendProperties(first:5,offre_id:"4",nuo:${property.nuo},quartier_id:"${property.quartier.id}",categorie_id:"${property.categorie_propriete.id}"){data{surface,badge_propriete{badge{badge_name,badge_image}},id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination,minus_denomination,id},visuels{uri,position}}}}`).
       then((res) => {
         setRecommendProperties(res.data.data.getRecommendProperties.data.map((propertyr) => {
           //const { status, data:badges_property, error, isFetching,isLoading,isError }  = usePropertyBadges(property.id);
           return {
-            href: getPropertyFullUrl(propertyr.pays.code, propertyr.offre.denomination, propertyr.categorie_propriete.denomination, propertyr.ville.denomination, propertyr.quartier.denomination, propertyr.nuo),
+            href: getPropertyFullUrl(propertyr.pays.code, propertyr.offre.denomination, propertyr.categorie_propriete.denomination, propertyr.ville.denomination, propertyr.quartier.minus_denomination, propertyr.nuo),
             images: [[getFirstImageArray(propertyr.visuels), 467, 305, 'Image']],
             title: 'N°' + propertyr.nuo + ': ' + propertyr.categorie_propriete.denomination + ' à ' + propertyr.offre.denomination + ' | ' + propertyr.surface + 'm²',
             category: propertyr.usage,
@@ -194,7 +163,7 @@ function SinglePropertyAltPage({ property }) {
                 </li>`
               } else {
                 return `<li class='swiper-thumbnail ${className}'>
-                  <img src=${session ? thumbnails[index] : 'http://127.0.0.1:8000/storage/uploads/visuels/proprietes/' + Unconnectedhumbnails[index]} alt='Thumbnail'/>
+                  <img src=${session ? thumbnails[index] : 'https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/proprietes/' + Unconnectedhumbnails[index]} alt='Thumbnail'/>
                 </li>`
               }
             }
@@ -210,7 +179,7 @@ function SinglePropertyAltPage({ property }) {
 
               return (
                 <SwiperSlide className='d-flex'>
-                  <ImageLoader className='rounded-3' src={'http://127.0.0.1:8000/storage/uploads/visuels/proprietes/' + imgproperty.uri} width={967} height={545} alt='Image' />
+                  <ImageLoader className='rounded-3' src={'https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/proprietes/' + imgproperty.uri} width={967} height={545} alt='Image' />
                 </SwiperSlide>
               )
             })
@@ -219,20 +188,20 @@ function SinglePropertyAltPage({ property }) {
             (
               <>
                 <SwiperSlide className='d-flex'>
-                  <ImageLoader className='rounded-3' src={'http://127.0.0.1:8000/storage/uploads/visuels/proprietes/' + Unconnectedhumbnails[0]} width={967} height={545} alt='Image' />
+                  <ImageLoader className='rounded-3' src={'https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/proprietes/' + Unconnectedhumbnails[0]} width={967} height={545} alt='Image' />
                 </SwiperSlide>
                 <SwiperSlide className='d-flex'>
-                  <ImageLoader className='rounded-3' src={'http://127.0.0.1:8000/storage/uploads/visuels/proprietes/' + Unconnectedhumbnails[1]} width={967} height={545} alt='Image' />
+                  <ImageLoader className='rounded-3' src={'https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/proprietes/' + Unconnectedhumbnails[1]} width={967} height={545} alt='Image' />
                 </SwiperSlide>
 
               </>
             )
           }
-          <SwiperSlide>
+          {/* <SwiperSlide>
             <div className='ratio ratio-16x9'>
               <iframe src='https://www.youtube.com/embed/1oVncb5hke0?autoplay=1' className='rounded-3' allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
             </div>
-          </SwiperSlide>
+          </SwiperSlide> */}
 
           <SlidesCount />
         </Swiper>
@@ -241,22 +210,57 @@ function SinglePropertyAltPage({ property }) {
     )
   }
 
- 
+  // Amenities collapse state
+  const [amenitiesOpen, setAmenitiesOpen] = useState(false)
+
+  // Amenities array
+  const amenities = [
+    [
+      { icon: 'fi-wifi', title: 'Free WiFi' },
+      { icon: 'fi-thermometer', title: 'Heating' },
+      { icon: 'fi-dish', title: 'Dishwasher' },
+      { icon: 'fi-parking', title: 'Parking place' },
+      { icon: 'fi-snowflake', title: 'Air conditioning' },
+      { icon: 'fi-iron', title: 'Iron' },
+      { icon: 'fi-tv', title: 'TV' },
+      { icon: 'fi-laundry', title: 'Laundry' },
+      { icon: 'fi-cctv', title: 'Security cameras' },
+      { icon: 'fi-no-smoke', title: 'No smocking' }
+    ],
+    [
+      { icon: 'fi-double-bed', title: 'Double bed' },
+      { icon: 'fi-bed', title: 'Single bed' }
+    ],
+    [
+      { icon: 'fi-swimming-pool', title: 'Zener Agoe 2 Lions' },
+      { icon: 'fi-cafe', title: 'Bonici Agoe 2 lions' },
+      { icon: 'fi-spa', title: 'Eglise Tout feu Tout flamme' },
+      { icon: 'fi-cocktail', title: 'Eglise Nouvelle' }
+    ]
+  ]
+
+  const infrastructures = [
+    { icon: 'fi-swimming-pool', title: 'Zener Agoe 2 Lions' },
+    { icon: 'fi-cafe', title: 'Bonici Agoe 2 lions' },
+    { icon: 'fi-spa', title: 'Eglise Tout feu Tout flamme' },
+    { icon: 'fi-cocktail', title: 'Eglise Nouvelle' }
+  ]
 
   { !property && <h4 className='mt-5 mb-lg-5 mb-4 pt-5 pb-lg-5'>Ce bien immobilier n'existe pas encore</h4> }
   //{isError && <h4 className='mt-5 mb-lg-5 mb-4 pt-5 pb-lg-5'>Une erreur: {error.message}</h4>}
 
   return (
     <RealEstatePageLayout
-      pageTitle={`${property.categorie_propriete.denomination} à louer, ${property.ville.denomination}, ${property.quartier.denomination} | No. ${nuo} | Togo`}
+      pageTitle={`${property.categorie_propriete.denomination} à bailler, ${property.ville.denomination}, ${property.quartier.denomination} | No. ${nuo} | Togo`}
       userLoggedIn={session ? true : false}
-      pageDescription={`${property.categorie_propriete.denomination} à louer, ${property.ville.denomination}, ${property.quartier.denomination}, Togo. ${property.descriptif}`}
-      pageKeywords={`bail immobilier, ${property.categorie_propriete.denomination},immeuble,foncier,investissemt,commerce,${property.ville.denomination}, ${property.quartier.denomination},Togo`}
+      pageDescription={`${property.categorie_propriete.denomination} à bailler, ${property.ville.denomination}, ${property.quartier.denomination}, Togo. ${property.descriptif}`}
+      pageKeywords={`bail immobilier, ${property.categorie_propriete.denomination},immeuble,foncier,investissemt,terrain,maison,${property.ville.denomination}, ${property.quartier.denomination},Togo`}
       pageCoverImage={`${getFirstImageArray(property.visuels)}`}
       pageUrl={`https://www.immoask.com/tg/baux-immobiliers/${bien}/${ville}/${quartier}/${nuo}`}
     >
 
 
+      {/* Message modal */}
       {/* Sign in modal */}
       {signinShow && <PayVisitModal
         centered
@@ -274,24 +278,6 @@ function SinglePropertyAltPage({ property }) {
         show={signupShow}
         onHide={handleSignupClose}
         onSwap={handleSignUpToIn}
-        property={property}
-      />}
-
-      {/* Sign up modal */}
-      {rentNegociationShow && <RentNegociationModal
-        centered
-        size='lg'
-        show={rentNegociationShow}
-        onHide={handleRentNegociationClose}
-        property={property}
-      />}
-
-
-      {askNuiteePriceShow && <AskNuiteePriceModal
-        centered
-        size='lg'
-        show={askNuiteePriceShow}
-        onHide={handleAskNuiteePriceClose}
         property={property}
       />}
       {/* Post content */}
@@ -328,7 +314,7 @@ function SinglePropertyAltPage({ property }) {
 
                   {/* Page title + Amenities */}
                   <div className='order-lg-2 order-1 pt-lg-2'>
-                    <h1 className='h2 mb-2'> No. {property.nuo} | {property.categorie_propriete.denomination} à louer, {property.ville.denomination}, {property.quartier.denomination} {" "}{property && property.titre == 'undefined' ? '' : property.titre}</h1>
+                    <h1 className='h2 mb-2'> No. {property.nuo} | {property.categorie_propriete.denomination} à bailler, {property.ville.denomination}, {property.quartier.denomination} {" "}{property && property.titre == 'undefined' ? '' : property.titre}</h1>
                     <p className='mb-2 pb-1 fs-lg'>{property && property.adresse.libelle}</p>
                     <ul className='d-flex mb-4 pb-lg-2 list-unstyled'>
                       <li className='me-3 pe-3 border-end'>
@@ -385,7 +371,7 @@ function SinglePropertyAltPage({ property }) {
                       <Dropdown className='d-inline-block'>
                         <OverlayTrigger
                           placement='top'
-                          overlay={<Tooltip>Share</Tooltip>}
+                          overlay={<Tooltip>Partager</Tooltip>}
                         >
                           <Dropdown.Toggle variant='icon btn-light-primary btn-xs shadow-sm rounded-circle ms-2 mb-2'>
                             <i className='fi-share'></i>
@@ -410,59 +396,36 @@ function SinglePropertyAltPage({ property }) {
                   </div>
 
                   {/* Price */}
-
                   <ul className='d-flex mb-4 list-unstyled fs-sm'>
-                  <li className='me-3 pe-3 border-end'>
-                    {!property ? <span className="sr-only">En chargement...</span>
-                    : <>
-                      {property.cout_mensuel > 0 &&
-                        <>
-                          <h3 className='h5 mb-2'>Loyer mensuel</h3>
-                          <h2 className='h3 mb-4 pb-2'>
-                            {property && property.cout_mensuel} <sup>XOF/mois</sup>
-                            
-                          </h2>
-                          <Button size='md' className='w-100' variant='outline-primary' onClick={handleRentNegociationModal}>Negocier le loyer</Button>
-                        </>
-                      }
-                    </>
-                  }
-                  </li>
                     <li className='me-3 pe-3'>
-                    { !property? <span className="sr-only">En chargement...</span>
-                    :<>
-                    {   property.nuitee > 0 && 
+
+                    {   property.cout_vente > 0 && 
                         <>
-                        <h3 className='h5 mb-2'>Nuitée</h3>
-                          <h2 className='h6 mb-4 pb-2'>
-                            {property && property.nuitee}<sup>XOF</sup>
-                            <span className='d-inline-block ms-1 fs-base fw-normal text-body'>/nuitée</span>
+                        <h3 className='h5 mb-2'>Prix d'achat:</h3>
+                          <h2 className='h5 mb-4 pb-2'>
+                            XOF {property && property.cout_vente}
+                            <span className='d-inline-block ms-1 fs-base fw-normal text-body'>/vie</span>
                           </h2>
-                          <Button size='md' className='w-100' variant='outline-primary' onClick={handleRentNegociationModal}>Réserver maintenant</Button> 
+                          <Button size='md' className='w-100' variant='outline-primary' onClick={handleSigninShow}>Planifier une visite</Button> 
                         </> 
                     }
-                    </>  
-                  }
                     </li>
-                    <li className='me-3 pe-3'>
-                    { !property? <span className="sr-only">En chargement...</span>
-                    :<>
-                    {   property.nuitee <= 0 && property.est_meuble === 1 && 
+
+                    <li className='me-3 pe-3 border-end'>
+                  
+                    {   property.cout_mensuel > 0 && 
                         <>
-                        <h3 className='h5 mb-2'>Nuitée</h3>
-                          <p className='mb-4 pb-2'>
-                            Le propriétaire n'a pas précisé la nuitée.
-                            Formuler une demande de nuitée en temps.
-                          </p>
-                          <Button size='md' className='w-100' variant='outline-primary' onClick={handleNuiteePriceModal}>Demander la nuitée</Button>    
+                        <h3 className='h5 mb-2'>Bail mensuel:</h3>
+                          <h2 className='h5 mb-4 pb-2'>
+                            XOF {property && property.cout_mensuel}
+                            <span className='d-inline-block ms-1 fs-base fw-normal text-body'>/mois</span>
+                          </h2>
+                          <Button size='md' className='w-100' variant='outline-primary' onClick={handleSigninShow}>Planifier une visite</Button> 
                         </> 
                     }
-                    </>  
-                  }
                     </li>
                     
                   </ul>
-                  
 
 
                   {/* Property details card */}
@@ -472,16 +435,28 @@ function SinglePropertyAltPage({ property }) {
                       <ul className='list-unstyled mt-n2 mb-0'>
                         <li className='mt-2 mb-0'><b>Type: </b>{property && property.categorie_propriete.denomination}</li>
                         <li className='mt-2 mb-0'><b>Surface: </b>{property && property.surface} m²</li>
-                        <li className='mt-2 mb-0'><b>Salon: </b>{property && property.salon}</li>
-                        <li className='mt-2 mb-0'><b>Chambres+salon: </b>{property && property.piece}+{property && property.salon}</li>
-                        <li className='mt-2 mb-0'><b>Douches: </b>{property && property.wc_douche_interne}</li>
-                        {/* <li className='mt-2 mb-0'><b>Parking places: </b>2</li>
-                        <li className='mt-2 mb-0'><b>Pets allowed: </b>cats only</li> */}
+                        <li className='mt-2 mb-0'><b>Document de propriété: </b>{property && property.papier_propriete}</li>
+                        {property.salon > 0 &&
+                          <>
+                          <li className='mt-2 mb-0'><b>Salon: </b>{property && property.salon}</li>
+                          </>
+                        }
+
+                        {property.piece > 0 &&
+                          <>
+                          <li className='mt-2 mb-0'><b>Chambres+salon: </b>{property && property.piece}+{property && property.salon}</li>
+                          </>
+                        }
+                        { property.wc_douche_interne > 0 &&
+                          <>
+                          <li className='mt-2 mb-0'><b>Douches: </b>{property && property.wc_douche_interne}</li>
+                          </>
+                        }
                       </ul>
                     </Card.Body>
                   </Card>
                   <div className='justify-content-between mb-2'>
-                    <Button size='lg' className='w-100' variant='outline-primary' onClick={handleSigninShow}>Planifier une visite avec l'agent immobilier</Button>
+                    <Button size='lg' className='w-100' variant='outline-primary' onClick={handleSigninShow}>Planifier une visite</Button>
                   </div>
                   <div className='justify-content-between mb-2'>
                     <Button size='lg' className='w-100 outline-primary' onClick={handleSignupShow}>Vérifier la disponibilité</Button>
@@ -492,11 +467,11 @@ function SinglePropertyAltPage({ property }) {
                       FAQ
                     </a>
                   </Link>
-                  {property.est_meuble > 0 &&
+                  {property.meubles.length > 0 &&
                     <>
                       <Card className='border-0 bg-secondary mb-4'>
                         <Card.Body>
-                          <h5>Interieur & Extérieur</h5>
+                          <h5>Intérieur & Extérieur</h5>
                           <Row as='ul' xs={1} md={2} className='list-unstyled gy-2 mb-0 text-nowrap'>
                             <FurnishedEquipmentList furnishedEquipments={property.meubles} />
                           </Row>
@@ -576,7 +551,7 @@ export async function getServerSideProps(context) {
   try {
     // Fetch data from external API
     const dataAPIresponse = await fetch(
-      `https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={propriete(nuo:${nuo}){tarifications{id,mode,currency,montant},id,cout_visite,est_disponible,nuo,garage,est_meuble,titre,descriptif,surface,usage,cuisine,salon,piece,wc_douche_interne,cout_mensuel,nuitee,cout_vente,categorie_propriete{denomination,id},infrastructures{denomination,icone},meubles{libelle,icone},badge_propriete{id,date_expiration,badge{id,badge_name,badge_image}},pays{id,code,denomination},ville{denomination,id},quartier{id,denomination,minus_denomination},adresse{libelle},offre{denomination},visuels{uri,position},user{id}}}`
+      `https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={propriete(nuo:${nuo}){tarifications{id,mode,currency,montant},id,cout_visite,est_disponible,nuo,garage,est_meuble,titre,descriptif,surface,usage,cuisine,salon,piece,wc_douche_interne,cout_mensuel,nuitee,cout_vente,categorie_propriete{denomination,id},infrastructures{denomination,icone},meubles{libelle,icone},badge_propriete{id,date_expiration,badge{id,badge_name,badge_image}},pays{id,code,denomination},ville{denomination,id},quartier{id,denomination,minus_denomination},adresse{libelle},offre{denomination,id},visuels{uri,position},user{id}}}`
     );
 
     // Check if the response is OK (status 200-299)
