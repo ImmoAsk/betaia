@@ -111,7 +111,10 @@ const HomePage = () => {
 
   return (
     <RealEstatePageLayout
-      pageTitle='Trouver aisément un logement urbain ou rural et acheter en sécurité les terrains et immeubles'
+      pageTitle='Trouver aisément un logement urbain ou rural et acheter en sécurité les terrains et immeubles et biens immobiliers au Togo'
+      pageDescription='Découvrez les meilleures offres immobilières au Togo. Trouvez facilement un logement urbain ou rural à louer, ainsi que des terrains et immeubles à acheter en toute sécurité. ImmoAsk vous accompagne dans l&rsquo;achat, la vente, la location et la gestion de patrimoine immobilier.'
+      pageKeywords='achat, vente, location, gestion de patrimoine, agent immobilier IA, tourisme, décoration, BTP'
+      pageUrl='https://immoask.com/tg'
       activeNav='Home'
       userLoggedIn={session ? true : false}
     >
@@ -548,7 +551,7 @@ const HomePage = () => {
       {/* Top properties ACQuisition */}
       <Container fluid className='px-xxl-4 pb-lg-4 pb-1 mb-3 mt-3'>
         <div className='d-flex align-items-center justify-content-between mb-3'>
-          <h2 className='h3 mb-0'>Des terrains urbains et moins ruraux à vendre à votre portée</h2>
+          <h2 className='h3 mb-0'>Des terrains urbains et ruraux à vendre à votre portée</h2>
           <Link href='/tg/catalog?usage=7' passHref>
             <Button variant='link fw-normal ms-sm-3 p-0'>
               Consulter tout
@@ -716,7 +719,7 @@ const HomePage = () => {
       {/* Top properties Experience et Sejours*/}
       <Container fluid className='px-xxl-4 pb-lg-4 pb-1 mb-3 mt-3'>
         <div className='d-flex align-items-center justify-content-between mb-3'>
-          <h2 className='h3 mb-0'>Une experience uniques et inoubliable! Un séjour confortable et abordable.</h2>
+          <h2 className='h3 mb-0'>Une experience unique et inoubliable! Un séjour confortable et abordable.</h2>
           <Link href='/tg/catalog?usage=5' passHref>
             <Button variant='link fw-normal ms-sm-3 p-0'>
               Consulter tout
@@ -730,7 +733,7 @@ const HomePage = () => {
         <PropertyListSwiper propertyList={topPropertiesSejour} />
       </Container>
       <Container as='section' className='mb-5 mt-n3 mt-lg-0'>
-        <BgParallaxHeroMessage image={'/images/tg/hero-image-v2.jpg'} message={`Détente. Excursions. Voyages d'affaires moins chers. De nouvels horizons dans nos meublés.`} action={handleSejourRedirect} callAction={"Faire une expérience meublée"} />
+        <BgParallaxHeroMessage image={'/images/tg/hero-image-v2.jpg'} message={`Détente. Excursions. Voyages d'affaires moins chers. De nouvels horizons dans nos meublés.`} action={handleSejourRedirect} callAction={"Faire une expérience"} />
       </Container>
       {/* Appel au produit ImmoAsk Business */}
       {/* <Container as='section' className='mb-5 pb-2 pb-lg-4'>
@@ -782,7 +785,7 @@ const HomePage = () => {
       </Container>
       <Container as='section' className='mb-5 mt-n3 mt-lg-0'>
         <BgParallaxHeroMessage image={'/images/tg/hero-image-v2.jpg'} message={`Les bons emplacements pour vos entrepots et bureaus sont ici`} action={handleEntrepriseRedirect}
-          callAction={"Explorer les biens immobiliers d'entreprise"} />
+          callAction={"Explorer les immeubles d'entreprise"} />
       </Container>
       {/* Appel au produit LesVoisins */}
       {/* <Container as='section' className='mb-5 pb-2 pb-lg-4'>
