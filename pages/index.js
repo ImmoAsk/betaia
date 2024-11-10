@@ -71,7 +71,7 @@ const IndexPage = () => {
   ]
 
   const { data: session } = useSession()
-  console.log(apiUrl);
+
   const getRTProperties = () =>{
 
     axios.get(`${API_URL}?query={get5Properties(orderBy:{column:NUO,order:DESC},limit:5){surface,badge_propriete{badge{badge_name,badge_image}},id,nuitee,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination},visuels{uri,position}}}`).
