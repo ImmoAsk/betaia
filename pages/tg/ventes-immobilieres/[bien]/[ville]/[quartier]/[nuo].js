@@ -253,7 +253,7 @@ function SinglePropertyAltPage({ property }) {
     <RealEstatePageLayout
       pageTitle={`${property.categorie_propriete.denomination} à vendre, ${property.ville.denomination}, ${property.quartier.denomination} | No. ${nuo} | Togo`}
       userLoggedIn={session ? true : false}
-      pageDescription={`${property.categorie_propriete.denomination} à louer, ${property.ville.denomination}, ${property.quartier.denomination}, Togo. ${property.descriptif}`}
+      pageDescription={`${property.categorie_propriete.denomination} à vendre, ${property.ville.denomination}, ${property.quartier.denomination}, Togo. ${property.descriptif}`}
       pageKeywords={`vente immobiliere, ${property.categorie_propriete.denomination},immeuble, achat immobilier,foncier,investissemt,acquisition,${property.ville.denomination}, ${property.quartier.denomination},Togo`}
       pageCoverImage={`${getFirstImageArray(property.visuels)}`}
       pageUrl={`https://www.immoask.com/tg/ventes-immobilieres/${bien}/${ville}/${quartier}/${nuo}`}

@@ -28,14 +28,14 @@ export default function RealEstateAgency() {
                 <footer className='d-flex justify-content-between'>
                     <div className='pe3'>
                         <h6 className='mb-0'>{organisation.name}</h6>
-                        <div className='text-muted fw-normal fs-sm mb-3'>Promoteur immobilier</div>
+                        <div className='text-muted fw-normal fs-sm mb-3'>Expert immobilier</div>
                         <SocialButton href={`https://facebook.com/${organisation.facebook_url}`} variant='solid' brand='facebook' roundedCircle className='mb-2 me-2' />
                         <SocialButton href={`https://x.com/${organisation.twitter_url}`} variant='solid' brand='twitter' roundedCircle className='mb-2 me-2' />
                         <SocialButton href={`https://linkedin.com/company/${organisation.linkedin_url}`} variant='solid' brand='linkedin' roundedCircle className='mb-2' />
                     </div>
                     <div>
                         <StarRating rating='4.8' />
-                        <div className='text-muted fs-sm mt-1'>24 avis</div>
+                        <div className='text-muted fs-sm mt-1'>1500 avis</div>
                     </div>
                 </footer>
             </Card.Body>

@@ -27,7 +27,6 @@ import ProRealEstateAgency from "../../../../../../components/iacomponents/ProRe
 import FurnishedEquipmentList from "../../../../../../components/iacomponents/FurnishedEquipmentList";
 import NearestInfrastructureList from "../../../../../../components/iacomponents/NearestInfrastructureList";
 import RecommendPropertyList from "../../../../../../components/iacomponents/RecommendPropertyList";
-
 import PayVisitModal from "../../../../../../components/iacomponents/PayVisitModal";
 import CheckAvailabilityModal from "../../../../../../components/iacomponents/CheckAvailabilityModal";
 import RentNegociationModal from "../../../../../../components/iacomponents/RentNegociationModal";
@@ -35,7 +34,8 @@ import AskNuiteePriceModal from "../../../../../../components/iacomponents/AskNu
 import ImageComponent from "../../../../../../components/iacomponents/ImageComponent";
 import { getHumanReadablePrice } from "../../../../../../utils/generalUtils";
 import BookFurnishedPropertyModal from "../../../../../../components/iacomponents/BookFurnishedPropertyModal";
-import { Book } from "feather-icons-react/build/IconComponents";
+import DetailRealEstateAgency from "../../../../../../components/iacomponents/DetailRealEstateAgency";
+import { API_URL, BASE_URL, IMAGE_URL } from "../../../../../../utils/settings";
 
 function SinglePropertyAltPage({ property }) {
   // Sign in modal
@@ -93,6 +93,7 @@ function SinglePropertyAltPage({ property }) {
   };
 
   const { data: session } = useSession();
+  console.log(session)
   const router = useRouter();
   const { nuo, bien, quartier, ville } = router.query;
 
@@ -108,7 +109,7 @@ function SinglePropertyAltPage({ property }) {
       property.visuels.map((imgproperty) => {
         setThumbnails((thumbnails) => [
           ...thumbnails,
-          "https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/proprietes/" +
+          IMAGE_URL +
           imgproperty.uri,
         ]);
       });
@@ -129,7 +130,7 @@ function SinglePropertyAltPage({ property }) {
   const getRecommendProperties = () => {
     axios
       .get(
-        `https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getRecommendProperties(first:5,offre_id:"1",nuo:${property.nuo},quartier_id:"${property.quartier.id}",categorie_id:"${property.categorie_propriete.id}"){data{surface,badge_propriete{badge{badge_name,badge_image}},id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,nuitee,quartier{denomination,minus_denomination},visuels{uri,position}}}}`
+        `${API_URL}?query={getRecommendProperties(first:5,offre_id:"1",nuo:${property.nuo},quartier_id:"${property.quartier.id}",categorie_id:"${property.categorie_propriete.id}"){data{surface,badge_propriete{badge{badge_name,badge_image}},id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,nuitee,quartier{denomination,minus_denomination},visuels{uri,position}}}}`
       )
       .then((res) => {
         setRecommendProperties(
@@ -225,7 +226,7 @@ function SinglePropertyAltPage({ property }) {
                 return `<li class='swiper-thumbnail ${className}'>
                   <img src=${session
                     ? thumbnails[index]
-                    : "https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/proprietes/" +
+                    : {} +
                     Unconnectedhumbnails[index]
                   } alt='Thumbnail'/>
                 </li>`;
@@ -285,7 +286,7 @@ function SinglePropertyAltPage({ property }) {
       pageDescription={`${property.categorie_propriete.denomination} à louer, ${property.ville.denomination}, ${property.quartier.denomination}, Togo. ${property.descriptif}`}
       pageKeywords={`location immobiliere, ${property.categorie_propriete.denomination}, logement, sejour, experience,${property.ville.denomination}, ${property.quartier.denomination},Togo`}
       pageCoverImage={`${getFirstImageArray(property.visuels)}`}
-      pageUrl={`https://www.immoask.com/tg/locations-immobilieres/${bien}/${ville}/${quartier}/${nuo}`}
+      pageUrl={`${BASE_URL}/locations-immobilieres/${bien}/${ville}/${quartier}/${nuo}`}
     >
       {/* Sign in modal */}
       {signinShow && (
@@ -423,8 +424,14 @@ function SinglePropertyAltPage({ property }) {
                 {/* Overview */}
                 <h2 className="h5">Descriptif immobilier</h2>
                 <p className="mb-4 pb-2">{property && property.descriptif}</p>
+                {session && session.user && (session.user.roleId === '1200' || session.user.roleId === '1231') ? (
+                  <DetailRealEstateAgency user={property.user.id} />
+                ) : (
+                  <ProRealEstateAgency user={property.user.id} />
+                )}
 
-                <ProRealEstateAgency user={property.user.id} />
+
+
               </Col>
 
               {/* Sidebar with details */}
@@ -809,10 +816,9 @@ export async function getServerSideProps(context) {
 
   try {
     // Fetch data from external API
-    const dataAPIresponse = await fetch(
-      `https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={propriete(nuo:${nuo}){tarifications{id,mode,currency,montant},id,cout_visite,est_disponible,nuo,garage,est_meuble,titre,descriptif,surface,usage,cuisine,salon,piece,wc_douche_interne,cout_mensuel,nuitee,cout_vente,categorie_propriete{denomination,id},infrastructures{denomination,icone},meubles{libelle,icone},badge_propriete{id,date_expiration,badge{id,badge_name,badge_image}},pays{id,code,denomination},ville{denomination,id},quartier{id,denomination,minus_denomination},adresse{libelle},offre{denomination,id},visuels{uri,position},user{id}}}`
-    );
-
+    const final_url = `${API_URL}?query={propriete(nuo:${nuo}){tarifications{id,mode,currency,montant},id,cout_visite,est_disponible,nuo,garage,est_meuble,titre,descriptif,surface,usage,cuisine,salon,piece,wc_douche_interne,cout_mensuel,nuitee,cout_vente,categorie_propriete{denomination,id},infrastructures{denomination,icone},meubles{libelle,icone},badge_propriete{id,date_expiration,badge{id,badge_name,badge_image}},pays{id,code,denomination},ville{denomination,id},quartier{id,denomination,minus_denomination},adresse{libelle},offre{denomination,id},visuels{uri,position},user{id,organisation{name_organisation,logo,description,id,adresse_commune,tel_whatsapp}}}}`
+    const dataAPIresponse = await fetch(final_url);
+    console.log(final_url)
     // Check if the response is OK (status 200-299)
     if (!dataAPIresponse.ok) {
       console.error("Failed to fetch data:", dataAPIresponse.statusText);

@@ -10,6 +10,7 @@ import { buildPropertiesArray, getHumanReadablePrice } from '../../utils/general
 import { useSession, getSession } from 'next-auth/react'
 import { Row, Col } from 'react-bootstrap';
 import PropertiesList from '../../components/iacomponents/PropertiesList'
+import { API_URL, BASE_URL, IMAGE_URL } from '../../utils/settings'
 
 const AccountPropertiesPage = ({ _userProperties, _handledProjets, _handlingProjets }) => {
 
@@ -171,7 +172,7 @@ const AccountPropertiesPage = ({ _userProperties, _handledProjets, _handlingProj
               />
             )) : <div className='text-center pt-2 pt-md-4 pt-lg-5 pb-2 pb-md-0'>
               <i className='fi-home display-6 text-muted mb-4'></i>
-              <h2 className='h5 mb-4'>Vous n'avez aucun bien immobilier enrollé!</h2>
+              <h2 className='h5 mb-4'>Aucun bien immobilier en location!</h2>
               <Link href='/tg/add-property' passHref>
                 <Button variant='primary'>
                   <i className='fi-plus fs-sm me-2'></i>
@@ -233,7 +234,7 @@ const AccountPropertiesPage = ({ _userProperties, _handledProjets, _handlingProj
               />
             )) : <div className='text-center pt-2 pt-md-4 pt-lg-5 pb-2 pb-md-0'>
               <i className='fi-home display-6 text-muted mb-4'></i>
-              <h2 className='h5 mb-4'>Vous n'avez aucun bien immobilier enrollé!</h2>
+              <h2 className='h5 mb-4'>Aucun bien immobilier en vente!</h2>
               <Link href='/tg/add-property' passHref>
                 <Button variant='primary'>
                   <i className='fi-plus fs-sm me-2'></i>
@@ -295,7 +296,7 @@ const AccountPropertiesPage = ({ _userProperties, _handledProjets, _handlingProj
               />
             )) : <div className='text-center pt-2 pt-md-4 pt-lg-5 pb-2 pb-md-0'>
               <i className='fi-home display-6 text-muted mb-4'></i>
-              <h2 className='h5 mb-4'>Vous n'avez aucun bien immobilier enrollé!</h2>
+              <h2 className='h5 mb-4'>Aucun bien immobilier indisponible!</h2>
               <Link href='/tg/add-property' passHref>
                 <Button variant='primary'>
                   <i className='fi-plus fs-sm me-2'></i>
@@ -312,9 +313,6 @@ const AccountPropertiesPage = ({ _userProperties, _handledProjets, _handlingProj
 // Fetch data from API in getServerSideProps using statut as an input variable
 export async function getServerSideProps(context) {
   const session = await getSession(context);
-
-  console.log("Session data:", session); // Check if the session data is correct
-
   if (!session) {
     return {
       redirect: {
@@ -328,13 +326,13 @@ export async function getServerSideProps(context) {
   if (session?.user?.roleId == '1200' || session?.user?.roleId == '1231') {
     console.log(session?.user?.roleId)
     // Admin role
-    var dataAPIresponse = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getPropertiesByKeyWords(orderBy:{order:DESC,column:NUO},offre_id:"1",statut:1,limit:50){surface,badge_propriete{badge{badge_name,badge_image}},id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,nuitee,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{id,denomination,minus_denomination},visuels{uri,position}}}`);
+    var dataAPIresponse = await fetch(`${API_URL}?query={getPropertiesByKeyWords(orderBy:{order:DESC,column:NUO},offre_id:"1",statut:1,limit:50){surface,badge_propriete{badge{badge_name,badge_image}},id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,nuitee,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{id,denomination,minus_denomination},visuels{uri,position}}}`);
     var _userProperties = await dataAPIresponse.json();
 
-    var handledProjets = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getPropertiesByKeyWords(orderBy:{order:DESC,column:NUO},offre_id:"2",statut:1,limit:50){surface,badge_propriete{badge{badge_name,badge_image}},id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,nuitee,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination,id,minus_denomination},visuels{uri,position}}}`);
+    var handledProjets = await fetch(`${API_URL}?query={getPropertiesByKeyWords(orderBy:{order:DESC,column:NUO},offre_id:"2",statut:1,limit:50){surface,badge_propriete{badge{badge_name,badge_image}},id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,nuitee,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination,id,minus_denomination},visuels{uri,position}}}`);
     var _handledProjets = await handledProjets.json();
 
-    var handlingProjets = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getPropertiesByKeyWords(orderBy:{order:DESC,column:NUO},statut:2,limit:50){surface,badge_propriete{badge{badge_name,badge_image}},id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,nuitee,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination,id,minus_denomination},visuels{uri,position}}}`);
+    var handlingProjets = await fetch(`${API_URL}?query={getPropertiesByKeyWords(orderBy:{order:DESC,column:NUO},statut:2,limit:50){surface,badge_propriete{badge{badge_name,badge_image}},id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,nuitee,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination,id,minus_denomination},visuels{uri,position}}}`);
     var _handlingProjets = await handlingProjets.json();
 
     _userProperties = _userProperties.data.getPropertiesByKeyWords;
@@ -342,19 +340,19 @@ export async function getServerSideProps(context) {
     _handlingProjets = _handlingProjets.data.getPropertiesByKeyWords;
   } else {
     // Property owner
-    console.log("Proprietair ID: ",session?.user?.id)
-    var dataAPIresponse = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getPropertiesByKeyWords(orderBy:{order:DESC,column:NUO},user_id:${Number(session?.user?.id)},offre_id:"1",statut:1,limit:50){surface,badge_propriete{badge{badge_name,badge_image}},id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,nuitee,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{id,denomination,minus_denomination},visuels{uri,position}}}`);
+    var dataAPIresponse = await fetch(`${API_URL}?query={getPropertiesByKeyWords(orderBy:{order:DESC,column:NUO},user_id:${Number(session?.user?.id)},offre_id:"1",statut:1,limit:50){surface,badge_propriete{badge{badge_name,badge_image}},id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,nuitee,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{id,denomination,minus_denomination},visuels{uri,position}}}`);
     var _userProperties = await dataAPIresponse.json();
 
-    var handledProjets = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getPropertiesByKeyWords(orderBy:{order:DESC,column:NUO},user_id:${Number(session?.user?.id)},offre_id:"2",statut:1,limit:50){surface,badge_propriete{badge{badge_name,badge_image}},id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,nuitee,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination,id,minus_denomination},visuels{uri,position}}}`);
+    var handledProjets = await fetch(`${API_URL}?query={getPropertiesByKeyWords(orderBy:{order:DESC,column:NUO},user_id:${Number(session?.user?.id)},offre_id:"2",statut:1,limit:50){surface,badge_propriete{badge{badge_name,badge_image}},id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,nuitee,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination,id,minus_denomination},visuels{uri,position}}}`);
     var _handledProjets = await handledProjets.json();
 
-    var handlingProjets = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getPropertiesByKeyWords(orderBy:{order:DESC,column:NUO},user_id:${Number(session?.user?.id)},statut:2,limit:50){surface,badge_propriete{badge{badge_name,badge_image}},id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,nuitee,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination,id,minus_denomination},visuels{uri,position}}}`);
+    var handlingProjets = await fetch(`${API_URL}?query={getPropertiesByKeyWords(orderBy:{order:DESC,column:NUO},user_id:${Number(session?.user?.id)},statut:2,limit:50){surface,badge_propriete{badge{badge_name,badge_image}},id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,nuitee,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination,id,minus_denomination},visuels{uri,position}}}`);
     var _handlingProjets = await handlingProjets.json();
 
     _userProperties = _userProperties.data.getPropertiesByKeyWords;
     _handledProjets = _handledProjets.data.getPropertiesByKeyWords;
     _handlingProjets = _handlingProjets.data.getPropertiesByKeyWords;
+
   }
 
   return {

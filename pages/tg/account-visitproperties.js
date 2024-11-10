@@ -5,11 +5,23 @@ import Nav from 'react-bootstrap/Nav';
 import { useSession, getSession } from 'next-auth/react';
 import { Row, Col } from 'react-bootstrap';
 import PropertyVisitList from '../../components/iacomponents/PropertyVisitList';
+import { API_URL, BASE_URL, IMAGE_URL } from '../../utils/settings';
 
 // Helper function to fetch negotiations by statut for property owner
-async function fetchNegotiationsByStatut(statut, proprietaireID) {
+async function fetchVisitationsByStatut(statut, proprietaireID) {
   const dataAPIresponse = await fetch(
-    `https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getVisitationsByKeyWords(statut:${statut},proprietaire_id:${proprietaireID},orderBy:{order:DESC,column:ID}){id,visiteur{name,id},date_visite,heure_visite,statut,telephone_visitor,fullname_visitor,propriete{id,nuo}}}`
+    `${API_URL}?query={getVisitationsByKeyWords(statut:${statut},proprietaire_id:${proprietaireID},orderBy:{order:DESC,column:ID}){id,visiteur{name,id},date_visite,heure_visite,statut,telephone_visitor,fullname_visitor,propriete{id,nuo}}}`
+  );
+  const responseData = await dataAPIresponse.json();
+  console.log(responseData)
+
+  return responseData.data ? responseData.data.getVisitationsByKeyWords : [];
+}
+
+
+async function fetchRenterVisitationsByStatut(statut, proprietaireID) {
+  const dataAPIresponse = await fetch(
+    `${API_URL}?query={getVisitationsByKeyWords(statut:${statut},user_id:${proprietaireID},orderBy:{order:DESC,column:ID}){id,visiteur{name,id},date_visite,heure_visite,statut,telephone_visitor,fullname_visitor,propriete{id,nuo}}}`
   );
   const responseData = await dataAPIresponse.json();
   console.log(responseData)
@@ -17,9 +29,9 @@ async function fetchNegotiationsByStatut(statut, proprietaireID) {
 }
 
 // Helper function to fetch negotiations by statut for admin
-async function fetchNegotiationsByStatutByRole(statut) {
+async function fetchVisitationsByStatutByRole(statut) {
   const dataAPIresponse = await fetch(
-    `https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getVisitationsByKeyWords(statut:${statut},orderBy:{order:DESC,column:ID}){id,visiteur{name,id},date_visite,heure_visite,statut,telephone_visitor,fullname_visitor,propriete{id,nuo}}}`
+    `${API_URL}?query={getVisitationsByKeyWords(statut:${statut},orderBy:{order:DESC,column:ID}){id,visiteur{name,id},date_visite,heure_visite,statut,telephone_visitor,fullname_visitor,propriete{id,nuo}}}`
   );
   const responseData = await dataAPIresponse.json();
   console.log(responseData)
@@ -74,9 +86,6 @@ const VisitPropertiesPage = ({ _newNegotiations, _acceptedNegotiations, _decline
 
   return (
     <RealEstatePageLayout pageTitle='Visite de biens immobiliers' activeNav='VisitProperties' userLoggedIn>
-      {/* {editPropertyShow && (
-        <EditPropertyModal centered size='lg' show={editPropertyShow} onHide={() => setEditPropertyShow(false)} property={propertyModal} />
-      )} */}
 
       <RealEstateAccountLayout accountPageTitle='Visite de biens immobiliers'>
         <div className='d-flex align-items-center justify-content-between mb-3'>
@@ -157,27 +166,35 @@ export async function getServerSideProps(context) {
       },
     };
   }
-  console.log("Session data:", session);
   let _newNegotiations, _acceptedNegotiations, _declinedNegotiations;
+  // Determine negotiations based on the user's role
+  switch (session?.user?.roleId) {
+    case '151': // Tenant role
+       console.log('Tenant visitations');
+      _newNegotiations = await fetchRenterVisitationsByStatut(0, session.user.id);
+      _acceptedNegotiations = await fetchRenterVisitationsByStatut(1, session.user.id);
+      _declinedNegotiations = await fetchRenterVisitationsByStatut(2, session.user.id);
+      break;
+    case '1200': // Admin role
+    case '1231': // Admin role
+      console.log('Admin visitations');
+      _newNegotiations = await fetchVisitationsByStatutByRole(0);
+      _acceptedNegotiations = await fetchVisitationsByStatutByRole(1);
+      _declinedNegotiations = await fetchVisitationsByStatutByRole(2);
+      break;
 
-  // Check if the user is an admin or property owner
-  if (session?.user?.roleId == '1200'|| session?.user?.roleId == '1231') {
-    // Admin role
-    console.log(session?.user?.roleId)
-    _newNegotiations = await fetchNegotiationsByStatutByRole(0);
-    console.log(_newNegotiations)
-    _acceptedNegotiations = await fetchNegotiationsByStatutByRole(1);
-    _declinedNegotiations = await fetchNegotiationsByStatutByRole(2);
-  } else {
-    // Property owner
-    _newNegotiations = await fetchNegotiationsByStatut(0, session.user.id);
-    _acceptedNegotiations = await fetchNegotiationsByStatut(1, session.user.id);
-    _declinedNegotiations = await fetchNegotiationsByStatut(2, session.user.id);
+    default: // Property owner
+      console.log('Property owner visitations');
+      _newNegotiations = await fetchVisitationsByStatut(0, session.user.id);
+      _acceptedNegotiations = await fetchVisitationsByStatut(1, session.user.id);
+      _declinedNegotiations = await fetchVisitationsByStatut(2, session.user.id);
+      break;
   }
 
   return {
     props: { _newNegotiations, _acceptedNegotiations, _declinedNegotiations },
   };
+
 }
 
 export default VisitPropertiesPage;

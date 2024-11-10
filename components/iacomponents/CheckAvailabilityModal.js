@@ -9,6 +9,7 @@ import { useSession } from 'next-auth/react'
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import axios from 'axios';
+import { min } from 'moment'
 
 const CheckAvailabilityModal = ({ property, onSwap, pillButtons, ...props }) => {
   const [email, setEmail] = useState('');

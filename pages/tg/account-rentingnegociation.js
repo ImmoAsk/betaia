@@ -6,11 +6,20 @@ import EditPropertyModal from '../../components/iacomponents/EditPropertyModal';
 import { useSession, getSession } from 'next-auth/react';
 import { Row, Col } from 'react-bootstrap';
 import RentingNegotiationOfferList from '../../components/iacomponents/RentingNegotiationOfferList';
+import { API_URL, BASE_URL, IMAGE_URL } from '../../utils/settings';
 
 // Helper function to fetch negotiations by statut for property owner
 async function fetchNegotiationsByStatut(statut, proprietaireID) {
   const dataAPIresponse = await fetch(
-    `https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getNegotiatiionsByKeyWords(statut:${statut},proprietaire_id:${proprietaireID},orderBy:{order:DESC,column:ID}){id,date_negociation,statut,telephone_negociateur,fullname_negociateur,montant,propriete{id,nuo}}}`
+    `${API_URL}?query={getNegotiatiionsByKeyWords(statut:${statut},proprietaire_id:${proprietaireID},orderBy:{order:DESC,column:ID}){id,date_negociation,statut,telephone_negociateur,fullname_negociateur,montant,propriete{id,nuo}}}`
+  );
+  const responseData = await dataAPIresponse.json();
+  return responseData.data ? responseData.data.getNegotiatiionsByKeyWords : [];
+}
+
+async function fetchRenterNegotiationsByStatut(statut, userID) {
+  const dataAPIresponse = await fetch(
+    `${API_URL}?query={getNegotiatiionsByKeyWords(statut:${statut},user_id:${userID},orderBy:{order:DESC,column:ID}){id,date_negociation,statut,telephone_negociateur,fullname_negociateur,montant,propriete{id,nuo}}}`
   );
   const responseData = await dataAPIresponse.json();
   return responseData.data ? responseData.data.getNegotiatiionsByKeyWords : [];
@@ -19,7 +28,7 @@ async function fetchNegotiationsByStatut(statut, proprietaireID) {
 // Helper function to fetch negotiations by statut for admin
 async function fetchNegotiationsByStatutByRole(statut) {
   const dataAPIresponse = await fetch(
-    `https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getNegotiatiionsByKeyWords(statut:${statut},orderBy:{order:DESC,column:ID}){id,date_negociation,statut,telephone_negociateur,fullname_negociateur,montant,propriete{id,nuo}}}`
+    `${API_URL}?query={getNegotiatiionsByKeyWords(statut:${statut},orderBy:{order:DESC,column:ID}){id,date_negociation,statut,telephone_negociateur,fullname_negociateur,montant,propriete{id,nuo}}}`
   );
   const responseData = await dataAPIresponse.json();
   return responseData.data ? responseData.data.getNegotiatiionsByKeyWords : [];
@@ -76,7 +85,6 @@ const RentingNegociationPage = ({ _newNegotiations, _acceptedNegotiations, _decl
       {/* {editPropertyShow && (
         <EditPropertyModal centered size='lg' show={editPropertyShow} onHide={() => setEditPropertyShow(false)} property={propertyModal} />
       )} */}
-
       <RealEstateAccountLayout accountPageTitle='Negociation de loyers'>
         <div className='d-flex align-items-center justify-content-between mb-3'>
           <h1 className='h2 mb-0'>Negociations de loyers</h1>
@@ -160,19 +168,25 @@ export async function getServerSideProps(context) {
 
   let _newNegotiations, _acceptedNegotiations, _declinedNegotiations;
 
-  // Check if the user is an admin or property owner
-  if (session?.user?.roleId == '1200'|| session?.user?.roleId == '1231') {
-    // Admin role
-    console.log(session?.user?.roleId)
-    _newNegotiations = await fetchNegotiationsByStatutByRole(0);
-    console.log(_newNegotiations)
-    _acceptedNegotiations = await fetchNegotiationsByStatutByRole(1);
-    _declinedNegotiations = await fetchNegotiationsByStatutByRole(2);
-  } else {
-    // Property owner
-    _newNegotiations = await fetchNegotiationsByStatut(0, session.user.id);
-    _acceptedNegotiations = await fetchNegotiationsByStatut(1, session.user.id);
-    _declinedNegotiations = await fetchNegotiationsByStatut(2, session.user.id);
+  // Check the user's role and fetch negotiations accordingly
+  switch (session?.user?.roleId) {
+    case '151': // Tenant role
+      _newNegotiations = await fetchRenterNegotiationsByStatut(0, session.user.id);
+      _acceptedNegotiations = await fetchRenterNegotiationsByStatut(1, session.user.id);
+      _declinedNegotiations = await fetchRenterNegotiationsByStatut(2, session.user.id);
+      break;
+    case '1200': // Admin role
+    case '1231': // Admin role
+      _newNegotiations = await fetchNegotiationsByStatutByRole(0);
+      _acceptedNegotiations = await fetchNegotiationsByStatutByRole(1);
+      _declinedNegotiations = await fetchNegotiationsByStatutByRole(2);
+      break;
+
+    default: // Property owner
+      _newNegotiations = await fetchNegotiationsByStatut(0, session.user.id);
+      _acceptedNegotiations = await fetchNegotiationsByStatut(1, session.user.id);
+      _declinedNegotiations = await fetchNegotiationsByStatut(2, session.user.id);
+      break;
   }
 
   return {

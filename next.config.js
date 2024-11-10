@@ -4,7 +4,7 @@
   //swcMinify: true,
   images: {
     disableStaticImages: true,
-    domains: ['immoask.com','immoaskbetaapi.omnisoft.africa','omnisoft.africa'],
+    domains: ['immoask.com','immoaskbetaapi.omnisoft.africa','omnisoft.africa','beta.immoask.com','devapi.omnisoft.africa'],
     imageSizes: [48, 64, 88, 96, 128, 256, 384, 416],
   },
   async redirects() {

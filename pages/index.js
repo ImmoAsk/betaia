@@ -39,10 +39,8 @@ import topPropertiesAcquisition from '../remoteAPI/topPropertiesAcquisition.json
 import topPropertiesEntrepreneuriat from '../remoteAPI/topPropertiesEntrepreneuriat.json'
 import propertyCategories from '../remoteAPI/propertyCategories.json'
 import BgParallaxHeroMessage from '../components/iacomponents/BgParallaxHeroMessage'
-import 'dotenv/config'
-import { get } from 'http'
 import { getHumanReadablePrice } from '../utils/generalUtils'
-const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+import { API_URL } from '../utils/settings'
 const IndexPage = () => {
 
   // Property cost calculator modal
@@ -76,7 +74,7 @@ const IndexPage = () => {
   console.log(apiUrl);
   const getRTProperties = () =>{
 
-    axios.get(`${apiUrl}?query={get5Properties(orderBy:{column:NUO,order:DESC},limit:5){surface,badge_propriete{badge{badge_name,badge_image}},id,nuitee,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination},visuels{uri,position}}}`).
+    axios.get(`${API_URL}?query={get5Properties(orderBy:{column:NUO,order:DESC},limit:5){surface,badge_propriete{badge{badge_name,badge_image}},id,nuitee,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination},visuels{uri,position}}}`).
     then((res)=>{
       setRealTimeProperties(res.data.data.get5Properties.map((property) =>{
         //const { status, data:badges_property, error, isFetching,isLoading,isError }  = usePropertyBadges(property.id);

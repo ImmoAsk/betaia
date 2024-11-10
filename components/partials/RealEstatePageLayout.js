@@ -160,37 +160,7 @@ const RealEstatePageLayout = (props) => {
 
       {/* Page wrapper for sticky footer
       Wraps everything except footer to push footer to the bottom of the page if there is little content */}
-      <Alert
-        variant="info"
-        className="alert-text"
-        style={{
-          position: 'fixed',
-          top: 0,
-          width: '100%',
-          zIndex: 1000,
-          textAlign: 'center',
-          padding: '10px 15px',
-          boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
-          overflowWrap: 'break-word'
-        }}
-      >
-        <div className="container-fluid">
-          <p className="mb-0">
-            Hello! Vous êtes sur une nouvelle version de <strong>ImmoAsk</strong>!
-            Si vous rencontrez un bogue ou un problème, merci de nous le signaler sur
-            <a href="https://wa.me/22870453625" target="_blank" rel="noopener noreferrer"> WhatsApp (+228 7045 3625)</a>
-            ou sur <a href="https://linkedin.com/company/immoask" target="_blank" rel="noopener noreferrer"> LinkedIn (ImmoAsk)</a>.
-          </p>
-        </div>
 
-        <style jsx>{`
-    @media (max-width: 576px) {
-      .alert-text {
-        font-size: 0.8rem;  /* Reduced font size for small screens */
-      }
-    }
-  `}</style>
-      </Alert>
 
 
       <main className='page-wrapper'>
@@ -226,7 +196,7 @@ const RealEstatePageLayout = (props) => {
                       <h6 className='fs-base mb-0'>{session ? session.user.name : " "}</h6>
                       <StarRating size='sm' rating={5} />
                       <div className='fs-xs py-2'>
-                      {session ? session.user?.phone : "(+228) 7045 3625"}<br />{session ? session.user.email : "contact@immoask.com"}
+                        {session && session.user && session.user.phone ? session.user.phone : "(+228) 7045 3625"}<br />{session && session.user.email ? session.user.email : ""}
                       </div>
                     </div>
                   </div>
@@ -386,7 +356,7 @@ const RealEstatePageLayout = (props) => {
                     <div className='ps-3'>
                       <StarRating size='sm' rating={5} />
                       <div className='fs-xs py-2'>
-                        (+228) 7045 3625<br />contact@immoask.com
+                        {session && session.user && session.user.phone ? session.user.phone : " "}<br />{session && session.user.email ? session.user.email : ""}
                       </div>
                     </div>
                     {
@@ -440,7 +410,37 @@ const RealEstatePageLayout = (props) => {
           </Container>
 
         </Navbar>
+        <Alert
+          variant="info"
+          className="alert-text"
+          style={{
+            position: 'fixed',
+            top: 0,
+            width: '100%',
+            zIndex: 1000,
+            textAlign: 'center',
+            padding: '10px 15px',
+            boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
+            overflowWrap: 'break-word'
+          }}
+        >
+          <div className="container-fluid">
+            <p className="mb-0">
+              Hello! Vous êtes sur une nouvelle version de <strong>ImmoAsk</strong>!
+              Si vous rencontrez un bogue ou un problème, merci de nous le signaler sur
+              <a href="https://wa.me/22870453625" target="_blank" rel="noopener noreferrer"> WhatsApp (+228 7045 3625)</a>
+              ou sur <a href="https://linkedin.com/company/immoask" target="_blank" rel="noopener noreferrer"> LinkedIn (ImmoAsk)</a>.
+            </p>
+          </div>
 
+          <style jsx>{`
+    @media (max-width: 576px) {
+      .alert-text {
+        font-size: 0.8rem;  /* Reduced font size for small screens */
+      }
+    }
+  `}</style>
+        </Alert>
         {/* Page content */}
         {props.children}
       </main>

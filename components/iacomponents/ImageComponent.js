@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import ImageLoader from '../ImageLoader'
+import { IMAGE_URL } from '../../utils/settings';
 const ImageComponent = ({ imageUri }) => {
-  let imageUrl = 'https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/proprietes/' + imageUri;
+  let imageUrl = IMAGE_URL + imageUri;
   const [imageError, setImageError] = useState(false);
 
   useEffect(() => {
@@ -26,10 +27,10 @@ const ImageComponent = ({ imageUri }) => {
     <>
       {imageError ? (
         //<ImageLoader className='rounded-3' src={'https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/proprietes/' + imageUri} width={967} height={545} alt='Image' />
-        <img className='rounded-3' src={'https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/proprietes/' + imageUri} width={967} height={545} alt='Bien immobilier ImmoAsk'/>
+        <img className='rounded-3' src={IMAGE_URL + imageUri} width={967} height={545} alt='Bien immobilier ImmoAsk'/>
       ) : (
         //<ImageLoader className='rounded-3' src={'https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/proprietes/' + imageUri} width={967} height={545} alt='Image' />
-        <img className='rounded-3' src={'https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/proprietes/' + imageUri} width={967} height={545} alt='Bien immobilier ImmoAsk'/>
+        <img className='rounded-3' src={IMAGE_URL + imageUri} width={967} height={545} alt='Bien immobilier ImmoAsk'/>
       )}
     </>
   );

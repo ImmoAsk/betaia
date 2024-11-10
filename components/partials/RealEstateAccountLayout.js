@@ -96,13 +96,13 @@ const RealEstateAccountLayout = ({ accountPageTitle, children }) => {
                   <li>
                     <a href='tel:+22870453625' className='nav-link fw-normal p-0'>
                       <i className='fi-phone opacity-60 me-2'></i>
-                      {session ? session.user?.phone : "(+228) 7045 3625"}
+                      {session ? session.user?.phone : " "}
                     </a>
                   </li>
                   <li>
                     <a href='mailto:contact@immoask.com' className='nav-link fw-normal p-0'>
                       <i className='fi-mail opacity-60 me-2'></i>
-                      {session ? session.user?.email : "contact@immoask.com"}
+                      {session ? session.user?.email : " "}
                     </a>
                   </li>
                 </ul>

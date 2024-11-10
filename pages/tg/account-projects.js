@@ -10,6 +10,7 @@ import { buildPropertiesArray } from '../../utils/generalUtils'
 import { useSession, getSession } from 'next-auth/react'
 import PropertyProjectList from '../../components/iacomponents/PropertyProjectList'
 import { Row, Col} from 'react-bootstrap';
+import { API_URL } from '../../utils/settings'
 const AccountProjectsPage = ({ _userProperties, _handledProjets, _handlingProjets }) => {
 
   // Properties array
@@ -144,18 +145,20 @@ const AccountProjectsPage = ({ _userProperties, _handledProjets, _handlingProjet
         <Row>
           {/* First Column */}
           <Col style={columnStyle}>
-            {getHandledPropertyProjects(_handlingProjets)}
+            {getNewPropertyProjects(userProperties)}
           </Col>
+          
 
           {/* Second Column */}
           <Col style={columnStyle}>
             {getHandledPropertyProjects(_handledProjets)}
           </Col>
+          <Col style={columnStyle}>
+            {getHandledPropertyProjects(_handlingProjets)}
+          </Col>
 
           {/* Third Column */}
-          <Col style={columnStyle}>
-            {getNewPropertyProjects(userProperties)}
-          </Col>
+          
         </Row>
 
 
@@ -182,30 +185,13 @@ const AccountProjectsPage = ({ _userProperties, _handledProjets, _handlingProjet
 }
 
 
+
 export async function getServerSideProps(context) {
   const session = await getSession(context);
-  console.log(session);
-  if (session.user) {
-    const userid = session ? session.user.id : 0;
-    // Fetch data from external API
-    var dataAPIresponse = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getProjectsByKeyWords(statut:2,orderBy:{order:DESC,column:ID}){project_category,project_name,project_document,description,statut,final_date,start_date}}`);
-    var _userProperties = await dataAPIresponse.json();
 
-    var handledProjets = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getProjectsByKeyWords(statut:3,orderBy:{order:DESC,column:ID}){project_category,project_name,project_document,description,statut,final_date,start_date}}`);
-    var _handledProjets = await handledProjets.json();
+  console.log("Session data:", session); // Check if the session data is correct
 
-    var handlingProjets = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getProjectsByKeyWords(statut:1,orderBy:{order:DESC,column:ID}){project_category,project_name,project_document,description,statut,final_date,start_date}}`);
-    var _handlingProjets = await handlingProjets.json();
-
-    _userProperties = _userProperties.data.getProjectsByKeyWords;
-    _handledProjets = _handledProjets.data.getProjectsByKeyWords;
-    _handlingProjets = _handlingProjets.data.getProjectsByKeyWords;
-    console.log(_handledProjets);
-    return {
-      props: { _userProperties, _handledProjets, _handlingProjets },
-    }
-
-  } else {
+  if (!session) {
     return {
       redirect: {
         destination: '/auth/signin',
@@ -213,5 +199,42 @@ export async function getServerSideProps(context) {
       },
     };
   }
+
+  // Check if the user is an admin or property owner
+  if (session?.user?.roleId == '1200' || session?.user?.roleId == '1231'|| session?.user?.roleId == '1232') {
+    console.log(session?.user?.roleId)
+    // Admin role
+    var dataAPIresponse = await fetch(`${API_URL}?query={getProjectsByKeyWords(statut:0,orderBy:{order:DESC,column:ID}){project_category,project_name,project_document,description,statut,final_date,start_date}}`);
+    var _userProperties = await dataAPIresponse.json();
+
+    var handledProjets = await fetch(`${API_URL}?query={getProjectsByKeyWords(statut:2,orderBy:{order:DESC,column:ID}){project_category,project_name,project_document,description,statut,final_date,start_date}}`);
+    var _handledProjets = await handledProjets.json();
+
+    var handlingProjets = await fetch(`${API_URL}?query={getProjectsByKeyWords(statut:1,orderBy:{order:DESC,column:ID}){project_category,project_name,project_document,description,statut,final_date,start_date}}`);
+    var _handlingProjets = await handlingProjets.json();
+
+    _userProperties = _userProperties.data.getProjectsByKeyWords;
+    _handledProjets = _handledProjets.data.getProjectsByKeyWords;
+    _handlingProjets = _handlingProjets.data.getProjectsByKeyWords;
+  } else {
+    // Property owner
+    console.log("Proprietair ID: ",session?.user?.id)
+    var dataAPIresponse = await fetch(`${API_URL}?query={getProjectsByKeyWords(statut:0,user_id:${session?.user?.id},orderBy:{order:DESC,column:ID}){project_category,project_name,project_document,description,statut,final_date,start_date}}`);
+    var _userProperties = await dataAPIresponse.json();
+
+    var handledProjets = await fetch(`${API_URL}?query={getProjectsByKeyWords(statut:2,user_id:${session?.user?.id},orderBy:{order:DESC,column:ID}){project_category,project_name,project_document,description,statut,final_date,start_date}}`);
+    var _handledProjets = await handledProjets.json();
+
+    var handlingProjets = await fetch(`${API_URL}?query={getProjectsByKeyWords(statut:1,user_id:${session?.user?.id},orderBy:{order:DESC,column:ID}){project_category,project_name,project_document,description,statut,final_date,start_date}}`);
+    var _handlingProjets = await handlingProjets.json();
+
+    _userProperties = _userProperties.data.getProjectsByKeyWords;
+    _handledProjets = _handledProjets.data.getProjectsByKeyWords;
+    _handlingProjets = _handlingProjets.data.getProjectsByKeyWords;
+  }
+
+  return {
+    props: { _userProperties, _handledProjets, _handlingProjets },
+  };
 }
 export default AccountProjectsPage
