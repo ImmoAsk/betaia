@@ -39,10 +39,10 @@ const NotFoundPage = () => {
               <div className='ratio ratio-16x9 mb-lg-5 mb-4'>
                 <div ref={animationContainer}></div>
               </div>
-              <h1 className='h3 pt-lg-4'>Sorry, the content you are looking for doesn&apos;t exist.</h1>
-              <p className='lead mb-5 pb-lg-2'>Either it was removed, or you mistyped the link.</p>
+              <h1 className='h3 pt-lg-4'>Desole!, la page que vous cherchez n&apos;existe pas.</h1>
+              <p className='lead mb-5 pb-lg-2'>Cliquez sur le bouton ci-dessous pour revenir a la page d&apos;accueil.</p>
               <Link href='/' passHref>
-                <Button size='lg' variant='primary rounded-pill w-sm-auto w-100 mb-3'>Go to homepage</Button>
+                <Button size='lg' variant='primary rounded-pill w-sm-auto w-100 mb-3'>Retourner a la page d&apos;accueil</Button>
               </Link>
             </Col>
           </Container>

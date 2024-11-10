@@ -170,7 +170,6 @@ const RealEstatePageLayout = (props) => {
         <Navbar as={StickyNavbar}
           expand='lg'
           bg='light'
-          style={{ marginTop: '40px' }}
           className={`fixed-top${props.navbarExtraClass ? ` ${props.navbarExtraClass}` : ''}`}
         >
           <Container fluid>
@@ -196,7 +195,7 @@ const RealEstatePageLayout = (props) => {
                       <h6 className='fs-base mb-0'>{session ? session.user.name : " "}</h6>
                       <StarRating size='sm' rating={5} />
                       <div className='fs-xs py-2'>
-                        {session && session.user && session.user.phone ? session.user.phone : "(+228) 7045 3625"}<br />{session && session.user.email ? session.user.email : ""}
+                        {session && session.user.phone ? session.user.phone : " "}<br />{session && session.user.email ? session.user.email : ""}
                       </div>
                     </div>
                   </div>
@@ -356,7 +355,7 @@ const RealEstatePageLayout = (props) => {
                     <div className='ps-3'>
                       <StarRating size='sm' rating={5} />
                       <div className='fs-xs py-2'>
-                        {session && session.user && session.user.phone ? session.user.phone : " "}<br />{session && session.user.email ? session.user.email : ""}
+                       {session && session.user.phone ? session.user.phone : " "}<br />{session && session.user.email ? session.user.email : ""}
                       </div>
                     </div>
                     {
@@ -410,7 +409,7 @@ const RealEstatePageLayout = (props) => {
           </Container>
 
         </Navbar>
-        <Alert
+{/*         <Alert
           variant="info"
           className="alert-text"
           style={{
@@ -418,7 +417,7 @@ const RealEstatePageLayout = (props) => {
             top: 0,
             width: '100%',
             zIndex: 1000,
-            textAlign: 'center',
+            textAlign: 'left',
             padding: '10px 15px',
             boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
             overflowWrap: 'break-word'
@@ -426,21 +425,13 @@ const RealEstatePageLayout = (props) => {
         >
           <div className="container-fluid">
             <p className="mb-0">
-              Hello! Vous êtes sur une nouvelle version de <strong>ImmoAsk</strong>!
-              Si vous rencontrez un bogue ou un problème, merci de nous le signaler sur
-              <a href="https://wa.me/22870453625" target="_blank" rel="noopener noreferrer"> WhatsApp (+228 7045 3625)</a>
-              ou sur <a href="https://linkedin.com/company/immoask" target="_blank" rel="noopener noreferrer"> LinkedIn (ImmoAsk)</a>.
+              Nouvelle version de <strong>ImmoAsk</strong>!
+              Si vous rencontrez un problème, merci de nous le signaler sur
+              <a href="https://wa.me/22870453625" target="_blank" rel="noopener noreferrer"> (+228 7045 3625)</a>
+              ou <a href="https://linkedin.com/company/immoask" target="_blank" rel="noopener noreferrer"> ici </a>.
             </p>
           </div>
-
-          <style jsx>{`
-    @media (max-width: 576px) {
-      .alert-text {
-        font-size: 0.8rem;  /* Reduced font size for small screens */
-      }
-    }
-  `}</style>
-        </Alert>
+        </Alert> */}
         {/* Page content */}
         {props.children}
       </main>
