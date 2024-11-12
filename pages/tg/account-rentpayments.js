@@ -48,7 +48,7 @@ const AccountRentPaymentsPage = () => {
   const [payments, setPayments] = useState([
     {
       status: 'Paid',
-      property: 'Apartment A',
+      property: 'Apartement A',
       month: 'January 2024',
       renter: 'Kossi A.',
       rentPaid: 45000,
@@ -190,7 +190,7 @@ const AccountRentPaymentsPage = () => {
               <Form.Control
                 type="text"
                 name="byMonth"
-                placeholder="By Month"
+                placeholder="Par mois"
                 value={filters.byMonth}
                 onChange={handleFilterChange}
                 className="me-2"
@@ -206,14 +206,14 @@ const AccountRentPaymentsPage = () => {
               <Form.Control
                 type="text"
                 name="dateOfPayment"
-                placeholder="Date of Payment"
+                placeholder="Date de paiement"
                 value={filters.dateOfPayment}
                 onChange={handleFilterChange}
               />
             </Form>
           </Col>
           <Col md={3} className="d-flex justify-content-end">
-            <Button onClick={() => setShowAddPaymentModal(true)}>Add a rent payment</Button>
+            <Button onClick={() => setShowAddPaymentModal(true)}>Ajouter un paiement</Button>
           </Col>
         </Row>
 
@@ -260,11 +260,11 @@ const AccountRentPaymentsPage = () => {
               <thead className="thead-dark">
                 <tr>
                   <th>Status</th>
-                  <th>Property</th>
-                  <th>Month</th>
-                  <th>Renter</th>
-                  <th>Rent Paid</th>
-                  <th>Rent Front</th>
+                  <th>Immeuble</th>
+                  <th>Mois</th>
+                  <th>Locataire</th>
+                  <th>Loyer payé</th>
+                  <th>Loyer restant</th>
                   <th>Date</th>
                   <th>Action</th>
                 </tr>
@@ -286,7 +286,7 @@ const AccountRentPaymentsPage = () => {
                 ) : (
                   <tr>
                     <td colSpan="8" className="text-center">
-                      No rent payments found.
+                      Aucun paiement de loyer trouve.
                     </td>
                   </tr>
                 )}
@@ -298,7 +298,7 @@ const AccountRentPaymentsPage = () => {
         {/* Modal for Adding New Payment */}
         <Modal show={showAddPaymentModal} onHide={() => setShowAddPaymentModal(false)}>
           <Modal.Header closeButton>
-            <Modal.Title>Add a New Rent Payment</Modal.Title>
+            <Modal.Title>Ajouter un paiement de loyer</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <Form>
