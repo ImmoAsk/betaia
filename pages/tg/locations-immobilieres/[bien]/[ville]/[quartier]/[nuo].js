@@ -224,11 +224,7 @@ function SinglePropertyAltPage({ property }) {
                 </li>`;
               } else {
                 return `<li class='swiper-thumbnail ${className}'>
-                  <img src=${session
-                    ? thumbnails[index]
-                    : {} +
-                    Unconnectedhumbnails[index]
-                  } alt='Thumbnail'/>
+                  <img src=${session? thumbnails[index]:{}+Unconnectedhumbnails[index]} alt='ImmoAsk Thumbnail'/>
                 </li>`;
               }
             },
@@ -286,7 +282,7 @@ function SinglePropertyAltPage({ property }) {
       pageDescription={`${property.categorie_propriete.denomination} à louer, ${property.ville.denomination}, ${property.quartier.denomination}, Togo. ${property.descriptif}`}
       pageKeywords={`location immobiliere, ${property.categorie_propriete.denomination}, logement, sejour, experience,${property.ville.denomination}, ${property.quartier.denomination},Togo`}
       pageCoverImage={`${getFirstImageArray(property.visuels)}`}
-      pageUrl={`${BASE_URL}/locations-immobilieres/${bien}/${ville}/${quartier}/${nuo}`}
+      pageUrl={`${BASE_URL}/tg/locations-immobilieres/${bien}/${ville}/${quartier}/${nuo}`}
     >
       {/* Sign in modal */}
       {signinShow && (
