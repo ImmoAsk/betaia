@@ -328,6 +328,7 @@ const AddPropertyPage = () => {
       url: null,
     };
     console.log(propertyPayload);
+    alert(propertyPayload);
     formData.append(
       'operations',
       JSON.stringify({
@@ -412,6 +413,10 @@ const AddPropertyPage = () => {
     { value: '3', label: 'Mettre en colocation' },
     { value: '4', label: 'Mettre en bail' },
     { value: '5', label: 'Mettre en investissement' }
+  ];
+
+  const propertyManagerOptions = [
+    { value: `${session?.user?.id}`, label: 'Je suis le gestionnaire ou proprietaire' },
   ];
   const { status, data: landlords1230, error, isFetching, isLoading, isError } = useLandLord(1230);
   const { status: status1232, data: landlords1232, error: error1232, isFetching: isFetching1232, isLoading: isLoading1232, isError: isError1232 } = useLandLord(1232);
@@ -566,9 +571,9 @@ const AddPropertyPage = () => {
                   </Row>
                 ) : (
                   <Row>
-                    <Form.Group as={Col} md={6} controlId="offer" className="mb-3">
+                    <Form.Group as={Col} md={4} controlId="offer" className="mb-3">
                       <Form.Label className="pb-1 mb-2 d-block fw-bold">
-                        Préciser l'offre que vous proposez <span className="text-danger">*</span>
+                        Préciser l'offre <span className="text-danger">*</span>
                       </Form.Label>
                       <Select
                         {...register('offer')}
@@ -576,7 +581,7 @@ const AddPropertyPage = () => {
                         value={propertyOfferSelectedOption} // Pre-select based on propertyData
                         onChange={(selected) => handleChange({ target: { name: 'offer', value: selected?.value || '' } })}
                         options={propertyOfferOptions}
-                        placeholder="Preciser l'offre que vous proposez"
+                        placeholder="Preciser l'offre"
                         className={`react-select-container ${errors.offer ? 'is-invalid' : ''}`}
                         classNamePrefix="react-select"
                       />
@@ -592,9 +597,9 @@ const AddPropertyPage = () => {
                         </Form.Control.Feedback>
                       )}
                     </Form.Group>
-                    <Form.Group as={Col} md={6} controlId="type" className="mb-3">
+                    <Form.Group as={Col} md={4} controlId="type" className="mb-3">
                       <Form.Label className="pb-1 mb-2 d-block fw-bold">
-                        Préciser le type de bien immobilier <span className="text-danger">*</span>
+                        Préciser le type <span className="text-danger">*</span>
                       </Form.Label>
                       <Select
                         {...register('type')}
@@ -602,10 +607,11 @@ const AddPropertyPage = () => {
                         value={propertyTypeSelectedOption} // Pre-select based on propertyData
                         onChange={(selected) => handleChange({ target: { name: 'type', value: selected?.value || '' } })}
                         options={propertyTypeOptions}
-                        placeholder="Preciser type du bien immobilier"
+                        placeholder="Preciser type"
                         className={`react-select-container ${errors.type ? 'is-invalid' : ''}`}
                         classNamePrefix="react-select"
                       />
+
                       {errors.type ? (
                         <Form.Control.Feedback type="invalid" tooltip>
                           {errors.type.message}
@@ -613,6 +619,29 @@ const AddPropertyPage = () => {
                       ) : (
                         <Form.Control.Feedback type="valid" tooltip>
                           Le type immobilier est bien précisé
+                        </Form.Control.Feedback>
+                      )}
+                    </Form.Group>
+                    <Form.Group as={Col} md={4} controlId="user_id" className="mb-3">
+                      <Form.Label className="pb-1 mb-2 d-block fw-bold">
+                        Preciser le proprietaire <span className="text-danger">*</span>
+                      </Form.Label>
+                      <Select
+                        {...register('user_id')}
+                        name="user_id"
+                        value={propertyManagerOptions.find((option) => option.value === propertyData?.user_id)} // Pre-select based on propertyData
+                        onChange={(selected) => handleChange({ target: { name: 'user_id', value: selected?.value || '' } })}
+                        options={propertyManagerOptions}
+                        className={`react-select-container ${errors.user_id ? 'is-invalid' : ''}`}
+                        classNamePrefix="react-select"
+                      />
+                      {errors.user_id ? (
+                        <Form.Control.Feedback type="invalid" tooltip>
+                          {errors.user_id.message}
+                        </Form.Control.Feedback>
+                      ) : (
+                        <Form.Control.Feedback type="valid" tooltip>
+                          Le proprietaire est bien précisé
                         </Form.Control.Feedback>
                       )}
                     </Form.Group>
