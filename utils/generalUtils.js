@@ -74,4 +74,32 @@ function getHumanReadablePrice(property) {
     
     return price;
 }
-export { formatDate,getHumanReadablePrice,buildPropertiesArray,replaceSpacesWithAny,getLastPage,createPropertyObject,capitalizeFirstLetter, replaceSpacesWithDots, toLowerCaseString };
+
+function formatPropertyOwners(owners) {
+    if (!Array.isArray(owners)) {
+        console.error('Invalid input: owners must be an array.');
+        return [];
+    }
+
+    return owners.map((owner) => {
+        return {
+            value: String(owner.id),
+            label: owner.name,
+        };
+    });
+}
+function formatRealEstateAgents(owners) {
+    if (!Array.isArray(owners)) {
+        console.error('Invalid input: owners must be an array.');
+        return [];
+    }
+
+    return owners.map((owner) => {
+        return {
+            value: String(owner.id),
+            label: owner.organisation.name_organisation,
+        };
+    });
+}
+
+export { formatDate,getHumanReadablePrice,buildPropertiesArray,replaceSpacesWithAny,getLastPage,createPropertyObject,capitalizeFirstLetter, replaceSpacesWithDots, toLowerCaseString,formatPropertyOwners,formatRealEstateAgents};

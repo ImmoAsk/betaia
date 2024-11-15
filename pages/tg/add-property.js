@@ -29,6 +29,7 @@ import FilePondPluginImagePreview from 'filepond-plugin-image-preview'
 import FilePondPluginImageCrop from 'filepond-plugin-image-crop'
 import FilePondPluginImageResize from 'filepond-plugin-image-resize'
 import FilePondPluginImageTransform from 'filepond-plugin-image-transform'
+import Select from 'react-select';
 //import NumberFormat from 'react-number-format'
 import TownList from '../../components/iacomponents/TownList';
 import QuarterList from '../../components/iacomponents/QuarterList';
@@ -54,6 +55,10 @@ const CustomMarker = dynamic(() =>
   { ssr: false }
 )
 import 'leaflet/dist/leaflet.css'
+import { useLandLord } from '../../customHooks/usePropertyOwner';
+import { format } from 'path';
+import { formatPropertyOwners,formatRealEstateAgents } from '../../utils/generalUtils';
+import { API_URL } from '../../utils/settings';
 
 
 const AddPropertyPage = () => {
@@ -108,42 +113,6 @@ const AddPropertyPage = () => {
       { icon: 'fi-bed', title: 'Single bed' }
     ]
   ]
-
-
-
-
-  // Number of bedrooms radios buttons
-  // const [InsideBathRoomsValue, setInsideBathRoomsValue] = useState('2')
-  // const Inbathrooms = [
-  //   { name: '0', value: '0' },
-  //   { name: '1', value: '1' },
-  //   { name: '2', value: '2' },
-  //   { name: '3', value: '3' },
-  //   { name: '4', value: '4' },
-  //   { name: '5+', value: '5' },
-  // ]
-
-  // Number of bathrooms radios buttons
-
-  // const [OutsideBathRoomsValue, setOutsideBathRoomsValue] = useState(0);
-  // const outBathrooms = [
-  //   { name: '0', value: '0' },
-  //   { name: '1', value: '1' },
-  //   { name: '2', value: '2' },
-  //   { name: '3', value: '3' },
-  //   { name: '4', value: '4' }
-  // ]
-
-  // Number of bathrooms radios buttons
-  // const [parkingsValue, setParkingsValue] = useState(0);
-  // const parkings = [
-  //   { name: '0', value: '0' },
-  //   { name: '1', value: '1' },
-  //   { name: '2', value: '2' },
-  //   { name: '3', value: '3' },
-  //   { name: '4', value: '4' }
-  // ]
-
   // Anchor lnks
   const anchors = [
     { to: 'basic-info', label: 'Informations basiques', completed: true },
@@ -244,11 +213,12 @@ const AddPropertyPage = () => {
     address: Yup.string().required('SVP indiquer une adresse commune de sélection'),
     type: Yup.string().required('SVP choisir le type du bien immobilier'),
     quarter: Yup.string().required('SVP choisir un quartier'),
+    user_id: Yup.string().required('Preciser le proprietaire'),
   });
 
   // Use Form options
   const formOptions = { resolver: yupResolver(validationSchema) };
-  const { register, handleSubmit, formState } = useForm(formOptions);
+  const { register, handleSubmit, setValue,formState } = useForm(formOptions);
   const { errors } = formState;
   const get_property_usage = () => {
     let usage = 0;
@@ -289,7 +259,7 @@ const AddPropertyPage = () => {
       case '1':
         if (propertyData.furnished === '1') {
           super_categorie = "sejour";
-        } else if (['8', '9','11', '12', '19', '29','30'].includes(propertyData.type)) {
+        } else if (['8', '9', '11', '12', '19', '29', '30'].includes(propertyData.type)) {
           super_categorie = "commercial";
         } else {
           super_categorie = "logement";
@@ -332,7 +302,7 @@ const AddPropertyPage = () => {
       eau: Number(propertyData.water),
       electricite: Number(propertyData.electricity),
       categorie_id: Number(propertyData.type),
-      user_id: Number(session ? session.user.id : 1), // Static, should be dynamic if required session?.user?.id || 1,
+      user_id: Number(propertyData.user_id), // Static, should be dynamic if required session?.user?.id || 1,
       offre_id: Number(propertyData.offer),
       ville_id: Number(propertyData.town),
       quartier_id: Number(propertyData.quarter),
@@ -376,7 +346,7 @@ const AddPropertyPage = () => {
     formData.append('map', `{${appendMap}}`);
 
     axios
-      .post('https://immoaskbetaapi.omnisoft.africa/public/api/v2', formData)
+      .post(API_URL, formData)
       .then((response) => {
         console.log('Response:', response.data);
         if (response.data?.data?.enrollProperty) {
@@ -406,10 +376,54 @@ const AddPropertyPage = () => {
       ...prevData,
       [name]: value, // Update the specific property
     }));
+    setValue(name, value);
   };
 
+  const propertyTypeOptions = [
+    { value: '', label: 'Selectionner le proprietaire' },
+    { value: '1', label: 'Villa' },
+    { value: '2', label: 'Appartement' },
+    { value: '3', label: 'Maison' },
+    { value: '4', label: 'Chambre (Pièce ou studio)' },
+    { value: '5', label: 'Chambre salon' },
+    { value: '6', label: 'Terrain rural' },
+    { value: '7', label: 'Terrain urbain' },
+    { value: '8', label: 'Boutique' },
+    { value: '9', label: 'Bureau' },
+    { value: '10', label: 'Appartement meublé' },
+    { value: '11', label: 'Espace coworking' },
+    { value: '12', label: 'Magasin' },
+    { value: '14', label: 'Villa meublée' },
+    { value: '15', label: 'Studio meublé' },
+    { value: '16', label: 'Hotel' },
+    { value: '17', label: 'Ecole' },
+    { value: '18', label: 'Bar-restaurant' },
+    { value: '19', label: 'Immeuble commercial' },
+    { value: '29', label: 'Mur commercial' },
+    { value: '30', label: 'Garage' },
+    { value: '21', label: "Chambre d'hotel" },
+    { value: '22', label: 'Immeuble' },
+  ];
+
+  const propertyOfferOptions = [
+    { value: '', label: 'Selectionner le proprietaire' },
+    { value: '1', label: 'Mettre en location' },
+    { value: '2', label: 'Mettre en vente' },
+    { value: '3', label: 'Mettre en colocation' },
+    { value: '4', label: 'Mettre en bail' },
+    { value: '5', label: 'Mettre en investissement' }
+  ];
+  const { status, data: landlords1230, error, isFetching, isLoading, isError } = useLandLord(1230);
+  const { status: status1232, data: landlords1232, error: error1232, isFetching: isFetching1232, isLoading: isLoading1232, isError: isError1232 } = useLandLord(1232);
+  const propertyOwners= formatPropertyOwners(landlords1230)
+  const realEstateAgents= formatRealEstateAgents(landlords1232)
+  const propertyOwnerOptions = [...new Set([...realEstateAgents, ...propertyOwners])];
 
 
+  // Get the selected option value from propertyData
+  const propertyOwnerSelectedOption = propertyOwnerOptions.find((option) => option.value === propertyData?.user_id);
+  const propertyTypeSelectedOption = propertyTypeOptions.find((option) => option.value === propertyData?.type);
+  const propertyOfferSelectedOption = propertyOfferOptions.find((option) => option.value === propertyData?.offer);
   return (
     <RealEstatePageLayout
       pageTitle='Lister un bien immobilier'
@@ -453,87 +467,158 @@ const AddPropertyPage = () => {
                   <i className='fi-info-circle text-primary fs-5 mt-n1 me-2'></i>
                   Commencons par des informations basiques
                 </h2>
-                <Row>
-                  <Form.Group as={Col} md={6} controlId="offer" className="mb-3">
-                    <Form.Label className="pb-1 mb-2 d-block fw-bold">
-                      Préciser l'offre que vous proposez <span className="text-danger">*</span>
-                    </Form.Label>
+                {session && session.user && (session.user.roleId === '1200' || session.user.roleId === '1231') ? (
+                  <Row>
+                    <Form.Group as={Col} md={4} controlId="offer" className="mb-3">
+                      <Form.Label className="pb-1 mb-2 d-block fw-bold">
+                        Préciser l'offre <span className="text-danger">*</span>
+                      </Form.Label>
+                      <Select
+                        {...register('offer')}
+                        name="offer"
+                        value={propertyOfferSelectedOption} // Pre-select based on propertyData
+                        onChange={(selected) => handleChange({ target: { name: 'offer', value: selected?.value || '' } })}
+                        options={propertyOfferOptions}
+                        placeholder="Preciser l'offre que vous proposez"
+                        className={`react-select-container ${errors.offer ? 'is-invalid' : ''}`}
+                        classNamePrefix="react-select"
+                      />
+                      {errors.offer ? (
+                        <Form.Control.Feedback type="invalid" tooltip>
+                          {errors.offer.message}
+                        </Form.Control.Feedback>
+                      ) : (
+                        <Form.Control.Feedback type="valid" tooltip>
+                          L'offre immobilière est bien précisée
+                        </Form.Control.Feedback>
+                      )}
+                    </Form.Group>
+                    <Form.Group as={Col} md={4} controlId="type" className="mb-3">
+                      <Form.Label className="pb-1 mb-2 d-block fw-bold">
+                        Préciser le type<span className="text-danger">*</span>
+                      </Form.Label>
+                      <Select
+                        {...register('type')}
+                        name="type"
+                        value={propertyTypeSelectedOption} // Pre-select based on propertyData
+                        onChange={(selected) => handleChange({ target: { name: 'type', value: selected?.value || '' } })}
+                        options={propertyTypeOptions}
+                        placeholder="Preciser type du bien immobilier"
+                        className={`react-select-container ${errors.type ? 'is-invalid' : ''}`}
+                        classNamePrefix="react-select"
+                      />
+                      {errors.type ? (
+                        <Form.Control.Feedback type="invalid" tooltip>
+                          {errors.type.message}
+                        </Form.Control.Feedback>
+                      ) : (
+                        <Form.Control.Feedback type="valid" tooltip>
+                          Le type immobilier est bien précisé
+                        </Form.Control.Feedback>
+                      )}
+                    </Form.Group>
+                    <Form.Group as={Col} md={4} controlId="user_id" className="mb-3">
+                      <Form.Label className="pb-1 mb-2 d-block fw-bold">
+                        Preciser le proprietaire <span className="text-danger">*</span>
+                      </Form.Label>
+                      <Select
+                        {...register('user_id')}
+                        name="user_id"
+                        value={propertyOwnerSelectedOption} // Pre-select based on propertyData
+                        onChange={(selected) => handleChange({ target: { name: 'user_id', value: selected?.value || '' } })}
+                        options={propertyOwnerOptions}
+                        placeholder="Selectionner le proprietaire"
+                        className={`react-select-container ${errors.user_id ? 'is-invalid' : ''}`}
+                        classNamePrefix="react-select"
+                      />
+                      {errors.user_id ? (
+                        <Form.Control.Feedback type="invalid" tooltip>
+                          {errors.user_id.message}
+                        </Form.Control.Feedback>
+                      ) : (
+                        <Form.Control.Feedback type="valid" tooltip>
+                          Le proprietaire est bien précisé
+                        </Form.Control.Feedback>
+                      )}
+                    </Form.Group>
+                    <style jsx>{`
+        .react-select-container {
+  width: 100%;
+}
+.react-select__control {
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+  min-height: calc(1.5em + 0.75rem + 2px);
+  box-shadow: none;
+}
+.react-select__control--is-invalid {
+  border-color: #dc3545;
+}
+.react-select__menu {
+  z-index: 1050; /* Ensures dropdown is above other elements */
+}
+.invalid-feedback {
+  display: block;
+  font-size: 0.875em;
+  color: #dc3545;
+}
+      `}</style>
+                  </Row>
+                ) : (
+                  <Row>
+                    <Form.Group as={Col} md={6} controlId="offer" className="mb-3">
+                      <Form.Label className="pb-1 mb-2 d-block fw-bold">
+                        Préciser l'offre que vous proposez <span className="text-danger">*</span>
+                      </Form.Label>
+                      <Select
+                        {...register('offer')}
+                        name="offer"
+                        value={propertyOfferSelectedOption} // Pre-select based on propertyData
+                        onChange={(selected) => handleChange({ target: { name: 'offer', value: selected?.value || '' } })}
+                        options={propertyOfferOptions}
+                        placeholder="Preciser l'offre que vous proposez"
+                        className={`react-select-container ${errors.offer ? 'is-invalid' : ''}`}
+                        classNamePrefix="react-select"
+                      />
+                      
 
-                    <Form.Select
-                      {...register('offer', { required: true })}
-                      name="offer"
-                      onChange={handleChange}
-                      value={propertyData.offer}
-                      className={`form-control ${errors.offer ? 'is-invalid' : ''}`}
-                    >
-                      <option value="">Choisir l'offre</option>
-                      <option value="1">Mettre en location</option>
-                      <option value="2">Mettre en vente</option>
-                      <option value="4">Mettre en bail</option>
-                      <option value="3">Mettre en colocation</option>
-                    </Form.Select>
+                      {errors.offer ? (
+                        <Form.Control.Feedback type="invalid" tooltip>
+                          {errors.offer.message}
+                        </Form.Control.Feedback>
+                      ) : (
+                        <Form.Control.Feedback type="valid" tooltip>
+                          L'offre immobilière est bien précisée
+                        </Form.Control.Feedback>
+                      )}
+                    </Form.Group>
+                    <Form.Group as={Col} md={6} controlId="type" className="mb-3">
+                      <Form.Label className="pb-1 mb-2 d-block fw-bold">
+                        Préciser le type de bien immobilier <span className="text-danger">*</span>
+                      </Form.Label>
+                      <Select
+                        {...register('type')}
+                        name="type"
+                        value={propertyTypeSelectedOption} // Pre-select based on propertyData
+                        onChange={(selected) => handleChange({ target: { name: 'type', value: selected?.value || '' } })}
+                        options={propertyTypeOptions}
+                        placeholder="Preciser type du bien immobilier"
+                        className={`react-select-container ${errors.type ? 'is-invalid' : ''}`}
+                        classNamePrefix="react-select"
+                      />
+                      {errors.type ? (
+                        <Form.Control.Feedback type="invalid" tooltip>
+                          {errors.type.message}
+                        </Form.Control.Feedback>
+                      ) : (
+                        <Form.Control.Feedback type="valid" tooltip>
+                          Le type immobilier est bien précisé
+                        </Form.Control.Feedback>
+                      )}
+                    </Form.Group>
+                  </Row>
+                )}
 
-                    {errors.offer ? (
-                      <Form.Control.Feedback type="invalid" tooltip>
-                        {errors.offer.message}
-                      </Form.Control.Feedback>
-                    ) : (
-                      <Form.Control.Feedback type="valid" tooltip>
-                        L'offre immobilière est bien précisée
-                      </Form.Control.Feedback>
-                    )}
-                  </Form.Group>
-
-                  <Form.Group as={Col} md={6} controlId="type" className="mb-3">
-                    <Form.Label className="pb-1 mb-2 d-block fw-bold">
-                      Préciser le type de bien immobilier <span className="text-danger">*</span>
-                    </Form.Label>
-
-                    <Form.Select
-                      {...register('type')}
-                      name="type"
-                      value={propertyData.type}
-                      onChange={handleChange}
-                      className={`form-control ${errors.type ? 'is-invalid' : ''}`}
-                    >
-                      <option value="">Choisir un type immobilier</option>
-                      <option value="1">Villa</option>
-                      <option value="2">Appartement</option>
-                      <option value="3">Maison</option>
-                      <option value="4">Chambre (Pièce ou studio)</option>
-                      <option value="5">Chambre salon</option>
-                      <option value="6">Terrain rural</option>
-                      <option value="7">Terrain urbain</option>
-                      <option value="8">Boutique</option>
-                      <option value="9">Bureau</option>
-                      <option value="12">Magasin</option>
-                      <option value="11">Espace coworking</option>
-                      <option value="19">Immeuble commercial</option>
-
-                      <option value="10">Appartement meublé</option>
-                      <option value="14">Villa meublée</option>
-                      <option value="15">Studio meublé</option>
-                      <option value="16">Hotel</option>
-                      <option value="17">Ecole</option>
-                      <option value="18">Bar-restaurant</option>
-                      <option value="29">Mur commercial</option>
-                      <option value="30">Garage</option>
-                      <option value="21">Chambre d'hotel</option>
-                      <option value="22">Immeuble</option>
-                    </Form.Select>
-
-                    {errors.type ? (
-                      <Form.Control.Feedback type="invalid" tooltip>
-                        {errors.type.message}
-                      </Form.Control.Feedback>
-                    ) : (
-                      <Form.Control.Feedback type="valid" tooltip>
-                        Le type immobilier est bien précisé
-                      </Form.Control.Feedback>
-                    )}
-                  </Form.Group>
-
-                </Row>
                 <h2 className='mb-4 h4'>
                   <i className='fi-image text-primary fs-5 mt-n1 me-2'></i>
                   Photos et vidéos du bien immobilier
