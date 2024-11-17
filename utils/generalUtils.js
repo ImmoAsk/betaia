@@ -88,6 +88,35 @@ function formatPropertyOwners(owners) {
         };
     });
 }
+
+
+function formatTownsOptions(towns) {
+    if (!Array.isArray(towns)) {
+        console.error('Invalid input: towns must be an array.');
+        return [];
+    }
+
+    return towns.map((town) => {
+        return {
+            value: String(town.id),
+            label: town.denomination,
+        };
+    });
+}
+
+function formatDistrictsOptions(districts) {
+    if (!Array.isArray(districts)) {
+        console.error('Invalid input: districts must be an array.');
+        return [];
+    }
+
+    return districts.map((district) => {
+        return {
+            value: String(district.id),
+            label: district.denomination,
+        };
+    });
+}
 function formatRealEstateAgents(owners) {
     if (!Array.isArray(owners)) {
         console.error('Invalid input: owners must be an array.');
@@ -102,4 +131,4 @@ function formatRealEstateAgents(owners) {
     });
 }
 
-export { formatDate,getHumanReadablePrice,buildPropertiesArray,replaceSpacesWithAny,getLastPage,createPropertyObject,capitalizeFirstLetter, replaceSpacesWithDots, toLowerCaseString,formatPropertyOwners,formatRealEstateAgents};
+export { formatDate,getHumanReadablePrice,formatDistrictsOptions,formatTownsOptions,buildPropertiesArray,replaceSpacesWithAny,getLastPage,createPropertyObject,capitalizeFirstLetter, replaceSpacesWithDots, toLowerCaseString,formatPropertyOwners,formatRealEstateAgents};

@@ -57,8 +57,10 @@ const CustomMarker = dynamic(() =>
 import 'leaflet/dist/leaflet.css'
 import { useLandLord } from '../../customHooks/usePropertyOwner';
 import { format } from 'path';
-import { formatPropertyOwners,formatRealEstateAgents } from '../../utils/generalUtils';
+import { formatDistrictsOptions, formatPropertyOwners,formatRealEstateAgents, formatTownsOptions } from '../../utils/generalUtils';
 import { API_URL } from '../../utils/settings';
+import useListTowns from '../../customHooks/useListTowns';
+import useListQuarters from '../../customHooks/useListQuarters';
 
 
 const AddPropertyPage = () => {
@@ -327,8 +329,8 @@ const AddPropertyPage = () => {
       est_meuble: Number(propertyData.furnished),
       url: null,
     };
-    console.log(propertyPayload);
-    alert(propertyPayload);
+    //console.log(propertyPayload);
+    //alert(propertyPayload);
     formData.append(
       'operations',
       JSON.stringify({
@@ -364,8 +366,6 @@ const AddPropertyPage = () => {
     const propertyUsage = get_property_usage(); // Get usage
     const propertySuperCategorie = get_property_super_categorie();
     updatePropertyData(propertyUsage, propertySuperCategorie);
-    //console.log(data);
-    //alert(JSON.stringify(data));
     buildAppendMapFileUpload(event);
   };
 
@@ -418,10 +418,16 @@ const AddPropertyPage = () => {
   const propertyManagerOptions = [
     { value: `${session?.user?.id}`, label: 'Je suis le gestionnaire ou proprietaire' },
   ];
+  
+  const { status: villesStatus,data: villes } = useListTowns(228);
+  const { status: quartiersStatus,data: quartiers} = useListQuarters(Number(propertyData?.town));
+
   const { status, data: landlords1230, error, isFetching, isLoading, isError } = useLandLord(1230);
   const { status: status1232, data: landlords1232, error: error1232, isFetching: isFetching1232, isLoading: isLoading1232, isError: isError1232 } = useLandLord(1232);
   const propertyOwners= formatPropertyOwners(landlords1230)
   const realEstateAgents= formatRealEstateAgents(landlords1232)
+  const townList = formatTownsOptions(villes)
+  const quarterList = formatDistrictsOptions(quartiers)
   const propertyOwnerOptions = [...new Set([...realEstateAgents, ...propertyOwners])];
 
 
@@ -429,6 +435,9 @@ const AddPropertyPage = () => {
   const propertyOwnerSelectedOption = propertyOwnerOptions.find((option) => option.value === propertyData?.user_id);
   const propertyTypeSelectedOption = propertyTypeOptions.find((option) => option.value === propertyData?.type);
   const propertyOfferSelectedOption = propertyOfferOptions.find((option) => option.value === propertyData?.offer);
+
+  const townSelectedOption = townList.find((option) => option.value === propertyData?.town);
+  const quarterSelectedOption = quarterList.find((option) => option.value === propertyData?.quarter);
   return (
     <RealEstatePageLayout
       pageTitle='Lister un bien immobilier'
@@ -484,7 +493,7 @@ const AddPropertyPage = () => {
                         value={propertyOfferSelectedOption} // Pre-select based on propertyData
                         onChange={(selected) => handleChange({ target: { name: 'offer', value: selected?.value || '' } })}
                         options={propertyOfferOptions}
-                        placeholder="Preciser l'offre que vous proposez"
+                        placeholder="Preciser l'offre"
                         className={`react-select-container ${errors.offer ? 'is-invalid' : ''}`}
                         classNamePrefix="react-select"
                       />
@@ -508,7 +517,7 @@ const AddPropertyPage = () => {
                         value={propertyTypeSelectedOption} // Pre-select based on propertyData
                         onChange={(selected) => handleChange({ target: { name: 'type', value: selected?.value || '' } })}
                         options={propertyTypeOptions}
-                        placeholder="Preciser type du bien immobilier"
+                        placeholder="Preciser type"
                         className={`react-select-container ${errors.type ? 'is-invalid' : ''}`}
                         classNamePrefix="react-select"
                       />
@@ -532,7 +541,7 @@ const AddPropertyPage = () => {
                         value={propertyOwnerSelectedOption} // Pre-select based on propertyData
                         onChange={(selected) => handleChange({ target: { name: 'user_id', value: selected?.value || '' } })}
                         options={propertyOwnerOptions}
-                        placeholder="Selectionner le proprietaire"
+                        placeholder="Preciser le proprietaire"
                         className={`react-select-container ${errors.user_id ? 'is-invalid' : ''}`}
                         classNamePrefix="react-select"
                       />
@@ -663,9 +672,9 @@ const AddPropertyPage = () => {
                   dropOnPage
                   name="imagesProperty"
                   instantUpload={true}
-                  maxFiles={10}
+                  maxFiles={20}
                   labelMaxFileSizeExceeded={"La taille maximale des fichiers est 10M"}
-                  labelMaxTotalFileSizeExceeded={"Uniquement 10 fichiers"}
+                  labelMaxTotalFileSizeExceeded={"Uniquement 20 fichiers"}
                   dropValidation
                   required={true}
                   labelIdle='<div class="btn btn-primary mb-3"><i class="fi-cloud-upload me-1"></i>Télécharger des photos ou vidéos</div>'
@@ -687,16 +696,16 @@ const AddPropertyPage = () => {
                       Préciser la ville<span className="text-danger">*</span>
                     </Form.Label>
 
-                    <Form.Select
-                      {...register('town')}
-                      name="town"
-                      onChange={handleChange}
-                      value={propertyData?.town}
-                      className={`form-control ${errors.town ? 'is-invalid' : 'is-valid'}`}
-                    >
-                      <option value="">Choisir la ville</option>
-                      <TownList country_code={228} />
-                    </Form.Select>
+                    <Select
+                        {...register('town')}
+                        name="town"
+                        value={townSelectedOption} // Pre-select based on propertyData
+                        onChange={(selected) => handleChange({ target: { name: 'town', value: selected?.value || '' } })}
+                        options={townList}
+                        placeholder="Preciser la ville"
+                        className={`react-select-container ${errors.offer ? 'is-invalid' : ''}`}
+                        classNamePrefix="react-select"
+                      />
 
                     {errors.town && (
                       <Form.Control.Feedback type="invalid" tooltip>
@@ -710,18 +719,16 @@ const AddPropertyPage = () => {
                       Préciser le quartier<span className="text-danger">*</span>
                     </Form.Label>
 
-                    <Form.Select
-                      {...register('quarter')}
-                      name="quarter"
-                      value={propertyData?.quarter} // ensure selected value remains when set
-                      onChange={handleChange}
-                      className={`form-control ${errors.quarter ? 'is-invalid' : ''}`}
-                    >
-                      <option value="" disabled>
-                        Sélectionner le quartier
-                      </option>
-                      <QuarterList town_code={Number(propertyData?.town)} />
-                    </Form.Select>
+                    <Select
+                        {...register('quarter')}
+                        name="quarter"
+                        value={quarterSelectedOption} // Pre-select based on propertyData
+                        onChange={(selected) => handleChange({ target: { name: 'quarter', value: selected?.value || '' } })}
+                        options={quarterList}
+                        placeholder="Preciser le quartier"
+                        className={`react-select-container ${errors.offer ? 'is-invalid' : ''}`}
+                        classNamePrefix="react-select"
+                      />
 
                     {errors.quarter && (
                       <Form.Control.Feedback type="invalid" tooltip>
