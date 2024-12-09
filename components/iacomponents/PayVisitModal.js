@@ -4,7 +4,6 @@ import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
 import CloseButton from 'react-bootstrap/CloseButton'
 import CardProperty from './CardProperty'
-import FormControl from 'react-bootstrap/FormControl';
 import { createPropertyObject } from '../../utils/buildPropertiesArray'
 import { getSession, useSession } from 'next-auth/react'
 import PhoneInput from 'react-phone-input-2';
@@ -12,7 +11,6 @@ import { DatePicker } from "antd";
 import 'react-phone-input-2/lib/style.css';
 import axios from 'axios';
 import moment from 'moment';
-import { useRouter } from 'next/router';
 import { now } from 'moment/moment'
 
 const PayVisitModal = ({ property, onSwap, pillButtons, ...props }) => {

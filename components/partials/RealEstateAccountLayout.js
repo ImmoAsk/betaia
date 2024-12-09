@@ -11,6 +11,7 @@ import StarRating from '../StarRating'
 import CardNav from '../CardNav'
 import { getSession, useSession } from 'next-auth/react'
 import { useRessourceByRole } from '../../customHooks/realEstateHooks'
+import MediumRealEstateAgencyCard from '../iacomponents/RealEstateAgency/MediumRealEstateAgencyCard'
 
 const RealEstateAccountLayout = ({ accountPageTitle, children }) => {
 
@@ -91,6 +92,7 @@ const RealEstateAccountLayout = ({ accountPageTitle, children }) => {
               <Avatar img={{ src: '/images/avatars/45.jpg', alt: 'ImmoAsk' }} size={[48, 48]} />
               <div className='pt-md-2 pt-lg-0 ps-3 ps-md-0 ps-lg-3'>
                 <h2 className='fs-lg mb-0'>{session ? session.user?.name : " "}</h2>
+                <MediumRealEstateAgencyCard user={session ? session.user?.id:"1"} />
                 <StarRating rating={4.8} />
                 <ul className='list-unstyled fs-sm mt-3 mb-0'>
                   <li>

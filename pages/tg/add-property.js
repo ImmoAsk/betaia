@@ -13,15 +13,9 @@ import Breadcrumb from 'react-bootstrap/Breadcrumb'
 import ProgressBar from 'react-bootstrap/ProgressBar'
 import Button from 'react-bootstrap/Button'
 import ButtonGroup from 'react-bootstrap/ButtonGroup'
-import ToggleButton from 'react-bootstrap/ToggleButton'
 import Form from 'react-bootstrap/Form'
-import Collapse from 'react-bootstrap/Collapse'
 import Alert from 'react-bootstrap/Alert'
-import Modal from 'react-bootstrap/Modal'
-import Badge from 'react-bootstrap/Badge'
 import { getSession, useSession } from "next-auth/react";
-import ImageLoader from '../../components/ImageLoader'
-import ScrollLink from '../../components/ScrollLink'
 import { FilePond, registerPlugin } from 'react-filepond'
 import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type'
 import FilePondPluginFileValidateSize from 'filepond-plugin-file-validate-size'
@@ -30,9 +24,6 @@ import FilePondPluginImageCrop from 'filepond-plugin-image-crop'
 import FilePondPluginImageResize from 'filepond-plugin-image-resize'
 import FilePondPluginImageTransform from 'filepond-plugin-image-transform'
 import Select from 'react-select';
-//import NumberFormat from 'react-number-format'
-import TownList from '../../components/iacomponents/TownList';
-import QuarterList from '../../components/iacomponents/QuarterList';
 var FormData = require('form-data');
 var formData = new FormData();
 import 'filepond/dist/filepond.min.css'

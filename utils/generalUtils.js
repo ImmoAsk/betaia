@@ -89,6 +89,20 @@ function formatPropertyOwners(owners) {
     });
 }
 
+function formatRealEstateAgents(owners) {
+    if (!Array.isArray(owners)) {
+        console.error('Invalid input: owners must be an array.');
+        return [];
+    }
+
+    return owners.map((owner) => {
+        return {
+            value: String(owner.id),
+            label: owner.name +"@"+owner.organisation.name_organisation,
+        };
+    });
+}
+
 
 function formatTownsOptions(towns) {
     if (!Array.isArray(towns)) {
@@ -117,18 +131,6 @@ function formatDistrictsOptions(districts) {
         };
     });
 }
-function formatRealEstateAgents(owners) {
-    if (!Array.isArray(owners)) {
-        console.error('Invalid input: owners must be an array.');
-        return [];
-    }
 
-    return owners.map((owner) => {
-        return {
-            value: String(owner.id),
-            label: owner.organisation.name_organisation,
-        };
-    });
-}
 
 export { formatDate,getHumanReadablePrice,formatDistrictsOptions,formatTownsOptions,buildPropertiesArray,replaceSpacesWithAny,getLastPage,createPropertyObject,capitalizeFirstLetter, replaceSpacesWithDots, toLowerCaseString,formatPropertyOwners,formatRealEstateAgents};

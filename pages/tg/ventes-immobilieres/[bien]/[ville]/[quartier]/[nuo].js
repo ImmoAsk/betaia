@@ -33,6 +33,7 @@ import NearestInfrastructureList from '../../../../../../components/iacomponents
 import RecommendPropertyList from '../../../../../../components/iacomponents/RecommendPropertyList'
 import PayVisitModal from '../../../../../../components/iacomponents/PayVisitModal'
 import CheckAvailabilityModal from '../../../../../../components/iacomponents/CheckAvailabilityModal'
+import ImageComponent from "../../../../../../components/iacomponents/ImageComponent";
 import { getHumanReadablePrice } from '../../../../../../utils/generalUtils'
 
 function SinglePropertyAltPage({ property }) {
@@ -174,29 +175,25 @@ function SinglePropertyAltPage({ property }) {
           grabCursor
           className='swiper-nav-onhover rounded-3'
         >
-          {
-            session && property && property.visuels.map((imgproperty) => {
-
+          {session &&
+            property &&
+            property.visuels.map((imgproperty) => {
               return (
-                <SwiperSlide className='d-flex'>
-                  <ImageLoader className='rounded-3' src={'https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/proprietes/' + imgproperty.uri} width={967} height={545} alt='Image' />
+                <SwiperSlide className="d-flex">
+                  <ImageComponent imageUri={imgproperty.uri} />
                 </SwiperSlide>
-              )
-            })
-          }
-          {!session &&
-            (
-              <>
-                <SwiperSlide className='d-flex'>
-                  <ImageLoader className='rounded-3' src={'https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/proprietes/' + Unconnectedhumbnails[0]} width={967} height={545} alt='Image' />
-                </SwiperSlide>
-                <SwiperSlide className='d-flex'>
-                  <ImageLoader className='rounded-3' src={'https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/proprietes/' + Unconnectedhumbnails[1]} width={967} height={545} alt='Image' />
-                </SwiperSlide>
-
-              </>
-            )
-          }
+              );
+            })}
+          {!session && (
+            <>
+              <SwiperSlide className="d-flex">
+                <ImageComponent imageUri={Unconnectedhumbnails[0]} />
+              </SwiperSlide>
+              <SwiperSlide className="d-flex">
+                <ImageComponent imageUri={Unconnectedhumbnails[1]} />
+              </SwiperSlide>
+            </>
+          )}
           {/* <SwiperSlide>
             <div className='ratio ratio-16x9'>
               <iframe src='https://www.youtube.com/embed/1oVncb5hke0?autoplay=1' className='rounded-3' allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
@@ -461,7 +458,7 @@ function SinglePropertyAltPage({ property }) {
                     </Card.Body>
                   </Card>
                   <div className='justify-content-between mb-2'>
-                    <Button size='lg' className='w-100' variant='outline-primary' onClick={handleSigninShow}>Planifier une visite avec l'agent immobilier</Button>
+                    <Button size='lg' className='w-100' variant='outline-primary' onClick={handleSigninShow}>Planifier une visite</Button>
                   </div>
                   <div className='justify-content-between mb-2'>
                     <Button size='lg' className='w-100 outline-primary' onClick={handleSignupShow}>Vérifier la disponibilité</Button>

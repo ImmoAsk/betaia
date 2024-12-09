@@ -10,6 +10,7 @@ import Alert from 'react-bootstrap/Alert';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import axios from 'axios';
+import { API_URL } from '../utils/settings';
 
 const SignupLightPage = () => {
   // Router
@@ -18,6 +19,7 @@ const SignupLightPage = () => {
   // Form state management
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [userRole, setUserRole] = useState('');
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -25,8 +27,7 @@ const SignupLightPage = () => {
   const [validated, setValidated] = useState(false);
   const [accountCreatedNotification, setAccountCreatedNotification] = useState(null);
 
-  // Check if the form is valid
-  const isFormValid = phone && name && email && password && confirmPassword && password === confirmPassword && termsChecked;
+  const isFormValid = (userRole && name  && email && phone && password && confirmPassword && password === confirmPassword && termsChecked);
 
   // Form submission handler
   const handleSubmit = async (event) => {
@@ -46,7 +47,8 @@ const SignupLightPage = () => {
       password,
       confirmPassword,
       termsChecked,
-      phone
+      phone,
+      userRole
     };
 
     // Prepare GraphQL mutation
@@ -65,13 +67,14 @@ const SignupLightPage = () => {
           email: formData.email,
           phone: formData.phone,
           password: formData.password,
-          password_confirmation: formData.confirmPassword
+          password_confirmation: formData.confirmPassword,
+          role_id: Number(formData.userRole)
         }
       }
     };
 
     try {
-      const response = await axios.post('https://immoaskbetaapi.omnisoft.africa/public/api/v2', user_creation_data, {
+      const response = await axios.post(API_URL, user_creation_data, {
         headers: { 'Content-Type': 'application/json' }
       });
 
@@ -118,16 +121,16 @@ const SignupLightPage = () => {
                 <div className="mt-sm-4 pt-md-3">Vous avez déja un compte? <Link href="/auth/signin"><a>Se connecter</a></Link></div>
               </div>
               <div className="col-md-6 px-2 pt-2 pb-4 px-sm-5 pb-sm-5 pt-md-5">
-                <Button variant="outline-info w-100 mb-3">
+                {/* <Button variant="outline-info w-100 mb-3">
                   <i className="fi-google fs-lg me-1"></i> Se connecter avec Google
                 </Button>
                 <Button variant="outline-info w-100 mb-3">
                   <i className="fi-facebook fs-lg me-1"></i> Se connecter avec Facebook
-                </Button>
+                </Button> */}
                 <div className="d-flex align-items-center py-3 mb-3">
-                  <hr className="w-100" />
-                  <div className="px-3">Ou</div>
-                  <hr className="w-100" />
+                  <hr className="w-25" />
+                  <div className="px-3">Créer votre compte</div>
+                  <hr className="w-25" />
                 </div>
 
                 {accountCreatedNotification && (
@@ -139,7 +142,36 @@ const SignupLightPage = () => {
 
                 <Form noValidate validated={validated} onSubmit={handleSubmit}>
                   <Form.Group controlId="su-name" className="mb-4">
-                    <Form.Label>Nom et prenom</Form.Label>
+                    <Form.Label>Sélectionnez votre role</Form.Label>
+                    <Form.Check
+                      type='radio'
+                      name='userRole'
+                      id='renter'
+                      value='151'
+                      label="Futur(e) locataire ou futur(e) proprietaire"
+                      onChange={(e) => setUserRole(e.target.value)}
+                    />
+                    <Form.Check
+                      type='radio'
+                      name='userRole'
+                      id='landlord'
+                      value='1230'
+                      label="Proprietaire de biens immobiliers"
+                      onChange={(e) => setUserRole(e.target.value)}
+                    />
+                    <Form.Check
+                      type='radio'
+                      name='userRole'
+                      id='professionnal'
+                      value='1232'
+                      label="Professionnel(le) immobilier(e)"
+                      onChange={(e) => setUserRole(e.target.value)}
+                    />
+                  </Form.Group>
+
+
+                  <Form.Group controlId="su-name" className="mb-4">
+                    <Form.Label>Nom et prénom</Form.Label>
                     <Form.Control
                       placeholder="Entrer votre nom et prenom"
                       required

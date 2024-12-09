@@ -224,7 +224,7 @@ function SinglePropertyAltPage({ property }) {
                 </li>`;
               } else {
                 return `<li class='swiper-thumbnail ${className}'>
-                  <img src=${session? thumbnails[index]:{}+Unconnectedhumbnails[index]} alt='ImmoAsk Thumbnail'/>
+                  <img src=${session? thumbnails[index]:'https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/proprietes/' + Unconnectedhumbnails[index]} alt='ImmoAsk Thumbnail'/>
                 </li>`;
               }
             },
