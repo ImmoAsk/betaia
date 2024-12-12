@@ -94,6 +94,34 @@ const HomePage = () => {
   const handleLogementRedirect = () => {
     router.push('/tg/catalog?usage=1');
   };
+
+  const displayCreationAccountButton = () => {
+    return (
+      <Link href='/signup-light' passHref>
+        {/* <Button size='sm' className='order-lg-3 ms-2'>
+                  <i className='fi-plus me-2'></i>
+                  Lancer <span className='d-none d-sm-inline'>un projet immobilier</span>
+                </Button> */}
+        <Button variant='outline-primary' size='lg'>
+          <i className='fi-user me-2'></i>
+          Créer <span className='d-none d-sm-inline'>votre compte</span>
+        </Button>
+
+      </Link>
+    )
+  };
+
+  const displayCreationProjectButton = () => {
+    return (
+      <Link href='/tg/add-project' passHref>
+        <Button variant='outline-primary' size='lg'>
+          <i className='fi-file me-2'></i>
+          Lancer <span className='d-none d-sm-inline'>un projet immobilier</span>
+        </Button>
+
+      </Link>
+    )
+  };
   const handleAcquisitionRedirect = () => {
     router.push('/tg/catalog?usage=7');
   };
@@ -216,25 +244,14 @@ const HomePage = () => {
               <b>Gérer. Investir. Louer. Vendre </b> <br />
             </p>
 
-            <Link href='/tg/add-project' passHref>
-              {/* <Button size='sm' className='order-lg-3 ms-2'>
-                  <i className='fi-plus me-2'></i>
-                  Lancer <span className='d-none d-sm-inline'>un projet immobilier</span>
-                </Button> */}
-              <Button variant='outline-primary' size='lg'>
-                <i className='fi-plus me-2'></i>
-                Lancer <span className='d-none d-sm-inline'>un projet immobilier</span>
-              </Button>
-
-            </Link>
+            {session ? displayCreationProjectButton() : displayCreationAccountButton()}
             {/* <span className='d-none d-lg-block position-absolute top-50 end-0 translate-middle-y border-end' style={{width: '1px', height: '30px'}}></span> */}
 
             <Link href='/tg/add-property' passHref>
               <Button className='outline-primary order-lg-3 ms-2' size='lg'>
-                <i className='fi-plus me-2'></i>
-                Lister <span className='d-none d-sm-inline'>un immeuble</span>
+                <i className='fi-building me-2'></i>
+                Lister <span className='d-none d-sm-inline'>votre immeuble</span>
               </Button>
-
             </Link>
 
           </Col>

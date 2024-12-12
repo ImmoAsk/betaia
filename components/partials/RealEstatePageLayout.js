@@ -81,8 +81,9 @@ const RealEstatePageLayout = (props) => {
 
   const OpenSignInOrRedirectToProjectForm = () => {
     if (!session) {
-      handleSigninShow();
-      handleSignupShow();
+      //handleSigninShow();
+      //handleSignupShow();
+      router.push('/signup-light');
     } else {
       handleSigninClose();
       handleSignupClose();
@@ -101,6 +102,27 @@ const RealEstatePageLayout = (props) => {
     }
   }
 
+  const displayCreationAccountButton = () => {
+    return (
+      <Link href='/signup-light' passHref>
+              <Button size='sm' variant='outline-primary d-none d-lg-block order-lg-3'>
+                <i className='fi-user me-2'></i>
+                Créer votre compte
+              </Button>
+            </Link>
+    )
+  };
+
+  const displayCreationProjectButton = () => {
+    return (
+      <Link href='/tg/add-project' passHref>
+              <Button size='sm' variant='outline-primary d-none d-lg-block order-lg-3'>
+                <i className='fi-file me-2'></i>
+                Lancer un projet immobilier
+              </Button>
+            </Link>
+    )
+  };
   return (
     <>
       <Head>
@@ -244,17 +266,12 @@ const RealEstatePageLayout = (props) => {
 
 
             }
-            <Link href='#' passHref>
-              <Button size='sm' variant='outline-primary d-none d-lg-block order-lg-3' onClick={OpenSignInOrRedirectToProjectForm}>
-                {/* <i className='fi-user me-2'></i> */}
-                Lancer un projet immobilier
-              </Button>
-            </Link>
+            {session? displayCreationProjectButton(): displayCreationAccountButton()}
 
             <Link href='/tg/add-property' passHref>
               <Button size='sm' className='order-lg-3 ms-2' onClick={OpenSignInOrRedirectToPropertyForm}>
-                <i className='fi-plus me-2'></i>
-                Lister <span className='d-none d-sm-inline'>un immeuble</span>
+                <i className='fi-building me-2'></i>
+                Lister <span className='d-none d-sm-inline'>votre immeuble</span>
               </Button>
             </Link>
 
