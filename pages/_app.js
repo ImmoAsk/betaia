@@ -5,16 +5,29 @@ import NProgress from 'nprogress'
 import { SessionProvider } from 'next-auth/react'
 import ScrollTopButton from '../components/ScrollTopButton'
 import '../scss/theme.scss'
-import { QueryClient,QueryClientProvider,} from '@tanstack/react-query'
-
+import { QueryClient, QueryClientProvider, } from '@tanstack/react-query'
+import { useEffect } from 'react';
+import Script from 'next/script';
+const GA_MEASUREMENT_ID = 'G-2K9WB0X66W'; // Replace with your Measurement ID
 const queryClient = new QueryClient();
-const ImmoAsk = ({ Component, pageProps: { session, ...pageProps }}) => {
+const ImmoAsk = ({ Component, pageProps: { session, ...pageProps } }) => {
 
   // Bind NProgress to Next Router events (Page loading animation)
   Router.events.on('routeChangeStart', () => NProgress.start())
   Router.events.on('routeChangeComplete', () => NProgress.done())
   Router.events.on('routeChangeError', () => NProgress.done())
-  
+  useEffect(() => {
+    const handleRouteChange = (url) => {
+      window.gtag('config', GA_MEASUREMENT_ID, {
+        page_path: url,
+      });
+    };
+    const router = require('next/router').default;
+    router.events.on('routeChangeComplete', handleRouteChange);
+    return () => {
+      router.events.off('routeChangeComplete', handleRouteChange);
+    };
+  }, []);
   return (
     <SSRProvider>
       <Head>
@@ -34,10 +47,29 @@ const ImmoAsk = ({ Component, pageProps: { session, ...pageProps }}) => {
       </Head>
       <QueryClientProvider client={queryClient}>
         <SessionProvider session={session}>
+          {/* Google Analytics Script */}
+          <Script
+            strategy="afterInteractive"
+            src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+          />
+          <Script
+            id="google-analytics"
+            strategy="afterInteractive"
+            dangerouslySetInnerHTML={{
+              __html: `
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '${GA_MEASUREMENT_ID}', {
+              page_path: window.location.pathname,
+            });
+          `,
+            }}
+          />
           <Component {...pageProps} />
         </SessionProvider>
       </QueryClientProvider>
-      
+
       <ScrollTopButton
         showOffset={600}
         duration={800}
