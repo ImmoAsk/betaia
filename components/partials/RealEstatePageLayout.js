@@ -105,22 +105,22 @@ const RealEstatePageLayout = (props) => {
   const displayCreationAccountButton = () => {
     return (
       <Link href='/signup-light' passHref>
-              <Button size='sm' variant='outline-primary d-none d-lg-block order-lg-3'>
-                <i className='fi-user me-2'></i>
-                Créer votre compte
-              </Button>
-            </Link>
+        <Button size='sm' variant='outline-primary d-none d-lg-block order-lg-3'>
+          <i className='fi-user me-2'></i>
+          Créer votre compte
+        </Button>
+      </Link>
     )
   };
 
   const displayCreationProjectButton = () => {
     return (
       <Link href='/tg/add-project' passHref>
-              <Button size='sm' variant='outline-primary d-none d-lg-block order-lg-3'>
-                <i className='fi-file me-2'></i>
-                Lancer un projet immobilier
-              </Button>
-            </Link>
+        <Button size='sm' variant='outline-primary d-none d-lg-block order-lg-3'>
+          <i className='fi-file me-2'></i>
+          Lancer un projet immobilier
+        </Button>
+      </Link>
     )
   };
   return (
@@ -197,7 +197,7 @@ const RealEstatePageLayout = (props) => {
           <Container fluid>
             <Link href='/tg' passHref>
               <Navbar.Brand className='me-3 me-xl-4'>
-                <ImageLoader priority src='/images/logo/logo-dark.png' width={124} height={42} placeholder={false} alt='ImmoAsk' />
+                <ImageLoader priority src='/images/logo/immoask-logo-cropped.png' width={124} height={52} placeholder={false} alt='ImmoAsk' />
               </Navbar.Brand>
             </Link>
             <Navbar.Toggle aria-controls='navbarNav' className='ms-auto' />
@@ -266,7 +266,7 @@ const RealEstatePageLayout = (props) => {
 
 
             }
-            {session? displayCreationProjectButton(): displayCreationAccountButton()}
+            {session ? displayCreationProjectButton() : displayCreationAccountButton()}
 
             <Link href='/tg/add-property' passHref>
               <Button size='sm' className='order-lg-3 ms-2' onClick={OpenSignInOrRedirectToPropertyForm}>
@@ -372,7 +372,7 @@ const RealEstatePageLayout = (props) => {
                     <div className='ps-3'>
                       <StarRating size='sm' rating={5} />
                       <div className='fs-xs py-2'>
-                       {session && session.user.phone ? session.user.phone : " "}<br />{session && session.user.email ? session.user.email : ""}
+                        {session && session.user.phone ? session.user.phone : " "}<br />{session && session.user.email ? session.user.email : ""}
                       </div>
                     </div>
                     {
@@ -426,7 +426,7 @@ const RealEstatePageLayout = (props) => {
           </Container>
 
         </Navbar>
-{/*         <Alert
+        {/*         <Alert
           variant="info"
           className="alert-text"
           style={{
@@ -464,9 +464,9 @@ const RealEstatePageLayout = (props) => {
                   <a className='d-inline-flex mb-4'>
                     <ImageLoader
                       priority
-                      src='/images/logo/immoask-logo-removebg.png'
-                      width={116}
-                      height={112}
+                      src='/images/logo/immoask-logo-cropped.png'
+                      width={124}
+                      height={52}
                       placeholder={false}
                       alt='ImmoAsk'
                     />
