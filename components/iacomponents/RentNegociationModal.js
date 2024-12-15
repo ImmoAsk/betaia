@@ -1,11 +1,12 @@
 import { useState } from 'react'
-import Modal from 'react-bootstrap/Modal'
-import Form from 'react-bootstrap/Form'
-import Button from 'react-bootstrap/Button'
+import Modal from 'react-bootstrap/Modal';
+import Form from 'react-bootstrap/Form';
+import Button from 'react-bootstrap/Button';
+import Link from 'next/link';
 import CloseButton from 'react-bootstrap/CloseButton'
 import CardProperty from './CardProperty'
 import { createPropertyObject } from '../../utils/buildPropertiesArray'
-import { useSession } from 'next-auth/react'
+import { useSession } from 'next-auth/react';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import axios from 'axios';
@@ -105,7 +106,9 @@ const RentNegociationModal = ({ property, onSwap, pillButtons, ...props }) => {
             <h3 className='h4'>
               Vous êtes sur le point de négocier le loyer pour le bien immobilier N° {property.nuo}. Bonne chance !
             </h3>
-
+            {!session && <i>✨ Astuce : Créez votre compte <Link href='/signup-light'>
+              <a className='fs-sm'>ici</a>
+            </Link> pour ne plus à remplir votre nom, prénom, email et numéro de téléphone 📱 à chaque fois. 😊</i>}
             <Form noValidate validated={validated} onSubmit={handleSubmit}>
               <Form.Group controlId='si-offer' className='mb-2'>
                 <Form.Label>Quelle est votre offre ?</Form.Label>

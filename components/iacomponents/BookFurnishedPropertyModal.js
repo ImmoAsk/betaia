@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
+import Link from 'next/link';
 import Button from "react-bootstrap/Button";
 import CloseButton from "react-bootstrap/CloseButton";
 import CardProperty from "./CardProperty";
@@ -11,6 +12,7 @@ import axios from 'axios';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import moment from "moment";
+import { API_URL } from "../../utils/settings";
 
 const onChange = (date, dateString) => {
   console.log(date, dateString);
@@ -115,7 +117,7 @@ const BookFurnishedPropertyModal = ({
     };
     console.log(booking_data);
     try {
-      const response = await axios.post('https://immoaskbetaapi.omnisoft.africa/public/api/v2', booking_data, {
+      const response = await axios.post(API_URL, booking_data, {
         headers: { 'Content-Type': 'application/json' }
       });
 
@@ -167,6 +169,9 @@ const BookFurnishedPropertyModal = ({
           <div className="col-md-6 p-4 p-sm-5">
             <h3 className="h4">Faire une réservation</h3>
             {bookingNotification && <div className="alert alert-success mt-3">{bookingNotification}</div>}
+            {!session && <i>✨ Astuce : Créez votre compte <Link href='/signup-light'>
+              <a className='fs-sm'>ici</a>
+            </Link> pour ne plus à remplir votre nom, prénom, email et numéro de téléphone 📱 à chaque fois. 😊</i>}
             <Form noValidate validated={validated} onSubmit={handleSubmit}>
               <Form.Group controlId="formCheckIn">
                 <Form.Label>Date d'arrivée</Form.Label>

@@ -4,6 +4,7 @@ import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
 import CloseButton from 'react-bootstrap/CloseButton'
 import CardProperty from './CardProperty'
+import Link from 'next/link';
 import { createPropertyObject } from '../../utils/buildPropertiesArray'
 import { getSession, useSession } from 'next-auth/react'
 import PhoneInput from 'react-phone-input-2';
@@ -12,6 +13,7 @@ import 'react-phone-input-2/lib/style.css';
 import axios from 'axios';
 import moment from 'moment';
 import { now } from 'moment/moment'
+import { API_URL } from '../../utils/settings'
 
 const PayVisitModal = ({ property, onSwap, pillButtons, ...props }) => {
   const [email, setEmail] = useState('');
@@ -82,7 +84,7 @@ const PayVisitModal = ({ property, onSwap, pillButtons, ...props }) => {
     };
     console.log("Visite: ", visite_data)
     try {
-      const response = await axios.post('https://immoaskbetaapi.omnisoft.africa/public/api/v2', visite_data, {
+      const response = await axios.post(API_URL, visite_data, {
         headers: { 'Content-Type': 'application/json' }
       });
 
@@ -122,7 +124,9 @@ const PayVisitModal = ({ property, onSwap, pillButtons, ...props }) => {
             <h3 className='h4'>
               Vous planifiez une visite pour le bien immobilier N° {property.nuo}.
             </h3>
-
+            {!session && <i>✨ Astuce : Créez votre compte <Link href='/signup-light'>
+              <a className='fs-sm'>ici</a>
+            </Link> pour ne plus à remplir votre nom, prénom, email et numéro de téléphone 📱 à chaque fois. 😊</i>}
             <Form noValidate validated={validated} onSubmit={handleSubmit}>
               <Form.Group controlId='si-offer' className='mb-2'>
                 <Form.Label>Date et Heure de visite ?</Form.Label>
