@@ -516,18 +516,22 @@ function SinglePropertyAltPage({ property }) {
                             <li className="me-3 pe-3">
                               <h3 className="h5 mb-2">Visite immobiliere</h3>
                               {property.cout_visite <= 0 && (
-                                <h2 className="h4 mb-2">4000 XOF</h2>
+                                <><h2 className="h4 mb-2">0 XOF</h2>
+                                <p className="text-body p">
+                                Le proprietaire ou l'agent immobiliere vous offre le droit de visite.
+                              </p></>
                               )}
                               {property.cout_visite > 0 && (
-                                <h2 className="h4 mb-2">
+                                <><h2 className="h4 mb-2">
                                   {" "}
                                   {property && property.cout_visite} XOF
                                 </h2>
-                              )}
-                              <p className="text-body p">
+                                <p className="text-body p">
                                 Le droit de visite est paye pour supporter la
                                 prospection et tous les risques lies.
-                              </p>
+                              </p></>
+                              )}
+                              
                               <Button
                                 size="md"
                                 className="w-100"
