@@ -164,6 +164,8 @@ const AddProjectPage = (props) => {
                       <option value="Sejour,Reservation de sejour">Reservation de sejour meuble</option>
                       <option value='Achat,Terrain rural'>Achat d'un terrain rural</option>
                       <option value='Achat,Terrain urbain'>Achat d'un terrain urbain</option>
+                      <option value='Achat,Achat de Villa'>Achat de villa</option>
+                      <option value='Achat,Achat de Appartement'>Achat d'appartement</option>
                       <option value='Accompagnement,Titre foncier'>Obtention de titre foncier</option>
                     </Form.Select>
                     <Form.Control.Feedback type="invalid">
