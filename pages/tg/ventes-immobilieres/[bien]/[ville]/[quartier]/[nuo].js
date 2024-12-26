@@ -35,13 +35,14 @@ import PayVisitModal from '../../../../../../components/iacomponents/PayVisitMod
 import CheckAvailabilityModal from '../../../../../../components/iacomponents/CheckAvailabilityModal'
 import ImageComponent from "../../../../../../components/iacomponents/ImageComponent";
 import { getHumanReadablePrice } from '../../../../../../utils/generalUtils'
+import DetailRealEstateAgency from '../../../../../../components/iacomponents/DetailRealEstateAgency'
 
 function SinglePropertyAltPage({ property }) {
   const { data: session } = useSession();
   const router = useRouter()
   const { nuo, bien, quartier, ville } = router.query;
 
- 
+
   // Message modal state
   // Sign in modal
   //const propertyCard= createPropertyObject(property);
@@ -342,7 +343,11 @@ function SinglePropertyAltPage({ property }) {
 
                 </p>
 
-                <ProRealEstateAgency user={property.user.id} />
+                {session && session.user && (session.user.roleId === '1200' || session.user.roleId === '1231') ? (
+                  <DetailRealEstateAgency user={property.user.id} />
+                ) : (
+                  <ProRealEstateAgency user={property.user.id} />
+                )}
               </Col>
 
 
@@ -395,38 +400,38 @@ function SinglePropertyAltPage({ property }) {
                   {/* Price */}
                   <ul className='d-flex mb-4 list-unstyled fs-sm'>
                     <li className='me-3 pe-3 border-end'>
-                    { !property? <span className="sr-only">En chargement...</span>
-                    :<>
-                    {   property.cout_vente > 0 && 
-                        <>
-                        <h3 className='h5 mb-2'>Prix d'achat:</h3>
-                          <h2 className='h5 mb-4 pb-2'>
-                            XOF {property && property.cout_vente}
-                            <span className='d-inline-block ms-1 fs-base fw-normal text-body'>/vie</span>
-                          </h2>
-                          <Button size='md' className='w-100' variant='outline-primary' onClick={handleSigninShow}>Planifier une visite</Button> 
-                        </> 
-                    }
-                    </>  
-                  }
+                      {!property ? <span className="sr-only">En chargement...</span>
+                        : <>
+                          {property.cout_vente > 0 &&
+                            <>
+                              <h3 className='h5 mb-2'>Prix d'achat:</h3>
+                              <h2 className='h5 mb-4 pb-2'>
+                                XOF {property && property.cout_vente}
+                                <span className='d-inline-block ms-1 fs-base fw-normal text-body'>/vie</span>
+                              </h2>
+                              <Button size='md' className='w-100' variant='outline-primary' onClick={handleSigninShow}>Planifier une visite</Button>
+                            </>
+                          }
+                        </>
+                      }
                     </li>
                     <li className='me-3 pe-3'>
-                    { !property? <span className="sr-only">En chargement...</span>
-                    :<>
-                    {   property.part_min_investissement > 0 && 
-                        <>
-                        <h3 className='h5 mb-2'>Investissement min:</h3>
-                          <h2 className='h5 mb-4 pb-2'>
-                            XOF {property && property.part_min_investissement}
-                            <span className='d-inline-block ms-1 fs-base fw-normal text-body'>/pierre</span>
-                          </h2>
-                          <Button size='md' className='w-100' variant='outline-primary'>Placer une pierre</Button>    
-                        </> 
-                    }
-                    </>  
-                  }
+                      {!property ? <span className="sr-only">En chargement...</span>
+                        : <>
+                          {property.part_min_investissement > 0 &&
+                            <>
+                              <h3 className='h5 mb-2'>Investissement min:</h3>
+                              <h2 className='h5 mb-4 pb-2'>
+                                XOF {property && property.part_min_investissement}
+                                <span className='d-inline-block ms-1 fs-base fw-normal text-body'>/pierre</span>
+                              </h2>
+                              <Button size='md' className='w-100' variant='outline-primary'>Placer une pierre</Button>
+                            </>
+                          }
+                        </>
+                      }
                     </li>
-                    
+
                   </ul>
 
 
@@ -440,18 +445,18 @@ function SinglePropertyAltPage({ property }) {
                         <li className='mt-2 mb-0'><b>Document de propriété: </b>{property && property.papier_propriete}</li>
                         {property.salon > 0 &&
                           <>
-                          <li className='mt-2 mb-0'><b>Salon: </b>{property && property.salon}</li>
+                            <li className='mt-2 mb-0'><b>Salon: </b>{property && property.salon}</li>
                           </>
                         }
 
                         {property.piece > 0 &&
                           <>
-                          <li className='mt-2 mb-0'><b>Chambres+salon: </b>{property && property.piece}+{property && property.salon}</li>
+                            <li className='mt-2 mb-0'><b>Chambres+salon: </b>{property && property.piece}+{property && property.salon}</li>
                           </>
                         }
-                        { property.wc_douche_interne > 0 &&
+                        {property.wc_douche_interne > 0 &&
                           <>
-                          <li className='mt-2 mb-0'><b>Douches: </b>{property && property.wc_douche_interne}</li>
+                            <li className='mt-2 mb-0'><b>Douches: </b>{property && property.wc_douche_interne}</li>
                           </>
                         }
                       </ul>
@@ -553,7 +558,7 @@ export async function getServerSideProps(context) {
   try {
     // Fetch data from external API
     const dataAPIresponse = await fetch(
-      `https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={propriete(nuo:${nuo}){tarifications{id,mode,currency,montant},id,cout_visite,est_disponible,nuo,garage,est_meuble,titre,descriptif,surface,usage,cuisine,salon,piece,wc_douche_interne,cout_mensuel,nuitee,cout_vente,categorie_propriete{denomination,id},infrastructures{denomination,icone},meubles{libelle,icone},badge_propriete{id,date_expiration,badge{id,badge_name,badge_image}},pays{id,code,denomination},ville{denomination,id},quartier{id,denomination,minus_denomination},adresse{libelle},offre{denomination,id},visuels{uri,position},user{id}}}`
+      `https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={propriete(nuo:${nuo}){tarifications{id,mode,currency,montant},id,cout_visite,est_disponible,papier_propriete,nuo,garage,est_meuble,titre,descriptif,surface,usage,cuisine,salon,piece,wc_douche_interne,cout_mensuel,nuitee,cout_vente,categorie_propriete{denomination,id},infrastructures{denomination,icone},meubles{libelle,icone},badge_propriete{id,date_expiration,badge{id,badge_name,badge_image}},pays{id,code,denomination},ville{denomination,id},quartier{id,denomination,minus_denomination},adresse{libelle},offre{denomination,id},visuels{uri,position},user{id}}}`
     );
 
     // Check if the response is OK (status 200-299)

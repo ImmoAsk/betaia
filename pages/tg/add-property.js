@@ -282,7 +282,7 @@ const AddPropertyPage = () => {
       salon: Number(propertyData.livingRooms),
       titre: propertyData.title,
       pays_id: propertyData.country,
-      papier_propriete: 'TF',
+      papier_propriete: ' ',
       duree_minimale: '180',
       surface: Number(propertyData.area),
       cout_mensuel: Number(propertyData.monthPrice),
