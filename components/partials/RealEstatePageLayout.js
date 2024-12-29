@@ -318,6 +318,9 @@ const RealEstatePageLayout = (props) => {
                     <Link href='/tg/ventes-immobilieres/terrain' passHref>
                       <Dropdown.Item>Terrains à vendre</Dropdown.Item>
                     </Link>
+                    <Link href='/tg/ventes-immobilieres/terrain-urbain' passHref>
+                      <Dropdown.Item>Terrains urbains à vendre</Dropdown.Item>
+                    </Link>
                     <Link href='/tg/ventes-immobilieres/villa' passHref>
                       <Dropdown.Item>Villas à vendre</Dropdown.Item>
                     </Link>
