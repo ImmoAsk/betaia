@@ -191,8 +191,13 @@ function SinglePropertyAltPage({ property }) {
                 <ImageComponent imageUri={Unconnectedhumbnails[0]} />
               </SwiperSlide>
               <SwiperSlide className="d-flex">
-                <ImageComponent imageUri={Unconnectedhumbnails[1]} />
+              <Link href="/signup-light">
+                  <a>
+                  <ImageComponent imageUri={Unconnectedhumbnails[1]} />
+                  </a>
+                </Link>
               </SwiperSlide>
+              
             </>
           )}
           {/* <SwiperSlide>

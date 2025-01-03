@@ -224,7 +224,7 @@ function SinglePropertyAltPage({ property }) {
                 </li>`;
               } else {
                 return `<li class='swiper-thumbnail ${className}'>
-                  <img src=${session? thumbnails[index]:'https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/proprietes/' + Unconnectedhumbnails[index]} alt='ImmoAsk Thumbnail'/>
+                  <img src=${session ? thumbnails[index] : 'https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/proprietes/' + Unconnectedhumbnails[index]} alt='ImmoAsk Thumbnail'/>
                 </li>`;
               }
             },
@@ -250,7 +250,12 @@ function SinglePropertyAltPage({ property }) {
                 <ImageComponent imageUri={Unconnectedhumbnails[0]} />
               </SwiperSlide>
               <SwiperSlide className="d-flex">
-                <ImageComponent imageUri={Unconnectedhumbnails[1]} />
+                <Link href="/signup-light">
+                  <a>
+                  <ImageComponent imageUri={Unconnectedhumbnails[1]} />
+                  </a>
+                </Link>
+                
               </SwiperSlide>
             </>
           )}
@@ -517,21 +522,21 @@ function SinglePropertyAltPage({ property }) {
                               <h3 className="h5 mb-2">Visite immobiliere</h3>
                               {property.cout_visite <= 0 && (
                                 <><h2 className="h4 mb-2">0 XOF</h2>
-                                <p className="text-body p">
-                                Le proprietaire ou l'agent immobiliere vous offre le droit de visite.
-                              </p></>
+                                  <p className="text-body p">
+                                    Le proprietaire ou l'agent immobiliere vous offre le droit de visite.
+                                  </p></>
                               )}
                               {property.cout_visite > 0 && (
                                 <><h2 className="h4 mb-2">
                                   {" "}
                                   {property && property.cout_visite} XOF
                                 </h2>
-                                <p className="text-body p">
-                                Le droit de visite est paye pour supporter la
-                                prospection et tous les risques lies.
-                              </p></>
+                                  <p className="text-body p">
+                                    Le droit de visite est paye pour supporter la
+                                    prospection et tous les risques lies.
+                                  </p></>
                               )}
-                              
+
                               <Button
                                 size="md"
                                 className="w-100"
