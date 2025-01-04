@@ -80,7 +80,7 @@ const VisitPropertiesPage = ({ _newNegotiations, _acceptedNegotiations, _decline
   };
 
   const columnStyle = {
-    height: '650px',
+    height: '700px',
     overflowY: 'scroll',
   };
 
@@ -124,16 +124,17 @@ const VisitPropertiesPage = ({ _newNegotiations, _acceptedNegotiations, _decline
                   {getHandledNegotiationRentOffers(_newNegotiations)}
                 </Col>
               )}
-              {activeTab === 'accepted' && (
-                <Col xs={12} style={columnStyle}>
-                  {getHandledNegotiationRentOffers(_acceptedNegotiations)}
-                </Col>
-              )}
               {activeTab === 'declined' && (
                 <Col xs={12} style={columnStyle}>
                   {getHandledNegotiationRentOffers(_declinedNegotiations)}
                 </Col>
               )}
+              {activeTab === 'accepted' && (
+                <Col xs={12} style={columnStyle}>
+                  {getHandledNegotiationRentOffers(_acceptedNegotiations)}
+                </Col>
+              )}
+              
             </>
           ) : (
             <>
@@ -141,11 +142,12 @@ const VisitPropertiesPage = ({ _newNegotiations, _acceptedNegotiations, _decline
                 {getHandledNegotiationRentOffers(_newNegotiations)}
               </Col>
               <Col xs={12} lg={4} style={columnStyle}>
-                {getHandledNegotiationRentOffers(_acceptedNegotiations)}
-              </Col>
-              <Col xs={12} lg={4} style={columnStyle}>
                 {getHandledNegotiationRentOffers(_declinedNegotiations)}
               </Col>
+              <Col xs={12} lg={4} style={columnStyle}>
+                {getHandledNegotiationRentOffers(_acceptedNegotiations)}
+              </Col>
+              
             </>
           )}
         </Row>
@@ -166,33 +168,46 @@ export async function getServerSideProps(context) {
       },
     };
   }
-  let _newNegotiations, _acceptedNegotiations, _declinedNegotiations;
+  let _newNegotiations, _acceptedNegotiations, _declinedNegotiations,_reportedVisit,_refusedVisit;
   // Determine negotiations based on the user's role
   switch (session?.user?.roleId) {
     case '151': // Tenant role
        console.log('Tenant visitations');
       _newNegotiations = await fetchRenterVisitationsByStatut(0, session.user.id);
-      _acceptedNegotiations = await fetchRenterVisitationsByStatut(1, session.user.id);
-      _declinedNegotiations = await fetchRenterVisitationsByStatut(2, session.user.id);
+
+      _acceptedNegotiations = await fetchRenterVisitationsByStatut(2, session.user.id);
+      _reportedVisit = await fetchRenterVisitationsByStatut(3, session.user.id);
+      _refusedVisit = await fetchRenterVisitationsByStatut(4, session.user.id);
+      _declinedNegotiations = await fetchRenterVisitationsByStatut(1, session.user.id);
       break;
     case '1200': // Admin role
     case '1231': // Admin role
       console.log('Admin visitations');
       _newNegotiations = await fetchVisitationsByStatutByRole(0);
-      _acceptedNegotiations = await fetchVisitationsByStatutByRole(1);
-      _declinedNegotiations = await fetchVisitationsByStatutByRole(2);
+      _acceptedNegotiations = await fetchVisitationsByStatutByRole(2);
+      _declinedNegotiations = await fetchVisitationsByStatutByRole(1);
+      _reportedVisit = await fetchVisitationsByStatutByRole(3);
+      _refusedVisit = await fetchVisitationsByStatutByRole(4);
       break;
 
     default: // Property owner
       console.log('Property owner visitations');
       _newNegotiations = await fetchVisitationsByStatut(0, session.user.id);
-      _acceptedNegotiations = await fetchVisitationsByStatut(1, session.user.id);
-      _declinedNegotiations = await fetchVisitationsByStatut(2, session.user.id);
+      _acceptedNegotiations = await fetchVisitationsByStatut(2, session.user.id);
+      _reportedVisit = await fetchVisitationsByStatut(3,session.user.id);
+      _refusedVisit = await fetchVisitationsByStatut(4,session.user.id);
+      _declinedNegotiations = await fetchVisitationsByStatut(1, session.user.id);
       break;
   }
 
+
+  const allVisitHandled = [
+    ..._acceptedNegotiations,
+    ..._reportedVisit,
+    ..._refusedVisit,
+  ];
   return {
-    props: { _newNegotiations, _acceptedNegotiations, _declinedNegotiations },
+    props: { _newNegotiations, _acceptedNegotiations:allVisitHandled, _declinedNegotiations },
   };
 
 }

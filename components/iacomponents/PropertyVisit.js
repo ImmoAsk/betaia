@@ -10,6 +10,10 @@ const getBadgeProps = (statut) => {
         case 1:
             return { text: "Acceptée", variant: "faded-accent success" };
         case 2:
+            return { text: "Effectuée", variant: "faded-accent danger" };
+            case 3:
+                return { text: "Reportée", variant: "faded-accent danger" };
+                case 4:
             return { text: "Refusée", variant: "faded-accent danger" };
         default:
             return { text: "Visite", variant: "faded-accent" };
@@ -25,7 +29,7 @@ const updateNegotiation = async ({ negociationOffer, statut }) => {
 
     try {
         const response = await fetch(
-            `https://immoaskbetaapi.omnisoft.africa/public/api/v2?query=mutation{updateNegotiation(input:{id:${Number(negociationOffer.id)},statut:${statut}}){statut}}`
+            `https://immoaskbetaapi.omnisoft.africa/public/api/v2?query=mutation{updateVisitationRequest(input:{id:${Number(negociationOffer.id)},statut:${statut}}){statut}}`
         );
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
@@ -36,7 +40,7 @@ const updateNegotiation = async ({ negociationOffer, statut }) => {
             throw new Error("Failed to update negotiation.");
         }
 
-        return responseData.data.updateNegotiation;
+        return responseData.data.updateVisitationRequest;
     } catch (error) {
         console.error("Error updating negotiation:", error);
         return null; // Handle error state as needed
@@ -60,10 +64,30 @@ const PropertyVisit = ({ project }) => {
         }
     };
 
-    const handleDecline = async (event) => {
+    const handleVisitDone = async (event) => {
         event.preventDefault();
         event.stopPropagation();
         const response = await updateNegotiation({ negociationOffer: project, statut: 2 });
+        if (response) {
+            console.log('Accepted the project:', project.id);
+            // Handle successful acceptance (e.g., notification, refresh)
+        }
+    };
+
+    const handleRefusedVisit = async (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        const response = await updateNegotiation({ negociationOffer: project, statut: 4 });
+        if (response) {
+            console.log('Accepted the project:', project.id);
+            // Handle successful acceptance (e.g., notification, refresh)
+        }
+    };
+
+    const handleReportedVisit = async (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        const response = await updateNegotiation({ negociationOffer: project, statut: 3 });
         if (response) {
             console.log('Declined the project:', project.id);
             // Handle successful decline (e.g., notification, refresh)
@@ -95,24 +119,44 @@ const PropertyVisit = ({ project }) => {
 
                     {/* Show Accept and Decline buttons when project.statut === 0 */}
                     {(role === '1230' || role === '1200') && project.statut === 0 && (
+                        <>
                         <div className="d-flex justify-content-center mt-3">
-                            <Link href='#' passHref onClick={(e) => console.log("Reporter la visite")}>
-                                <Button
-                                    variant="outline-secondary"
-                                    className="me-2 flex-grow-1"
-                                >
-                                    Reporter
-                                </Button>
-                            </Link>
-                            <Link href='#' passHref onClick={(e) => console.log("Confirmer la visite")}>
-                                <Button
-                                    variant="primary"
-                                    className="flex-grow-1"
-                                >
-                                    Confirmer
-                                </Button>
-                            </Link>
+                            <button
+                                className="btn btn-outline-secondary me-2 flex-grow-1"
+                                onClick={handleReportedVisit}
+                            >
+                                Reporter
+                            </button>
+                            <button
+                                className="btn btn-primary flex-grow-1"
+                                onClick={handleAccept}
+                            >
+                                Confirmer
+                            </button>
+                            
+                        </div>
+                        <div className="d-flex justify-content-center mt-3">
+                            <button
+                                className="btn btn-outline-danger flex-grow-1"
+                                onClick={handleRefusedVisit}
+                            >
+                                Refuser
+                            </button>
+                            
+                        </div>
+                        </>
+                        
+                        
+                    )}
 
+                    {(role === '1230' || role === '1200') && project.statut === 1 && (
+                        <div className="d-flex justify-content-center mt-3">
+                            <button
+                                className="btn btn-outline-info me-2 flex-grow-1"
+                                onClick={handleVisitDone}
+                            >
+                                Visite realisee
+                            </button>
                         </div>
                     )}
                 </Card.Body>
