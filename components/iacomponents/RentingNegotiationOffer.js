@@ -48,7 +48,6 @@ const RentingNegotiationOffer = ({ project }) => {
     const { text, variant } = getBadgeProps(project?.statut);
     const { data: session } = useSession();
     const role = session?.user?.roleId
-    console.log("RoleId: ", role)
     // Placeholder functions for the "Accept" and "Decline" buttons
     const handleAccept = async (event) => {
         event.preventDefault();
@@ -94,27 +93,21 @@ const RentingNegotiationOffer = ({ project }) => {
 
                     {/* Show Accept and Decline buttons when project.statut === 0 */}
                     {(role === '1230' || role === '1200') && project.statut === 0 && (
-                        <div className="d-flex justify-content-center mt-3">
-                            <Link href='#' passHref onClick={(e)=>handleDecline(e)}>
-                                <Button
-                                    variant="outline-secondary"
-                                    className="me-2 flex-grow-1"
-                                >
-
-                                    Decliner
-                                </Button>
-                            </Link>
-                            <Link href='#' passHref onClick={(e)=>handleAccept(e)}>
-                                <Button
-                                    variant="primary"
-                                    className="flex-grow-1"
-                                >
-                                    Accepter
-                                </Button>
-                            </Link>
-
-                        </div>
-                    )}
+                    <div className="d-flex justify-content-center mt-3">
+                        <button
+                            className="btn btn-outline-secondary me-2 flex-grow-1"
+                            onClick={handleDecline}
+                        >
+                            Decliner
+                        </button>
+                        <button
+                            className="btn btn-primary flex-grow-1"
+                            onClick={handleAccept}
+                        >
+                           Accepter
+                        </button>
+                    </div>
+                )}
                 </Card.Body>
             </Card>
         </div>

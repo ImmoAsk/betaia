@@ -76,7 +76,7 @@ const RentingNegociationPage = ({ _newNegotiations, _acceptedNegotiations, _decl
   };
 
   const columnStyle = {
-    height: '650px',
+    height: '700px',
     overflowY: 'scroll',
   };
 
