@@ -1,8 +1,7 @@
-import { useState } from 'react';
-import { Card, Badge, Button } from 'react-bootstrap';
+import { Card, Badge } from 'react-bootstrap';
 import { formatDate } from '../../../utils/generalUtils';
-import { useSession, getSession } from 'next-auth/react';
-import Link from 'next/link'
+import { useSession } from 'next-auth/react';
+
 const getBadgeProps = (statut) => {
     switch (statut) {
         case 0:
@@ -17,56 +16,38 @@ const getBadgeProps = (statut) => {
 };
 
 const updateNegotiation = async ({ negociationOffer, statut }) => {
-    console.log("Update negociation statut:", negociationOffer.id, statut);
     if (!negociationOffer || !negociationOffer.id) {
         console.error("Invalid negotiation offer.");
         return null;
     }
 
     try {
-        const response = await fetch(
-            `https://immoaskbetaapi.omnisoft.africa/public/api/v2?query=mutation{updateNegotiation(input:{id:${Number(negociationOffer.id)},statut:${statut}}){statut}}`
+        const url = `https://immoaskbetaapi.omnisoft.africa/public/api/v2?query=mutation{updateVerificationDisponibilite(input:{id:${Number(negociationOffer.id)},statut:${statut}}){statut}}`;
+        const response = await fetch(url
         );
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-
+        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
         const responseData = await response.json();
-        if (!responseData.data) {
-            throw new Error("Failed to update negotiation.");
-        }
-
+        if (!responseData.data) throw new Error("Failed to update negotiation.");
         return responseData.data.updateNegotiation;
     } catch (error) {
         console.error("Error updating negotiation:", error);
-        return null; // Handle error state as needed
+        return null;
     }
 };
-
 
 const CheckingAvailability = ({ project }) => {
     const { text, variant } = getBadgeProps(project?.statut);
     const { data: session } = useSession();
-    const role = session?.user?.roleId
-    console.log("RoleId: ", role)
-    // Placeholder functions for the "Accept" and "Decline" buttons
-    const handleAccept = async (event) => {
-        event.preventDefault();
-        event.stopPropagation();
+    const role = session?.user?.roleId;
+
+    const handleAccept = async () => {
         const response = await updateNegotiation({ negociationOffer: project, statut: 1 });
-        if (response) {
-            console.log('Accepted the project:', project.id);
-            // Handle successful acceptance (e.g., notification, refresh)
-        }
+        if (response) console.log('Accepted the project:', project.id);
     };
 
-    const handleDecline = async (event) => {
-        event.preventDefault();
-        event.stopPropagation();
+    const handleDecline = async () => {
         const response = await updateNegotiation({ negociationOffer: project, statut: 2 });
-        if (response) {
-            console.log('Declined the project:', project.id);
-        }
+        if (response) console.log('Declined the project:', project.id);
     };
 
     return (
@@ -79,10 +60,11 @@ const CheckingAvailability = ({ project }) => {
                         </div>
                     </div>
                     <h3 className="h6 card-title pt-1 mb-3">
-                        <p className="text-nav stretched-link text-decoration-none">
+                        <p className="text-nav text-decoration-none">
                             <strong>
-                                {project.fullname_verificateur ? project.fullname_verificateur : project.verificateur?.name}
-                            </strong> {role === '1200' && (project.telephone_verificateur ? "+" + project.telephone_verificateur : "")} souhaite verifier la disponibilité de la propriété No. {project.propriete.nuo}
+                                {project.fullname_verificateur || project.verificateur?.name}
+                            </strong>{" "}
+                            {role === '1200' && (project.telephone_verificateur ? `+${project.telephone_verificateur}` : "")} souhaite vérifier la disponibilité de la propriété No. {project.propriete.nuo}
                         </p>
                     </h3>
                     <div className="fs-sm">
@@ -91,32 +73,27 @@ const CheckingAvailability = ({ project }) => {
                             {formatDate(project.created_at)}
                         </span>
                     </div>
-
-                    {/* Show Accept and Decline buttons when project.statut === 0 */}
                     {(role === '1230' || role === '1200') && project.statut === 0 && (
-                        <div className="d-flex justify-content-center mt-3">
-                            <Link href='#' passHref onClick={(e) => console.log("Reporter la visite")}>
-                                <Button
-                                    variant="outline-secondary"
-                                    className="me-2 flex-grow-1"
-                                >
-
-                                    Deja occupé
-                                </Button>
-                            </Link>
-                            <Link href='#' passHref onClick={(e) => console.log("Confirmer la visite")}>
-                                <Button
-                                    variant="primary"
-                                    className="flex-grow-1"
-                                >
-                                    Libre pour visite
-                                </Button>
-                            </Link>
-
-                        </div>
-                    )}
+                    <div className="d-flex justify-content-center mt-3">
+                        <button
+                            className="btn btn-outline-secondary me-2 flex-grow-1"
+                            onClick={handleDecline}
+                        >
+                            Déjà occupé
+                        </button>
+                        <button
+                            className="btn btn-primary flex-grow-1"
+                            onClick={handleAccept}
+                        >
+                            Libre pour visite
+                        </button>
+                    </div>
+                )}
                 </Card.Body>
+                
             </Card>
+
+
         </div>
     );
 };

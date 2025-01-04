@@ -80,7 +80,7 @@ const RentingNegotiationOffer = ({ project }) => {
                         </div>
                     </div>
                     <h3 className="h6 card-title pt-1 mb-3">
-                        <p className="text-nav stretched-link text-decoration-none">
+                        <p className="text-nav text-decoration-none">
                             Le locataire <strong>{project.fullname_negociateur}</strong> {role === '1200'&& <>{"+" +project.telephone_negociateur}</>} souhaite négocier le loyer mensuel de propriété
                             No. {project.propriete.nuo} pour un montant de <strong>{project.montant}</strong>
                         </p>

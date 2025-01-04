@@ -80,7 +80,7 @@ const FurnishedBooking = ({ project }) => {
                         </div>
                     </div>
                     <h3 className="h6 card-title pt-1 mb-3">
-                        <p className="text-nav stretched-link text-decoration-none">
+                        <p className="text-nav text-decoration-none">
                             Le locataire <strong>{project.fullname_reservateur ? project.fullname_reservateur : project.client?.name}</strong> {role === '1200'&& <>{project.telephone_visitor ? "+" + project.telephone_visitor : ""}</>} souhaite reserver la propriété
                             No. {project.propriete.nuo} du  <strong>{formatDate(project.date_arrive)}</strong> au <strong>{formatDate(project.date_depart)}</strong>
                         </p>

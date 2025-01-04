@@ -80,7 +80,7 @@ const PropertyVisit = ({ project }) => {
                         </div>
                     </div>
                     <h3 className="h6 card-title pt-1 mb-3">
-                        <p className="text-nav stretched-link text-decoration-none">
+                        <p className="text-nav ext-decoration-none">
                             <strong>
                                 {project.fullname_visitor ? project.fullname_visitor : project.visiteur?.name}
                             </strong> {role === '1200' && (project.telephone_visitor ? "+" + project.telephone_visitor : "")} souhaite visiter la propriété No. {project.propriete.nuo} le <strong>{formatDate(project.date_visite)}</strong> a <strong>{project.heure_visite}</strong>
@@ -101,7 +101,6 @@ const PropertyVisit = ({ project }) => {
                                     variant="outline-secondary"
                                     className="me-2 flex-grow-1"
                                 >
-
                                     Reporter
                                 </Button>
                             </Link>

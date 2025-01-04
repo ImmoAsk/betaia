@@ -166,8 +166,8 @@ export async function getServerSideProps(context) {
     console.log(session?.user?.roleId)
     _newNegotiations = await fetchNegotiationsByStatutByRole(0);
     console.log(_newNegotiations)
-    _acceptedNegotiations = await fetchNegotiationsByStatutByRole(1);
-    _declinedNegotiations = await fetchNegotiationsByStatutByRole(2);
+    _acceptedNegotiations = await fetchNegotiationsByStatutByRole(2);
+    _declinedNegotiations = await fetchNegotiationsByStatutByRole(1);
   } else {
     // Property owner
     _newNegotiations = await fetchNegotiationsByStatut(0, session.user.id);
