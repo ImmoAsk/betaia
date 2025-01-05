@@ -145,6 +145,14 @@ const RealEstateAccountLayout = ({ accountPageTitle, children }) => {
             <Collapse in={open} className='d-md-block'>
               <div id='account-menu'>
                 <CardNav className='pt-3'>
+                {session && session.user.roleId === "1232" && (
+                    <CardNav.Item
+                    href='/tg/subscriptions'
+                    icon='fi-star'
+                  >
+                    Votre abonnement
+                  </CardNav.Item>
+                  )}
 
                   {
                     ressources && ressources.map((ressource) => {

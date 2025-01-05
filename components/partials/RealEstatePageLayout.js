@@ -203,7 +203,10 @@ const RealEstatePageLayout = (props) => {
             <Navbar.Toggle aria-controls='navbarNav' className='ms-auto' />
 
             {/* Display content depending on user auth satus  */}
+
             {props.userLoggedIn ?
+
+
               <Dropdown className='d-none d-lg-block order-lg-3 my-n2 me-3'>
                 <Link href='/tg/account-info' passHref>
                   <Dropdown.Toggle as={Nav.Link} className='dropdown-toggle-flush d-flex py-1 px-0' style={{ width: '40px' }}>
@@ -221,6 +224,14 @@ const RealEstatePageLayout = (props) => {
                       </div>
                     </div>
                   </div>
+                  {session && session.user.roleId === "1232" && (
+                    <Link href='/tg/subscriptions' passHref>
+                      <Dropdown.Item>
+                        <i className='fi-star me-2'></i>
+                        Votre <span className='d-none d-sm-inline'>abonnement</span>
+                      </Dropdown.Item>
+                    </Link>
+                  )}
                   {
                     ressources && ressources.map((ressource) => {
 
@@ -378,6 +389,14 @@ const RealEstatePageLayout = (props) => {
                         {session && session.user.phone ? session.user.phone : " "}<br />{session && session.user.email ? session.user.email : ""}
                       </div>
                     </div>
+                    {session && session.user.roleId === "1232" && (
+                      <Link href='/tg/subscriptions' passHref>
+                        <Dropdown.Item>
+                          <i className='fi-star'></i>
+                          Votre abonnement
+                        </Dropdown.Item>
+                      </Link>
+                    )}
                     {
                       ressources && ressources.map((ressource) => {
 
