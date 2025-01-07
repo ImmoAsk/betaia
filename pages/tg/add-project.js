@@ -162,6 +162,7 @@ const AddProjectPage = (props) => {
                       <option value="Bail,Location de bureau">Location de bureau</option>
                       <option value="Bail,Location de magasin">Location de magasin</option>
                       <option value="Bail,Location de boutique">Location de boutique</option>
+                      <option value="Bail,Location de Salle de Conference">Location de boutique</option>
                       <option value="Bail,Location de terrain">Location de terrain</option>
                       <option value="Sejour,Reservation de sejour">Reservation de sejour meuble</option>
                       <option value='Achat,Terrain rural'>Achat d'un terrain rural</option>

@@ -395,6 +395,7 @@ const AddPropertyPage = () => {
     { value: '30', label: 'Garage' },
     { value: '21', label: "Chambre d'hotel" },
     { value: '22', label: 'Immeuble' },
+    { value: '31', label: 'Salle de Conference' },
   ];
 
   const propertyOfferOptions = [
