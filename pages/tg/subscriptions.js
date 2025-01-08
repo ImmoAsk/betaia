@@ -57,7 +57,7 @@ const MarketplaceSubscriptionPage = () => {
               }}
               title='Senior'
               price='$145,99'
-              period='year'
+              period='an'
               options={[
                 { title: 'Mise en location d\'au moins 50 biens immobiliers', available: true },
                 { title: 'Mise en vente d\'au moins 50 biens immobiliers', available: true },
@@ -75,6 +75,7 @@ const MarketplaceSubscriptionPage = () => {
                 { title: 'Accès partiel à ImmoAsk Business', available: true },
                 { title: 'Encaissement des honoraires des séjours meublés', available: true },
                 { title: 'Showcase de votre carte de professionnel immobilier', available: true },
+                { title: 'Exposition de votre tableau immobilier au public		', available: false },
                 { title: 'Traitement des demandes immobilières en exclusivité (3)', available: true }
               ]}
               
@@ -100,7 +101,7 @@ const MarketplaceSubscriptionPage = () => {
               }}
               title='Guru'
               price='$210,99'
-              period='year'
+              period='an'
               options={[
                 { title: 'Mise en location d\'au moins 75 biens immobiliers', available: true },
                 { title: 'Mise en vente d\'au moins 75 biens immobiliers', available: true },
@@ -118,6 +119,7 @@ const MarketplaceSubscriptionPage = () => {
                 { title: 'Accès partiel à ImmoAsk Business', available: true },
                 { title: 'Encaissement des honoraires des séjours meublés', available: true },
                 { title: 'Showcase de votre carte de professionnel immobilier', available: true },
+                { title: 'Exposition de votre tableau immobilier au public		', available: true },
                 { title: 'Traitement des demandes immobilières en exclusivité (1)', available: true }
               ]}
               button={{
@@ -140,7 +142,7 @@ const MarketplaceSubscriptionPage = () => {
               }}
               title='Junior'
               price='$99,99'
-              period='year'
+              period='an'
               options={[
                 { title: 'Mise en location d\'au moins 25 biens immobiliers', available: true },
                 { title: 'Mise en vente d\'au moins 25 biens immobiliers', available: true },
@@ -158,6 +160,7 @@ const MarketplaceSubscriptionPage = () => {
                 { title: 'Accès partiel à ImmoAsk Business', available: true },
                 { title: 'Encaissement des honoraires des séjours meublés', available: true },
                 { title: 'Showcase de votre carte de professionnel immobilier', available: false },
+                { title: 'Exposition de votre tableau immobilier au public		', available: false },
                 { title: 'Traitement des demandes immobilières en inclusivité', available: true }
               ]}
               button={{
@@ -213,7 +216,7 @@ const MarketplaceSubscriptionPage = () => {
           </FormCheck>
         </Card> */}
         <div className='text-end pt-4 pb-2'>
-          <div className='h4 mb-4'>Total: $35</div>
+         {/*  <div className='h4 mb-4'>Total: $35</div> */}
           <Button size='lg' variant='primary btn-lg'>Acheter maintenant</Button>
         </div>
       </Container>
