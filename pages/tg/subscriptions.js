@@ -17,7 +17,7 @@ const MarketplaceSubscriptionPage = () => {
       activeNav='Vendor'
       userLoggedIn
     >
-      
+
       {/* Page container */}
       <Container className='mt-5 mb-md-4 py-5'>
 
@@ -35,19 +35,63 @@ const MarketplaceSubscriptionPage = () => {
         {/* Page title */}
         <h1 className='h2 mb-4'>Tarification des abonnements agents immobiliers</h1>
         <p className='pb-2 mb-4'>
-        Les 3 types d'abonnements s'adressent exclusivement aux agents immobiliers qui souhaitent : <br/>
-            Devenir de véritables professionnels du secteur. <br/>
-            Augmenter leur base clientèle d'au moins 35 %.<br/>
-            Tripler leur chiffre d'affaires.<br/>
-            Éliminer les tâches manuelles de marketing en ligne.<br/>
-            Tirer parti des avancées de l'IA dans l'immobilier.<br/>
-            Encaisser leurs revenus via des moyens de paiement modernes.
-            </p>
+          Les 3 types d'abonnements s'adressent exclusivement aux agents immobiliers qui souhaitent : <br />
+          Devenir de véritables professionnels du secteur. <br />
+          Augmenter leur base clientèle d'au moins 35 %.<br />
+          Tripler leur chiffre d'affaires.<br />
+          Éliminer les tâches manuelles de marketing en ligne.<br />
+          Tirer parti des avancées de l'IA dans l'immobilier.<br />
+          Encaisser leurs revenus via des moyens de paiement modernes.
+        </p>
 
 
         {/* Pricing plans */}
         <Row>
+          <Col md={4} className='mb-4'>
+            <PricingPlan
+              image={{
+                src: '/images/pricing/icon-3.svg',
+                width: '72',
+                height: '88',
+                alt: 'Icon'
+              }}
+              title='Junior'
+              price='XOF 63 665.99'
+              period='an'
+              options={[
+                { title: 'Mise en location d\'au moins 25 biens immobiliers', available: true },
+                { title: 'Mise en vente d\'au moins 25 biens immobiliers', available: true },
+                { title: 'Mise en colocation d\'au moins 25 biens immobiliers', available: true },
+                { title: 'Accès complet aux dossiers des futurs locataires et acquéreurs', available: true },
+                { title: 'Encaissement des droits de visite si effectif (**)', available: true },
+                { title: 'Accès de 1 semaine au social marketing automation', available: true },
+                { title: 'Accès à toutes les notifications clientèle sur WhatsApp', available: true },
+                { title: 'Sponsoriser 1 bien immobilier en une semaine par trimestre', available: true },
+                { title: 'Accès en 1 semaine à ImmoAsk Intuition', available: true },
+                { title: 'Accès total aux honoraires clients', available: true },
+                { title: 'Gestion de compte propriétaire (*)', available: false },
+                { title: 'Accès gratuit à ImmoAsk State', available: true },
+                { title: 'Accompagnement général sur le marketing immobilier', available: true },
+                { title: 'Accès partiel à ImmoAsk Business', available: true },
+                { title: 'Encaissement des honoraires des séjours meublés', available: true },
+                { title: 'Showcase de votre carte de professionnel immobilier', available: false },
+                { title: 'Exposition de votre tableau immobilier au public		', available: false },
+                { title: 'Traitement des demandes immobilières en exclusivité', available: false }
+              ]}
+              button={{
+                href: '#',
+                title: 'Souscrire maintenant',
+                variant: 'outline-primary',
+                props: {
+                  onClick: () => console.log('You have chosen Turbo Boost plan')
+                }
+              }}
+              className='shadow-sm'
+            />
+          </Col>
           <Col sm={6} md={4} className='mb-4'>
+
+
             <PricingPlan
               image={{
                 src: '/images/pricing/icon-1.svg',
@@ -56,7 +100,7 @@ const MarketplaceSubscriptionPage = () => {
                 alt: 'Icon'
               }}
               title='Senior'
-              price='$145,99'
+              price='XOF 92 954.99'
               period='an'
               options={[
                 { title: 'Mise en location d\'au moins 50 biens immobiliers', available: true },
@@ -78,7 +122,6 @@ const MarketplaceSubscriptionPage = () => {
                 { title: 'Exposition de votre tableau immobilier au public		', available: false },
                 { title: 'Traitement des demandes immobilières en exclusivité (3)', available: true }
               ]}
-              
               button={{
                 href: '#',
                 title: 'Souscrire maintenant',
@@ -100,7 +143,7 @@ const MarketplaceSubscriptionPage = () => {
                 alt: 'Icon'
               }}
               title='Guru'
-              price='$210,99'
+              price='XOF 134 345.99'
               period='an'
               options={[
                 { title: 'Mise en location d\'au moins 75 biens immobiliers', available: true },
@@ -132,48 +175,7 @@ const MarketplaceSubscriptionPage = () => {
               }}
             />
           </Col>
-          <Col md={4} className='mb-4'>
-            <PricingPlan
-              image={{
-                src: '/images/pricing/icon-3.svg',
-                width: '72',
-                height: '88',
-                alt: 'Icon'
-              }}
-              title='Junior'
-              price='$99,99'
-              period='an'
-              options={[
-                { title: 'Mise en location d\'au moins 25 biens immobiliers', available: true },
-                { title: 'Mise en vente d\'au moins 25 biens immobiliers', available: true },
-                { title: 'Mise en colocation d\'au moins 25 biens immobiliers', available: true },
-                { title: 'Accès complet aux dossiers des futurs locataires et acquéreurs', available: true },
-                { title: 'Encaissement des droits de visite si effectif (**)', available: true },
-                { title: 'Accès de 1 semaine au social marketing automation', available: true },
-                { title: 'Accès à toutes les notifications clientèle sur WhatsApp', available: true },
-                { title: 'Sponsoriser 1 bien immobilier en une semaine par trimestre', available: true },
-                { title: 'Accès en 1 semaine à ImmoAsk Intuition', available: true },
-                { title: 'Accès total aux honoraires clients', available: true },
-                { title: 'Gestion de compte propriétaire (*)', available: false },
-                { title: 'Accès gratuit à ImmoAsk State', available: true },
-                { title: 'Accompagnement général sur le marketing immobilier', available: true },
-                { title: 'Accès partiel à ImmoAsk Business', available: true },
-                { title: 'Encaissement des honoraires des séjours meublés', available: true },
-                { title: 'Showcase de votre carte de professionnel immobilier', available: false },
-                { title: 'Exposition de votre tableau immobilier au public		', available: false },
-                { title: 'Traitement des demandes immobilières en inclusivité', available: true }
-              ]}
-              button={{
-                href: '#',
-                title: 'Souscrire maintenant',
-                variant: 'outline-primary',
-                props: {
-                  onClick: () => console.log('You have chosen Turbo Boost plan')
-                }
-              }}
-              className='shadow-sm'
-            />
-          </Col>
+
         </Row>
 
 
@@ -216,7 +218,7 @@ const MarketplaceSubscriptionPage = () => {
           </FormCheck>
         </Card> */}
         <div className='text-end pt-4 pb-2'>
-         {/*  <div className='h4 mb-4'>Total: $35</div> */}
+          {/*  <div className='h4 mb-4'>Total: $35</div> */}
           <Button size='lg' variant='primary btn-lg'>Acheter maintenant</Button>
         </div>
       </Container>
