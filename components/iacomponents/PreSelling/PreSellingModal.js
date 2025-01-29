@@ -181,7 +181,7 @@ const PreSellingModal = ({ property, onSwap, pillButtons, ...props }) => {
                 size='lg'
                 variant={`primary ${pillButtons ? 'rounded-pill' : ''} w-100`}
               >
-                Planifier la visite
+                Proceder au paiement
               </Button>
               {visiteNotification && <div className="alert alert-success mt-3">{visiteNotification}</div>}
             </Form>
