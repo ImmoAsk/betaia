@@ -94,7 +94,6 @@ const AccountPropertiesPage = ({ _userProperties, _handledProjets, _handlingProj
           </a>
         </div>
         <p className='pt-1 mb-4'>Tous vos biens immobiliers en vente, location et ms en indisponibitlite....</p>
-
         <Nav
           variant='tabs'
           defaultActiveKey='published'
@@ -165,7 +164,7 @@ const AccountPropertiesPage = ({ _userProperties, _handledProjets, _handlingProj
                   {
                     icon: 'fi-trash',
                     label: 'Rendre indisponible',
-                    props: { onClick: () => console.log('Deactivate property') }
+                    props: { onClick: () => console.log('Rendre indisponible') }
                   }
                 ]}
                 className={indx === userProperties.length - 1 ? '' : 'mb-4'}
@@ -289,7 +288,14 @@ const AccountPropertiesPage = ({ _userProperties, _handledProjets, _handlingProj
                   {
                     icon: 'fi-trash',
                     label: 'Rendre indisponible',
-                    props: { onClick: () => console.log('Deactivate property') }
+                    props: { 
+                      onClick: (event) => {
+                      event.stopPropagation();
+                      event.preventDefault();
+                      setPropertyModal(property);
+                      handleEditPropertyModal();
+                      } 
+                    }
                   }
                 ]}
                 className={indx === userProperties.length - 1 ? '' : 'mb-4'}
