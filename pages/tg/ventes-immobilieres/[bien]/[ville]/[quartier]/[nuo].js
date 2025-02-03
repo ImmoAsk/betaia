@@ -512,7 +512,7 @@ function SinglePropertyAltPage({ property }) {
                       <Card.Body>
                         <h5 className='mb-0 pb-3'>Modalité de paiements</h5>
                         <ul className='list-unstyled mt-n2 mb-0'>
-                          <li className='mt-2 mb-0'><b>Apport initial: </b>30 % du prix initial</li>
+                          <li className='mt-2 mb-0'><b>Apport initial: </b>20 % du prix initial</li>
                           <li className='mt-2 mb-0'><b>Echelonnement: </b> 15 ans</li>
                           <li className='mt-2 mb-0'><b>Pret immobilier: </b>Accord de pret immobilier possible</li>
                           <li className='mt-2 mb-0'><b>Disponibilité: </b>1er Mai 2025, En prevente</li>

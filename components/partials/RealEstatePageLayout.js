@@ -495,7 +495,7 @@ const RealEstatePageLayout = (props) => {
                   </a>
                 </Link>
                 <p>ImmoAsk est un marketplace immobilier et foncier avec un CRM de gestion immobiliere boosté par une intelligence artificielle.</p>
-                <Nav className='flex-column mb-sm-4 mb-2'>
+               {/*  <Nav className='flex-column mb-sm-4 mb-2'>
                   <Nav.Item className='mb-2'>
                     <Nav.Link href='mailto:contact@immoask.com' className='p-0 fw-normal'>
                       <i className='fi-mail me-2 align-middle opacity-70'></i>contact@immoask.com
@@ -506,7 +506,7 @@ const RealEstatePageLayout = (props) => {
                       <i className='fi-device-mobile me-2 align-middle opacity-70'></i>(+228) 7045-3625
                     </Nav.Link>
                   </Nav.Item>
-                </Nav>
+                </Nav> */}
                 <div className='pt-2'>
                   <SocialButton href='https://facebook.com/immoask' variant='solid' brand='facebook' roundedCircle className='me-2 mb-2' />
                   <SocialButton href='https://twitter.com/immoask' variant='solid' brand='twitter' roundedCircle className='me-2 mb-2' />
