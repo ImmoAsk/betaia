@@ -492,7 +492,7 @@ function SinglePropertyAltPage({ property }) {
                   {!property ? (
                     <span className="sr-only">En chargement...</span>
                   ) : (
-                    <ul className="d-flex mb-4 list-unstyled fs-sm">
+                    <ul className="d-flex mb-2 list-unstyled fs-sm">
                       {property.nuitee <= 0 &&
                         property.cout_mensuel > 0 &&
                         property.est_meuble === 0 && (
@@ -554,7 +554,7 @@ function SinglePropertyAltPage({ property }) {
                   {!property ? (
                     <span className="sr-only">En chargement...</span>
                   ) : (
-                    <ul className="d-flex mb-4 list-unstyled fs-sm">
+                    <ul className="d-flex mb-2 list-unstyled fs-sm">
                       {property.nuitee <= 0 &&
                         property.cout_mensuel > 0 &&
                         property.est_meuble === 1 && (
@@ -604,7 +604,7 @@ function SinglePropertyAltPage({ property }) {
                   {!property ? (
                     <span className="sr-only">En chargement...</span>
                   ) : (
-                    <ul className="d-flex mb-4 list-unstyled fs-sm">
+                    <ul className="d-flex mb-2 list-unstyled fs-sm">
                       {property.nuitee > 0 &&
                         property.cout_mensuel > 0 &&
                         property.est_meuble === 1 && (
@@ -685,6 +685,26 @@ function SinglePropertyAltPage({ property }) {
                           <b>Douches: </b>
                           {property && property.wc_douche_interne}
                         </li>
+                        {property && property.est_meuble > 0  && property.super_categorie === "sejour" && (
+                          <>
+                          <li className="mt-2 mb-0">
+                            <b>Frais d'assistance court-sejour: </b>
+                              25 %
+                          </li>
+                          <li className="mt-2 mb-0">
+                          <b>Frais d'assistance  long-sejour: </b>
+                            1 mois du loyer mensuel
+                        </li>
+                          </>
+                          
+                        )}
+
+                        {property &&   property.est_meuble === 0 && property.super_categorie !== "acquisition" &&(
+                          <li className="mt-2 mb-0">
+                            <b>Frais d'assistance: </b>
+                            {property && property.cout_assistance_client*100} % du loyer mensuel
+                          </li>
+                        )}
                       </ul>
                     </Card.Body>
                   </Card>
@@ -821,7 +841,7 @@ export async function getServerSideProps(context) {
 
   try {
     // Fetch data from external API
-    const final_url = `${API_URL}?query={propriete(nuo:${nuo}){tarifications{id,mode,currency,montant},id,cout_visite,est_disponible,nuo,garage,est_meuble,titre,descriptif,surface,usage,cuisine,salon,piece,wc_douche_interne,cout_mensuel,nuitee,cout_vente,categorie_propriete{denomination,id},infrastructures{denomination,icone},meubles{libelle,icone},badge_propriete{id,date_expiration,badge{id,badge_name,badge_image}},pays{id,code,denomination},ville{denomination,id},quartier{id,denomination,minus_denomination},adresse{libelle},offre{denomination,id},visuels{uri,position},user{id,organisation{name_organisation,logo,description,id,adresse_commune,tel_whatsapp}}}}`
+    const final_url = `${API_URL}?query={propriete(nuo:${nuo}){tarifications{id,mode,currency,montant},id,super_categorie,cout_visite,cout_assistance_client,est_disponible,nuo,garage,est_meuble,titre,descriptif,surface,usage,cuisine,salon,piece,wc_douche_interne,cout_mensuel,nuitee,cout_vente,categorie_propriete{denomination,id},infrastructures{denomination,icone},meubles{libelle,icone},badge_propriete{id,date_expiration,badge{id,badge_name,badge_image}},pays{id,code,denomination},ville{denomination,id},quartier{id,denomination,minus_denomination},adresse{libelle},offre{denomination,id},visuels{uri,position},user{id,organisation{name_organisation,logo,description,id,adresse_commune,tel_whatsapp}}}}`
     const dataAPIresponse = await fetch(final_url);
     console.log(final_url)
     // Check if the response is OK (status 200-299)

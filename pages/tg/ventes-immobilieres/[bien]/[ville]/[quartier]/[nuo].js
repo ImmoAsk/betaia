@@ -103,7 +103,7 @@ function SinglePropertyAltPage({ property }) {
     defineUnauthenticatedThumbNails();
   }, []);
   const getRecommendProperties = () => {
-    axios.get(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getRecommendProperties(first:5,offre_id:"2",nuo:${property.nuo},quartier_id:"${property.quartier.id}",categorie_id:"${property.categorie_propriete.id}"){data{surface,badge_propriete{badge{badge_name,badge_image}},id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination,minus_denomination,id},visuels{uri,position}}}}`).
+    axios.get(`${API_URL}?query={getRecommendProperties(first:5,offre_id:"2",nuo:${property.nuo},quartier_id:"${property.quartier.id}",categorie_id:"${property.categorie_propriete.id}"){data{surface,badge_propriete{badge{badge_name,badge_image}},id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination,minus_denomination,id},visuels{uri,position}}}}`).
       then((res) => {
         setRecommendProperties(res.data.data.getRecommendProperties.data.map((propertyr) => {
           //const { status, data:badges_property, error, isFetching,isLoading,isError }  = usePropertyBadges(property.id);
@@ -504,6 +504,12 @@ function SinglePropertyAltPage({ property }) {
                             <li className='mt-2 mb-0'><b>Douches: </b>{property && property.wc_douche_interne}</li>
                           </>
                         }
+                        {property && property.prevente === 0 &&  property.est_meuble === 0 && property.super_categorie === "acquisition" &&(
+                          <li className="mt-2 mb-0">
+                            <b>Frais d'assistance: </b>
+                            {property && property.cout_assistance_client*100} % du prix de vente 
+                          </li>
+                        )}
                       </ul>
                     </Card.Body>
                   </Card>
@@ -626,7 +632,7 @@ export async function getServerSideProps(context) {
   try {
     // Fetch data from external API
     const dataAPIresponse = await fetch(
-      `${API_URL}?query={propriete(nuo:${nuo}){tarifications{id,mode,currency,montant},id,cout_visite,prevente,est_disponible,papier_propriete,nuo,garage,est_meuble,titre,descriptif,surface,usage,cuisine,salon,piece,wc_douche_interne,cout_mensuel,nuitee,cout_vente,categorie_propriete{denomination,id},infrastructures{denomination,icone},meubles{libelle,icone},badge_propriete{id,date_expiration,badge{id,badge_name,badge_image}},pays{id,code,denomination},ville{denomination,id},quartier{id,denomination,minus_denomination},adresse{libelle},offre{denomination,id},visuels{uri,position},user{id}}}`
+      `${API_URL}?query={propriete(nuo:${nuo}){tarifications{id,mode,currency,montant},id,cout_visite,cout_assistance_client,super_categorie,prevente,est_disponible,papier_propriete,nuo,garage,est_meuble,titre,descriptif,surface,usage,cuisine,salon,piece,wc_douche_interne,cout_mensuel,nuitee,cout_vente,categorie_propriete{denomination,id},infrastructures{denomination,icone},meubles{libelle,icone},badge_propriete{id,date_expiration,badge{id,badge_name,badge_image}},pays{id,code,denomination},ville{denomination,id},quartier{id,denomination,minus_denomination},adresse{libelle},offre{denomination,id},visuels{uri,position},user{id}}}`
     );
 
     // Check if the response is OK (status 200-299)

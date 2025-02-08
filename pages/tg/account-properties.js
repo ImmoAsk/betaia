@@ -11,6 +11,7 @@ import { useSession, getSession } from 'next-auth/react'
 import { Row, Col } from 'react-bootstrap';
 import PropertiesList from '../../components/iacomponents/PropertiesList'
 import { API_URL, BASE_URL, IMAGE_URL } from '../../utils/settings'
+import DeletePropertyModal from '../../components/iacomponents/DeleteProperty/DeletePropertyModal'
 
 const AccountPropertiesPage = ({ _userProperties, _handledProjets, _handlingProjets }) => {
 
@@ -18,9 +19,15 @@ const AccountPropertiesPage = ({ _userProperties, _handledProjets, _handlingProj
   _userProperties = buildPropertiesArray(_userProperties);
   _handledProjets = buildPropertiesArray(_handledProjets);
   _handlingProjets = buildPropertiesArray(_handlingProjets);
+
   const [editPropertyShow, setEditPropertyShow] = useState(false);
   const handleEditPropertyClose = () => setEditPropertyShow(false);
   const handleEditPropertyShow = () => setEditPropertyShow(true);
+
+  const [deletePropertyShow, setDeletePropertyShow] = useState(false);
+  const handleDeletePropertyClose = () => setDeletePropertyShow(false);
+  const handleDeletePropertyShow = () => setDeletePropertyShow(true);
+
   const [newPropertyProjectsTab, setNewPropertyProjectsTab] = useState(false);
   const handledClickNewPropertyProjectsTab = () => setNewPropertyProjectsTab(true);
 
@@ -41,11 +48,18 @@ const AccountPropertiesPage = ({ _userProperties, _handledProjets, _handlingProj
     }
   }
 
+  const handleDeletePropertyModal = () => {
+    //e.preventDefault();
+    if (session) {
+      handleDeletePropertyShow();
+    } else {
+      handleSignInToUp(e);
+    }
+  }
+
   //console.log(properties);
   const deleteAll = (e) => {
     e.preventDefault();
-    //userProperties=[];
-    //setProperties([])
   }
   const getNewPropertyProjects = (properties) => {
     return (<PropertiesList properties={properties} />)
@@ -56,7 +70,7 @@ const AccountPropertiesPage = ({ _userProperties, _handledProjets, _handlingProj
   const getHandlingPropertyProjects = (properties) => {
     return (<PropertiesList properties={properties} />)
   }
-  const columnStyle = { 
+  const columnStyle = {
     height: '650px', // Adjust the height as needed
     overflowY: 'scroll', // Enable vertical scrolling
   };
@@ -82,6 +96,16 @@ const AccountPropertiesPage = ({ _userProperties, _handledProjets, _handlingProj
           size='lg'
           show={editPropertyShow}
           onHide={handleEditPropertyClose}
+          property={propertyModal}
+        />
+      }
+
+      {
+        deletePropertyShow && <DeletePropertyModal
+          centered
+          size='lg'
+          show={deletePropertyShow}
+          onHide={handleDeletePropertyClose}
           property={propertyModal}
         />
       }
@@ -164,7 +188,14 @@ const AccountPropertiesPage = ({ _userProperties, _handledProjets, _handlingProj
                   {
                     icon: 'fi-trash',
                     label: 'Rendre indisponible',
-                    props: { onClick: () => console.log('Rendre indisponible') }
+                    props: {
+                      onClick: (event) => {
+                        event.stopPropagation();
+                        event.preventDefault();
+                        setPropertyModal(property);
+                        handleDeletePropertyModal();
+                      }
+                    }
                   }
                 ]}
                 className={indx === userProperties.length - 1 ? '' : 'mb-4'}
@@ -183,7 +214,7 @@ const AccountPropertiesPage = ({ _userProperties, _handledProjets, _handlingProj
 
           {/* Second Column */}
           <Col style={columnStyle}>
-          {_handledProjets.length ? _handledProjets.map((property, indx) => (
+            {_handledProjets.length ? _handledProjets.map((property, indx) => (
               <PropertyCard
                 key={indx}
                 href={property.href}
@@ -226,7 +257,14 @@ const AccountPropertiesPage = ({ _userProperties, _handledProjets, _handlingProj
                   {
                     icon: 'fi-trash',
                     label: 'Rendre indisponible',
-                    props: { onClick: () => console.log('Deactivate property') }
+                    props: {
+                      onClick: (event) => {
+                        event.stopPropagation();
+                        event.preventDefault();
+                        setPropertyModal(property);
+                        handleDeletePropertyModal();
+                      }
+                    }
                   }
                 ]}
                 className={indx === userProperties.length - 1 ? '' : 'mb-4'}
@@ -245,7 +283,7 @@ const AccountPropertiesPage = ({ _userProperties, _handledProjets, _handlingProj
 
           {/* Third Column */}
           <Col style={columnStyle}>
-          {_handlingProjets.length ? _handlingProjets.map((property, indx) => (
+            {_handlingProjets.length ? _handlingProjets.map((property, indx) => (
               <PropertyCard
                 key={indx}
                 href={property.href}
@@ -263,40 +301,10 @@ const AccountPropertiesPage = ({ _userProperties, _handledProjets, _handlingProj
                 horizontal
                 dropdown={[
                   {
-                    // href: '#', // Optionally pass href prop to convert dropdown item to Next link
-                    icon: 'fi-edit',
-                    label: 'Editer',
-                    props: {
-                      onClick: (event) => {
-                        event.stopPropagation();
-                        event.preventDefault();
-                        setPropertyModal(property);
-                        handleEditPropertyModal();
-                      }
-                    }
-                  },
-                  {
-                    icon: 'fi-flame',
-                    label: 'Promouvoir',
-                    props: { onClick: () => console.log('Promote property') }
-                  },
-                  {
                     icon: 'fi-power',
-                    label: 'Rendre invisible',
+                    label: 'Remettre sur le marche immobilier',
                     props: { onClick: () => console.log('Deactivate property') }
                   },
-                  {
-                    icon: 'fi-trash',
-                    label: 'Rendre indisponible',
-                    props: { 
-                      onClick: (event) => {
-                      event.stopPropagation();
-                      event.preventDefault();
-                      setPropertyModal(property);
-                      handleEditPropertyModal();
-                      } 
-                    }
-                  }
                 ]}
                 className={indx === userProperties.length - 1 ? '' : 'mb-4'}
               />
@@ -356,11 +364,12 @@ export async function getServerSideProps(context) {
     var _handlingProjets = await handlingProjets.json();
 
     _userProperties = _userProperties.data.getPropertiesByKeyWords;
+
     _handledProjets = _handledProjets.data.getPropertiesByKeyWords;
     _handlingProjets = _handlingProjets.data.getPropertiesByKeyWords;
 
   }
-
+  //console.log(_userProperties);
   return {
     props: { _userProperties, _handledProjets, _handlingProjets },
   };

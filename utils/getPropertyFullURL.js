@@ -3,7 +3,7 @@ import toNormalForm from "./toNormalForm";
 import { replaceSpacesWithAny } from "./generalUtils";
 
 const getPropertyFullUrl = (country, categoryParam, propertytype, town, quarter, nuo) => {
-  //console.log(country, categoryParam, propertytype, town, quarter, nuo);
+  console.log(country, categoryParam, propertytype, town, quarter, nuo);
   
   let categoryArray = {
     'bailler': 'baux-immobiliers',

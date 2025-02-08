@@ -36,6 +36,7 @@ function buildPropertiesArray(properties) {
     }
     properties.map((property) => {
         const _objetProperty = createPropertyObject(property);
+        
         tempPropertyArray.push(_objetProperty);
     });
     let propertiesArrayCustomized = tempPropertyArray;
@@ -48,19 +49,34 @@ const formatDate = (dateString) => {
     return date.toLocaleDateString('fr-FR', options);
 };
 function createPropertyObject(property) {
-    let _objetProperty = {
-        nuo: property.nuo,
-        href: getPropertyFullUrl(property.pays.code, property.offre.denomination, property.categorie_propriete.denomination, property.ville.denomination, property?.quartier?.minus_denomination, property.nuo),
-        images: [[getFirstImageArray(property.visuels), 467, 305, 'Image']],
-        title: 'N°' + property?.nuo + ': ' + property.categorie_propriete.denomination + ' à ' + property.offre.denomination + ' | ' + property.surface + 'm²',
-        category: property.usage,
-        location: property.quartier.denomination + ", " + property.ville.denomination,
-        price: getHumanReadablePrice(property),
-        badges: buildPropertyBadge(property.badge_propriete),
-        amenities: [property.piece, property.wc_douche_interne, property.garage],
+    //console.log("Before Processing - Property: ", property);
+    
+    if (!property.pays) {
+        console.error("🚨 Error: property.pays is undefined!");
+        return null;
     }
+
+    let _objetProperty = {
+        nuo: property?.nuo,
+        href: getPropertyFullUrl(property?.pays?.code, property?.offre?.denomination, 
+                                 property?.categorie_propriete?.denomination, 
+                                 property?.ville?.denomination, 
+                                 property?.quartier?.minus_denomination, 
+                                 property?.nuo),
+        images: [[getFirstImageArray(property.visuels), 467, 305, 'Image']],
+        title: `N°${property?.nuo}: ${property?.categorie_propriete?.denomination} à ${property?.offre?.denomination} | ${property?.surface}m²`,
+        category: property?.usage,
+        id: property?.id,
+        location: `${property?.quartier?.denomination}, ${property?.ville?.denomination}`,
+        price: getHumanReadablePrice(property),
+        badges: buildPropertyBadge(property?.badge_propriete),
+        amenities: [property?.piece, property?.wc_douche_interne, property?.garage],
+    };
+
+    //console.log("Processed Property Object: ", _objetProperty);
     return _objetProperty;
 }
+
 
 
 function getHumanReadablePrice(property) {

@@ -380,7 +380,7 @@ const AddPropertyPage = () => {
     { value: '5', label: 'Chambre salon' },
     { value: '6', label: 'Terrain rural' },
     { value: '7', label: 'Terrain urbain' },
-    { value: '8', label: 'Boutique' },
+    { value: '14', label: 'Boutique' },
     { value: '9', label: 'Bureau' },
     { value: '10', label: 'Appartement meublé' },
     { value: '11', label: 'Espace coworking' },
