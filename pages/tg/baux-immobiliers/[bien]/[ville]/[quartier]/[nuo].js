@@ -34,6 +34,7 @@ import RecommendPropertyList from '../../../../../../components/iacomponents/Rec
 import PayVisitModal from '../../../../../../components/iacomponents/PayVisitModal'
 import CheckAvailabilityModal from '../../../../../../components/iacomponents/CheckAvailabilityModal'
 import { getHumanReadablePrice } from '../../../../../../utils/generalUtils'
+import ImageComponent from '../../../../../../components/iacomponents/ImageComponent'
 
 function SinglePropertyAltPage({ property }) {
   const { data: session } = useSession();
@@ -153,7 +154,7 @@ function SinglePropertyAltPage({ property }) {
             clickable: true,
             renderBullet: (index, className) => {
               //console.log("Index: " + index)
-              session ? thumbnailSize = thumbnailSize : thumbnailSize = unconnectedThumbnailSize;
+              //session ? thumbnailSize = thumbnailSize : thumbnailSize = unconnectedThumbnailSize;
               if (index === thumbnailSize) {
                 return `<li class='swiper-thumbnail ${className}'>
                   <div class='d-flex flex-column align-items-center justify-content-center h-100'>
@@ -163,7 +164,7 @@ function SinglePropertyAltPage({ property }) {
                 </li>`
               } else {
                 return `<li class='swiper-thumbnail ${className}'>
-                  <img src=${session ? thumbnails[index] : 'https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/proprietes/' + Unconnectedhumbnails[index]} alt='Thumbnail'/>
+                  <img src=${thumbnails[index]} alt='Thumbnail'/>
                 </li>`
               }
             }
@@ -174,17 +175,15 @@ function SinglePropertyAltPage({ property }) {
           grabCursor
           className='swiper-nav-onhover rounded-3'
         >
-          {
-            session && property && property.visuels.map((imgproperty) => {
-
+          {property &&
+            property.visuels.map((imgproperty) => {
               return (
-                <SwiperSlide className='d-flex'>
-                  <ImageLoader className='rounded-3' src={'https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/proprietes/' + imgproperty.uri} width={967} height={545} alt='Image' />
+                <SwiperSlide className="d-flex">
+                  <ImageComponent imageUri={imgproperty.uri} />
                 </SwiperSlide>
-              )
-            })
-          }
-          {!session &&
+              );
+            })}
+          {/* {!session &&
             (
               <>
                 <SwiperSlide className='d-flex'>
@@ -196,7 +195,7 @@ function SinglePropertyAltPage({ property }) {
 
               </>
             )
-          }
+          } */}
           {/* <SwiperSlide>
             <div className='ratio ratio-16x9'>
               <iframe src='https://www.youtube.com/embed/1oVncb5hke0?autoplay=1' className='rounded-3' allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>

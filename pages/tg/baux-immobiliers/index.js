@@ -44,6 +44,7 @@ import 'leaflet/dist/leaflet.css'
 import RentingList from '../../../components/iacomponents/RentingList'
 import {buildPropertiesArray} from '../../../utils/generalUtils'
 import IAPaginaation from '../../../components/iacomponents/IAPagination'
+import { API_URL } from '../../../utils/settings'
 
 const CatalogPage = ({_rentingProperties}) => {
     
@@ -943,7 +944,7 @@ const CatalogPage = ({_rentingProperties}) => {
 export async function getServerSideProps(context) {  
   const offreId="4";
   // Fetch data from external API
-  let dataAPIresponse = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getPropertiesByKeyWords(limit:24,orderBy:{column:NUO,order:DESC},offre_id:"${offreId}")
+  let dataAPIresponse = await fetch(`${API_URL}?query={getPropertiesByKeyWords(limit:24,orderBy:{column:NUO,order:DESC},offre_id:"${offreId}")
   {badge_propriete{badge{badge_name,badge_image}},visuels{uri,position},id,surface,lat_long,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination,id,minus_denomination}}}`);
   let _rentingProperties = await dataAPIresponse.json();
   //console.log(_rentingProperties.data.getPropertiesByKeyWords);

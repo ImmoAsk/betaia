@@ -7,15 +7,10 @@ import Link from 'next/link'
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
-import Offcanvas from 'react-bootstrap/Offcanvas'
 import Form from 'react-bootstrap/Form'
 import InputGroup from 'react-bootstrap/InputGroup'
 import Button from 'react-bootstrap/Button'
-import ButtonGroup from 'react-bootstrap/ButtonGroup'
-import ToggleButton from 'react-bootstrap/ToggleButton'
 import Breadcrumb from 'react-bootstrap/Breadcrumb'
-import Pagination from 'react-bootstrap/Pagination'
-import SimpleBar from 'simplebar-react'
 import Nouislider from 'nouislider-react'
 import 'simplebar/dist/simplebar.min.css'
 import 'nouislider/distribute/nouislider.css'
@@ -45,6 +40,7 @@ import RentingList from '../../../../components/iacomponents/RentingList'
 import {buildPropertiesArray} from '../../../../utils/generalUtils'
 import FormSearchOffcanvas from '../../../../components/iacomponents/FormSearchOffcanvas'
 import IAPaginaation from '../../../../components/iacomponents/IAPagination'
+import { API_URL } from '../../../../utils/settings'
 
 
 
@@ -512,18 +508,18 @@ export async function getServerSideProps(context) {
   
   
 
-  const _ville = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getTownIdByTownName(minus_denomination:"${toLowerCaseString(ville)}")
+  const _ville = await fetch(`${API_URL}?query={getTownIdByTownName(minus_denomination:"${toLowerCaseString(ville)}")
   {denomination,id,code}}`);
   const _jsonville = await _ville.json();
 
-  const _bien = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getCategoryIdByCategorieName(minus_denomination:"${toLowerCaseString(bien)}"){denomination,id,code}}`);
+  const _bien = await fetch(`${API_URL}?query={getCategoryIdByCategorieName(minus_denomination:"${toLowerCaseString(bien)}"){denomination,id,code}}`);
   const _jsonbien= await _bien.json();
 
   const bienId=_jsonbien.data.getCategoryIdByCategorieName;
   console.log("BienId: "+ bienId);
   const villeId=_jsonville.data.getTownIdByTownName;
   // Fetch data from external API
-  let dataAPIresponse = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getPropertiesByKeyWords(limit:10,orderBy:{column:NUO,order:DESC},offre_id:"4",ville_id:"${villeId.id}",categorie_id:"${bienId.id}")
+  let dataAPIresponse = await fetch(`${API_URL}?query={getPropertiesByKeyWords(limit:10,orderBy:{column:NUO,order:DESC},offre_id:"4",ville_id:"${villeId.id}",categorie_id:"${bienId.id}")
   {badge_propriete{badge{badge_name,badge_image}},visuels{uri,position},id,surface,lat_long,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination,id,minus_denomination}}}`);
   let _rentingProperties = await dataAPIresponse.json();
   //console.log(_rentingProperties.data.getPropertiesByKeyWords);

@@ -45,6 +45,7 @@ import RentingList from '../../../components/iacomponents/RentingList'
 import {buildPropertiesArray} from '../../../utils/generalUtils'
 import { capitalizeFirstLetter } from '../../../utils/generalUtils'
 import IAPaginaation from '../../../components/iacomponents/IAPagination'
+import { API_URL } from '../../../utils/settings'
 
 
 
@@ -669,13 +670,13 @@ export async function getServerSideProps(context) {
 
   const { bien } = context.query;
   console.log("Bien: "+ bien);
-  const _bien = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getCategoryIdByCategorieName(minus_denomination:"${bien}"){denomination,id,code}}`);
+  const _bien = await fetch(`${API_URL}?query={getCategoryIdByCategorieName(minus_denomination:"${bien}"){denomination,id,code}}`);
   const _jsonbien= await _bien.json();
 
   const bienId=_jsonbien.data.getCategoryIdByCategorieName.id;
   console.log("BienId: "+ bienId);
   // Fetch data from external API
-  let dataAPIresponse = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getPropertiesByKeyWords(limit:10,orderBy:{column:NUO,order:DESC},offre_id:"4",categorie_id:"${bienId}")
+  let dataAPIresponse = await fetch(`${API_URL}?query={getPropertiesByKeyWords(limit:10,orderBy:{column:NUO,order:DESC},offre_id:"4",categorie_id:"${bienId}")
   {badge_propriete{badge{badge_name,badge_image}},visuels{uri,position},id,surface,lat_long,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination,id,minus_denomination}}}`);
   let _rentingProperties = await dataAPIresponse.json();
   //console.log(_rentingProperties.data.getPropertiesByKeyWords);

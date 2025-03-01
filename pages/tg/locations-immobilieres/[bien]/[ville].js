@@ -45,6 +45,7 @@ import {buildPropertiesArray} from '../../../../utils/generalUtils'
 import FormSearchOffcanvas from '../../../../components/iacomponents/FormSearchOffcanvas'
 import { useMockPaginate } from '../../../../customHooks/usePagination'
 import IAPaginaation from '../../../../components/iacomponents/IAPagination'
+import { API_URL } from '../../../../utils/settings'
 
 
 
@@ -510,14 +511,11 @@ export async function getServerSideProps(context) {
   let { nuo } = context.query;
   const { bien } = context.query;
   const { ville } = context.query;
-  
-  
-
-  const _ville = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getTownIdByTownName(minus_denomination:"${toLowerCaseString(ville)}")
+  const _ville = await fetch(`${API_URL}?query={getTownIdByTownName(minus_denomination:"${toLowerCaseString(ville)}")
   {denomination,id,code}}`);
   const _jsonville = await _ville.json();
 
-  const _bien = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getCategoryIdByCategorieName(minus_denomination:"${toLowerCaseString(bien)}"){denomination,id,code}}`);
+  const _bien = await fetch(`${API_URL}?query={getCategoryIdByCategorieName(minus_denomination:"${toLowerCaseString(bien)}"){denomination,id,code}}`);
   const _jsonbien= await _bien.json();
 
   const bienId=_jsonbien.data.getCategoryIdByCategorieName;
@@ -526,7 +524,7 @@ export async function getServerSideProps(context) {
   
   const offreId="1";
   // Fetch data from external API
-  let dataAPIresponse = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getPropertiesByKeyWords(limit:200,orderBy:{column:NUO,order:DESC},offre_id:"${offreId}",ville_id:"${villeId.id}",categorie_id:"${bienId.id}")
+  let dataAPIresponse = await fetch(`${API_URL}?query={getPropertiesByKeyWords(limit:200,orderBy:{column:NUO,order:DESC},offre_id:"${offreId}",ville_id:"${villeId.id}",categorie_id:"${bienId.id}")
   {badge_propriete{badge{badge_name,badge_image}},visuels{uri,position},id,surface,nuitee,lat_long,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination,id,minus_denomination}}}`);
   let _rentingProperties = await dataAPIresponse.json();
   //console.log(_rentingProperties.data.getPropertiesByKeyWords);

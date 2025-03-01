@@ -8,24 +8,16 @@ import RealEstatePageLayout from '../../../../../components/partials/RealEstateP
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
-import Offcanvas from 'react-bootstrap/Offcanvas'
-import Nav from 'react-bootstrap/Nav'
 import Form from 'react-bootstrap/Form'
 import InputGroup from 'react-bootstrap/InputGroup'
 import Button from 'react-bootstrap/Button'
-import ButtonGroup from 'react-bootstrap/ButtonGroup'
-import ToggleButton from 'react-bootstrap/ToggleButton'
 import Breadcrumb from 'react-bootstrap/Breadcrumb'
-import Pagination from 'react-bootstrap/Pagination'
 import ImageLoader from '../../../../../components/ImageLoader'
-import PropertyCard from '../../../../../components/PropertyCard'
-import SimpleBar from 'simplebar-react'
 import Nouislider from 'nouislider-react'
 import 'simplebar/dist/simplebar.min.css'
 import 'nouislider/distribute/nouislider.css'
 import { capitalizeFirstLetter, toLowerCaseString } from '../../../../../utils/generalUtils'
 import PropertiesList from '../../../../../components/iacomponents/PropertiesList'
-import RentingList from '../../../../../components/iacomponents/RentingList'
 
 const MapContainer = dynamic(() =>
   import('react-leaflet').then(mod => mod.MapContainer),
@@ -47,6 +39,7 @@ import 'leaflet/dist/leaflet.css'
 import {buildPropertiesArray} from '../../../../../utils/generalUtils'
 import FormSearchOffcanvas from '../../../../../components/iacomponents/FormSearchOffcanvas'
 import IAPaginaation from '../../../../../components/iacomponents/IAPagination'
+import { API_URL } from '../../../../../utils/settings'
 
 
 const CatalogPage = ({_rentingProperties,bienId,villeId,quartierId,soffreId}) => {
@@ -534,15 +527,15 @@ export async function getServerSideProps(context) {
   const { quartier } = context.query;
   
 
-  const _ville = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getTownIdByTownName(minus_denomination:"${toLowerCaseString(ville)}")
+  const _ville = await fetch(`${API_URL}?query={getTownIdByTownName(minus_denomination:"${toLowerCaseString(ville)}")
   {denomination,id,code}}`);
   const _jsonville = await _ville.json();
 
-  const _quartier = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getDistrictIdByDistrictName(minus_denomination:"${toLowerCaseString(quartier)}")
+  const _quartier = await fetch(`${API_URL}?query={getDistrictIdByDistrictName(minus_denomination:"${toLowerCaseString(quartier)}")
   {denomination,id,code,minus_denomination}}`);
   const _jsonquartier=await _quartier.json();
 
-  const _bien = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getCategoryIdByCategorieName(minus_denomination:"${toLowerCaseString(bien)}"){denomination,id,code}}`);
+  const _bien = await fetch(`${API_URL}?query={getCategoryIdByCategorieName(minus_denomination:"${toLowerCaseString(bien)}"){denomination,id,code}}`);
   const _jsonbien= await _bien.json();
 
   const bienId=_jsonbien.data.getCategoryIdByCategorieName;
@@ -555,7 +548,7 @@ export async function getServerSideProps(context) {
   const quartierId=_jsonquartier.data.getDistrictIdByDistrictName;
   //console.log("QuarrtierId: "+ quartierId);
   // Fetch data from external API
-  let dataAPIresponse = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getPropertiesByKeyWords(limit:10,orderBy:{column:NUO,order:DESC},offre_id:"4",ville_id:"${villeId.id}",quartier_id:"${quartierId.id}",categorie_id:"${bienId.id}")
+  let dataAPIresponse = await fetch(`${API_URL}?query={getPropertiesByKeyWords(limit:10,orderBy:{column:NUO,order:DESC},offre_id:"4",ville_id:"${villeId.id}",quartier_id:"${quartierId.id}",categorie_id:"${bienId.id}")
   {badge_propriete{badge{badge_name,badge_image}},visuels{uri,position},id,surface,lat_long,nuo,usage,offre{denomination,id},categorie_propriete{denomination,id},pays{code,id},piece,titre,garage,cout_mensuel,ville{denomination,id},wc_douche_interne,cout_vente,quartier{denomination,id,minus_denomination}}}`);
   let _rentingProperties = await dataAPIresponse.json();
   const soffreId = {id:"4",denomination:"bailler"};
