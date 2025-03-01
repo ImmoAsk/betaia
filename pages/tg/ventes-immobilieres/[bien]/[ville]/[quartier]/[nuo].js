@@ -38,6 +38,7 @@ import { getHumanReadablePrice } from '../../../../../../utils/generalUtils'
 import DetailRealEstateAgency from '../../../../../../components/iacomponents/DetailRealEstateAgency'
 import { API_URL, BASE_URL } from '../../../../../../utils/settings'
 import PreSellingModal from '../../../../../../components/iacomponents/PreSelling/PreSellingModal'
+import Model3DList from '../../../../../../components/iacomponents/Model3D/Model3DList'
 
 function SinglePropertyAltPage({ property }) {
   const { data: session } = useSession();
@@ -87,6 +88,7 @@ function SinglePropertyAltPage({ property }) {
   const [thumbnails, setThumbnails] = useState([]);
   const [Unconnectedhumbnails, setUnconnectedhumbnails] = useState([]);
   const [recommendProperties, setRecommendProperties] = useState([]);
+  const [model3dImages, setModel3dImages] = useState([]);
   const defineThumbNails = () => {
     property && property.visuels.map((imgproperty) => {
       setThumbnails(thumbnails => [...thumbnails, 'https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/proprietes/' + imgproperty.uri]);
@@ -587,31 +589,42 @@ function SinglePropertyAltPage({ property }) {
             </Row>
           </Container>
           {/* Recently viewed properties (carousel) */}
-          <Container as='section' className='mb-5 pb-2 pb-lg-4'>
-            <div className='d-flex align-items-center justify-content-between mb-3'>
-              <h2 className='h3 mb-0'>Autour du quartier, voici nos recommandations</h2>
-              {/* <Link href='/tg/catalog?category=rent' passHref>
-                <Button variant='link fw-normal p-0'>
-                  Consulter tout
-                  <i className='fi-arrow-long-right ms-2'></i>
-                </Button>
-              </Link> */}
-            </div>
+          {recommendProperties.length > 0 && (
+            <Container as='section' className='mb-5 pb-2 pb-lg-4'>
+              <div className='d-flex align-items-center justify-content-between mb-3'>
+                <h2 className='h3 mb-0'>D'autres biens immobiliers similaires autour du quartier</h2>
+              </div>
+              {/* Swiper slider */}
+              <div className='position-relative'>
+                <RecommendPropertyList propertyList={recommendProperties} />
+                {/* External Prev/Next buttons */}
+                <Button id='prevProperties' variant='prev' className='d-none d-xxl-block mt-n5 ms-n5' />
+                <Button id='nextProperties' variant='next' className='d-none d-xxl-block mt-n5 me-n5' />
+              </div>
 
-            {/* Swiper slider */}
-            <div className='position-relative'>
-              <RecommendPropertyList propertyList={recommendProperties} />
+              {/* External pagination (bullets) buttons */}
+              <div id='paginationProperties' className='swiper-pagination position-relative bottom-0 py-2 mt-1'></div>
+            </Container>
+          )}
+          {model3dImages.length > 0 && (
+            <Container as='section' className='mb-5 pb-2 pb-lg-4'>
+              <div className='d-flex align-items-center justify-content-between mb-3'>
+                <h2 className='h3 mb-0'>Des modèles 3D à adopter sur ce terrain après achat</h2>
+              </div>
+              {/* Swiper slider */}
+              <div className='position-relative'>
+                <Model3DList propertyList={model3dImages} />
+                <Button id='prevProperties' variant='prev' className='d-none d-xxl-block mt-n5 ms-n5' />
+                <Button id='nextProperties' variant='next' className='d-none d-xxl-block mt-n5 me-n5' />
+              </div>
 
-              {/* External Prev/Next buttons */}
-              <Button id='prevProperties' variant='prev' className='d-none d-xxl-block mt-n5 ms-n5' />
-              <Button id='nextProperties' variant='next' className='d-none d-xxl-block mt-n5 me-n5' />
-            </div>
+              {/* External pagination (bullets) buttons */}
+              <div id='paginationProperties' className='swiper-pagination position-relative bottom-0 py-2 mt-1'></div>
+            </Container>
+          )}
 
-            {/* External pagination (bullets) buttons */}
-            <div id='paginationProperties' className='swiper-pagination position-relative bottom-0 py-2 mt-1'></div>
-          </Container>
-
-        </Container>)}
+        </Container>
+      )}
 
     </RealEstatePageLayout>
   )

@@ -1,5 +1,4 @@
 import React from "react";
-import LoadingSpinner from "../LoadingSpinner";
 import { Swiper, SwiperSlide } from "swiper/react";
 import PropertyCard from "../PropertyCard";
 import { Navigation, Pagination } from "swiper";
