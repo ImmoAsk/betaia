@@ -50,9 +50,10 @@ import getFirstImageArray from '../../utils/formatFirsImageArray'
 import { useSession } from 'next-auth/react'
 import IAPaginaation from '../../components/iacomponents/IAPagination'
 import { buildPropertiesArray } from '../../utils/generalUtils'
+import { API_URL } from '../../utils/settings'
 
 
-function constructApiUrl(apiUrl, offre, ville, quartier, categorie,usage) {
+function constructApiUrl(offre, ville, quartier, categorie,usage) {
   // Start constructing the query
   let query = `query={getPropertiesByKeyWords(limit:100,orderBy:{column:NUO,order:DESC}`;
 
@@ -77,7 +78,7 @@ function constructApiUrl(apiUrl, offre, ville, quartier, categorie,usage) {
   query += `){badge_propriete{badge{badge_name,badge_image}},visuels{uri,position},nuitee,surface,lat_long,nuo,usage,offre{denomination,id},categorie_propriete{denomination,id},pays{code,id},id,piece,titre,garage,cout_mensuel,ville{denomination,id},wc_douche_interne,cout_vente,quartier{denomination,id,minus_denomination}}}`;
 
   // Construct the full URL
-  const fullUrl = `${apiUrl}?${query}`;
+  const fullUrl = `${API_URL}?${query}`;
   
   return fullUrl;
 }
@@ -764,8 +765,7 @@ export async function getServerSideProps(context) {
   const { categorie, offre, ville, quartier, usage} = query;
   //console.log(quartier);
   try {
-    const url = constructApiUrl(apiUrl, offre, ville, quartier, categorie,usage);
-    console.log(url)
+    const url = constructApiUrl(offre, ville, quartier, categorie,usage);
     const response = await axios.get(url);
     const _rentingProperties = await response.data;
     // Pass them as props to the component

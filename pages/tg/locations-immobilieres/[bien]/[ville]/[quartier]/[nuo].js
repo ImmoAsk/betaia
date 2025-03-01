@@ -688,13 +688,9 @@ function SinglePropertyAltPage({ property }) {
                         {property && property.est_meuble > 0  && property.super_categorie === "sejour" && (
                           <>
                           <li className="mt-2 mb-0">
-                            <b>Frais d'assistance court-sejour: </b>
-                              25 %
+                            <b>Frais d'assistance : </b>
+                              25 %(court sejour), 1 mois (long sejour) du loyer mensuel
                           </li>
-                          <li className="mt-2 mb-0">
-                          <b>Frais d'assistance  long-sejour: </b>
-                            1 mois du loyer mensuel
-                        </li>
                           </>
                           
                         )}

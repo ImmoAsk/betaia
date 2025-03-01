@@ -113,7 +113,6 @@ const MarketplaceSubscriptionPage = () => {
                 { title: 'Sponsoriser 3 biens immobiliers en une semaine par trimestre', available: true },
                 { title: 'Accès en 3 semaines à ImmoAsk Intuition', available: true },
                 { title: 'Accès total aux honoraires clients', available: true },
-                { title: 'Gestion d\'au plus 1 compte propriétaire (*)', available: true },
                 { title: 'Accès gratuit à ImmoAsk State', available: true },
                 { title: 'Accompagnement général sur le marketing immobilier', available: true },
                 { title: 'Accès partiel à ImmoAsk Business', available: true },
@@ -152,11 +151,10 @@ const MarketplaceSubscriptionPage = () => {
                 { title: 'Accès complet aux dossiers des futurs locataires et acquéreurs', available: true },
                 { title: 'Encaissement des droits de visite si effectif (**)', available: true },
                 { title: 'Accès illimite au social marketing automation', available: true },
-                { title: 'Accès à toutes les notifications clientèle sur WhatsApp', available: true },
+                { title: 'Accès à toutes les notifications clientèles sur WhatsApp', available: true },
                 { title: 'Sponsoriser 5 biens immobiliers en une semaine par trimestre', available: true },
                 { title: 'Accès illimite à ImmoAsk Intuition', available: true },
                 { title: 'Accès total aux honoraires clients', available: true },
-                { title: 'Gestion d\'au plus 3 compte propriétaire (*)', available: true },
                 { title: 'Accès gratuit à ImmoAsk State', available: true },
                 { title: 'Accompagnement général sur le marketing immobilier', available: true },
                 { title: 'Accès partiel à ImmoAsk Business', available: true },
@@ -177,48 +175,7 @@ const MarketplaceSubscriptionPage = () => {
           </Col>
 
         </Row>
-
-
-        {/* Other services */}
-        {/* <h2 className='h3 pt-4 pt-md-5 mb-4'>Other services</h2>
-        <Card className='card-hover card-body px-4 mb-2'>
-          <FormCheck id='ad-option-1'>
-            <FormCheck.Input type='checkbox' defaultChecked />
-            <FormCheck.Label className='d-sm-flex w-100 align-items-center justify-content-between'>
-              <span className='d-block px-1'>
-                <span className='d-block h6 mb-2'>Check and certify my ad by Finder experts</span>
-                <span className='d-block mb-2 mb-sm-0'>Ads with Certified badge get <strong>10x</strong> more views</span>
-              </span>
-              <span className='d-block h4 mb-0'>$35</span>
-            </FormCheck.Label>
-          </FormCheck>
-        </Card>
-        <Card className='card-hover card-body px-4 mb-2'>
-          <FormCheck id='ad-option-2'>
-            <FormCheck.Input type='checkbox' />
-            <FormCheck.Label className='d-sm-flex w-100 align-items-center justify-content-between'>
-              <span className='d-block px-1'>
-                <span className='d-block h6 mb-2'>10 lifts to the top of the list (daily, 7 days)</span>
-                <span className='d-block mb-2 mb-sm-0'>Your ad will be seen by as many people as possible</span>
-              </span>
-              <span className='d-block h4 mb-0'>$20</span>
-            </FormCheck.Label>
-          </FormCheck>
-        </Card>
-        <Card className='card-hover card-body px-4 mb-2'>
-          <FormCheck id='ad-option-3'>
-            <FormCheck.Input type='checkbox' />
-            <FormCheck.Label className='d-sm-flex w-100 align-items-center justify-content-between'>
-              <span className='d-block px-1'>
-                <span className='d-block h6 mb-2'>Featured ad for 7 days</span>
-                <span className='d-block mb-2 mb-sm-0'>Ads with Featured badge get <strong>5x</strong> more views</span>
-              </span>
-              <span className='d-block h4 mb-0'>$15</span>
-            </FormCheck.Label>
-          </FormCheck>
-        </Card> */}
         <div className='text-end pt-4 pb-2'>
-          {/*  <div className='h4 mb-4'>Total: $35</div> */}
           <Button size='lg' variant='primary btn-lg'>Acheter maintenant</Button>
         </div>
       </Container>
