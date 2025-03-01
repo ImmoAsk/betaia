@@ -12,6 +12,7 @@ import { Row, Col } from 'react-bootstrap';
 import PropertiesList from '../../components/iacomponents/PropertiesList'
 import { API_URL, BASE_URL, IMAGE_URL } from '../../utils/settings'
 import DeletePropertyModal from '../../components/iacomponents/DeleteProperty/DeletePropertyModal'
+import AddNewImagesModal from '../../components/iacomponents/AddNewImagesProperty/AddNewImagesModal'
 
 const AccountPropertiesPage = ({ _userProperties, _handledProjets, _handlingProjets }) => {
 
@@ -30,6 +31,10 @@ const AccountPropertiesPage = ({ _userProperties, _handledProjets, _handlingProj
 
   const [newPropertyProjectsTab, setNewPropertyProjectsTab] = useState(false);
   const handledClickNewPropertyProjectsTab = () => setNewPropertyProjectsTab(true);
+
+  const [newImagesPropertyShow, setNewImagesPropertyShow] = useState(false);
+  const handleAddNewImagesPropertyClose = () => setNewImagesPropertyShow(false);
+  const handleAddNewImagesPropertyShow = () => setNewImagesPropertyShow(true);
 
   const [handlingPropertyProjectsTab, setHandlingPropertyProjectsTab] = useState(false);
   const handledClickHandlingPropertyProjectsTab = () => setHandlingPropertyProjectsTab(true);
@@ -57,33 +62,23 @@ const AccountPropertiesPage = ({ _userProperties, _handledProjets, _handlingProj
     }
   }
 
+  const handleAddNewImagesPropertyModal = () => {
+    //e.preventDefault();
+    if (session) {
+      handleAddNewImagesPropertyShow();
+    } else {
+      handleSignInToUp(e);
+    }
+  }
+
   //console.log(properties);
   const deleteAll = (e) => {
     e.preventDefault();
-  }
-  const getNewPropertyProjects = (properties) => {
-    return (<PropertiesList properties={properties} />)
-  }
-  const getHandledPropertyProjects = (properties) => {
-    return (<PropertiesList properties={properties} />)
-  }
-  const getHandlingPropertyProjects = (properties) => {
-    return (<PropertiesList properties={properties} />)
   }
   const columnStyle = {
     height: '650px', // Adjust the height as needed
     overflowY: 'scroll', // Enable vertical scrolling
   };
-  const navComponent = (
-    <Nav variant='tabs' defaultActiveKey='published' className='border-bottom mb-2'>
-      <Nav.Item className='mb-2'>
-        <Nav.Link eventKey='published'>
-          <i className='fi-file fs-base me-2'></i>
-          Nouvels non traites
-        </Nav.Link>
-      </Nav.Item>
-    </Nav>
-  );
   return (
     <RealEstatePageLayout
       pageTitle='Portofolio immobilier'
@@ -106,6 +101,15 @@ const AccountPropertiesPage = ({ _userProperties, _handledProjets, _handlingProj
           size='lg'
           show={deletePropertyShow}
           onHide={handleDeletePropertyClose}
+          property={propertyModal}
+        />
+      }
+      {
+        newImagesPropertyShow && <AddNewImagesModal
+          centered
+          size='lg'
+          show={newImagesPropertyShow}
+          onHide={handleAddNewImagesPropertyClose}
           property={propertyModal}
         />
       }
@@ -196,6 +200,18 @@ const AccountPropertiesPage = ({ _userProperties, _handledProjets, _handlingProj
                         handleDeletePropertyModal();
                       }
                     }
+                  },
+                  {
+                    icon: 'fi-image',
+                    label: 'Ajouter de nouvelles images',
+                    props: {
+                      onClick: (event) => {
+                        event.stopPropagation();
+                        event.preventDefault();
+                        setPropertyModal(property);
+                        handleAddNewImagesPropertyModal();
+                      }
+                    }
                   }
                 ]}
                 className={indx === userProperties.length - 1 ? '' : 'mb-4'}
@@ -263,6 +279,18 @@ const AccountPropertiesPage = ({ _userProperties, _handledProjets, _handlingProj
                         event.preventDefault();
                         setPropertyModal(property);
                         handleDeletePropertyModal();
+                      }
+                    }
+                  },
+                  {
+                    icon: 'fi-image',
+                    label: 'Ajouter de nouvelles images',
+                    props: {
+                      onClick: (event) => {
+                        event.stopPropagation();
+                        event.preventDefault();
+                        setPropertyModal(property);
+                        handleAddNewImagesPropertyModal();
                       }
                     }
                   }

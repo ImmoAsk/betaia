@@ -154,8 +154,6 @@ const AddPropertyPage = () => {
   const { data: session } = useSession();
 
   // State declarations
-  const [gallery, setGallery] = useState([]);
-  const [quartersList, setQuartersList] = useState([]);
   const [imagesProperty, setImagesProperty] = useState([]);
   const [propertyCreatedNotification, setPropertyCreatedNotification] = useState(null);
   // Form values
@@ -642,7 +640,7 @@ const AddPropertyPage = () => {
                         </Form.Control.Feedback>
                       ) : (
                         <Form.Control.Feedback type="valid" tooltip>
-                          Le proprietaire est bien précisé
+                          Le propriétaire est bien précisé
                         </Form.Control.Feedback>
                       )}
                     </Form.Group>
