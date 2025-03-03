@@ -13,7 +13,9 @@ import PropertiesList from '../../components/iacomponents/PropertiesList'
 import { API_URL, BASE_URL, IMAGE_URL } from '../../utils/settings'
 import DeletePropertyModal from '../../components/iacomponents/DeleteProperty/DeletePropertyModal'
 import AddNewImagesModal from '../../components/iacomponents/AddNewImagesProperty/AddNewImagesModal'
-import RePostPropertyModal from '../../components/iacomponents/RepostProperty/RePostPropertyModal'
+import RePostPropertyModal from '../../components/iacomponents/RePost/RePostPropertyModal'
+
+
 
 const AccountPropertiesPage = ({ _userProperties, _handledProjets, _handlingProjets }) => {
 
