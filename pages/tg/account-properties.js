@@ -13,6 +13,7 @@ import PropertiesList from '../../components/iacomponents/PropertiesList'
 import { API_URL, BASE_URL, IMAGE_URL } from '../../utils/settings'
 import DeletePropertyModal from '../../components/iacomponents/DeleteProperty/DeletePropertyModal'
 import AddNewImagesModal from '../../components/iacomponents/AddNewImagesProperty/AddNewImagesModal'
+import RePostPropertyModal from '../../components/iacomponents/RepostProperty/RePostPropertyModal'
 
 const AccountPropertiesPage = ({ _userProperties, _handledProjets, _handlingProjets }) => {
 
@@ -28,6 +29,10 @@ const AccountPropertiesPage = ({ _userProperties, _handledProjets, _handlingProj
   const [deletePropertyShow, setDeletePropertyShow] = useState(false);
   const handleDeletePropertyClose = () => setDeletePropertyShow(false);
   const handleDeletePropertyShow = () => setDeletePropertyShow(true);
+
+  const [repostPropertyShow, setRePostPropertyShow] = useState(false);
+  const handleRePostPropertyClose = () => setRePostPropertyShow(false);
+  const handleRePostPropertyShow = () => setRePostPropertyShow(true);
 
   const [newPropertyProjectsTab, setNewPropertyProjectsTab] = useState(false);
   const handledClickNewPropertyProjectsTab = () => setNewPropertyProjectsTab(true);
@@ -57,6 +62,15 @@ const AccountPropertiesPage = ({ _userProperties, _handledProjets, _handlingProj
     //e.preventDefault();
     if (session) {
       handleDeletePropertyShow();
+    } else {
+      handleSignInToUp(e);
+    }
+  }
+
+  const handleRePostPropertyModal = () => {
+    //e.preventDefault();
+    if (session) {
+      handleRePostPropertyShow();
     } else {
       handleSignInToUp(e);
     }
@@ -101,6 +115,16 @@ const AccountPropertiesPage = ({ _userProperties, _handledProjets, _handlingProj
           size='lg'
           show={deletePropertyShow}
           onHide={handleDeletePropertyClose}
+          property={propertyModal}
+        />
+      }
+
+      {
+        repostPropertyShow && <RePostPropertyModal
+          centered
+          size='lg'
+          show={repostPropertyShow}
+          onHide={handleRePostPropertyClose}
           property={propertyModal}
         />
       }
@@ -222,7 +246,7 @@ const AccountPropertiesPage = ({ _userProperties, _handledProjets, _handlingProj
               <Link href='/tg/add-property' passHref>
                 <Button variant='primary'>
                   <i className='fi-plus fs-sm me-2'></i>
-                  Enroller un bien immobilier
+                  Lister un bien immobilier
                 </Button>
               </Link>
             </div>}
@@ -303,7 +327,7 @@ const AccountPropertiesPage = ({ _userProperties, _handledProjets, _handlingProj
               <Link href='/tg/add-property' passHref>
                 <Button variant='primary'>
                   <i className='fi-plus fs-sm me-2'></i>
-                  Enroller un bien immobilier
+                  Lister un bien immobilier
                 </Button>
               </Link>
             </div>}
@@ -331,7 +355,14 @@ const AccountPropertiesPage = ({ _userProperties, _handledProjets, _handlingProj
                   {
                     icon: 'fi-power',
                     label: 'Remettre sur le marche immobilier',
-                    props: { onClick: () => console.log('Deactivate property') }
+                    props: {
+                      onClick: (event) => {
+                        event.stopPropagation();
+                        event.preventDefault();
+                        setPropertyModal(property);
+                        handleRePostPropertyModal();
+                      }
+                    }
                   },
                 ]}
                 className={indx === userProperties.length - 1 ? '' : 'mb-4'}
@@ -342,7 +373,7 @@ const AccountPropertiesPage = ({ _userProperties, _handledProjets, _handlingProj
               <Link href='/tg/add-property' passHref>
                 <Button variant='primary'>
                   <i className='fi-plus fs-sm me-2'></i>
-                  Enroller un bien immobilier
+                  Lister un bien immobilier
                 </Button>
               </Link>
             </div>}
