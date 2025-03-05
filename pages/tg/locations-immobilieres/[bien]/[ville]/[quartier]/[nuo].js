@@ -240,7 +240,7 @@ function SinglePropertyAltPage({ property }) {
                 </SwiperSlide>
               );
             })}
-            
+
           {/* {!session && (
             <>
               <SwiperSlide className="d-flex">
@@ -373,9 +373,66 @@ function SinglePropertyAltPage({ property }) {
               <Breadcrumb.Item active>{nuo}</Breadcrumb.Item>
             </Breadcrumb>
             <Row>
-              <Col lg={7} className="pt-lg-2 mb-5 mb-lg-0" sm={12}>
+              <Col lg={7} className="pt-lg-2 mb-5 mb-lg-0" sm={12} md={12}>
                 <div className="d-flex flex-column">
                   {/* Gallery */}
+                  <div className="d-block d-md-none">
+                    <div className="d-flex align-items-center justify-content-between mb-3">
+                      <ul className="d-flex mb-2 list-unstyled fs-sm">
+                        <li className="me-3 pe-3 border-end">
+                          <h3 className="h5 mb-2">Loyer mensuel</h3>
+                          <h2 className="h4 mb-2">
+                            {property && property.cout_mensuel} XOF
+                            <span className="d-inline-block ms-1 fs-base fw-normal text-body">
+                              /mois
+                            </span>
+                          </h2>
+                          <p className="text-body p">
+                            Il est recommandé de lire le contrat de location
+                            avant de procéder au paiement
+                          </p>
+                          <Button
+                      size="md"
+                      className="w-45 outline-primary"
+                      onClick={handleSignupShow}
+                    >
+                      Vérifier la disponibilité
+                    </Button>
+                        </li>
+                        <li className="me-3 pe-3">
+                          <h3 className="h5 mb-2">Visite immobiliere</h3>
+                          {property.cout_visite <= 0 && (
+                            <>
+                              <h2 className="h4 mb-2">0 XOF</h2>
+                              <p className="text-body p">
+                                Le propriétaire ou l'agent immobilier vous offre le droit de visite.
+                              </p>
+                            </>
+                          )}
+                          {property.cout_visite > 0 && (
+                            <>
+                              <h2 className="h4 mb-2">
+                                {property && property.cout_visite} XOF
+                              </h2>
+                              <p className="text-body p">
+                                Le droit de visite est payé pour supporter la
+                                prospection et tous les risques liés.
+                              </p>
+                            </>
+                          )}
+                          <Button
+                            size="md"
+                            className="w-45"
+                            variant="outline-primary"
+                            onClick={handleSigninShow}
+                          >
+                            Planifier une visite
+                          </Button>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+
                   <div className="order-lg-1 order-2">
                     <SwiperGallery />
                   </div>
@@ -433,7 +490,7 @@ function SinglePropertyAltPage({ property }) {
               </Col>
 
               {/* Sidebar with details */}
-              <Col as="aside" lg={5} sm={12} className="pt-lg-2 mb-1 mb-lg-0">
+              <Col as="aside" lg={5} sm={12} className="pt-lg-2 mb-1 mb-lg-0" md={12}>
                 <div className="ps-lg-2">
                   <div className="d-flex align-items-center justify-content-between mb-3">
                     <div>
@@ -682,20 +739,20 @@ function SinglePropertyAltPage({ property }) {
                           <b>Douches: </b>
                           {property && property.wc_douche_interne}
                         </li>
-                        {property && property.est_meuble > 0  && property.super_categorie === "sejour" && (
+                        {property && property.est_meuble > 0 && property.super_categorie === "sejour" && (
                           <>
-                          <li className="mt-2 mb-0">
-                            <b>Frais d'assistance : </b>
+                            <li className="mt-2 mb-0">
+                              <b>Frais d'assistance : </b>
                               25 %(court sejour), 1 mois (long sejour) du loyer mensuel
-                          </li>
+                            </li>
                           </>
-                          
+
                         )}
 
-                        {property &&   property.est_meuble === 0 && property.super_categorie !== "acquisition" &&(
+                        {property && property.est_meuble === 0 && property.super_categorie !== "acquisition" && (
                           <li className="mt-2 mb-0">
                             <b>Frais d'assistance: </b>
-                            {property && property.cout_assistance_client*100} % du loyer mensuel
+                            {property && property.cout_assistance_client * 100} % du loyer mensuel
                           </li>
                         )}
                       </ul>
