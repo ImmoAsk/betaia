@@ -159,7 +159,7 @@ const AddNewImagesModal = ({ property, onSwap, pillButtons, ...props }) => {
     formData.append(
       'operations',
       JSON.stringify({
-        query: 'mutation UpdatePropertyImage($data: ProprieteInput!) { addNewImagesProperty(input: $data) }',
+        query: 'mutation UpdatePropertyImage($data: UpdateImageInput!) { updatePropertyImages(input: $data) }',
         variables: { data: propertyPayload },
       })
     );
@@ -172,26 +172,11 @@ const AddNewImagesModal = ({ property, onSwap, pillButtons, ...props }) => {
     });
 
     formData.append('map', `{${appendMap}}`);
-    // Prepare GraphQL mutation for rent disponibilite
-    const disponibilite_data = {
-      query: `mutation UpdatePropertyStatus($input: UpdateProprieteStatusInput!) {
-        updateProprieteStatus(input: $input) {
-          id
-        }
-      }`,
-      variables: {
-        input: {
-          id: property.id,
-          statut: 2,
-        }
-      }
-    };
     try {
       const response = await axios.post(API_URL, formData, {
         headers: { 'Content-Type': 'application/json' }
       });
-
-      if (Number(response.data?.data?.updateProprieteStatus?.id) >= 1) {
+      if (response.data?.data?.updatePropertyImages !== null) {
         setDisponibiliteNotification("Les nouvelles images ont bien été ajoutées avec succès.");
       }
     } catch (error) {
@@ -200,7 +185,6 @@ const AddNewImagesModal = ({ property, onSwap, pillButtons, ...props }) => {
 
     setValidated(true);
   };
-  console.log("Property In Delete Modal: ", property);
   //const propertyCard = createPropertyObject(property);
 
   return (
@@ -249,7 +233,7 @@ const AddNewImagesModal = ({ property, onSwap, pillButtons, ...props }) => {
                 <div className='mt-4'>
                 <Button
                 type='submit'
-                disabled={newImages.length > 0}
+                disabled={newImages.length === 0}
                 size='lg'
                 variant={`primary ${pillButtons ? 'rounded-pill' : ''} w-100`}
               >
