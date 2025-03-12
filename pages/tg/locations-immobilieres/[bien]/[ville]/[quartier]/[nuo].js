@@ -376,62 +376,7 @@ function SinglePropertyAltPage({ property }) {
               <Col lg={7} className="pt-lg-2 mb-5 mb-lg-0" sm={12} md={12}>
                 <div className="d-flex flex-column">
                   {/* Gallery */}
-                  <div className="d-block d-md-none">
-                    <div className="d-flex align-items-center justify-content-between mb-3">
-                      <ul className="d-flex mb-2 list-unstyled fs-sm">
-                        <li className="me-3 pe-3 border-end">
-                          <h3 className="h5 mb-2">Loyer mensuel</h3>
-                          <h2 className="h4 mb-2">
-                            {property && property.cout_mensuel} XOF
-                            <span className="d-inline-block ms-1 fs-base fw-normal text-body">
-                              /mois
-                            </span>
-                          </h2>
-                          <p className="text-body p">
-                            Il est recommandé de lire le contrat de location
-                            avant de procéder au paiement
-                          </p>
-                          <Button
-                      size="md"
-                      className="w-45 outline-primary"
-                      onClick={handleSignupShow}
-                    >
-                      Vérifier la disponibilité
-                    </Button>
-                        </li>
-                        <li className="me-3 pe-3">
-                          <h3 className="h5 mb-2">Visite immobiliere</h3>
-                          {property.cout_visite <= 0 && (
-                            <>
-                              <h2 className="h4 mb-2">0 XOF</h2>
-                              <p className="text-body p">
-                                Le propriétaire ou l'agent immobilier vous offre le droit de visite.
-                              </p>
-                            </>
-                          )}
-                          {property.cout_visite > 0 && (
-                            <>
-                              <h2 className="h4 mb-2">
-                                {property && property.cout_visite} XOF
-                              </h2>
-                              <p className="text-body p">
-                                Le droit de visite est payé pour supporter la
-                                prospection et tous les risques liés.
-                              </p>
-                            </>
-                          )}
-                          <Button
-                            size="md"
-                            className="w-45"
-                            variant="outline-primary"
-                            onClick={handleSigninShow}
-                          >
-                            Planifier une visite
-                          </Button>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
+
 
                   <div className="order-lg-1 order-2">
                     <SwiperGallery />
@@ -475,7 +420,62 @@ function SinglePropertyAltPage({ property }) {
                     </ul>
                   </div>
                 </div>
-
+                <div className="d-block d-md-none">
+                  <div className="d-flex align-items-center justify-content-between mb-3">
+                    <ul className="d-flex mb-2 list-unstyled fs-sm">
+                      <li className="me-3 pe-3 border-end">
+                        <h3 className="h5 mb-2">Loyer mensuel</h3>
+                        <h2 className="h4 mb-2">
+                          {property && property.cout_mensuel} XOF
+                          <span className="d-inline-block ms-1 fs-base fw-normal text-body">
+                            /mois
+                          </span>
+                        </h2>
+                        <p className="text-body p">
+                          Il est recommandé de lire le contrat de location
+                          avant de procéder au paiement
+                        </p>
+                        <Button
+                          size="md"
+                          className="w-45 outline-primary"
+                          onClick={handleSignupShow}
+                        >
+                          Vérifier la disponibilité
+                        </Button>
+                      </li>
+                      <li className="me-3 pe-3">
+                        <h3 className="h5 mb-2">Visite immobiliere</h3>
+                        {property.cout_visite <= 0 && (
+                          <>
+                            <h2 className="h4 mb-2">0 XOF</h2>
+                            <p className="text-body p">
+                              Le propriétaire ou l'agent immobilier vous offre le droit de visite.
+                            </p>
+                          </>
+                        )}
+                        {property.cout_visite > 0 && (
+                          <>
+                            <h2 className="h4 mb-2">
+                              {property && property.cout_visite} XOF
+                            </h2>
+                            <p className="text-body p">
+                              Le droit de visite est payé pour supporter la
+                              prospection et tous les risques liés.
+                            </p>
+                          </>
+                        )}
+                        <Button
+                          size="md"
+                          className="w-45"
+                          variant="outline-primary"
+                          onClick={handleSigninShow}
+                        >
+                          Planifier une visite
+                        </Button>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
                 {/* Overview */}
                 <h2 className="h5">Descriptif immobilier</h2>
                 <p className="mb-4 pb-2">{property && property.descriptif}</p>
@@ -735,6 +735,14 @@ function SinglePropertyAltPage({ property }) {
                           {property && property.piece}+
                           {property && property.salon}
                         </li>
+
+                        {property && property.est_meuble === 0 && (
+
+                          <li className="mt-2 mb-0">
+                            <b>Cautions+Avances sur loyer: </b>
+                            {property && property.caution_avance} mois
+                          </li>
+                        )}
                         <li className="mt-2 mb-0">
                           <b>Douches: </b>
                           {property && property.wc_douche_interne}
@@ -787,7 +795,7 @@ function SinglePropertyAltPage({ property }) {
                     <>
                       <Card className="border-0 bg-secondary mb-4">
                         <Card.Body>
-                          <h5>Interieur & Extérieur</h5>
+                          <h5>Intérieur & Extérieur</h5>
                           <Row
                             as="ul"
                             xs={1}
@@ -872,7 +880,7 @@ export async function getServerSideProps(context) {
 
   try {
     // Fetch data from external API
-    const final_url = `${API_URL}?query={propriete(nuo:${nuo}){tarifications{id,mode,currency,montant},id,super_categorie,cout_visite,cout_assistance_client,est_disponible,nuo,garage,est_meuble,titre,descriptif,surface,usage,cuisine,salon,piece,wc_douche_interne,cout_mensuel,nuitee,cout_vente,categorie_propriete{denomination,id},infrastructures{denomination,icone},meubles{libelle,icone},badge_propriete{id,date_expiration,badge{id,badge_name,badge_image}},pays{id,code,denomination},ville{denomination,id},quartier{id,denomination,minus_denomination},adresse{libelle},offre{denomination,id},visuels{uri,position},user{id,organisation{name_organisation,logo,description,id,adresse_commune,tel_whatsapp}}}}`
+    const final_url = `${API_URL}?query={propriete(nuo:${nuo}){tarifications{id,mode,currency,montant},id,super_categorie,cout_visite,cout_assistance_client,est_disponible,nuo,garage,est_meuble,titre,descriptif,surface,usage,cuisine,salon,piece,wc_douche_interne,cout_mensuel,nuitee,cout_vente,categorie_propriete{denomination,id},infrastructures{denomination,icone},meubles{libelle,icone},badge_propriete{id,date_expiration,badge{id,badge_name,badge_image}},pays{id,code,denomination},caution_avance,ville{denomination,id},quartier{id,denomination,minus_denomination},adresse{libelle},offre{denomination,id},visuels{uri,position},user{id,organisation{name_organisation,logo,description,id,adresse_commune,tel_whatsapp}}}}`
     const dataAPIresponse = await fetch(final_url);
     console.log(final_url)
     // Check if the response is OK (status 200-299)
