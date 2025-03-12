@@ -736,10 +736,10 @@ function SinglePropertyAltPage({ property }) {
                           {property && property.salon}
                         </li>
 
-                        {property && property.est_meuble === 0 && (
+                        {property && property.est_meuble === 0 && property.super_categorie === "logement" && (
 
                           <li className="mt-2 mb-0">
-                            <b>Cautions+Avances sur loyer: </b>
+                            <b>Cautions+avances sur loyer: </b>
                             {property && property.caution_avance} mois
                           </li>
                         )}
