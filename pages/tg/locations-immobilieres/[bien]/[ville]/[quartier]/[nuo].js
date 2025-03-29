@@ -711,7 +711,7 @@ function SinglePropertyAltPage({ property }) {
                   )}
 
                   {/* Property details card */}
-                  <Card className="border-0 bg-secondary mb-3">
+                  <Card className="border-0 bg-secondary mb-3" sm={12} md={12}>
                     <Card.Body>
                       <h5 className="mb-0 pb-3">
                         Détails clés du bien immobilier

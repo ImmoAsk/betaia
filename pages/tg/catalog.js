@@ -49,7 +49,7 @@ import buildPropertyBadge from '../../utils/buildPropertyBadge'
 import getFirstImageArray from '../../utils/formatFirsImageArray'
 import { useSession } from 'next-auth/react'
 import IAPaginaation from '../../components/iacomponents/IAPagination'
-import { buildPropertiesArray } from '../../utils/generalUtils'
+import { buildPropertiesArray, createCatalogTitle } from '../../utils/generalUtils'
 import { API_URL } from '../../utils/settings'
 
 
@@ -98,6 +98,7 @@ const CatalogPage = ({ categoryParam, offerParam, usageParam,townParam, district
   console.log('Town:', townParam);
   console.log('District:', districtParam);
   console.log('Usage:', usageParam);
+  const catalog_title= createCatalogTitle(categoryParam, offerParam,townParam,districtParam,usageParam)
   //immeubleType= router.query.type
   // Media query for displaying Offcanvas on screens larger than 991px
 
@@ -439,7 +440,7 @@ const CatalogPage = ({ categoryParam, offerParam, usageParam,townParam, district
   //console.log("Catalogue 3:",_rentingProperties);
   return (
     <RealEstatePageLayout
-      pageTitle={"Catalogue de l'immobilier au Togo"}
+      pageTitle={catalog_title}
       activeNav='Catalog'
       userLoggedIn={session ? true : false}
     >
@@ -469,7 +470,7 @@ const CatalogPage = ({ categoryParam, offerParam, usageParam,townParam, district
               <Offcanvas.Header className='d-block border-bottom pt-0 pt-lg-4 px-lg-0'>
                 <Nav variant='tabs' className='mb-0'>
                   <Nav.Item>
-                    <Link href='/tg/catalog?category=rent' passHref>
+                    <Link href='/tg/catalog?offre=1' passHref>
                       <Nav.Link active={categoryParam === 'rent' ? true : false}>
                         <i className='fi-rent fs-base me-2'></i>
                         A louer
@@ -477,7 +478,7 @@ const CatalogPage = ({ categoryParam, offerParam, usageParam,townParam, district
                     </Link>
                   </Nav.Item>
                   <Nav.Item>
-                    <Link href='/tg/catalog?category=sale' passHref>
+                    <Link href='/tg/catalog?offre=2' passHref>
                       <Nav.Link active={categoryParam === 'sale' ? true : false}>
                         <i className='fi-home fs-base me-2'></i>
                         A vendre
@@ -486,7 +487,7 @@ const CatalogPage = ({ categoryParam, offerParam, usageParam,townParam, district
                   </Nav.Item>
 
                   <Nav.Item className='mt-1'>
-                    <Link href='/tg/catalog?category=invest' passHref>
+                    <Link href='/tg/catalog?offre=3' passHref>
                       <Nav.Link active={categoryParam === 'invest' ? true : false}>
                         <i className='fi-home fs-base me-2'></i>
                         A investir
@@ -494,7 +495,7 @@ const CatalogPage = ({ categoryParam, offerParam, usageParam,townParam, district
                     </Link>
                   </Nav.Item>
                   <Nav.Item className='mt-1'>
-                    <Link href='/tg/catalog?category=bailler' passHref>
+                    <Link href='/tg/catalog?offre=4' passHref>
                       <Nav.Link active={categoryParam === 'bailler' ? true : false}>
                         <i className='fi-home fs-base me-2'></i>
                         A bailler
@@ -698,13 +699,13 @@ const CatalogPage = ({ categoryParam, offerParam, usageParam,townParam, district
                 <Breadcrumb.Item>Accueil</Breadcrumb.Item>
               </Link>
               <Breadcrumb.Item active>
-                Catalogue de biens immobiliers au Togo
+              {catalog_title}
               </Breadcrumb.Item>
             </Breadcrumb>
 
             {/* Title + Map toggle */}
             <div className='d-sm-flex align-items-center justify-content-between pb-3 pb-sm-4'>
-              <h1 className='h2 mb-sm-0'>Catalogue de l'immobilier chez nous...</h1>
+              <h1 className='h2 mb-sm-0'>{catalog_title}</h1>
               {/* <a
                 href='#'
                 className='d-inline-block fw-bold text-decoration-none py-1'
