@@ -28,17 +28,11 @@ import 'swiper/css/effect-fade'
 import getPropertyFullUrl from '../../utils/getPropertyFullURL'
 import getFirstImageArray from '../../utils/formatFirsImageArray'
 import buildPropertyBadge from '../../utils/buildPropertyBadge'
-import { PropertyListSwiper } from '../../components/iacomponents/PropertyListSwiper'
-//import topPropertiesLogement from '../../remoteAPI/topPropertiesLogement.json'
-//import topPropertiesSejour from '../../remoteAPI/topPropertiesSejour.json'
-//import topPropertiesAcquisition from '../../remoteAPI/topPropertiesAcquisition.json'
-//import topPropertiesEntrepreneuriat from '../../remoteAPI/topPropertiesEntrepreneuriat.json'
 import propertyCategories from '../../remoteAPI/propertyCategories.json'
 import BgParallaxHeroMessage from '../../components/iacomponents/BgParallaxHeroMessage'
 import { useRouter } from 'next/router';
-import { createTop6PropertiesIn, getHumanReadablePrice } from '../../utils/generalUtils'
+import { getHumanReadablePrice } from '../../utils/generalUtils'
 import { API_URL } from '../../utils/settings'
-import { usePropertiesBySuperCategory } from '../../customHooks/realEstateHooks'
 import SuperCategoryProperties from '../../components/iacomponents/SuperCategoryList/SuperCategoryProperties'
 const HomePage = () => {
 
