@@ -29,16 +29,19 @@ import getPropertyFullUrl from '../../utils/getPropertyFullURL'
 import getFirstImageArray from '../../utils/formatFirsImageArray'
 import buildPropertyBadge from '../../utils/buildPropertyBadge'
 import { PropertyListSwiper } from '../../components/iacomponents/PropertyListSwiper'
-import topPropertiesLogement from '../../remoteAPI/topPropertiesLogement.json'
-import topPropertiesSejour from '../../remoteAPI/topPropertiesSejour.json'
-import topPropertiesAcquisition from '../../remoteAPI/topPropertiesAcquisition.json'
-import topPropertiesEntrepreneuriat from '../../remoteAPI/topPropertiesEntrepreneuriat.json'
+//import topPropertiesLogement from '../../remoteAPI/topPropertiesLogement.json'
+//import topPropertiesSejour from '../../remoteAPI/topPropertiesSejour.json'
+//import topPropertiesAcquisition from '../../remoteAPI/topPropertiesAcquisition.json'
+//import topPropertiesEntrepreneuriat from '../../remoteAPI/topPropertiesEntrepreneuriat.json'
 import propertyCategories from '../../remoteAPI/propertyCategories.json'
 import BgParallaxHeroMessage from '../../components/iacomponents/BgParallaxHeroMessage'
 import { useRouter } from 'next/router';
-import { getHumanReadablePrice } from '../../utils/generalUtils'
+import { createTop6PropertiesIn, getHumanReadablePrice } from '../../utils/generalUtils'
 import { API_URL } from '../../utils/settings'
+import { usePropertiesBySuperCategory } from '../../customHooks/realEstateHooks'
+import SuperCategoryProperties from '../../components/iacomponents/SuperCategoryList/SuperCategoryProperties'
 const HomePage = () => {
+
   const router = useRouter();
   // Property cost calculator modal
   const [modalShow, setModalShow] = useState(false)
@@ -519,16 +522,15 @@ const HomePage = () => {
         <div className='d-flex align-items-center justify-content-between mb-3'>
           <h2 className='h3 mb-0'>Des logements uniques en location pour vous</h2>
           <Link href='/tg/catalog?usage=1' passHref>
-            <Button variant='link fw-normal ms-sm-3 p-0'>
+            <Button size='md' variant='outline-primary' className='order-lg-3 ms-2'>
               Consulter tout
-              <i className='fi-arrow-long-right ms-2'></i>
             </Button>
           </Link>
         </div>
         <div className='d-flex align-items-center justify-content-between'>
           <h3 className='h5'>Villas | Chambres salon | Appartements | Chambres </h3>
         </div>
-        <PropertyListSwiper propertyList={topPropertiesLogement} />
+        <SuperCategoryProperties usage={1} status={1} />
         {/* External Prev/Next buttons */}
         <div className='d-flex justify-content-center py-md-2 mt-4'>
           <Button id='prevProprties' variant='prev position-relative mx-2' />
@@ -570,9 +572,8 @@ const HomePage = () => {
         <div className='d-flex align-items-center justify-content-between mb-3'>
           <h2 className='h3 mb-0'>Des terrains urbains et ruraux à vendre à votre portée</h2>
           <Link href='/tg/catalog?usage=7' passHref>
-            <Button variant='link fw-normal ms-sm-3 p-0'>
+            <Button size='md' variant='outline-primary' className='order-lg-3 ms-2'>
               Consulter tout
-              <i className='fi-arrow-long-right ms-2'></i>
             </Button>
           </Link>
         </div>
@@ -580,13 +581,13 @@ const HomePage = () => {
           <h3 className='h5'>Terrains | Villas | Appartements | Maisons | Immeubles</h3>
         </div>
 
-        <PropertyListSwiper propertyList={topPropertiesAcquisition} />
+        <SuperCategoryProperties usage={7} status={1} />
 
         {/* External Prev/Next buttons */}
-        {/* <div className='d-flex justify-content-center py-md-2 mt-4'>
-          <Button id='prevProprties' variant='prev position-relative mx-2' />
-          <Button id='nextProprties' variant='next position-relative mx-2' />
-        </div> */}
+        <div className='d-flex justify-content-center py-md-2 mt-4'>
+          <Button id='prevProprties2' variant='prev position-relative mx-2' />
+          <Button id='nextProprties2' variant='next position-relative mx-2' />
+        </div>
       </Container>
       <Container as='section' className='mb-5 mt-n3 mt-lg-0'>
         <BgParallaxHeroMessage image={'/images/tg/hero-image-v2.jpg'} message={`
@@ -738,16 +739,20 @@ const HomePage = () => {
         <div className='d-flex align-items-center justify-content-between mb-3'>
           <h2 className='h3 mb-0'>Une experience unique et inoubliable! Un séjour confortable et abordable.</h2>
           <Link href='/tg/catalog?usage=5' passHref>
-            <Button variant='link fw-normal ms-sm-3 p-0'>
+            <Button size='md' variant='outline-primary' className='order-lg-3 ms-2'>
               Consulter tout
-              <i className='fi-arrow-long-right ms-2'></i>
             </Button>
           </Link>
         </div>
         <div className='d-flex align-items-center justify-content-between'>
           <h3 className='h5'>Séjour meublé | Appartement meublé | Villa meublées | Studio meublé </h3>
         </div>
-        <PropertyListSwiper propertyList={topPropertiesSejour} />
+        <SuperCategoryProperties usage={5} status={1} />
+        {/* External Prev/Next buttons */}
+        <div className='d-flex justify-content-center py-md-2 mt-4'>
+          <Button id='prevProprties3' variant='prev position-relative mx-2' />
+          <Button id='nextProprties3' variant='next position-relative mx-2' />
+        </div>
       </Container>
       <Container as='section' className='mb-5 mt-n3 mt-lg-0'>
         <BgParallaxHeroMessage image={'/images/tg/hero-image-v2.jpg'} message={`Détente. Excursions. Voyages d'affaires moins chers. De nouvels horizons dans nos meublés.`} action={handleSejourRedirect} callAction={"Faire une expérience"} />
@@ -783,22 +788,21 @@ const HomePage = () => {
         <div className='d-flex align-items-center justify-content-between mb-3'>
           <h2 className='h3 mb-0'>Commencer l'entrepreunariat ou accelerer avec nous</h2>
           <Link href='/tg/catalog?category=rent' passHref>
-            <Button variant='link fw-normal ms-sm-3 p-0'>
+            <Button size='md' variant='outline-primary' className='order-lg-3 ms-2'>
               Consulter tout
-              <i className='fi-arrow-long-right ms-2'></i>
             </Button>
           </Link>
         </div>
         <div className='d-flex align-items-center justify-content-between'>
           <h3 className='h5'>Bureaux | Magasins | Terrains à bailler | Espaces co-working</h3>
         </div>
-        <PropertyListSwiper propertyList={topPropertiesEntrepreneuriat} />
+        <SuperCategoryProperties usage={3} status={1} />
 
         {/* External Prev/Next buttons */}
-        {/* <div className='d-flex justify-content-center py-md-2 mt-4'>
-          <Button id='prevProprties' variant='prev position-relative mx-2' />
-          <Button id='nextProprties' variant='next position-relative mx-2' />
-        </div> */}
+        <div className='d-flex justify-content-center py-md-2 mt-4'>
+          <Button id='prevProprties4' variant='prev position-relative mx-2' />
+          <Button id='nextProprties4' variant='next position-relative mx-2' />
+        </div>
       </Container>
       <Container as='section' className='mb-5 mt-n3 mt-lg-0'>
         <BgParallaxHeroMessage image={'/images/tg/hero-image-v2.jpg'} message={`Les bons emplacements pour vos entrepots et bureaus sont ici`} action={handleEntrepriseRedirect}
@@ -835,9 +839,9 @@ const HomePage = () => {
         <div className='d-flex align-items-center justify-content-between mb-3'>
           <h2 className='h3 mb-0'>FlashImmo, des biens immobiliers en temps réel!</h2>
           <Link href='/tg/flashimmo' passHref>
-            <Button variant='link fw-normal ms-sm-3 p-0'>
+
+            <Button size='md' variant='outline-primary' className='order-lg-3 ms-2'>
               Consulter tout
-              <i className='fi-arrow-long-right ms-2'></i>
             </Button>
           </Link>
         </div>

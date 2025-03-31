@@ -1,7 +1,9 @@
+import { use } from "react";
 import buildPropertyBadge from "./buildPropertyBadge";
 import getFirstImageArray from "./formatFirsImageArray";
 import getPropertyFullUrl from "./getPropertyFullURL";
 import numeral from "numeral";
+import { usePropertiesBySuperCategory } from "../customHooks/realEstateHooks";
 function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
@@ -64,6 +66,7 @@ function createPropertyObject(property) {
                                  property?.quartier?.minus_denomination, 
                                  property?.nuo),
         images: [[getFirstImageArray(property.visuels), 467, 305, 'Image']],
+        img: [getFirstImageArray(property.visuels),735,389,'Image'],
         title: `N°${property?.nuo}: ${property?.categorie_propriete?.denomination} à ${property?.offre?.denomination} | ${property?.surface}m²`,
         category: property?.usage,
         id: property?.id,
@@ -180,8 +183,7 @@ const CATEGORY_MAP = {
     28: "Bar-restaurant",
     29: "Espace commercial",
     30: "Garage",
-    31: "Salle de conference"
-  }
+    31: "Salle de conference"}
   ;
 const USAGE_MAP = { 1: "logements", 3: "immeubles commerciaux" ,5: "sejours" ,7: "achats" };
 const TOWN_MAP = {
@@ -316,4 +318,26 @@ function createCatalogTitle(category, offer, town, district, usage) {
     return titleParts.length ? "Catalogue immobilier de "+ titleParts.join(" ") : "Catalogue des biens immobiliers";
 }
 
-export { createCatalogTitle, formatDate,getHumanReadablePrice,formatDistrictsOptions,formatTownsOptions,buildPropertiesArray,replaceSpacesWithAny,getLastPage,createPropertyObject,capitalizeFirstLetter, replaceSpacesWithDots, toLowerCaseString,formatPropertyOwners,formatRealEstateAgents};
+function createTop6PropertiesIn(properties) {
+    let top6Properties = [];
+    if (properties.length === 0) {
+        console.warn("No properties found after filtering.");
+        return [];
+    }
+    let tempPropertyArray = buildPropertiesArray(properties);//[{},{},{}]
+    top6Properties = createNestedArray(tempPropertyArray, 2, 3);
+    return top6Properties;
+}
+
+function createNestedArray(inputArray,rows, cols) {
+    if (inputArray.length !== rows * cols) {
+        throw new Error("Invalid input: The array length must match rows * cols");
+    }
+
+    let index = 0;
+    return Array.from({ length: rows }, () =>
+        Array.from({ length: cols }, () => (inputArray[index++]))
+    );
+}
+export { createTop6PropertiesIn,createCatalogTitle, formatDate,getHumanReadablePrice,formatDistrictsOptions,formatTownsOptions,buildPropertiesArray,replaceSpacesWithAny,getLastPage,createPropertyObject,capitalizeFirstLetter, replaceSpacesWithDots, toLowerCaseString,formatPropertyOwners,formatRealEstateAgents};
+

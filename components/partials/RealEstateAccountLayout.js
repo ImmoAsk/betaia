@@ -73,15 +73,7 @@ const RealEstateAccountLayout = ({ accountPageTitle, children }) => {
     <Container fluid className='pt-5 pb-lg-4 mt-5 mb-sm-2'>
 
       {/* Breadcrumb */}
-      <Breadcrumb className='mb-4 pt-md-3'>
-        <Link href='/tg' passHref>
-          <Breadcrumb.Item>Accueil</Breadcrumb.Item>
-        </Link>
-        <Link href='/tg/account-info' passHref>
-          <Breadcrumb.Item>Compte</Breadcrumb.Item>
-        </Link>
-        <Breadcrumb.Item active>{accountPageTitle}</Breadcrumb.Item>
-      </Breadcrumb>
+
 
       <Row>
 
@@ -92,7 +84,7 @@ const RealEstateAccountLayout = ({ accountPageTitle, children }) => {
               <Avatar img={{ src: '/images/avatars/45.jpg', alt: 'ImmoAsk' }} size={[48, 48]} />
               <div className='pt-md-2 pt-lg-0 ps-3 ps-md-0 ps-lg-3'>
                 <h2 className='fs-lg mb-0'>{session ? session.user?.name : " "}</h2>
-                <MediumRealEstateAgencyCard user={session ? session.user?.id:"1"} />
+                <MediumRealEstateAgencyCard user={session ? session.user?.id : "1"} />
                 <StarRating rating={4.8} />
                 <ul className='list-unstyled fs-sm mt-3 mb-0'>
                   <li>
@@ -145,13 +137,13 @@ const RealEstateAccountLayout = ({ accountPageTitle, children }) => {
             <Collapse in={open} className='d-md-block'>
               <div id='account-menu'>
                 <CardNav className='pt-3'>
-                {session && session.user.roleId === "1232" && (
+                  {session && session.user.roleId === "1232" && (
                     <CardNav.Item
-                    href='/tg/subscriptions'
-                    icon='fi-star'
-                  >
-                    Votre abonnement
-                  </CardNav.Item>
+                      href='/tg/subscriptions'
+                      icon='fi-star'
+                    >
+                      Votre abonnement
+                    </CardNav.Item>
                   )}
 
                   {
@@ -253,6 +245,15 @@ const RealEstateAccountLayout = ({ accountPageTitle, children }) => {
 
         {/* Page content */}
         <Col md={7} lg={9} className='mb-5'>
+          <Breadcrumb className='mb-4 pt-md-3'>
+            <Link href='/tg' passHref>
+              <Breadcrumb.Item>Accueil</Breadcrumb.Item>
+            </Link>
+            <Link href='/tg/account-info' passHref>
+              <Breadcrumb.Item>Compte</Breadcrumb.Item>
+            </Link>
+            <Breadcrumb.Item active>{accountPageTitle}</Breadcrumb.Item>
+          </Breadcrumb>
           {children}
         </Col>
       </Row>

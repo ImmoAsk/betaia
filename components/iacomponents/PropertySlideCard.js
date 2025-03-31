@@ -15,7 +15,7 @@ export default function PropertySlideCard({property}){
               <Card
                 as='a'
                 className='text-decoration-none text-light bg-size-cover bg-position-center border-0 overflow-hidden h-100'
-                style={{minHeight: '18.75rem', backgroundImage: `url(${property[0].img})`}}
+                style={{minHeight: '18.75rem', backgroundImage: `url(${property[0].img[0]})`}}
               >
                 <span className='img-gradient-overlay'></span>
                 <Card.Body className='pb-0'></Card.Body>

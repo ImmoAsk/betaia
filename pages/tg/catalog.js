@@ -438,9 +438,11 @@ const CatalogPage = ({ categoryParam, offerParam, usageParam,townParam, district
   const { data: session } = useSession();
   const rentingProperties = buildPropertiesArray(_rentingProperties);
   //console.log("Catalogue 3:",_rentingProperties);
+  const catalog_description= `Trouvez votre bien immobilier idéal à vendre ou à louer sur ImmoAsk. Explorer le ${catalog_title} au Togo.`
   return (
     <RealEstatePageLayout
       pageTitle={catalog_title}
+      pageDescription={catalog_description}
       activeNav='Catalog'
       userLoggedIn={session ? true : false}
     >

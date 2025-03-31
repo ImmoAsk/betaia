@@ -16,7 +16,7 @@ const getPropertyFullUrl = (country, categoryParam, propertytype, town, quarter,
   quarter = quarter ? quarter.toLowerCase() : '';
   nuo = nuo || '';
   let uri= '/' + country.toLowerCase() + '/' + category + '/' + replaceSpacesWithAny(toNormalForm(propertytype.toLowerCase()), '-') + '/' + toNormalForm(town.toLowerCase()) + '/' + quarter + '/' + nuo;
-  //console.log(uri);
+  console.log(uri);
   return uri
 };
 

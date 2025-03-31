@@ -36,13 +36,15 @@ import { PropertyListSwiper } from '../components/iacomponents/PropertyListSwipe
 import topPropertiesLogement from '../remoteAPI/topPropertiesLogement.json'
 import topPropertiesSejour from '../remoteAPI/topPropertiesSejour.json'
 import topPropertiesAcquisition from '../remoteAPI/topPropertiesAcquisition.json'
-import topPropertiesEntrepreneuriat from '../remoteAPI/topPropertiesEntrepreneuriat.json'
+//import topPropertiesEntrepreneuriat from '../remoteAPI/topPropertiesEntrepreneuriat.json'
 import propertyCategories from '../remoteAPI/propertyCategories.json'
 import BgParallaxHeroMessage from '../components/iacomponents/BgParallaxHeroMessage'
-import { getHumanReadablePrice } from '../utils/generalUtils'
+import { createTop6PropertiesIn, getHumanReadablePrice } from '../utils/generalUtils'
 import { API_URL } from '../utils/settings'
 const IndexPage = () => {
 
+
+  const topPropertiesEntrepreneuriat=createTop6PropertiesIn(3)
   // Property cost calculator modal
   const [modalShow, setModalShow] = useState(false)
   const handleModalClose = () => setModalShow(false)
