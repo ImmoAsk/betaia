@@ -360,6 +360,7 @@ const HomePage = () => {
                 title={category.title}
                 type='card-shadow'
                 align='center'
+                count={category.count}
               />
             </Col>
           ))}

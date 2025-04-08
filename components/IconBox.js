@@ -11,18 +11,19 @@ const IconBox = ({
   text,
   type,
   light,
+  count,
   align,
   className,
   ...props
 }) => {
 
   const mediaShapeClass = mediaShape ? ` rounded-${mediaShape}` : '',
-        alignment = align ? ` text-${align}` : '',
-        cardSkinClass = light ? ' card-light' : '',
-        titleFontSize = titleSize ? ` fs-${titleSize}` : ' fs-base',
-        titleSkinClass = light ? ' text-light' : '',
-        textSkinClass = light ? ' text-light opacity-60' : ' text-body',
-        extraClass = className ? ` ${className}` : ''
+    alignment = align ? ` text-${align}` : '',
+    cardSkinClass = light ? ' card-light' : '',
+    titleFontSize = titleSize ? ` fs-${titleSize}` : ' fs-base',
+    titleSkinClass = light ? ' text-light' : '',
+    textSkinClass = light ? ' text-light opacity-60' : ' text-body',
+    extraClass = className ? ` ${className}` : ''
 
 
   // Icon box media class
@@ -35,9 +36,9 @@ const IconBox = ({
 
   // CSS classes that depend on prop.type, prop.light, prop.alignment, prop.className
   let iconBoxClass,
-      iconBoxMediaClass,
-      iconBoxTitleClass,
-      iconBoxTextClass
+    iconBoxMediaClass,
+    iconBoxTitleClass,
+    iconBoxTextClass
 
   switch (type) {
     case 'card':
@@ -89,12 +90,12 @@ const IconBox = ({
   // Icon box media markup
   let iconBoxMedia
   if (media) {
-    iconBoxMedia = media === 'image' ? <div className={iconBoxMediaClass} style={{backgroundImage: 'url(' + imageSrc + ')'}}></div> : <div className={iconBoxMediaClass}><i className={media}></i></div>
+    iconBoxMedia = media === 'image' ? <div className={iconBoxMediaClass} style={{ backgroundImage: 'url(' + imageSrc + ')' }}></div> : <div className={iconBoxMediaClass}><i className={media}></i></div>
   }
 
   // Render markup
   return (
-    <>
+    <div className="position-relative">
       {href ? <Link href={href}><a className={iconBoxClass} {...props}>
         {iconBoxMedia}
         <h3 className={iconBoxTitleClass}>{title}</h3>
@@ -104,7 +105,16 @@ const IconBox = ({
         <h3 className={iconBoxTitleClass}>{title}</h3>
         {iconBoxText}
       </div>}
-    </>
+      {/* Count Badge (if count is greater than 0) */}
+      {count > 0 && (
+        <div 
+          className="position-absolute top-0 end-0 bg-danger text-white rounded-circle d-flex justify-content-center align-items-center"
+          style={{ width: '20px', height: '20px', fontSize: '12px', transform: 'translate(50%, -50%)' }}
+        >
+          {count}
+        </div>
+      )}
+    </div>
   )
 }
 
