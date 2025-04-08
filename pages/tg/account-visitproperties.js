@@ -1,182 +1,215 @@
-import { useState } from 'react'
-import RealEstatePageLayout from '../../components/partials/RealEstatePageLayout'
-import RealEstateAccountLayout from '../../components/partials/RealEstateAccountLayout'
-import Link from 'next/link'
-import Nav from 'react-bootstrap/Nav'
-import Button from 'react-bootstrap/Button'
-import PropertyCard from '../../components/PropertyCard'
-import EditPropertyModal from '../../components/iacomponents/EditPropertyModal'
-import { buildPropertiesArray } from '../../utils/generalUtils'
-import { useSession, getSession } from 'next-auth/react'
+import { useState, useEffect } from 'react';
+import RealEstatePageLayout from '../../components/partials/RealEstatePageLayout';
+import RealEstateAccountLayout from '../../components/partials/RealEstateAccountLayout';
+import Nav from 'react-bootstrap/Nav';
+import { useSession, getSession } from 'next-auth/react';
+import { Row, Col } from 'react-bootstrap';
+import PropertyVisitList from '../../components/iacomponents/PropertyVisitList';
+import { API_URL, BASE_URL, IMAGE_URL } from '../../utils/settings';
 
-const VisitPropertiesPage = ({ _userProperties }) => {
+// Helper function to fetch negotiations by statut for property owner
+async function fetchVisitationsByStatut(statut, proprietaireID) {
+  const dataAPIresponse = await fetch(
+    `${API_URL}?query={getVisitationsByKeyWords(statut:${statut},proprietaire_id:${proprietaireID},orderBy:{order:DESC,column:ID}){id,visiteur{name,id},date_visite,heure_visite,statut,telephone_visitor,fullname_visitor,propriete{id,nuo}}}`
+  );
+  const responseData = await dataAPIresponse.json();
+  console.log(responseData)
 
-  // Properties array
+  return responseData.data ? responseData.data.getVisitationsByKeyWords : [];
+}
+
+
+async function fetchRenterVisitationsByStatut(statut, proprietaireID) {
+  const dataAPIresponse = await fetch(
+    `${API_URL}?query={getVisitationsByKeyWords(statut:${statut},user_id:${proprietaireID},orderBy:{order:DESC,column:ID}){id,visiteur{name,id},date_visite,heure_visite,statut,telephone_visitor,fullname_visitor,propriete{id,nuo}}}`
+  );
+  const responseData = await dataAPIresponse.json();
+  console.log(responseData)
+  return responseData.data ? responseData.data.getVisitationsByKeyWords : [];
+}
+
+// Helper function to fetch negotiations by statut for admin
+async function fetchVisitationsByStatutByRole(statut) {
+  const dataAPIresponse = await fetch(
+    `${API_URL}?query={getVisitationsByKeyWords(statut:${statut},orderBy:{order:DESC,column:ID}){id,visiteur{name,id},date_visite,heure_visite,statut,telephone_visitor,fullname_visitor,propriete{id,nuo}}}`
+  );
+  const responseData = await dataAPIresponse.json();
+  console.log(responseData)
+  return responseData.data ? responseData.data.getVisitationsByKeyWords : [];
+}
+
+const VisitPropertiesPage = ({ _newNegotiations, _acceptedNegotiations, _declinedNegotiations }) => {
   const [editPropertyShow, setEditPropertyShow] = useState(false);
-  const handleEditPropertyClose = () => setEditPropertyShow(false);
-  const handleEditPropertyShow = () => setEditPropertyShow(true);
-
-
+  const [activeTab, setActiveTab] = useState('published');
   const [propertyModal, setPropertyModal] = useState({});
+  const [isMobile, setIsMobile] = useState(false);
 
   const { data: session } = useSession();
-  const userProperties = buildPropertiesArray(_userProperties);
-  const handleEditPropertyModal = () => {
-    //e.preventDefault();
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 992);
+    };
+
+    handleResize(); // Call once to set initial state
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
+  const handleEditPropertyModal = (e) => {
     if (session) {
-      handleEditPropertyShow();
+      setEditPropertyShow(true);
     } else {
-      handleSignInToUp(e);
+      console.log("Sign in needed");
     }
-  }
+  };
 
-  //console.log(properties);
-  const deleteAll = (e) => {
-    e.preventDefault();
-    //userProperties=[];
-    //setProperties([])
-  }
+  const handleTabChange = (tabKey) => {
+    if (['published', 'accepted', 'declined'].includes(tabKey)) {
+      setActiveTab(tabKey);
+    } else {
+      setActiveTab('published'); // Fallback to default tab
+    }
+  };
 
+  const getHandledNegotiationRentOffers = (projects) => {
+    return <PropertyVisitList projects={projects} />;
+  };
+
+  const columnStyle = {
+    height: '700px',
+    overflowY: 'scroll',
+  };
 
   return (
-    <RealEstatePageLayout
-      pageTitle='Visite de biens immobiliers'
-      activeNav='Account'
-      userLoggedIn
-    >
-      {
-        editPropertyShow && <EditPropertyModal
-          centered
-          size='lg'
-          show={editPropertyShow}
-          onHide={handleEditPropertyClose}
-          property={propertyModal}
-        />
-      }
-      <RealEstateAccountLayout accountPageTitle='Visite de biens immobiliers' >
-        <div className='d-flex align-items-center justify-content-between mb-3'>
-          <h1 className='h2 mb-0'>Visite de biens immobiliers</h1>
-          <a href='#' className='fw-bold text-decoration-none' onClick={deleteAll}>
-            <i className='fi-trash mt-n1 me-2'></i>
-            Supprimer tout
-          </a>
-        </div>
-        <p className='pt-1 mb-4'>Tous les rendez-vous des visites de biens immobiliers sont ici</p>
+    <RealEstatePageLayout pageTitle='Visite de biens immobiliers' activeNav='VisitProperties' userLoggedIn>
 
-        {/* Nav tabs */}
-        <Nav
-          variant='tabs'
-          defaultActiveKey='published'
-          className='border-bottom mb-4'
-        >
-          <Nav.Item className='mb-3'>
+      <RealEstateAccountLayout accountPageTitle='Visite de biens immobiliers'>
+        <div className='d-flex align-items-center justify-content-between mb-3'>
+          <h1 className='h2 mb-0'>Visites de biens immobiliers</h1>
+        </div>
+        <p className='pt-1 mb-4'>
+          Consulter ici toutes les visites de biens immobiliers et se preparer au rendez-vous.
+        </p>
+        <Nav variant='tabs' defaultActiveKey='published' onSelect={handleTabChange} className='border-bottom mb-2'>
+          <Nav.Item as={Col}>
             <Nav.Link eventKey='published'>
               <i className='fi-file fs-base me-2'></i>
-              Confirmees
+              Nouvelles visites
             </Nav.Link>
           </Nav.Item>
-          <Nav.Item className='mb-3'>
-            <Nav.Link eventKey='drafts'>
-              <i className='fi-file-clean fs-base me-2'></i>
-              Annulees
-            </Nav.Link>
-          </Nav.Item>
-          <Nav.Item className='mb-3'>
-            <Nav.Link eventKey='archived'>
+          <Nav.Item as={Col}>
+            <Nav.Link eventKey='accepted'>
               <i className='fi-archive fs-base me-2'></i>
-              Nouvelles
+              Visites en cours
+            </Nav.Link>
+          </Nav.Item>
+          <Nav.Item as={Col}>
+            <Nav.Link eventKey='declined'>
+              <i className='fi-file-clean fs-base me-2'></i>
+              Visites deja faites
             </Nav.Link>
           </Nav.Item>
         </Nav>
 
-        {/* List of properties or empty state */}
-        {userProperties.length ? userProperties.map((property, indx) => (
-          <PropertyCard
-            key={indx}
-            href={property.href}
-            images={property.images}
-            category={property.category}
-            title={property.title}
-            location={property.location}
-            price={property.price}
-            badges={property.badges}
-            footer={[
-              ['fi-bed', property.amenities[0]],
-              ['fi-bath', property.amenities[1]],
-              ['fi-car', property.amenities[2]]
-            ]}
-            dropdown={[
-              {
-                // href: '#', // Optionally pass href prop to convert dropdown item to Next link
-                icon: 'fi-edit',
-                label: 'Editer',
-                props: {
-                  onClick: (event) => {
-                    event.stopPropagation();
-                    event.preventDefault();
-                    setPropertyModal(property);
-                    handleEditPropertyModal();
-                  }
-                }
-              },
-              {
-                icon: 'fi-flame',
-                label: 'Promouvoir',
-                props: { onClick: () => console.log('Promote property') }
-              },
-              {
-                icon: 'fi-power',
-                label: 'Rendre invisible',
-                props: { onClick: () => console.log('Deactivate property') }
-              },
-              {
-                icon: 'fi-trash',
-                label: 'Rendre indisponible',
-                props: { onClick: () => console.log('Deactivate property') }
-              }
-            ]}
-            horizontal
-            className={indx === userProperties.length - 1 ? '' : 'mb-4'}
-          />
-        )) : <div className='text-center pt-2 pt-md-4 pt-lg-5 pb-2 pb-md-0'>
-          <i className='fi-home display-6 text-muted mb-4'></i>
-          <h2 className='h5 mb-4'>Vous n'avez aucun bien immobilier enrollé!</h2>
-          <Link href='/tg/add-property' passHref>
-            <Button variant='primary'>
-              <i className='fi-plus fs-sm me-2'></i>
-              Enroller un bien immobilier
-            </Button>
-          </Link>
-        </div>}
+        <Row>
+          {/* For small screens, display only one column based on activeTab */}
+          {isMobile ? (
+            <>
+              {activeTab === 'published' && (
+                <Col xs={12} style={columnStyle}>
+                  {getHandledNegotiationRentOffers(_newNegotiations)}
+                </Col>
+              )}
+              {activeTab === 'declined' && (
+                <Col xs={12} style={columnStyle}>
+                  {getHandledNegotiationRentOffers(_declinedNegotiations)}
+                </Col>
+              )}
+              {activeTab === 'accepted' && (
+                <Col xs={12} style={columnStyle}>
+                  {getHandledNegotiationRentOffers(_acceptedNegotiations)}
+                </Col>
+              )}
+              
+            </>
+          ) : (
+            <>
+              <Col xs={12} lg={4} style={columnStyle}>
+                {getHandledNegotiationRentOffers(_newNegotiations)}
+              </Col>
+              <Col xs={12} lg={4} style={columnStyle}>
+                {getHandledNegotiationRentOffers(_declinedNegotiations)}
+              </Col>
+              <Col xs={12} lg={4} style={columnStyle}>
+                {getHandledNegotiationRentOffers(_acceptedNegotiations)}
+              </Col>
+              
+            </>
+          )}
+        </Row>
       </RealEstateAccountLayout>
     </RealEstatePageLayout>
-  )
-}
+  );
+};
 
-
+// Fetch data from API in getServerSideProps using statut as an input variable
 export async function getServerSideProps(context) {
   const session = await getSession(context);
-  console.log(session);
-  if (session.user) {
-    const userid = session ? session.user.id : 0;
-    // Fetch data from external API
-    var dataAPIresponse = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getUserProperties(user_id:${userid},first:10,orderBy:{column:NUO,order:DESC}){data{surface,badge_propriete{badge{badge_name,badge_image}},id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination},visuels{uri}}}}`);
-    var _userProperties = await dataAPIresponse.json();
 
-    _userProperties = _userProperties.data.getUserProperties.data;
-
-    return {
-      props: { _userProperties},
-    }
-
-  } else {
+  if (!session) {
     return {
       redirect: {
-          destination: '/auth/signin',
-          permanent: false,
+        destination: '/auth/signin',
+        permanent: false,
       },
-  };
+    };
+  }
+  let _newNegotiations, _acceptedNegotiations, _declinedNegotiations,_reportedVisit,_refusedVisit;
+  // Determine negotiations based on the user's role
+  switch (session?.user?.roleId) {
+    case '151': // Tenant role
+       console.log('Tenant visitations');
+      _newNegotiations = await fetchRenterVisitationsByStatut(0, session.user.id);
+
+      _acceptedNegotiations = await fetchRenterVisitationsByStatut(2, session.user.id);
+      _reportedVisit = await fetchRenterVisitationsByStatut(3, session.user.id);
+      _refusedVisit = await fetchRenterVisitationsByStatut(4, session.user.id);
+      _declinedNegotiations = await fetchRenterVisitationsByStatut(1, session.user.id);
+      break;
+    case '1200': // Admin role
+    case '1231': // Admin role
+      console.log('Admin visitations');
+      _newNegotiations = await fetchVisitationsByStatutByRole(0);
+      _acceptedNegotiations = await fetchVisitationsByStatutByRole(2);
+      _declinedNegotiations = await fetchVisitationsByStatutByRole(1);
+      _reportedVisit = await fetchVisitationsByStatutByRole(3);
+      _refusedVisit = await fetchVisitationsByStatutByRole(4);
+      break;
+
+    default: // Property owner
+      console.log('Property owner visitations');
+      _newNegotiations = await fetchVisitationsByStatut(0, session.user.id);
+      _acceptedNegotiations = await fetchVisitationsByStatut(2, session.user.id);
+      _reportedVisit = await fetchVisitationsByStatut(3,session.user.id);
+      _refusedVisit = await fetchVisitationsByStatut(4,session.user.id);
+      _declinedNegotiations = await fetchVisitationsByStatut(1, session.user.id);
+      break;
   }
 
+
+  const allVisitHandled = [
+    ..._acceptedNegotiations,
+    ..._reportedVisit,
+    ..._refusedVisit,
+  ];
+  return {
+    props: { _newNegotiations, _acceptedNegotiations:allVisitHandled, _declinedNegotiations },
+  };
+
 }
-export default VisitPropertiesPage
+
+export default VisitPropertiesPage;

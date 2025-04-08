@@ -12,14 +12,10 @@ import Form from 'react-bootstrap/Form'
 import ButtonGroup from 'react-bootstrap/ButtonGroup'
 import ToggleButton from 'react-bootstrap/ToggleButton'
 import ImageLoader from '../../components/ImageLoader'
-import FormGroup from '../../components/FormGroup'
-import DropdownSelect from '../../components/DropdownSelect'
 import IconBox from '../../components/IconBox'
 import PropertyCard from '../../components/PropertyCard'
-import PropertyCardOverlay from '../../components/PropertyCardOverlay'
 import SocialButton from '../../components/SocialButton'
 import StarRating from '../../components/StarRating'
-import Nouislider from 'nouislider-react'
 import { Navigation, Pagination, EffectFade } from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { useSession } from 'next-auth/react'
@@ -32,18 +28,14 @@ import 'swiper/css/effect-fade'
 import getPropertyFullUrl from '../../utils/getPropertyFullURL'
 import getFirstImageArray from '../../utils/formatFirsImageArray'
 import buildPropertyBadge from '../../utils/buildPropertyBadge'
-import { PropertyListSwiper } from '../../components/iacomponents/PropertyListSwiper'
-import topPropertiesLogement from '../../remoteAPI/topPropertiesLogement.json'
-import topPropertiesSejour from '../../remoteAPI/topPropertiesSejour.json'
-import topPropertiesAcquisition from '../../remoteAPI/topPropertiesAcquisition.json'
-import topPropertiesEntrepreneuriat from '../../remoteAPI/topPropertiesEntrepreneuriat.json'
 import propertyCategories from '../../remoteAPI/propertyCategories.json'
 import BgParallaxHeroMessage from '../../components/iacomponents/BgParallaxHeroMessage'
 import { useRouter } from 'next/router';
-import 'dotenv/config'
 import { getHumanReadablePrice } from '../../utils/generalUtils'
-const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+import { API_URL } from '../../utils/settings'
+import SuperCategoryProperties from '../../components/iacomponents/SuperCategoryList/SuperCategoryProperties'
 const HomePage = () => {
+
   const router = useRouter();
   // Property cost calculator modal
   const [modalShow, setModalShow] = useState(false)
@@ -76,12 +68,12 @@ const HomePage = () => {
   //console.log(apiUrl);
   const getRTProperties = () => {
 
-    axios.get(`${apiUrl}?query={get5Properties(orderBy:{column:NUO,order:DESC},limit:5){surface,badge_propriete{badge{badge_name,badge_image}},nuitee,id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination},visuels{uri,position}}}`).
+    axios.get(`${API_URL}?query={get5Properties(orderBy:{column:NUO,order:DESC},limit:5){surface,badge_propriete{badge{badge_name,badge_image}},nuitee,id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination,minus_denomination},visuels{uri,position}}}`).
       then((res) => {
         setRealTimeProperties(res.data.data.get5Properties.map((property) => {
           //const { status, data:badges_property, error, isFetching,isLoading,isError }  = usePropertyBadges(property.id);
           return {
-            href: getPropertyFullUrl(property.pays.code, property.offre.denomination, property.categorie_propriete.denomination, property.ville.denomination, property.quartier.denomination, property.nuo),
+            href: getPropertyFullUrl(property.pays.code, property.offre.denomination, property.categorie_propriete.denomination, property.ville.denomination, property.quartier.minus_denomination, property.nuo),
             images: [[getFirstImageArray(property.visuels), 467, 305, 'Image']],
             title: 'N°' + property.nuo + ': ' + property.categorie_propriete.denomination + ' à ' + property.offre.denomination + ' | ' + property.surface + 'm²',
             category: property.usage,
@@ -98,6 +90,34 @@ const HomePage = () => {
   // Function to handle redirection on button click
   const handleLogementRedirect = () => {
     router.push('/tg/catalog?usage=1');
+  };
+
+  const displayCreationAccountButton = () => {
+    return (
+      <Link href='/signup-light' passHref>
+        {/* <Button size='sm' className='order-lg-3 ms-2'>
+                  <i className='fi-plus me-2'></i>
+                  Lancer <span className='d-none d-sm-inline'>un projet immobilier</span>
+                </Button> */}
+        <Button variant='outline-primary' size='lg'>
+          <i className='fi-user me-2'></i>
+          Créer <span className='d-none d-sm-inline'>votre compte</span>
+        </Button>
+
+      </Link>
+    )
+  };
+
+  const displayCreationProjectButton = () => {
+    return (
+      <Link href='/tg/add-project' passHref>
+        <Button variant='outline-primary' size='lg'>
+          <i className='fi-file me-2'></i>
+          Lancer <span className='d-none d-sm-inline'>un projet immobilier</span>
+        </Button>
+
+      </Link>
+    )
   };
   const handleAcquisitionRedirect = () => {
     router.push('/tg/catalog?usage=7');
@@ -116,7 +136,10 @@ const HomePage = () => {
 
   return (
     <RealEstatePageLayout
-      pageTitle='Trouver aisément un logement urbain ou rural et acheter en sécurité les terrains et immeubles'
+      pageTitle='Trouver aisément un logement urbain ou rural et acheter en sécurité les terrains et immeubles et biens immobiliers au Togo'
+      pageDescription='Découvrez les meilleures offres immobilières au Togo. Trouvez facilement un logement urbain ou rural à louer, ainsi que des terrains et immeubles à acheter en toute sécurité. ImmoAsk vous accompagne dans l&rsquo;achat, la vente, la location et la gestion de patrimoine immobilier.'
+      pageKeywords='achat, vente, location, gestion de patrimoine, agent immobilier IA, tourisme, décoration, BTP'
+      pageUrl='https://immoask.com/tg'
       activeNav='Home'
       userLoggedIn={session ? true : false}
     >
@@ -218,25 +241,14 @@ const HomePage = () => {
               <b>Gérer. Investir. Louer. Vendre </b> <br />
             </p>
 
-            <Link href='/tg/add-project' passHref>
-              {/* <Button size='sm' className='order-lg-3 ms-2'>
-                  <i className='fi-plus me-2'></i>
-                  Lancer <span className='d-none d-sm-inline'>un projet immobilier</span>
-                </Button> */}
-              <Button variant='outline-primary' size='lg'>
-                <i className='fi-plus me-2'></i>
-                Lancer <span className='d-none d-sm-inline'>un projet immobilier</span>
-              </Button>
-
-            </Link>
+            {session ? displayCreationProjectButton() : displayCreationAccountButton()}
             {/* <span className='d-none d-lg-block position-absolute top-50 end-0 translate-middle-y border-end' style={{width: '1px', height: '30px'}}></span> */}
 
             <Link href='/tg/add-property' passHref>
               <Button className='outline-primary order-lg-3 ms-2' size='lg'>
-                <i className='fi-plus me-2'></i>
-                Lister <span className='d-none d-sm-inline'>un immeuble</span>
+                <i className='fi-building me-2'></i>
+                Lister <span className='d-none d-sm-inline'>votre immeuble</span>
               </Button>
-
             </Link>
 
           </Col>
@@ -348,6 +360,7 @@ const HomePage = () => {
                 title={category.title}
                 type='card-shadow'
                 align='center'
+                count={category.count}
               />
             </Col>
           ))}
@@ -504,16 +517,15 @@ const HomePage = () => {
         <div className='d-flex align-items-center justify-content-between mb-3'>
           <h2 className='h3 mb-0'>Des logements uniques en location pour vous</h2>
           <Link href='/tg/catalog?usage=1' passHref>
-            <Button variant='link fw-normal ms-sm-3 p-0'>
+            <Button size='md' variant='outline-primary' className='order-lg-3 ms-2'>
               Consulter tout
-              <i className='fi-arrow-long-right ms-2'></i>
             </Button>
           </Link>
         </div>
         <div className='d-flex align-items-center justify-content-between'>
           <h3 className='h5'>Villas | Chambres salon | Appartements | Chambres </h3>
         </div>
-        <PropertyListSwiper propertyList={topPropertiesLogement} />
+        <SuperCategoryProperties usage={1} status={1} />
         {/* External Prev/Next buttons */}
         <div className='d-flex justify-content-center py-md-2 mt-4'>
           <Button id='prevProprties' variant='prev position-relative mx-2' />
@@ -553,11 +565,10 @@ const HomePage = () => {
       {/* Top properties ACQuisition */}
       <Container fluid className='px-xxl-4 pb-lg-4 pb-1 mb-3 mt-3'>
         <div className='d-flex align-items-center justify-content-between mb-3'>
-          <h2 className='h3 mb-0'>Des terrains urbains et moins ruraux à vendre à votre portée</h2>
+          <h2 className='h3 mb-0'>Des terrains urbains et ruraux à vendre à votre portée</h2>
           <Link href='/tg/catalog?usage=7' passHref>
-            <Button variant='link fw-normal ms-sm-3 p-0'>
+            <Button size='md' variant='outline-primary' className='order-lg-3 ms-2'>
               Consulter tout
-              <i className='fi-arrow-long-right ms-2'></i>
             </Button>
           </Link>
         </div>
@@ -565,13 +576,13 @@ const HomePage = () => {
           <h3 className='h5'>Terrains | Villas | Appartements | Maisons | Immeubles</h3>
         </div>
 
-        <PropertyListSwiper propertyList={topPropertiesAcquisition} />
+        <SuperCategoryProperties usage={7} status={1} />
 
         {/* External Prev/Next buttons */}
-        {/* <div className='d-flex justify-content-center py-md-2 mt-4'>
-          <Button id='prevProprties' variant='prev position-relative mx-2' />
-          <Button id='nextProprties' variant='next position-relative mx-2' />
-        </div> */}
+        <div className='d-flex justify-content-center py-md-2 mt-4'>
+          <Button id='prevProprties2' variant='prev position-relative mx-2' />
+          <Button id='nextProprties2' variant='next position-relative mx-2' />
+        </div>
       </Container>
       <Container as='section' className='mb-5 mt-n3 mt-lg-0'>
         <BgParallaxHeroMessage image={'/images/tg/hero-image-v2.jpg'} message={`
@@ -721,21 +732,25 @@ const HomePage = () => {
       {/* Top properties Experience et Sejours*/}
       <Container fluid className='px-xxl-4 pb-lg-4 pb-1 mb-3 mt-3'>
         <div className='d-flex align-items-center justify-content-between mb-3'>
-          <h2 className='h3 mb-0'>Une experience uniques et inoubliable! Un séjour confortable et abordable.</h2>
+          <h2 className='h3 mb-0'>Une experience unique et inoubliable! Un séjour confortable et abordable.</h2>
           <Link href='/tg/catalog?usage=5' passHref>
-            <Button variant='link fw-normal ms-sm-3 p-0'>
+            <Button size='md' variant='outline-primary' className='order-lg-3 ms-2'>
               Consulter tout
-              <i className='fi-arrow-long-right ms-2'></i>
             </Button>
           </Link>
         </div>
         <div className='d-flex align-items-center justify-content-between'>
           <h3 className='h5'>Séjour meublé | Appartement meublé | Villa meublées | Studio meublé </h3>
         </div>
-        <PropertyListSwiper propertyList={topPropertiesSejour} />
+        <SuperCategoryProperties usage={5} status={1} />
+        {/* External Prev/Next buttons */}
+        <div className='d-flex justify-content-center py-md-2 mt-4'>
+          <Button id='prevProprties3' variant='prev position-relative mx-2' />
+          <Button id='nextProprties3' variant='next position-relative mx-2' />
+        </div>
       </Container>
       <Container as='section' className='mb-5 mt-n3 mt-lg-0'>
-        <BgParallaxHeroMessage image={'/images/tg/hero-image-v2.jpg'} message={`Détente. Excursions. Voyages d'affaires moins chers. De nouvels horizons dans nos meublés.`} action={handleSejourRedirect} callAction={"Faire une expérience meublée"} />
+        <BgParallaxHeroMessage image={'/images/tg/hero-image-v2.jpg'} message={`Détente. Excursions. Voyages d'affaires moins chers. De nouvels horizons dans nos meublés.`} action={handleSejourRedirect} callAction={"Faire une expérience"} />
       </Container>
       {/* Appel au produit ImmoAsk Business */}
       {/* <Container as='section' className='mb-5 pb-2 pb-lg-4'>
@@ -768,26 +783,25 @@ const HomePage = () => {
         <div className='d-flex align-items-center justify-content-between mb-3'>
           <h2 className='h3 mb-0'>Commencer l'entrepreunariat ou accelerer avec nous</h2>
           <Link href='/tg/catalog?category=rent' passHref>
-            <Button variant='link fw-normal ms-sm-3 p-0'>
+            <Button size='md' variant='outline-primary' className='order-lg-3 ms-2'>
               Consulter tout
-              <i className='fi-arrow-long-right ms-2'></i>
             </Button>
           </Link>
         </div>
         <div className='d-flex align-items-center justify-content-between'>
           <h3 className='h5'>Bureaux | Magasins | Terrains à bailler | Espaces co-working</h3>
         </div>
-        <PropertyListSwiper propertyList={topPropertiesEntrepreneuriat} />
+        <SuperCategoryProperties usage={3} status={1} />
 
         {/* External Prev/Next buttons */}
-        {/* <div className='d-flex justify-content-center py-md-2 mt-4'>
-          <Button id='prevProprties' variant='prev position-relative mx-2' />
-          <Button id='nextProprties' variant='next position-relative mx-2' />
-        </div> */}
+        <div className='d-flex justify-content-center py-md-2 mt-4'>
+          <Button id='prevProprties4' variant='prev position-relative mx-2' />
+          <Button id='nextProprties4' variant='next position-relative mx-2' />
+        </div>
       </Container>
       <Container as='section' className='mb-5 mt-n3 mt-lg-0'>
         <BgParallaxHeroMessage image={'/images/tg/hero-image-v2.jpg'} message={`Les bons emplacements pour vos entrepots et bureaus sont ici`} action={handleEntrepriseRedirect}
-          callAction={"Explorer les biens immobiliers d'entreprise"} />
+          callAction={"Explorer les immeubles d'entreprise"} />
       </Container>
       {/* Appel au produit LesVoisins */}
       {/* <Container as='section' className='mb-5 pb-2 pb-lg-4'>
@@ -820,9 +834,9 @@ const HomePage = () => {
         <div className='d-flex align-items-center justify-content-between mb-3'>
           <h2 className='h3 mb-0'>FlashImmo, des biens immobiliers en temps réel!</h2>
           <Link href='/tg/flashimmo' passHref>
-            <Button variant='link fw-normal ms-sm-3 p-0'>
+
+            <Button size='md' variant='outline-primary' className='order-lg-3 ms-2'>
               Consulter tout
-              <i className='fi-arrow-long-right ms-2'></i>
             </Button>
           </Link>
         </div>

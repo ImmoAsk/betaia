@@ -45,6 +45,7 @@ import RentingList from '../../../components/iacomponents/RentingList'
 import {buildPropertiesArray} from '../../../utils/generalUtils'
 import { capitalizeFirstLetter } from '../../../utils/generalUtils'
 import IAPaginaation from '../../../components/iacomponents/IAPagination'
+import { API_URL } from '../../../utils/settings'
 
 
 
@@ -665,7 +666,7 @@ const CatalogPage = ({_rentingProperties}) => {
   )
 }
 
-export async function getServerSideProps(context) {
+/* export async function getServerSideProps(context) {
 
   const { bien } = context.query;
   console.log("Bien: "+ bien);
@@ -683,6 +684,77 @@ export async function getServerSideProps(context) {
   //console.log(_rentingProperties.data.getPropertiesByKeyWords);
   _rentingProperties = _rentingProperties.data.getPropertiesByKeyWords;
   return { props: { _rentingProperties } }
+} */
+
+
+export async function getServerSideProps(context) {
+  const { bien} = context.query;
+
+  const baseUrl = API_URL;
+
+  try {
+    // Fetch IDs in parallel
+    const [bienResponse] = await Promise.all([
+      fetch(
+        `${baseUrl}?query={getCategoryIdByCategorieName(minus_denomination:"${bien?.toLowerCase()}"){denomination,id,code}}`
+      ),
+    ]);
+
+    // Parse JSON
+    const [bienData] = await Promise.all([
+      bienResponse.json(),
+    ]);
+
+    const bienObject = bienData?.data?.getCategoryIdByCategorieName || null;
+    const bienId= bienObject?.id
+    //console.log(villeId,quartierId,bienId)
+    if (!bienId) {
+      throw new Error("Missing required IDs for ville, quartier, or bien");
+    }
+
+    const offreId = "2";
+    const commonQuery = `limit:10,orderBy:{column:NUO,order:DESC},offre_id:"${offreId}"`;
+
+    // Fetch property data in parallel
+    console.log("BienId : ",bienId)
+    const [ruralLands, townLands, mainProperties] = await Promise.all([
+      Number(bienId) === 13
+        ? fetch(
+            `${baseUrl}?query={getPropertiesByKeyWords(${commonQuery},categorie_id:"6"){badge_propriete{badge{badge_name,badge_image}},visuels{uri,position},id,surface,lat_long,nuo,usage,offre{denomination,id},categorie_propriete{denomination,id},pays{code,id},piece,titre,garage,cout_mensuel,ville{denomination,id},wc_douche_interne,cout_vente,quartier{denomination,id,minus_denomination}}}`
+          ).then((res) => res.json())
+        : { data: { getPropertiesByKeyWords: [] } },
+        Number(bienId) === 13
+        ? fetch(
+            `${baseUrl}?query={getPropertiesByKeyWords(${commonQuery},categorie_id:"7"){badge_propriete{badge{badge_name,badge_image}},visuels{uri,position},id,surface,lat_long,nuo,usage,offre{denomination,id},categorie_propriete{denomination,id},pays{code,id},piece,titre,garage,cout_mensuel,ville{denomination,id},wc_douche_interne,cout_vente,quartier{denomination,id,minus_denomination}}}`
+          ).then((res) => res.json())
+        : { data: { getPropertiesByKeyWords: [] } },
+      fetch(
+        `${baseUrl}?query={getPropertiesByKeyWords(${commonQuery},categorie_id:"${bienId}"){badge_propriete{badge{badge_name,badge_image}},visuels{uri,position},id,surface,lat_long,nuo,usage,offre{denomination,id},categorie_propriete{denomination,id},pays{code,id},piece,titre,garage,cout_mensuel,ville{denomination,id},wc_douche_interne,cout_vente,quartier{denomination,id,minus_denomination}}}`
+      ).then((res) => res.json()),
+    ]);
+    console.log(townLands)
+    const allProperties = [
+      ...ruralLands.data.getPropertiesByKeyWords,
+      ...townLands.data.getPropertiesByKeyWords,
+      ...mainProperties.data.getPropertiesByKeyWords,
+    ];
+    console.log(townLands.data.getPropertiesByKeyWords);
+    return {
+      props: {
+        _rentingProperties: allProperties,
+        soffreId: { id: "2", denomination: "vendre" },
+        bienObject,
+      },
+    };
+  } catch (error) {
+    console.error("Error fetching properties:", error);
+
+    return {
+      props: {
+        _rentingProperties: [],
+      },
+    };
+  }
 }
 
 export default CatalogPage

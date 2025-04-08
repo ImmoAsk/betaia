@@ -45,6 +45,7 @@ import RentingList from '../../../../components/iacomponents/RentingList'
 import {buildPropertiesArray} from '../../../../utils/generalUtils'
 import FormSearchOffcanvas from '../../../../components/iacomponents/FormSearchOffcanvas'
 import IAPaginaation from '../../../../components/iacomponents/IAPagination'
+import { API_URL } from '../../../../utils/settings'
 
 
 
@@ -505,32 +506,80 @@ const CatalogPage = ({_rentingProperties,bienId,soffreId,villeId}) => {
 
 
 export async function getServerSideProps(context) {
+  const { bien, ville} = context.query;
 
-  let { nuo } = context.query;
-  const { bien } = context.query;
-  const { ville } = context.query;
-  
-  
+  const baseUrl = API_URL;
 
-  const _ville = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getTownIdByTownName(minus_denomination:"${toLowerCaseString(ville)}")
-  {denomination,id,code}}`);
-  const _jsonville = await _ville.json();
+  try {
+    // Fetch IDs in parallel
+    const [villeResponse, bienResponse] = await Promise.all([
+      fetch(
+        `${baseUrl}?query={getTownIdByTownName(minus_denomination:"${ville?.toLowerCase()}"){denomination,id,code}}`
+      ),
+      fetch(
+        `${baseUrl}?query={getCategoryIdByCategorieName(minus_denomination:"${bien?.toLowerCase()}"){denomination,id,code}}`
+      ),
+    ]);
 
-  const _bien = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getCategoryIdByCategorieName(minus_denomination:"${toLowerCaseString(bien)}"){denomination,id,code}}`);
-  const _jsonbien= await _bien.json();
+    // Parse JSON
+    const [villeData, bienData] = await Promise.all([
+      villeResponse.json(),
+      bienResponse.json(),
+    ]);
 
-  const bienId=_jsonbien.data.getCategoryIdByCategorieName;
-  console.log("BienId: "+ bienId);
-  const villeId=_jsonville.data.getTownIdByTownName;
-  
-  const offreId="2";
-  // Fetch data from external API
-  let dataAPIresponse = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getPropertiesByKeyWords(limit:10,orderBy:{column:NUO,order:DESC},offre_id:"${offreId}",ville_id:"${villeId.id}",categorie_id:"${bienId.id}")
-  {badge_propriete{badge{badge_name,badge_image}},visuels{uri,position},id,surface,lat_long,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination,id,minus_denomination}}}`);
-  let _rentingProperties = await dataAPIresponse.json();
-  //console.log(_rentingProperties.data.getPropertiesByKeyWords);
-  _rentingProperties = _rentingProperties.data.getPropertiesByKeyWords;
-  const soffreId = {id:"1",denomination:"louer"};
-  return { props: { _rentingProperties,bienId,soffreId,villeId } }
+    const villeObject = villeData?.data?.getTownIdByTownName|| null;
+    const bienObject = bienData?.data?.getCategoryIdByCategorieName || null;
+    console.log(villeObject,bienObject)
+    const villeId= villeObject?.id
+    const bienId= bienObject?.id
+    //console.log(villeId,quartierId,bienId)
+    if (!villeId || !bienId) {
+      throw new Error("Missing required IDs for ville, quartier, or bien");
+    }
+
+    const offreId = "2";
+    const commonQuery = `limit:10,orderBy:{column:NUO,order:DESC},offre_id:"${offreId}",ville_id:"${villeId}"`;
+
+    // Fetch property data in parallel
+    console.log("BienId : ",bienId)
+    const [ruralLands, townLands, mainProperties] = await Promise.all([
+      Number(bienId) === 13
+        ? fetch(
+            `${baseUrl}?query={getPropertiesByKeyWords(${commonQuery},categorie_id:"6"){badge_propriete{badge{badge_name,badge_image}},visuels{uri,position},id,surface,lat_long,nuo,usage,offre{denomination,id},categorie_propriete{denomination,id},pays{code,id},piece,titre,garage,cout_mensuel,ville{denomination,id},wc_douche_interne,cout_vente,quartier{denomination,id,minus_denomination}}}`
+          ).then((res) => res.json())
+        : { data: { getPropertiesByKeyWords: [] } },
+        Number(bienId) === 13
+        ? fetch(
+            `${baseUrl}?query={getPropertiesByKeyWords(${commonQuery},categorie_id:"7"){badge_propriete{badge{badge_name,badge_image}},visuels{uri,position},id,surface,lat_long,nuo,usage,offre{denomination,id},categorie_propriete{denomination,id},pays{code,id},piece,titre,garage,cout_mensuel,ville{denomination,id},wc_douche_interne,cout_vente,quartier{denomination,id,minus_denomination}}}`
+          ).then((res) => res.json())
+        : { data: { getPropertiesByKeyWords: [] } },
+      fetch(
+        `${baseUrl}?query={getPropertiesByKeyWords(${commonQuery},categorie_id:"${bienId}"){badge_propriete{badge{badge_name,badge_image}},visuels{uri,position},id,surface,lat_long,nuo,usage,offre{denomination,id},categorie_propriete{denomination,id},pays{code,id},piece,titre,garage,cout_mensuel,ville{denomination,id},wc_douche_interne,cout_vente,quartier{denomination,id,minus_denomination}}}`
+      ).then((res) => res.json()),
+    ]);
+    console.log(townLands)
+    const allProperties = [
+      ...ruralLands.data.getPropertiesByKeyWords,
+      ...townLands.data.getPropertiesByKeyWords,
+      ...mainProperties.data.getPropertiesByKeyWords,
+    ];
+    console.log(townLands.data.getPropertiesByKeyWords);
+    return {
+      props: {
+        _rentingProperties: allProperties,
+        soffreId: { id: "2", denomination: "vendre" },
+        villeId:villeObject,
+        bienObject,
+      },
+    };
+  } catch (error) {
+    console.error("Error fetching properties:", error);
+
+    return {
+      props: {
+        _rentingProperties: [],
+      },
+    };
+  }
 }
 export default CatalogPage

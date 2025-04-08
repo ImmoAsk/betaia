@@ -27,7 +27,6 @@ import ProRealEstateAgency from "../../../../../../components/iacomponents/ProRe
 import FurnishedEquipmentList from "../../../../../../components/iacomponents/FurnishedEquipmentList";
 import NearestInfrastructureList from "../../../../../../components/iacomponents/NearestInfrastructureList";
 import RecommendPropertyList from "../../../../../../components/iacomponents/RecommendPropertyList";
-
 import PayVisitModal from "../../../../../../components/iacomponents/PayVisitModal";
 import CheckAvailabilityModal from "../../../../../../components/iacomponents/CheckAvailabilityModal";
 import RentNegociationModal from "../../../../../../components/iacomponents/RentNegociationModal";
@@ -35,7 +34,8 @@ import AskNuiteePriceModal from "../../../../../../components/iacomponents/AskNu
 import ImageComponent from "../../../../../../components/iacomponents/ImageComponent";
 import { getHumanReadablePrice } from "../../../../../../utils/generalUtils";
 import BookFurnishedPropertyModal from "../../../../../../components/iacomponents/BookFurnishedPropertyModal";
-import { Book } from "feather-icons-react/build/IconComponents";
+import DetailRealEstateAgency from "../../../../../../components/iacomponents/DetailRealEstateAgency";
+import { API_URL, BASE_URL, IMAGE_URL } from "../../../../../../utils/settings";
 
 function SinglePropertyAltPage({ property }) {
   // Sign in modal
@@ -93,6 +93,7 @@ function SinglePropertyAltPage({ property }) {
   };
 
   const { data: session } = useSession();
+  console.log(session)
   const router = useRouter();
   const { nuo, bien, quartier, ville } = router.query;
 
@@ -108,8 +109,8 @@ function SinglePropertyAltPage({ property }) {
       property.visuels.map((imgproperty) => {
         setThumbnails((thumbnails) => [
           ...thumbnails,
-          "https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/proprietes/" +
-            imgproperty.uri,
+          IMAGE_URL +
+          imgproperty.uri,
         ]);
       });
   };
@@ -129,7 +130,7 @@ function SinglePropertyAltPage({ property }) {
   const getRecommendProperties = () => {
     axios
       .get(
-        `https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getRecommendProperties(first:5,offre_id:"1",nuo:${property.nuo},quartier_id:"${property.quartier.id}",categorie_id:"${property.categorie_propriete.id}"){data{surface,badge_propriete{badge{badge_name,badge_image}},id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,nuitee,quartier{denomination},visuels{uri,position}}}}`
+        `${API_URL}?query={getRecommendProperties(first:5,offre_id:"1",nuo:${property.nuo},quartier_id:"${property.quartier.id}",categorie_id:"${property.categorie_propriete.id}"){data{surface,badge_propriete{badge{badge_name,badge_image}},id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,nuitee,quartier{denomination,minus_denomination},visuels{uri,position}}}}`
       )
       .then((res) => {
         setRecommendProperties(
@@ -141,7 +142,7 @@ function SinglePropertyAltPage({ property }) {
                 propertyr.offre.denomination,
                 propertyr.categorie_propriete.denomination,
                 propertyr.ville.denomination,
-                propertyr.quartier.denomination,
+                propertyr.quartier.minus_denomination,
                 propertyr.nuo
               ),
               images: [
@@ -211,9 +212,6 @@ function SinglePropertyAltPage({ property }) {
             clickable: true,
             renderBullet: (index, className) => {
               //console.log("Index: " + index)
-              session
-                ? (thumbnailSize = thumbnailSize)
-                : (thumbnailSize = unconnectedThumbnailSize);
               if (index === thumbnailSize) {
                 return `<li class='swiper-thumbnail ${className}'>
                   <div class='d-flex flex-column align-items-center justify-content-center h-100'>
@@ -223,12 +221,7 @@ function SinglePropertyAltPage({ property }) {
                 </li>`;
               } else {
                 return `<li class='swiper-thumbnail ${className}'>
-                  <img src=${
-                    session
-                      ? thumbnails[index]
-                      : "https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/proprietes/" +
-                        Unconnectedhumbnails[index]
-                  } alt='Thumbnail'/>
+                  <img src=${thumbnails[index]} alt='ImmoAsk Thumbnail'/>
                 </li>`;
               }
             },
@@ -239,8 +232,7 @@ function SinglePropertyAltPage({ property }) {
           grabCursor
           className="swiper-nav-onhover rounded-3"
         >
-          {session &&
-            property &&
+          {property &&
             property.visuels.map((imgproperty) => {
               return (
                 <SwiperSlide className="d-flex">
@@ -248,16 +240,22 @@ function SinglePropertyAltPage({ property }) {
                 </SwiperSlide>
               );
             })}
-          {!session && (
+
+          {/* {!session && (
             <>
               <SwiperSlide className="d-flex">
                 <ImageComponent imageUri={Unconnectedhumbnails[0]} />
               </SwiperSlide>
               <SwiperSlide className="d-flex">
-                <ImageComponent imageUri={Unconnectedhumbnails[1]} />
+                <Link href="/signup-light">
+                  <a>
+                  <ImageComponent imageUri={Unconnectedhumbnails[1]} />
+                  </a>
+                </Link>
+                
               </SwiperSlide>
             </>
-          )}
+          )} */}
           {/* <SwiperSlide>
             <div className='ratio ratio-16x9'>
               <iframe src='https://www.youtube.com/embed/1oVncb5hke0?autoplay=1' className='rounded-3' allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
@@ -278,7 +276,7 @@ function SinglePropertyAltPage({ property }) {
       </h4>
     );
   }
-
+  // <img src=${session ? thumbnails[index] : 'https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/proprietes/' + Unconnectedhumbnails[index]} alt='ImmoAsk Thumbnail'/>
   return (
     <RealEstatePageLayout
       pageTitle={`${property.categorie_propriete.denomination} à louer, ${property.ville.denomination}, ${property.quartier.denomination} | No. ${nuo} | Togo`}
@@ -286,7 +284,7 @@ function SinglePropertyAltPage({ property }) {
       pageDescription={`${property.categorie_propriete.denomination} à louer, ${property.ville.denomination}, ${property.quartier.denomination}, Togo. ${property.descriptif}`}
       pageKeywords={`location immobiliere, ${property.categorie_propriete.denomination}, logement, sejour, experience,${property.ville.denomination}, ${property.quartier.denomination},Togo`}
       pageCoverImage={`${getFirstImageArray(property.visuels)}`}
-      pageUrl={`https://www.immoask.com/tg/locations-immobilieres/${bien}/${ville}/${quartier}/${nuo}`}
+      pageUrl={`${BASE_URL}/tg/locations-immobilieres/${bien}/${ville}/${quartier}/${nuo}`}
     >
       {/* Sign in modal */}
       {signinShow && (
@@ -375,9 +373,11 @@ function SinglePropertyAltPage({ property }) {
               <Breadcrumb.Item active>{nuo}</Breadcrumb.Item>
             </Breadcrumb>
             <Row>
-              <Col lg={7} className="pt-lg-2 mb-5 mb-lg-0">
+              <Col lg={7} className="pt-lg-2 mb-5 mb-lg-0" sm={12} md={12}>
                 <div className="d-flex flex-column">
                   {/* Gallery */}
+
+
                   <div className="order-lg-1 order-2">
                     <SwiperGallery />
                   </div>
@@ -420,16 +420,77 @@ function SinglePropertyAltPage({ property }) {
                     </ul>
                   </div>
                 </div>
-
+                <div className="d-block d-md-none">
+                  <div className="d-flex align-items-center justify-content-between mb-3">
+                    <ul className="d-flex mb-2 list-unstyled fs-sm">
+                      <li className="me-3 pe-3 border-end">
+                        <h3 className="h5 mb-2">Loyer mensuel</h3>
+                        <h2 className="h4 mb-2">
+                          {property && property.cout_mensuel} XOF
+                          <span className="d-inline-block ms-1 fs-base fw-normal text-body">
+                            /mois
+                          </span>
+                        </h2>
+                        <p className="text-body p">
+                          Il est recommandé de lire le contrat de location
+                          avant de procéder au paiement
+                        </p>
+                        <Button
+                          size="md"
+                          className="w-45 outline-primary"
+                          onClick={handleSignupShow}
+                        >
+                          Vérifier la disponibilité
+                        </Button>
+                      </li>
+                      <li className="me-3 pe-3">
+                        <h3 className="h5 mb-2">Visite immobiliere</h3>
+                        {property.cout_visite <= 0 && (
+                          <>
+                            <h2 className="h4 mb-2">0 XOF</h2>
+                            <p className="text-body p">
+                              Le propriétaire ou l'agent immobilier vous offre le droit de visite.
+                            </p>
+                          </>
+                        )}
+                        {property.cout_visite > 0 && (
+                          <>
+                            <h2 className="h4 mb-2">
+                              {property && property.cout_visite} XOF
+                            </h2>
+                            <p className="text-body p">
+                              Le droit de visite est payé pour supporter la
+                              prospection et tous les risques liés.
+                            </p>
+                          </>
+                        )}
+                        <Button
+                          size="md"
+                          className="w-45"
+                          variant="outline-primary"
+                          onClick={handleSigninShow}
+                        >
+                          Planifier une visite
+                        </Button>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
                 {/* Overview */}
                 <h2 className="h5">Descriptif immobilier</h2>
                 <p className="mb-4 pb-2">{property && property.descriptif}</p>
+                {session && session.user && (session.user.roleId === '1200' || session.user.roleId === '1231') ? (
+                  <DetailRealEstateAgency user={property.user.id} />
+                ) : (
+                  <ProRealEstateAgency user={property.user.id} />
+                )}
 
-                <ProRealEstateAgency user={property.user.id} />
+
+
               </Col>
 
               {/* Sidebar with details */}
-              <Col as="aside" lg={5}>
+              <Col as="aside" lg={5} sm={12} className="pt-lg-2 mb-1 mb-lg-0" md={12}>
                 <div className="ps-lg-2">
                   <div className="d-flex align-items-center justify-content-between mb-3">
                     <div>
@@ -485,7 +546,7 @@ function SinglePropertyAltPage({ property }) {
                   {!property ? (
                     <span className="sr-only">En chargement...</span>
                   ) : (
-                    <ul className="d-flex mb-4 list-unstyled fs-sm">
+                    <ul className="d-flex mb-2 list-unstyled fs-sm">
                       {property.nuitee <= 0 &&
                         property.cout_mensuel > 0 &&
                         property.est_meuble === 0 && (
@@ -514,18 +575,22 @@ function SinglePropertyAltPage({ property }) {
                             <li className="me-3 pe-3">
                               <h3 className="h5 mb-2">Visite immobiliere</h3>
                               {property.cout_visite <= 0 && (
-                                <h2 className="h4 mb-2">4000 XOF</h2>
+                                <><h2 className="h4 mb-2">0 XOF</h2>
+                                  <p className="text-body p">
+                                    Le proprietaire ou l'agent immobiliere vous offre le droit de visite.
+                                  </p></>
                               )}
                               {property.cout_visite > 0 && (
-                                <h2 className="h4 mb-2">
+                                <><h2 className="h4 mb-2">
                                   {" "}
                                   {property && property.cout_visite} XOF
                                 </h2>
+                                  <p className="text-body p">
+                                    Le droit de visite est paye pour supporter la
+                                    prospection et tous les risques lies.
+                                  </p></>
                               )}
-                              <p className="text-body p">
-                                Le droit de visite est paye pour supporter la
-                                prospection et tous les risques lies.
-                              </p>
+
                               <Button
                                 size="md"
                                 className="w-100"
@@ -543,7 +608,7 @@ function SinglePropertyAltPage({ property }) {
                   {!property ? (
                     <span className="sr-only">En chargement...</span>
                   ) : (
-                    <ul className="d-flex mb-4 list-unstyled fs-sm">
+                    <ul className="d-flex mb-2 list-unstyled fs-sm">
                       {property.nuitee <= 0 &&
                         property.cout_mensuel > 0 &&
                         property.est_meuble === 1 && (
@@ -593,7 +658,7 @@ function SinglePropertyAltPage({ property }) {
                   {!property ? (
                     <span className="sr-only">En chargement...</span>
                   ) : (
-                    <ul className="d-flex mb-4 list-unstyled fs-sm">
+                    <ul className="d-flex mb-2 list-unstyled fs-sm">
                       {property.nuitee > 0 &&
                         property.cout_mensuel > 0 &&
                         property.est_meuble === 1 && (
@@ -646,7 +711,7 @@ function SinglePropertyAltPage({ property }) {
                   )}
 
                   {/* Property details card */}
-                  <Card className="border-0 bg-secondary mb-4">
+                  <Card className="border-0 bg-secondary mb-3" sm={12} md={12}>
                     <Card.Body>
                       <h5 className="mb-0 pb-3">
                         Détails clés du bien immobilier
@@ -670,10 +735,34 @@ function SinglePropertyAltPage({ property }) {
                           {property && property.piece}+
                           {property && property.salon}
                         </li>
+
+                        {property && property.est_meuble === 0 && property.super_categorie === "logement" && (
+
+                          <li className="mt-2 mb-0">
+                            <b>Cautions+avances sur loyer: </b>
+                            {property && property.caution_avance} mois
+                          </li>
+                        )}
                         <li className="mt-2 mb-0">
                           <b>Douches: </b>
                           {property && property.wc_douche_interne}
                         </li>
+                        {property && property.est_meuble > 0 && property.super_categorie === "sejour" && (
+                          <>
+                            <li className="mt-2 mb-0">
+                              <b>Frais d'assistance : </b>
+                              25 %(court sejour), 1 mois (long sejour) du loyer mensuel
+                            </li>
+                          </>
+
+                        )}
+
+                        {property && property.est_meuble === 0 && property.super_categorie !== "acquisition" && (
+                          <li className="mt-2 mb-0">
+                            <b>Frais d'assistance: </b>
+                            {property && property.cout_assistance_client * 100} % du loyer mensuel
+                          </li>
+                        )}
                       </ul>
                     </Card.Body>
                   </Card>
@@ -706,7 +795,7 @@ function SinglePropertyAltPage({ property }) {
                     <>
                       <Card className="border-0 bg-secondary mb-4">
                         <Card.Body>
-                          <h5>Interieur & Extérieur</h5>
+                          <h5>Intérieur & Extérieur</h5>
                           <Row
                             as="ul"
                             xs={1}
@@ -756,42 +845,23 @@ function SinglePropertyAltPage({ property }) {
             </Row>
           </Container>
           {/* Recently viewed properties (carousel) */}
-          <Container as="section" className="mb-5 pb-2 pb-lg-4">
-            <div className="d-flex align-items-center justify-content-between mb-3">
-              <h2 className="h3 mb-0">
-                Autour du quartier, voici nos recommandations
-              </h2>
-              {/* <Link href='/tg/catalog?category=rent' passHref>
-                <Button variant='link fw-normal p-0'>
-                  Consulter tout
-                  <i className='fi-arrow-long-right ms-2'></i>
-                </Button>
-              </Link> */}
-            </div>
+          {recommendProperties.length > 0 && (
+            <Container as='section' className='mb-5 pb-2 pb-lg-4'>
+              <div className='d-flex align-items-center justify-content-between mb-3'>
+                <h2 className='h3 mb-0'>D'autres biens immobiliers similaires autour du quartier</h2>
+              </div>
+              {/* Swiper slider */}
+              <div className='position-relative'>
+                <RecommendPropertyList propertyList={recommendProperties} />
+                {/* External Prev/Next buttons */}
+                <Button id='prevProperties' variant='prev' className='d-none d-xxl-block mt-n5 ms-n5' />
+                <Button id='nextProperties' variant='next' className='d-none d-xxl-block mt-n5 me-n5' />
+              </div>
 
-            {/* Swiper slider */}
-            <div className="position-relative">
-              <RecommendPropertyList propertyList={recommendProperties} />
-
-              {/* External Prev/Next buttons */}
-              <Button
-                id="prevProperties"
-                variant="prev"
-                className="d-none d-xxl-block mt-n5 ms-n5"
-              />
-              <Button
-                id="nextProperties"
-                variant="next"
-                className="d-none d-xxl-block mt-n5 me-n5"
-              />
-            </div>
-
-            {/* External pagination (bullets) buttons */}
-            <div
-              id="paginationProperties"
-              className="swiper-pagination position-relative bottom-0 py-2 mt-1"
-            ></div>
-          </Container>
+              {/* External pagination (bullets) buttons */}
+              <div id='paginationProperties' className='swiper-pagination position-relative bottom-0 py-2 mt-1'></div>
+            </Container>
+          )}
         </Container>
       )}
     </RealEstatePageLayout>
@@ -800,14 +870,51 @@ function SinglePropertyAltPage({ property }) {
 
 export async function getServerSideProps(context) {
   let { nuo } = context.query;
-  // Fetch data from external API
-  let dataAPIresponse = await fetch(
-    `https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={propriete(nuo:${nuo}){tarifications{id,mode,currency,montant},id,cout_visite,est_disponible,nuo,garage,est_meuble,titre,descriptif,surface,usage,cuisine,id,salon,piece,wc_douche_interne,cout_mensuel,nuitee,cout_vente,categorie_propriete{denomination,id},infrastructures{denomination,icone},meubles{libelle,icone},badge_propriete{id,date_expiration,badge{id,badge_name,badge_image}},pays{id,code,denomination},ville{denomination,id},quartier{id,denomination},adresse{libelle},offre{denomination},visuels{uri,position},user{id}}}`
-  );
-  let property = await dataAPIresponse.json();
-  property = property.data.propriete;
-  console.log(property);
-  // Pass data to the page via props
-  return { props: { property } };
+
+  // Check if nuo is provided
+  if (!nuo) {
+    return {
+      notFound: true, // Return 404 if `nuo` is missing
+    };
+  }
+
+  try {
+    // Fetch data from external API
+    const final_url = `${API_URL}?query={propriete(nuo:${nuo}){tarifications{id,mode,currency,montant},id,super_categorie,cout_visite,cout_assistance_client,est_disponible,nuo,garage,est_meuble,titre,descriptif,surface,usage,cuisine,salon,piece,wc_douche_interne,cout_mensuel,nuitee,cout_vente,categorie_propriete{denomination,id},infrastructures{denomination,icone},meubles{libelle,icone},badge_propriete{id,date_expiration,badge{id,badge_name,badge_image}},pays{id,code,denomination},caution_avance,ville{denomination,id},quartier{id,denomination,minus_denomination},adresse{libelle},offre{denomination,id},visuels{uri,position},user{id,organisation{name_organisation,logo,description,id,adresse_commune,tel_whatsapp}}}}`
+    const dataAPIresponse = await fetch(final_url);
+    console.log(final_url)
+    // Check if the response is OK (status 200-299)
+    if (!dataAPIresponse.ok) {
+      console.error("Failed to fetch data:", dataAPIresponse.statusText);
+      return {
+        notFound: true, // Return 404 if API call fails
+      };
+    }
+
+    // Parse the JSON data
+    const jsonResponse = await dataAPIresponse.json();
+
+    // Check if property data exists
+    const property = jsonResponse?.data?.propriete;
+    if (!property) {
+      console.error("Property data not found in the response.");
+      return {
+        notFound: true, // Return 404 if property is not found
+      };
+    }
+
+    // Log the property for debugging
+    console.log("Propriete:", property);
+
+    // Pass data to the page via props
+    return { props: { property } };
+  } catch (error) {
+    // Handle any errors during fetch or JSON parsing
+    console.error("Error fetching property data:", error);
+    return {
+      props: { property: null }, // Pass null property if there's an error
+    };
+  }
 }
+
 export default SinglePropertyAltPage;

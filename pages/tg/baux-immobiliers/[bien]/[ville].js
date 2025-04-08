@@ -1,20 +1,16 @@
 import { useRef, useEffect, useState } from 'react'
 import { useMediaQuery } from 'react-responsive'
 import { useRouter } from 'next/router'
+import { useSession } from 'next-auth/react'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
-import Offcanvas from 'react-bootstrap/Offcanvas'
 import Form from 'react-bootstrap/Form'
 import InputGroup from 'react-bootstrap/InputGroup'
 import Button from 'react-bootstrap/Button'
-import ButtonGroup from 'react-bootstrap/ButtonGroup'
-import ToggleButton from 'react-bootstrap/ToggleButton'
 import Breadcrumb from 'react-bootstrap/Breadcrumb'
-import Pagination from 'react-bootstrap/Pagination'
-import SimpleBar from 'simplebar-react'
 import Nouislider from 'nouislider-react'
 import 'simplebar/dist/simplebar.min.css'
 import 'nouislider/distribute/nouislider.css'
@@ -43,6 +39,8 @@ import 'leaflet/dist/leaflet.css'
 import RentingList from '../../../../components/iacomponents/RentingList'
 import {buildPropertiesArray} from '../../../../utils/generalUtils'
 import FormSearchOffcanvas from '../../../../components/iacomponents/FormSearchOffcanvas'
+import IAPaginaation from '../../../../components/iacomponents/IAPagination'
+import { API_URL } from '../../../../utils/settings'
 
 
 
@@ -54,7 +52,7 @@ const CatalogPage = ({_rentingProperties,bienId,soffreId,villeId}) => {
     document.body.classList.add('fixed-bottom-btn')
     return () => body.classList.remove('fixed-bottom-btn')
   })
-
+  const { data: session } = useSession();
   // Query param (Switch between Rent and Sale category)
   const router = useRouter();
   const { bien } = router.query;
@@ -334,6 +332,7 @@ const CatalogPage = ({_rentingProperties,bienId,soffreId,villeId}) => {
     <RealEstatePageLayout
       pageTitle={pageTitle}
       activeNav='Catalog'
+      userLoggedIn={session ? true : false}
     >
 
       {/* Page container */}
@@ -478,28 +477,15 @@ const CatalogPage = ({_rentingProperties,bienId,soffreId,villeId}) => {
               <hr className='d-none d-sm-block w-100 mx-4' />
               <div className='d-none d-sm-flex align-items-center flex-shrink-0 text-muted'>
                 <i className='fi-check-circle me-2'></i>
-                <span className='fs-sm mt-n1'>148 résultats</span>
+                <span className='fs-sm mt-n1'>{rentingProperties.length} résultats</span>
               </div>
             </div>
 
             {/* Catalog grid */}
-            <Row xs={1} sm={2} xl={3} className='g-4 py-4'>
-              <RentingList rentingProperties={rentingProperties}/>
-            </Row>
+            
 
             {/* Pagination */}
-            <nav className='border-top pb-md-4 pt-4' aria-label='Pagination'>
-              <Pagination className='mb-1'>
-                <Pagination.Item active>{1}</Pagination.Item>
-                <Pagination.Item>{2}</Pagination.Item>
-                <Pagination.Item>{3}</Pagination.Item>
-                <Pagination.Ellipsis />
-                <Pagination.Item>{8}</Pagination.Item>
-                <Pagination.Item>
-                  <i className='fi-chevron-right'></i>
-                </Pagination.Item>
-              </Pagination>
-            </nav>
+            <IAPaginaation dataPagineted={rentingProperties}/>
           </Col>
         </Row>
       </Container>
@@ -522,21 +508,19 @@ export async function getServerSideProps(context) {
   
   
 
-  const _ville = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getTownIdByTownName(minus_denomination:"${toLowerCaseString(ville)}")
+  const _ville = await fetch(`${API_URL}?query={getTownIdByTownName(minus_denomination:"${toLowerCaseString(ville)}")
   {denomination,id,code}}`);
   const _jsonville = await _ville.json();
 
-  const _bien = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getCategoryIdByCategorieName(minus_denomination:"${toLowerCaseString(bien)}"){denomination,id,code}}`);
+  const _bien = await fetch(`${API_URL}?query={getCategoryIdByCategorieName(minus_denomination:"${toLowerCaseString(bien)}"){denomination,id,code}}`);
   const _jsonbien= await _bien.json();
 
   const bienId=_jsonbien.data.getCategoryIdByCategorieName;
   console.log("BienId: "+ bienId);
   const villeId=_jsonville.data.getTownIdByTownName;
-  
-  const offreId="4";
   // Fetch data from external API
-  let dataAPIresponse = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getPropertiesByKeyWords(limit:10,orderBy:{column:NUO,order:DESC},offre_id:"${offreId}",ville_id:"${villeId.id}",categorie_id:"${bienId.id}")
-  {badge_propriete{badge{badge_name,badge_image}},visuels{uri,position},id,surface,lat_long,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination,id,minus_denomination},bien{denomination,id,minus_denomination},ville_id,offre_id}}`);
+  let dataAPIresponse = await fetch(`${API_URL}?query={getPropertiesByKeyWords(limit:10,orderBy:{column:NUO,order:DESC},offre_id:"4",ville_id:"${villeId.id}",categorie_id:"${bienId.id}")
+  {badge_propriete{badge{badge_name,badge_image}},visuels{uri,position},id,surface,lat_long,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination,id,minus_denomination}}}`);
   let _rentingProperties = await dataAPIresponse.json();
   //console.log(_rentingProperties.data.getPropertiesByKeyWords);
   _rentingProperties = _rentingProperties.data.getPropertiesByKeyWords;

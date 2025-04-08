@@ -29,6 +29,7 @@ import 'filepond/dist/filepond.min.css'
 import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css'
 import moment from 'moment'
 import { set } from 'nprogress'
+import { API_URL } from '../../utils/settings'
 var FormData = require('form-data');
 
 
@@ -68,41 +69,14 @@ const AddProjectPage = (props) => {
 
     event.stopPropagation();
     event.preventDefault();
-
-    //console.log("Image from c to s:", files[0].filename);
-    //const [createObjectURL, setCreateObjectURL] = useState(null);
-    //console.log("Full url: ", createObjectURL);
-    //console.log("Description:",descriptionProjet);
-    /* formData.append('map', '{"0": ["variables.file"]}');
-    formData.append('operations', `{"query":"mutation($file:Upload!){Upload(file: $file)}"}`)
-    formData.append("0", files);
-
-    await fetch(
-      "https://immoaskbetaapi.omnisoft.africa/public/api/v2", { method: "POST", body: formData }).then((response) => response.json())
-      .then((response) => {
-        if (response && response.data) {
-          setSentFile(response.data.data.Upload.hashName);
-          console.log("Project file:",sentFile)
-        } else {
-          console.error("Response data or data project is undefined");
-        }
-        
-      }).
-      catch((error) => {
-        console.error('Error:', error)
-      }); */
-
-    
-
-
-    var projectData = `{user_id:${Number(session ? session.user.id : 0)},final_date:"${moment(dateLivrable).format('YYYY-MM-DD hh:mm:ss')}",start_date:"${moment(new Date()).format('YYYY-MM-DD hh:mm:ss')}",statut:1,description:"${descriptionProjet}",project_name:"${categorieProjet.split(",")[1]}",project_category:"${categorieProjet.split(",")[0]}",project_document:"${sentFile}"}`
+    var projectData = `{user_id:${Number(session ? session.user.id : 0)},final_date:"${moment(dateLivrable).format('YYYY-MM-DD hh:mm:ss')}",start_date:"${moment(new Date()).format('YYYY-MM-DD hh:mm:ss')}",statut:0,description:"${descriptionProjet}",project_name:"${categorieProjet.split(",")[1]}",project_category:"${categorieProjet.split(",")[0]}",project_document:"${sentFile}"}`
     let data = JSON.stringify({
       query: `mutation{createProject(input:${projectData}){id,description}}`,
       variables: {}
     });
     let config = {
       method: 'post',
-      url: 'https://immoaskbetaapi.omnisoft.africa/public/api/v2',
+      url: API_URL,
       headers: {
         'Content-Type': 'application/json'
       },
@@ -184,8 +158,17 @@ const AddProjectPage = (props) => {
                       <option value='Construction,Immeuble commercial'>Construction d'un immeuble commercial</option>
                       <option value='Consruction, Hotel'>Construction d'un hotel</option>
                       <option value="Logement,Location d'appartement">Location d'appartement</option>
+                      <option value="Logement,Location de villa">Location de villa</option>
+                      <option value="Bail,Location de bureau">Location de bureau</option>
+                      <option value="Bail,Location de magasin">Location de magasin</option>
+                      <option value="Bail,Location de boutique">Location de boutique</option>
+                      <option value="Bail,Location de Salle de Conference">Location de de salle de conference</option>
+                      <option value="Bail,Location de terrain">Location de terrain</option>
+                      <option value="Sejour,Reservation de sejour">Reservation de sejour meuble</option>
                       <option value='Achat,Terrain rural'>Achat d'un terrain rural</option>
                       <option value='Achat,Terrain urbain'>Achat d'un terrain urbain</option>
+                      <option value='Achat,Achat de Villa'>Achat de villa</option>
+                      <option value="Achat,Achat d\'appartement">Achat d'appartement</option>
                       <option value='Accompagnement,Titre foncier'>Obtention de titre foncier</option>
                     </Form.Select>
                     <Form.Control.Feedback type="invalid">
@@ -248,7 +231,7 @@ const AddProjectPage = (props) => {
                 <Alert variant='info' className='d-flex mb-4'>
                   <i className='fi-alert-circle me-2 me-sm-3'></i>
                   <p className='fs-sm mb-1'>Un fichier esquisse du projet. Obligatoire si vous
-                  soumettez un projet immobilier de construction, de suivi de chantier etc...</p>
+                    soumettez un projet immobilier de construction, de suivi de chantier etc...</p>
                 </Alert>
                 <FilePond
                   files={files ? files : []}
@@ -265,14 +248,14 @@ const AddProjectPage = (props) => {
                         return formData;
                       },
                       onload: (response) => {
-                        console.log("Server:",response);
+                        console.log("Server:", response);
                         if (response) {
-                          var parsedData=JSON.parse(response)
-                          var uploadData= JSON.parse(parsedData.data.Upload);
-                          const hashFileNane= uploadData.hashName;
+                          var parsedData = JSON.parse(response)
+                          var uploadData = JSON.parse(parsedData.data.Upload);
+                          const hashFileNane = uploadData.hashName;
                           setSentFile(hashFileNane);
-                          console.log("Project file name:",uploadData.hashName)
-                          
+                          console.log("Project file name:", uploadData.hashName)
+
                         } else {
                           console.error("Response data or data project is undefined");
                         }

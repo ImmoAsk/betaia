@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Card, Badge, Button } from 'react-bootstrap';
 import { formatDate } from '../../utils/generalUtils';
-
+import { useSession, getSession } from 'next-auth/react';
+import Link from 'next/link'
 const getBadgeProps = (statut) => {
     switch (statut) {
         case 0:
@@ -17,14 +18,24 @@ const getBadgeProps = (statut) => {
 
 const updateNegotiation = async ({ negociationOffer, statut }) => {
     console.log("Update negociation statut:", negociationOffer.id, statut);
+    if (!negociationOffer || !negociationOffer.id) {
+        console.error("Invalid negotiation offer.");
+        return null;
+    }
+
     try {
         const response = await fetch(
             `https://immoaskbetaapi.omnisoft.africa/public/api/v2?query=mutation{updateNegotiation(input:{id:${Number(negociationOffer.id)},statut:${statut}}){statut}}`
         );
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
         const responseData = await response.json();
         if (!responseData.data) {
             throw new Error("Failed to update negotiation.");
         }
+
         return responseData.data.updateNegotiation;
     } catch (error) {
         console.error("Error updating negotiation:", error);
@@ -32,12 +43,15 @@ const updateNegotiation = async ({ negociationOffer, statut }) => {
     }
 };
 
+
 const RentingNegotiationOffer = ({ project }) => {
     const { text, variant } = getBadgeProps(project?.statut);
-
+    const { data: session } = useSession();
+    const role = session?.user?.roleId
     // Placeholder functions for the "Accept" and "Decline" buttons
     const handleAccept = async (event) => {
         event.preventDefault();
+        event.stopPropagation();
         const response = await updateNegotiation({ negociationOffer: project, statut: 1 });
         if (response) {
             console.log('Accepted the project:', project.id);
@@ -47,6 +61,7 @@ const RentingNegotiationOffer = ({ project }) => {
 
     const handleDecline = async (event) => {
         event.preventDefault();
+        event.stopPropagation();
         const response = await updateNegotiation({ negociationOffer: project, statut: 2 });
         if (response) {
             console.log('Declined the project:', project.id);
@@ -64,8 +79,8 @@ const RentingNegotiationOffer = ({ project }) => {
                         </div>
                     </div>
                     <h3 className="h6 card-title pt-1 mb-3">
-                        <p className="text-nav stretched-link text-decoration-none">
-                            Le locataire <strong>{project.fullname_negociateur}</strong> souhaite négocier le loyer mensuel de propriété 
+                        <p className="text-nav text-decoration-none">
+                            Le locataire <strong>{project.fullname_negociateur}</strong> {role === '1200'&& <>{"+" +project.telephone_negociateur}</>} souhaite négocier le loyer mensuel de propriété
                             No. {project.propriete.nuo} pour un montant de <strong>{project.montant}</strong>
                         </p>
                     </h3>
@@ -77,27 +92,22 @@ const RentingNegotiationOffer = ({ project }) => {
                     </div>
 
                     {/* Show Accept and Decline buttons when project.statut === 0 */}
-                    {project.statut === 0 && (
-                        <div className="d-flex justify-content-center mt-3">
-                            <Button
-                                as='a'
-                                variant="outline-secondary"
-                                className="me-2 flex-grow-1"
-                                onClick={(e) => handleDecline(e)}
-                            >
-
-                                Decliner l'offre
-                            </Button>
-                            <Button
-                                as='a'
-                                variant="primary"
-                                className="flex-grow-1"
-                                onClick={(e) => handleAccept(e)}
-                            >
-                                Accepter l'offre
-                            </Button>
-                        </div>
-                    )}
+                    {(role === '1230' || role === '1200') && project.statut === 0 && (
+                    <div className="d-flex justify-content-center mt-3">
+                        <button
+                            className="btn btn-outline-secondary me-2 flex-grow-1"
+                            onClick={handleDecline}
+                        >
+                            Decliner
+                        </button>
+                        <button
+                            className="btn btn-primary flex-grow-1"
+                            onClick={handleAccept}
+                        >
+                           Accepter
+                        </button>
+                    </div>
+                )}
                 </Card.Body>
             </Card>
         </div>

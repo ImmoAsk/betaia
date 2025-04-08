@@ -6,11 +6,11 @@ import SocialButton from "../SocialButton";
 import StarRating from "../StarRating";
 import RealEstateAgency from "./RealEstateAgency";
 
+
 export default function ProRealEstateAgency({user}) {
     const { status, data:organisation, error, isFetching,isLoading,isError }  = useOrganisation(user);
     //console.log(organisation);
-    
-    //console.log(organisation && organisation.organisation);
+    console.log(organisation && organisation.organisation);
     if(isLoading) return <LoadingSpinner/>
 
     if(organisation && organisation.organisation!=null && organisation.organisation.status==4) {return(
@@ -22,8 +22,8 @@ export default function ProRealEstateAgency({user}) {
                 <p>{organisation.organisation.description}</p>
                 <footer className='d-flex justify-content-between'>
                     <div className='pe3'>
-                        <h6 className='mb-0'>{organisation.name}</h6>
-                        <div className='text-muted fw-normal fs-sm mb-3'>Promoteur immobilier</div>
+                        <h6 className='mb-0'>{organisation.organisation.name}</h6>
+                        <div className='text-muted fw-normal fs-sm mb-3'>Agence immobilière</div>
                         <SocialButton href={`https://facebook.com/${organisation.organisation.facebook_url}`} variant='solid' brand='facebook' roundedCircle className='mb-2 me-2' />
                         <SocialButton href={`https://x.com/${organisation.organisation.twitter_url}`} variant='solid' brand='twitter' roundedCircle className='mb-2 me-2' />
                         <SocialButton href={`https://linkedin.com/company/${organisation.organisation.linkedin_url}`} variant='solid' brand='linkedin' roundedCircle className='mb-2' />
@@ -37,6 +37,6 @@ export default function ProRealEstateAgency({user}) {
         </Card>
     </>
     )}
-    if(!organisation || organisation.organisation===null || organisation.organisation.status!=4) return (<RealEstateAgency/>)
+    if(!organisation || organisation.organisation===null || organisation.organisation.status!=4) return (<></>)
 }
 

@@ -1,13 +1,18 @@
 import React, { useState, useEffect } from "react";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
+import Link from 'next/link';
 import Button from "react-bootstrap/Button";
 import CloseButton from "react-bootstrap/CloseButton";
 import CardProperty from "./CardProperty";
 import { createPropertyObject } from "../../utils/buildPropertiesArray";
 import { useSession } from "next-auth/react";
 import { DatePicker } from "antd";
+import axios from 'axios';
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css';
 import moment from "moment";
+import { API_URL } from "../../utils/settings";
 
 const onChange = (date, dateString) => {
   console.log(date, dateString);
@@ -27,14 +32,13 @@ const BookFurnishedPropertyModal = ({
   const [numberOfChildren, setNumberOfChildren] = useState("");
   const [numberOfAdults, setNumberOfAdults] = useState("");
   const [pickUpLocation, setPickUpLocation] = useState("");
+  const [bookingNotification, setBookingNotification] = useState(null);
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [firstName, setFirstName] = useState('');
 
   const { data: session } = useSession();
-  const isFormValid =
-    checkIn &&
-    checkOut &&
-    numberOfAdults !== "" &&
-    numberOfChildren !== "" &&
-    pickUpLocation !== "";
+  const isFormValid = session ? (checkIn && checkOut) : (checkIn && checkOut && firstName !== "" && email !== "" && phone !== "")
 
   // Handle date changes for check-in and check-out
   const handleCheckInChange = (date, dateString) => {
@@ -67,58 +71,58 @@ const BookFurnishedPropertyModal = ({
     event.preventDefault();
 
     // Redirect to sign-in page if user is not authenticated
-    if (!session) {
+    /* if (!session) {
       alert("You need to sign in to book a room.");
       signIn(); 
       return;
-    }
-
+    } */
     if (!isFormValid || error) {
+      console.log("Le formulaire n'est pas valide. Veuillez vérifier les champs.");
       setValidated(true);
-      alert("Please fix errors before submitting.");
       return;
     }
 
     const formData = {
       checkInDate: checkIn,
       checkOutDate: checkOut,
-      numberOfAdults: numberOfAdults,
-      numberOfChildren: numberOfChildren,
-      userId: session.user.id, // User ID from the session
+      firstName: firstName,
+      email: session ? "" : email,
+      phone: session ? "" : phone,
+      firstName: firstName,
+      pickUpLocation: pickUpLocation,
+      userId: session ? Number(session.user.id) : 0, // User ID from the session
     };
-
     // Prepare GraphQL mutation for rent negotiation
-    
     const booking_data = {
-      query: `mutation BookFurnishedProperty($input: BookingInput!) {
+      query: `mutation BookFurnishedProperty($input: ReservationInput!) {
         createReservation(input: $input) {
           id
         }
       }`,
       variables: {
         input: {
-          //email_reservateur: session ? "" : formData.,
-          //phone_negociateur: session ? "" : formData.phone,
-          //user_id: session ? session.user.id : 0,
-          //date_arrive: "2024-09-10 14:40:30",
-          //date_depart: Number(formData.offer),
-          //propriete_id: Number(property.id),
-          //proprietaire_id: Number(property?.user?.id),
-          //fullname_reservateur: session ? "" : formData.firstName,
-          //adulte:1,
-          //enfant:1,
-          //pickup_place:""
+          email_reservateur: formData.email,
+          phone_reservateur: formData.phone,
+          user_id: formData.userId,
+          date_arrive: formData.checkInDate,
+          date_depart: formData.checkOutDate,
+          propriete_id: Number(property.id),
+          proprietaire_id: Number(property?.user?.id),
+          fullname_reservateur: formData.firstName,
+          adulte: 1,
+          enfant: 1,
+          pickup_place: formData.pickUpLocation
         }
       }
     };
-    console.log(bookin_data);
+    console.log(booking_data);
     try {
-      const response = await axios.post('https://immoaskbetaapi.omnisoft.africa/public/api/v2', negotiation_data, {
+      const response = await axios.post(API_URL, booking_data, {
         headers: { 'Content-Type': 'application/json' }
       });
 
-      if (Number(response.data?.data?.createReservation?.id)>= 1) {
-        setBookingNotification("Votre négociation a été envoyée avec succès. Vous serez contacté sous peu.");
+      if (Number(response.data?.data?.createReservation?.id) >= 1) {
+        setBookingNotification("Votre réservation a été envoyée avec succès. Vous serez contacté sous peu.");
         // Redirect or perform any other actions needed
         //router.push("/thank-you");
       }
@@ -126,10 +130,10 @@ const BookFurnishedPropertyModal = ({
       console.error("Error during negotiation:", error);
     }
     console.log(formData);
-
     // For now, saving reservation to local storage
     localStorage.setItem("reservation", JSON.stringify(formData));
-    alert("Booking successful!");
+    const reservation = localStorage.getItem("reservation");
+    setValidated(true);
   };
 
   // Restrict date selection to today or later
@@ -150,84 +154,124 @@ const BookFurnishedPropertyModal = ({
         />
         <div className="row mx-0">
           <div className="col-md-6 border-end-md p-4 p-sm-5">
-            <h2 className="h3 mb-2 mb-sm-2">Book a Property</h2>
+            <h2 className="h3 mb-2 mb-sm-2">Reservation d'un sejour</h2>
             <div className="d-flex align-items-center py-3 mb-3">
               <CardProperty property={propertyCard} />
             </div>
             <div className="mt-2 mt-sm-2">
-              Before booking,{" "}
+              Avant de réserver,{" "}
               <a href="#" onClick={onSwap}>
-                check availability
+                Vérifier la disponibilité
               </a>
-              .
             </div>
           </div>
 
           <div className="col-md-6 p-4 p-sm-5">
-            <h3 className="h4">Make a Reservation</h3>
-
-            <Form onSubmit={handleSubmit}>
+            <h3 className="h4">Faire une réservation</h3>
+            {bookingNotification && <div className="alert alert-success mt-3">{bookingNotification}</div>}
+            {!session && <i>✨ Astuce : Créez votre compte <Link href='/signup-light'>
+              <a className='fs-sm'>ici</a>
+            </Link> pour ne plus à remplir votre nom, prénom, email et numéro de téléphone 📱 à chaque fois. 😊</i>}
+            <Form noValidate validated={validated} onSubmit={handleSubmit}>
               <Form.Group controlId="formCheckIn">
-                <Form.Label>Check-In Date</Form.Label>
-                <Form.Control as={DatePicker}
-                className="mb-2"
-                getPopupContainer={(trigger) => trigger.parentNode}
-                onChange={handleCheckInChange}
-                disabledDate={disabledDate}
-                required
-                />
-              
-              </Form.Group>
-              <Form.Group controlId="formCheckOut" >
-                <Form.Label>Check-Out Date</Form.Label>
+                <Form.Label>Date d'arrivée</Form.Label>
                 <Form.Control as={DatePicker}
                   className="mb-2"
+                  showTime
+                  getPopupContainer={(trigger) => trigger.parentNode}
+                  onChange={handleCheckInChange}
+                  disabledDate={disabledDate}
+                  required
+                />
+
+              </Form.Group>
+              <Form.Group controlId="formCheckOut" >
+                <Form.Label>Date de départ</Form.Label>
+                <Form.Control as={DatePicker}
+                  className="mb-2"
+                  showTime
                   getPopupContainer={(trigger) => trigger.parentNode}
                   onChange={handleCheckOutChange}
                   disabledDate={disabledDate}
                   required
                 />
               </Form.Group>
-              <Form.Group controlId="formNumberOfAdults">
-                <Form.Label>Number of Adults:</Form.Label>
-                <Form.Control
-                  type="number"
-                  name="numberOfAdults"
-                  value={numberOfAdults}
-                  placeholder="Adults"
-                  onChange={(e) => setNumberOfAdults(e.target.value)}
-                  min="1"
-                  required
-                />
-              </Form.Group>
-              <Form.Group controlId="formNumberOfChildren" className="mb-2">
-                <Form.Label>Number of Children</Form.Label>
-                <Form.Control
-                  type="number"
-                  name="numberOfChildren"
-                  placeholder="Children"
-                  value={numberOfChildren}
-                  onChange={(e) => setNumberOfChildren(e.target.value)}
-                  required
-                />
-              </Form.Group>
               <Form.Group controlId="formPickUpLocation" className="mb-2">
-                <Form.Label>Pick Up Location</Form.Label>
+                <Form.Label>Ou viendrons-nous vous chercher?</Form.Label>
                 <Form.Control
                   type="text"
                   name="pickUpLocation"
-                  placeholder="Location"
+                  placeholder="Ou viendrons-nous vous chercher"
                   value={pickUpLocation}
                   onChange={(e) => setPickUpLocation(e.target.value)}
-                  required
                 />
               </Form.Group>
+              {!session && (
+                <>
+                  <Form.Group className='mb-2'>
+                    <Form.Label>Numéro de téléphone</Form.Label>
+                    <PhoneInput
+                      country={'tg'}
+                      value={phone}
+                      onChange={(phone) => setPhone(phone)}
+                      enableSearch={true}
+                      inputProps={{
+                        name: 'phone',
+                        required: true,
+                        autoFocus: true,
+                        className: 'form-control w-100 form-control-lg',
+                      }}
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      Veuillez saisir un numéro de téléphone valide.
+                    </Form.Control.Feedback>
+                  </Form.Group>
+
+                  <Form.Group controlId='si-email' className='mb-2'>
+                    <Form.Label>Votre email ?</Form.Label>
+                    <Form.Control
+                      type='email'
+                      name='email'
+                      placeholder='Saisir votre email'
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      Veuillez saisir une adresse email valide.
+                    </Form.Control.Feedback>
+                  </Form.Group>
+
+                  <Form.Group controlId='si-firstname' className='mb-2'>
+                    <Form.Label>Votre prénom ?</Form.Label>
+                    <Form.Control
+                      type='text'
+                      name='firstname'
+                      placeholder='Saisir votre prénom'
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      required
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      Veuillez saisir votre prénom.
+                    </Form.Control.Feedback>
+                  </Form.Group>
+                </>
+              )}
+
               {error && <p style={{ color: "red" }}>{error}</p>}
-              <h3>Total Cost: ${totalCost}</h3>
-              <Button variant="primary" type="submit" className="mt-3">
-                Book Now
+              {/* <h3>Total Cost: ${totalCost}</h3> */}
+              <Button
+                type='submit'
+                disabled={!isFormValid}
+                size='lg'
+                variant={`primary ${pillButtons ? 'rounded-pill' : ''} w-100`}
+              >
+                Réserver maintenant
               </Button>
+
             </Form>
+            {bookingNotification && <div className="alert alert-success mt-3">{bookingNotification}</div>}
           </div>
         </div>
       </Modal.Body>

@@ -39,6 +39,7 @@ import {buildPropertiesArray} from '../../../../../utils/generalUtils'
 import FormSearchOffcanvas from '../../../../../components/iacomponents/FormSearchOffcanvas'
 import { useMockPaginate } from '../../../../../customHooks/usePagination'
 import IAPaginaation from '../../../../../components/iacomponents/IAPagination'
+import { API_URL } from '../../../../../utils/settings'
 
 
 const CatalogPage = ({_rentingProperties,bienId,villeId,quartierId,soffreId}) => {
@@ -516,7 +517,7 @@ const CatalogPage = ({_rentingProperties,bienId,villeId,quartierId,soffreId}) =>
 // Utility to handle fetch requests and errors
 async function fetchGraphQL(query) {
   try {
-    const response = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query=${query}`);
+    const response = await fetch(`${API_URL}?query=${query}`);
     const data = await response.json();
     if (data.errors) {
       console.error('GraphQL error:', data.errors);

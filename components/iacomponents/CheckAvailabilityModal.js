@@ -1,24 +1,84 @@
-import { useState } from 'react'
-import Link from 'next/link'
-import Modal from 'react-bootstrap/Modal'
-import Form from 'react-bootstrap/Form'
-import Button from 'react-bootstrap/Button'
-import CloseButton from 'react-bootstrap/CloseButton'
-import ImageLoader from '../ImageLoader'
-import PasswordToggle from '../PasswordToggle'
+import { useState } from 'react';
+import Modal from 'react-bootstrap/Modal';
+import Form from 'react-bootstrap/Form';
+import Button from 'react-bootstrap/Button';
+import CloseButton from 'react-bootstrap/CloseButton';
+import CardProperty from './CardProperty';
+import Link from 'next/link';
+import { createPropertyObject } from '../../utils/buildPropertiesArray'
+import { useSession } from 'next-auth/react';
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css';
+import axios from 'axios';
+import { min } from 'moment'
+import { API_URL } from '../../utils/settings';
 
-const CheckAvailabilityModal = ({ property,onSwap, pillButtons, ...props }) => {
+const CheckAvailabilityModal = ({ property, onSwap, pillButtons, ...props }) => {
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [requestAvailability, setRequestAvailability] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [validated, setValidated] = useState(false);
+  const [disponibiliteNotification, setDisponibiliteNotification] = useState(null);
 
-  // Form validation
-  const [validated, setValidated] = useState(false)
-  const handleSubmit = (event) => {
-    const form = event.currentTarget
-    if (form.checkValidity() === false) {
-      event.preventDefault()
-      event.stopPropagation()
+  const { data: session } = useSession();
+
+  // Adjust validation logic based on session
+  const isFormValid = session ? true : (email && phone  && firstName);
+
+  // Form submission handler
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    // Validate form inputs
+    if (!isFormValid) {
+      console.log("Le formulaire n'est pas valide. Veuillez vérifier les champs.");
+      setValidated(true);
+      return;
     }
+
+    // Collect form data
+    const formData = {
+      email,
+      phone,
+      firstName
+    };
+    console.log("Before Mutation: ", formData)
+    // Prepare GraphQL mutation for rent disponibilite
+    const disponibilite_data = {
+      query: `mutation CheckAvailability($input: Verification_disponibiliteInput!) {
+        createVerificationDisponibilite(input: $input) {
+          id
+        }
+      }`,
+      variables: {
+        input: {
+          user_id: session ? Number(session.user?.id) : 0,
+          email_verificateur: formData.email,
+          telephone_verificateur: formData.phone,
+          propriete_id: Number(property.id),
+          proprietaire_id: Number(property?.user?.id),
+          fullname_verificateur: formData.firstName,
+        }
+      }
+    };
+    console.log("Before Mutation: ", disponibilite_data)
+    try {
+      const response = await axios.post(API_URL, disponibilite_data, {
+        headers: { 'Content-Type': 'application/json' }
+      });
+
+      if (Number(response.data?.data?.createVerificationDisponibilite?.id) >= 1) {
+        setDisponibiliteNotification("La verification de disponibilité a été envoyée avec succès. Le propritaire vous confirme sous peu.");
+      }
+    } catch (error) {
+      console.error("Error during disponibilite:", error);
+    }
+
     setValidated(true);
-  }
+  };
+
+  const propertyCard = createPropertyObject(property);
 
   return (
     <Modal {...props} className='signin-modal'>
@@ -28,52 +88,88 @@ const CheckAvailabilityModal = ({ property,onSwap, pillButtons, ...props }) => {
           aria-label='Close modal'
           className='position-absolute top-0 end-0 mt-3 me-3'
         />
-        <div className='row mx-0 align-items-center'>
+        <div className='row mx-0'>
           <div className='col-md-6 border-end-md p-4 p-sm-5'>
-            <h2 className='h3 mb-4 mb-sm-5'>Disponibilité de : N°{property.nuo} {property.categorie_propriete.denomination} à {property.offre.denomination} | {property.surface} m²</h2>
-            <div className='d-flex justify-content-center'>
-              <ImageLoader
-                src='/images/signin-modal/signin.svg'
-                width={344}
-                height={292}
-                alt='Illusration'
-              />
-            </div>
-            <div className='mt-4 mt-sm-5'>Planifier la visite maintenant <a href='#' onClick={onSwap}>Planifier la visite</a></div>
-          </div>
-          <div className='col-md-6 px-4 pt-2 pb-4 px-sm-5 pb-sm-5 pt-md-5'>
-            <Button variant={`outline-info ${pillButtons ? 'rounded-pill' : ''} w-100 mb-3`}>
-              <i className='fi-google fs-lg me-1'></i>
-              Verifier la disponibilité 
-            </Button>
-            <Button variant={`outline-info ${pillButtons ? 'rounded-pill' : ''} w-100 mb-3`}>
-              <i className='fi-facebook fs-lg me-1'></i>
-              Sign in with Facebook
-            </Button>
+            <h2 className='h3 mb-2 mb-sm-2'>Disponibilité du bien immobilier N° {property.nuo}</h2>
+
             <div className='d-flex align-items-center py-3 mb-3'>
-              <hr className='w-100' />
-              <div className='px-3'>Or</div>
-              <hr className='w-100' />
+              <CardProperty property={propertyCard} />
             </div>
+            <div className='mt-2 mt-sm-2'>
+              Apres la disponibilité, <a href='#' onClick={onSwap}>Planifier la visite</a>
+            </div>
+          </div>
+
+          <div className='col-md-6 p-4 p-sm-5'>
+            <h3 className='h4'>
+              Verification de disponibilité du bien immobilier N° {property.nuo}. Bonne chance !
+            </h3>
+            {!session && <i>✨ Astuce : Créez votre compte <Link href='/signup-light'>
+              <a className='fs-sm'>ici</a>
+            </Link> pour ne plus à remplir votre nom, prénom, email et numéro de téléphone 📱 à chaque fois. 😊</i>}
             <Form noValidate validated={validated} onSubmit={handleSubmit}>
-              <Form.Group controlId='si-email' className='mb-4'>
-                <Form.Label>Email address</Form.Label>
-                <Form.Control
-                  type='email'
-                  placeholder='Enter your email'
-                  required
-                />
-              </Form.Group>
-              <Form.Group className='mb-4'>
-                <div className='d-flex align-items-center justify-content-between mb-2'>
-                  <Form.Label htmlFor='si-password' className='mb-0'>Password</Form.Label>
-                  <Link href='#'>
-                    <a className='fs-sm'>Forgot password?</a>
-                  </Link>
-                </div>
-                <PasswordToggle id='si-password' placeholder='Enter password' required />
-              </Form.Group>
-              <Button type='submit' size='lg' variant={`primary ${pillButtons ? 'rounded-pill' : ''} w-100`}>Sign in</Button>
+              {!session && (
+                <>
+                  <Form.Group className='mb-2'>
+                    <Form.Label>Numéro de téléphone</Form.Label>
+                    <PhoneInput
+                      country={'tg'}
+                      value={phone}
+                      onChange={(phone) => setPhone(phone)}
+                      enableSearch={true}
+                      inputProps={{
+                        name: 'phone',
+                        required: true,
+                        autoFocus: true,
+                        className: 'form-control w-100 form-control-lg',
+                      }}
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      Veuillez saisir un numéro de téléphone valide.
+                    </Form.Control.Feedback>
+                  </Form.Group>
+
+                  <Form.Group controlId='si-email' className='mb-2'>
+                    <Form.Label>Votre email ?</Form.Label>
+                    <Form.Control
+                      type='email'
+                      name='email'
+                      placeholder='Saisir votre email'
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      Veuillez saisir une adresse email valide.
+                    </Form.Control.Feedback>
+                  </Form.Group>
+
+                  <Form.Group controlId='si-firstname' className='mb-2'>
+                    <Form.Label>Votre prénom ?</Form.Label>
+                    <Form.Control
+                      type='text'
+                      name='firstname'
+                      placeholder='Saisir votre prénom'
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      required
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      Veuillez saisir votre prénom.
+                    </Form.Control.Feedback>
+                  </Form.Group>
+                </>
+              )}
+
+              <Button
+                type='submit'
+                disabled={!isFormValid}
+                size='lg'
+                variant={`primary ${pillButtons ? 'rounded-pill' : ''} w-100`}
+              >
+                Vérifier la disponibilité
+              </Button>
+              {disponibiliteNotification && <div className="alert alert-success mt-3">{disponibiliteNotification}</div>}
             </Form>
           </div>
         </div>
@@ -82,4 +178,4 @@ const CheckAvailabilityModal = ({ property,onSwap, pillButtons, ...props }) => {
   )
 }
 
-export default CheckAvailabilityModal
+export default CheckAvailabilityModal;

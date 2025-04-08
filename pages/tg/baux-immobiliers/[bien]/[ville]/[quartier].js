@@ -1,30 +1,23 @@
 import { useRef, useEffect, useState } from 'react'
 import { useMediaQuery } from 'react-responsive'
 import { useRouter } from 'next/router'
+import { useSession } from 'next-auth/react'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import RealEstatePageLayout from '../../../../../components/partials/RealEstatePageLayout'
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
-import Offcanvas from 'react-bootstrap/Offcanvas'
-import Nav from 'react-bootstrap/Nav'
 import Form from 'react-bootstrap/Form'
 import InputGroup from 'react-bootstrap/InputGroup'
 import Button from 'react-bootstrap/Button'
-import ButtonGroup from 'react-bootstrap/ButtonGroup'
-import ToggleButton from 'react-bootstrap/ToggleButton'
 import Breadcrumb from 'react-bootstrap/Breadcrumb'
-import Pagination from 'react-bootstrap/Pagination'
 import ImageLoader from '../../../../../components/ImageLoader'
-import PropertyCard from '../../../../../components/PropertyCard'
-import SimpleBar from 'simplebar-react'
 import Nouislider from 'nouislider-react'
 import 'simplebar/dist/simplebar.min.css'
 import 'nouislider/distribute/nouislider.css'
 import { capitalizeFirstLetter, toLowerCaseString } from '../../../../../utils/generalUtils'
 import PropertiesList from '../../../../../components/iacomponents/PropertiesList'
-import RentingList from '../../../../../components/iacomponents/RentingList'
 
 const MapContainer = dynamic(() =>
   import('react-leaflet').then(mod => mod.MapContainer),
@@ -45,6 +38,8 @@ const Popup = dynamic(() =>
 import 'leaflet/dist/leaflet.css'
 import {buildPropertiesArray} from '../../../../../utils/generalUtils'
 import FormSearchOffcanvas from '../../../../../components/iacomponents/FormSearchOffcanvas'
+import IAPaginaation from '../../../../../components/iacomponents/IAPagination'
+import { API_URL } from '../../../../../utils/settings'
 
 
 const CatalogPage = ({_rentingProperties,bienId,villeId,quartierId,soffreId}) => {
@@ -55,7 +50,7 @@ const CatalogPage = ({_rentingProperties,bienId,villeId,quartierId,soffreId}) =>
     document.body.classList.add('fixed-bottom-btn')
     return () => body.classList.remove('fixed-bottom-btn')
   })
-
+  const { data: session } = useSession();
   // Query param (Switch between Rent and Sale category)
   const router = useRouter();
   const { bien } = router.query;
@@ -346,6 +341,7 @@ const CatalogPage = ({_rentingProperties,bienId,villeId,quartierId,soffreId}) =>
   return (
     <RealEstatePageLayout
       pageTitle={pageTitle}
+      userLoggedIn={session ? true : false}
       activeNav='Catalog'
     >
 
@@ -500,28 +496,15 @@ const CatalogPage = ({_rentingProperties,bienId,villeId,quartierId,soffreId}) =>
               <hr className='d-none d-sm-block w-100 mx-4' />
               <div className='d-none d-sm-flex align-items-center flex-shrink-0 text-muted'>
                 <i className='fi-check-circle me-2'></i>
-                <span className='fs-sm mt-n1'>148 résultats</span>
+                <span className='fs-sm mt-n1'>{rentingProperties.length} résultats</span>
               </div>
             </div>
 
             {/* Catalog grid */}
-            <Row xs={1} sm={2} xl={3} className='g-4 py-4'>
-              <RentingList rentingProperties={rentingProperties}/>
-            </Row>
+            
 
             {/* Pagination */}
-            <nav className='border-top pb-md-4 pt-4' aria-label='Pagination'>
-              <Pagination className='mb-1'>
-                <Pagination.Item active>{1}</Pagination.Item>
-                <Pagination.Item>{2}</Pagination.Item>
-                <Pagination.Item>{3}</Pagination.Item>
-                <Pagination.Ellipsis />
-                <Pagination.Item>{8}</Pagination.Item>
-                <Pagination.Item>
-                  <i className='fi-chevron-right'></i>
-                </Pagination.Item>
-              </Pagination>
-            </nav>
+            <IAPaginaation dataPagineted={rentingProperties}/>
           </Col>
         </Row>
       </Container>
@@ -544,15 +527,15 @@ export async function getServerSideProps(context) {
   const { quartier } = context.query;
   
 
-  const _ville = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getTownIdByTownName(minus_denomination:"${toLowerCaseString(ville)}")
+  const _ville = await fetch(`${API_URL}?query={getTownIdByTownName(minus_denomination:"${toLowerCaseString(ville)}")
   {denomination,id,code}}`);
   const _jsonville = await _ville.json();
 
-  const _quartier = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getDistrictIdByDistrictName(minus_denomination:"${toLowerCaseString(quartier)}")
+  const _quartier = await fetch(`${API_URL}?query={getDistrictIdByDistrictName(minus_denomination:"${toLowerCaseString(quartier)}")
   {denomination,id,code,minus_denomination}}`);
   const _jsonquartier=await _quartier.json();
 
-  const _bien = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getCategoryIdByCategorieName(minus_denomination:"${toLowerCaseString(bien)}"){denomination,id,code}}`);
+  const _bien = await fetch(`${API_URL}?query={getCategoryIdByCategorieName(minus_denomination:"${toLowerCaseString(bien)}"){denomination,id,code}}`);
   const _jsonbien= await _bien.json();
 
   const bienId=_jsonbien.data.getCategoryIdByCategorieName;
@@ -563,11 +546,9 @@ export async function getServerSideProps(context) {
   //console.log("VilleId: "+ villeId);
   
   const quartierId=_jsonquartier.data.getDistrictIdByDistrictName;
-  console.log("QuarrtierId: "+ quartierId);
-  
-  const offreId="4";
+  //console.log("QuarrtierId: "+ quartierId);
   // Fetch data from external API
-  let dataAPIresponse = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getPropertiesByKeyWords(limit:10,orderBy:{column:NUO,order:DESC},offre_id:"${offreId}",ville_id:"${villeId.id}",quartier_id:"${quartierId.id}",categorie_id:"${bienId.id}")
+  let dataAPIresponse = await fetch(`${API_URL}?query={getPropertiesByKeyWords(limit:10,orderBy:{column:NUO,order:DESC},offre_id:"4",ville_id:"${villeId.id}",quartier_id:"${quartierId.id}",categorie_id:"${bienId.id}")
   {badge_propriete{badge{badge_name,badge_image}},visuels{uri,position},id,surface,lat_long,nuo,usage,offre{denomination,id},categorie_propriete{denomination,id},pays{code,id},piece,titre,garage,cout_mensuel,ville{denomination,id},wc_douche_interne,cout_vente,quartier{denomination,id,minus_denomination}}}`);
   let _rentingProperties = await dataAPIresponse.json();
   const soffreId = {id:"4",denomination:"bailler"};

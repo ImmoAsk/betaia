@@ -110,7 +110,7 @@ export default function SignInForm({ ...props }) {
             </div>
             {props.signup ? "Ouvrir un compte" : "Se connecter"}
           </h1>
-          <p className="text-muted text-center mb-3">Propriétaire. Agent immobilier. Promoteur.</p>
+          <p className="text-muted text-center mb-3">Propriétaire. Professionnel immobilier. Promoteur. Locataire</p>
           <form action={props.providers['credentials'].callbackUrl} method="post" onSubmit={handleSubmit(onSubmit)}>
             <input type="hidden" name="csrfToken" value={props.csrfToken} />
 

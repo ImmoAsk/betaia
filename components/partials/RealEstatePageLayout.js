@@ -81,8 +81,9 @@ const RealEstatePageLayout = (props) => {
 
   const OpenSignInOrRedirectToProjectForm = () => {
     if (!session) {
-      handleSigninShow();
-      handleSignupShow();
+      //handleSigninShow();
+      //handleSignupShow();
+      router.push('/signup-light');
     } else {
       handleSigninClose();
       handleSignupClose();
@@ -101,6 +102,27 @@ const RealEstatePageLayout = (props) => {
     }
   }
 
+  const displayCreationAccountButton = () => {
+    return (
+      <Link href='/signup-light' passHref>
+        <Button size='sm' variant='outline-primary d-none d-lg-block order-lg-3'>
+          <i className='fi-user me-2'></i>
+          Créer votre compte
+        </Button>
+      </Link>
+    )
+  };
+
+  const displayCreationProjectButton = () => {
+    return (
+      <Link href='/tg/add-project' passHref>
+        <Button size='sm' variant='outline-primary d-none d-lg-block order-lg-3'>
+          <i className='fi-file me-2'></i>
+          Lancer un projet immobilier
+        </Button>
+      </Link>
+    )
+  };
   return (
     <>
       <Head>
@@ -110,7 +132,7 @@ const RealEstatePageLayout = (props) => {
         <meta name='keywords' content={props.pageKeywords} />
         <meta name='robots' content='index, follow' />
         <meta httpEquiv='Content-Type' content='text/html; charset=utf-8' />
-        <meta property="og:title" content={props.pageTitle}/>
+        <meta property="og:title" content={props.pageTitle} />
         <meta property="og:description" content={props.pageDescription} />
         <meta property="og:image" content={props.pageCoverImage} />
         <meta property="og:image:width" content="1200" />
@@ -120,12 +142,23 @@ const RealEstatePageLayout = (props) => {
         <meta name='author' content='Omnisoft Africa' />
         <link rel='apple-touch-icon' sizes='180x180' href='/favicon/apple-icon-180x180.png' />
         <link rel='icon' type='image/png' sizes='32x32' href='/favicon/favicon-32x32.png' />
-        <link rel='icon' type='image/png' sizes='16x16' href='/favicon/favicon-16x16.png' />
         <link rel='icon' type='image/x-icon' href='/favicon/favicon.ico' />
         <link rel='manifest' href='/favicon/site.webmanifest' />
         <link rel='mask-icon' color='#5bbad5' href='/favicon/safari-pinned-tab.svg' />
         <meta name='msapplication-TileColor' content='#766df4' />
         <meta name='theme-color' content='#ffffff' />
+        <meta property="og:site_name" content="ImmoAsk" />
+        <meta property="fb:app_id" content="2049277298731648" />
+        <meta property="fb:pages" content="431591890524770,322098734581229" />
+        <meta property="og:locale" content="fr_TG" />
+        <meta property="og:rich_attachment" content="true" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:site" content="@immoask" />
+        <meta name="twitter:creator" content="@immoask" />
+        <meta name="twitter:title" content={props.pageTitle} />
+        <meta name="twitter:url" content={props.pageUrl} />
+        <meta name="twitter:description" content={props.pageDescription} />
+        <meta name="twitter:image" content={props.pageCoverImage} />
       </Head>
 
       {/* Sign in modal */}
@@ -149,37 +182,7 @@ const RealEstatePageLayout = (props) => {
 
       {/* Page wrapper for sticky footer
       Wraps everything except footer to push footer to the bottom of the page if there is little content */}
-      <Alert
-        variant="info"
-        className="alert-text"
-        style={{
-          position: 'fixed',
-          top: 0,
-          width: '100%',
-          zIndex: 1000,
-          textAlign: 'center',
-          padding: '10px 15px',
-          boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
-          overflowWrap: 'break-word'
-        }}
-      >
-        <div className="container-fluid">
-          <p className="mb-0">
-            Hello! Vous êtes sur une nouvelle version de <strong>ImmoAsk</strong>!
-            Si vous rencontrez un bogue ou un problème, merci de nous le signaler sur
-            <a href="https://wa.me/22870453625" target="_blank" rel="noopener noreferrer"> WhatsApp (+228 7045 3625)</a>
-            ou sur <a href="https://linkedin.com/company/immoask" target="_blank" rel="noopener noreferrer"> LinkedIn (ImmoAsk)</a>.
-          </p>
-        </div>
 
-        <style jsx>{`
-    @media (max-width: 576px) {
-      .alert-text {
-        font-size: 0.8rem;  /* Reduced font size for small screens */
-      }
-    }
-  `}</style>
-      </Alert>
 
 
       <main className='page-wrapper'>
@@ -189,36 +192,46 @@ const RealEstatePageLayout = (props) => {
         <Navbar as={StickyNavbar}
           expand='lg'
           bg='light'
-          style={{ marginTop: '40px' }}
           className={`fixed-top${props.navbarExtraClass ? ` ${props.navbarExtraClass}` : ''}`}
         >
-          <Container>
+          <Container fluid>
             <Link href='/tg' passHref>
               <Navbar.Brand className='me-3 me-xl-4'>
-                <ImageLoader priority src='/images/logo/logo-dark.png' width={124} height={42} placeholder={false} alt='ImmoAsk' />
+                <ImageLoader priority src='/images/logo/immoask-logo-cropped.png' width={124} height={52} placeholder={false} alt='ImmoAsk' />
               </Navbar.Brand>
             </Link>
             <Navbar.Toggle aria-controls='navbarNav' className='ms-auto' />
 
             {/* Display content depending on user auth satus  */}
+
             {props.userLoggedIn ?
+
+
               <Dropdown className='d-none d-lg-block order-lg-3 my-n2 me-3'>
                 <Link href='/tg/account-info' passHref>
                   <Dropdown.Toggle as={Nav.Link} className='dropdown-toggle-flush d-flex py-1 px-0' style={{ width: '40px' }}>
-                    <ImageLoader src='/images/avatars/30.jpg' width={80} height={80} placeholder={false} className='rounded-circle' alt='Annette Black' />
+                    <ImageLoader src='/images/avatars/45.jpg' width={80} height={80} placeholder={false} className='rounded-circle' alt='ImmoAsk' />
                   </Dropdown.Toggle>
                 </Link>
                 <Dropdown.Menu renderOnMount align='end'>
                   <div className='d-flex align-items-start border-bottom px-3 py-1 mb-2' style={{ width: '16rem' }}>
-                    <ImageLoader src='/images/avatars/03.jpg' width={48} height={48} placeholder={false} className='rounded-circle' alt='Annette Black' />
+                    <ImageLoader src='/images/avatars/45.jpg' width={48} height={48} placeholder={false} className='rounded-circle' alt='ImmoAsk' />
                     <div className='ps-2'>
                       <h6 className='fs-base mb-0'>{session ? session.user.name : " "}</h6>
                       <StarRating size='sm' rating={5} />
                       <div className='fs-xs py-2'>
-                        (302) 555-0107<br />annette_black@email.com
+                        {session && session.user.phone ? session.user.phone : " "}<br />{session && session.user.email ? session.user.email : ""}
                       </div>
                     </div>
                   </div>
+                  {session && session.user.roleId === "1232" && (
+                    <Link href='/tg/subscriptions' passHref>
+                      <Dropdown.Item>
+                        <i className='fi-star me-2'></i>
+                        Votre <span className='d-none d-sm-inline'>abonnement</span>
+                      </Dropdown.Item>
+                    </Link>
+                  )}
                   {
                     ressources && ressources.map((ressource) => {
 
@@ -264,17 +277,12 @@ const RealEstatePageLayout = (props) => {
 
 
             }
-            <Link href='#' passHref>
-              <Button size='sm' variant='outline-primary d-none d-lg-block order-lg-3' onClick={OpenSignInOrRedirectToProjectForm}>
-                {/* <i className='fi-user me-2'></i> */}
-                Lancer un projet immobilier
-              </Button>
-            </Link>
+            {session ? displayCreationProjectButton() : displayCreationAccountButton()}
 
             <Link href='/tg/add-property' passHref>
               <Button size='sm' className='order-lg-3 ms-2' onClick={OpenSignInOrRedirectToPropertyForm}>
-                <i className='fi-plus me-2'></i>
-                Lister <span className='d-none d-sm-inline'>un immeuble</span>
+                <i className='fi-building me-2'></i>
+                Lister <span className='d-none d-sm-inline'>votre immeuble</span>
               </Button>
             </Link>
 
@@ -321,6 +329,9 @@ const RealEstatePageLayout = (props) => {
                     <Link href='/tg/ventes-immobilieres/terrain' passHref>
                       <Dropdown.Item>Terrains à vendre</Dropdown.Item>
                     </Link>
+                    <Link href='/tg/ventes-immobilieres/terrain-urbain' passHref>
+                      <Dropdown.Item>Terrains urbains à vendre</Dropdown.Item>
+                    </Link>
                     <Link href='/tg/ventes-immobilieres/villa' passHref>
                       <Dropdown.Item>Villas à vendre</Dropdown.Item>
                     </Link>
@@ -359,22 +370,33 @@ const RealEstatePageLayout = (props) => {
                       <Dropdown.Item>Chambres salon à louer</Dropdown.Item>
                     </Link>
                     <Link href='/tg/locations-immobilieres/studio' passHref>
-                      <Dropdown.Item>Studio(Chambre ou pièce) à loeur</Dropdown.Item>
+                      <Dropdown.Item>Studio à louer</Dropdown.Item>
+                    </Link>
+                    <Link href='/tg/locations-immobilieres/chambre' passHref>
+                      <Dropdown.Item>Chambre à louer</Dropdown.Item>
                     </Link>
                   </Dropdown.Menu>
                 </Nav.Item>
                 {props.userLoggedIn ? <Nav.Item as={Dropdown} className='d-lg-none'>
                   <Dropdown.Toggle as={Nav.Link} className='d-flex align-items-center'>
-                    <ImageLoader src='/images/avatars/30.jpg' width={30} height={30} placeholder={false} className='rounded-circle' alt='Annette Black' />
-                    <span className='ms-2'>{session ? true : false}</span>
+                    <ImageLoader src='/images/avatars/45.jpg' width={30} height={30} placeholder={false} className='rounded-circle' alt='ImmoAsk' />
+                    <span className='ms-2'>{session ? session.user.name : "Connectez-vous"}</span>
                   </Dropdown.Toggle>
                   <Dropdown.Menu>
                     <div className='ps-3'>
                       <StarRating size='sm' rating={5} />
                       <div className='fs-xs py-2'>
-                        (+228) 7045 3625<br />contact@immoask.com
+                        {session && session.user.phone ? session.user.phone : " "}<br />{session && session.user.email ? session.user.email : ""}
                       </div>
                     </div>
+                    {session && session.user.roleId === "1232" && (
+                      <Link href='/tg/subscriptions' passHref>
+                        <Dropdown.Item>
+                          <i className='fi-star'></i>
+                          Votre abonnement
+                        </Dropdown.Item>
+                      </Link>
+                    )}
                     {
                       ressources && ressources.map((ressource) => {
 
@@ -426,7 +448,29 @@ const RealEstatePageLayout = (props) => {
           </Container>
 
         </Navbar>
-
+        {/*         <Alert
+          variant="info"
+          className="alert-text"
+          style={{
+            position: 'fixed',
+            top: 0,
+            width: '100%',
+            zIndex: 1000,
+            textAlign: 'left',
+            padding: '10px 15px',
+            boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
+            overflowWrap: 'break-word'
+          }}
+        >
+          <div className="container-fluid">
+            <p className="mb-0">
+              Nouvelle version de <strong>ImmoAsk</strong>!
+              Si vous rencontrez un problème, merci de nous le signaler sur
+              <a href="https://wa.me/22870453625" target="_blank" rel="noopener noreferrer"> (+228 7045 3625)</a>
+              ou <a href="https://linkedin.com/company/immoask" target="_blank" rel="noopener noreferrer"> ici </a>.
+            </p>
+          </div>
+        </Alert> */}
         {/* Page content */}
         {props.children}
       </main>
@@ -442,16 +486,16 @@ const RealEstatePageLayout = (props) => {
                   <a className='d-inline-flex mb-4'>
                     <ImageLoader
                       priority
-                      src='/images/logo/immoask-logo-removebg.png'
-                      width={116}
-                      height={112}
+                      src='/images/logo/immoask-logo-cropped.png'
+                      width={124}
+                      height={52}
                       placeholder={false}
                       alt='ImmoAsk'
                     />
                   </a>
                 </Link>
                 <p>ImmoAsk est un marketplace immobilier et foncier avec un CRM de gestion immobiliere boosté par une intelligence artificielle.</p>
-                <Nav className='flex-column mb-sm-4 mb-2'>
+               {/*  <Nav className='flex-column mb-sm-4 mb-2'>
                   <Nav.Item className='mb-2'>
                     <Nav.Link href='mailto:contact@immoask.com' className='p-0 fw-normal'>
                       <i className='fi-mail me-2 align-middle opacity-70'></i>contact@immoask.com
@@ -462,7 +506,7 @@ const RealEstatePageLayout = (props) => {
                       <i className='fi-device-mobile me-2 align-middle opacity-70'></i>(+228) 7045-3625
                     </Nav.Link>
                   </Nav.Item>
-                </Nav>
+                </Nav> */}
                 <div className='pt-2'>
                   <SocialButton href='https://facebook.com/immoask' variant='solid' brand='facebook' roundedCircle className='me-2 mb-2' />
                   <SocialButton href='https://twitter.com/immoask' variant='solid' brand='twitter' roundedCircle className='me-2 mb-2' />

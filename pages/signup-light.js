@@ -7,7 +7,10 @@ import Button from 'react-bootstrap/Button';
 import ImageLoader from '../components/ImageLoader';
 import PasswordToggle from '../components/PasswordToggle';
 import Alert from 'react-bootstrap/Alert';
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css';
 import axios from 'axios';
+import { API_URL } from '../utils/settings';
 
 const SignupLightPage = () => {
   // Router
@@ -16,14 +19,15 @@ const SignupLightPage = () => {
   // Form state management
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [userRole, setUserRole] = useState('');
+  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [termsChecked, setTermsChecked] = useState(false);
   const [validated, setValidated] = useState(false);
   const [accountCreatedNotification, setAccountCreatedNotification] = useState(null);
 
-  // Check if the form is valid
-  const isFormValid = name && email && password && confirmPassword && password === confirmPassword && termsChecked;
+  const isFormValid = (userRole && name  && email && phone && password && confirmPassword && password === confirmPassword && termsChecked);
 
   // Form submission handler
   const handleSubmit = async (event) => {
@@ -42,7 +46,9 @@ const SignupLightPage = () => {
       email,
       password,
       confirmPassword,
-      termsChecked
+      termsChecked,
+      phone,
+      userRole
     };
 
     // Prepare GraphQL mutation
@@ -59,18 +65,37 @@ const SignupLightPage = () => {
         input: {
           name: formData.name,
           email: formData.email,
+          phone: formData.phone,
           password: formData.password,
-          password_confirmation: formData.confirmPassword
+          password_confirmation: formData.confirmPassword,
+          role_id: Number(formData.userRole)
         }
       }
     };
 
     try {
-      const response = await axios.post('https://immoaskbetaapi.omnisoft.africa/public/api/v2', user_creation_data, {
+      const response = await axios.post(API_URL, user_creation_data, {
         headers: { 'Content-Type': 'application/json' }
       });
 
       if (response.data?.data?.register?.status === "SUCCESS") {
+        // Send welcome email
+        const emailData = {
+          query: `mutation SendWelcomeEmail($input: SendWelcomeEmailInput!) {
+            subscribeUser(input: $input)
+          }`,
+          variables: {
+            input: {
+              email: formData.email,
+              name: formData.name
+            }
+          }
+        };
+        await axios.post(API_URL, emailData, {
+          headers: { 'Content-Type': 'application/json' }
+        });
+        // Redirect to sign-in page
+
         setAccountCreatedNotification("Votre compte a bien été créé. Vous pouvez maintenant vous connecter.");
         router.push("/auth/signin");
       }
@@ -113,16 +138,16 @@ const SignupLightPage = () => {
                 <div className="mt-sm-4 pt-md-3">Vous avez déja un compte? <Link href="/auth/signin"><a>Se connecter</a></Link></div>
               </div>
               <div className="col-md-6 px-2 pt-2 pb-4 px-sm-5 pb-sm-5 pt-md-5">
-                <Button variant="outline-info w-100 mb-3">
+                {/* <Button variant="outline-info w-100 mb-3">
                   <i className="fi-google fs-lg me-1"></i> Se connecter avec Google
                 </Button>
                 <Button variant="outline-info w-100 mb-3">
                   <i className="fi-facebook fs-lg me-1"></i> Se connecter avec Facebook
-                </Button>
+                </Button> */}
                 <div className="d-flex align-items-center py-3 mb-3">
-                  <hr className="w-100" />
-                  <div className="px-3">Ou</div>
-                  <hr className="w-100" />
+                  <hr className="w-25" />
+                  <div className="px-3">Créer votre compte</div>
+                  <hr className="w-25" />
                 </div>
 
                 {accountCreatedNotification && (
@@ -134,7 +159,36 @@ const SignupLightPage = () => {
 
                 <Form noValidate validated={validated} onSubmit={handleSubmit}>
                   <Form.Group controlId="su-name" className="mb-4">
-                    <Form.Label>Nom et prenom</Form.Label>
+                    <Form.Label>Sélectionnez votre role</Form.Label>
+                    <Form.Check
+                      type='radio'
+                      name='userRole'
+                      id='renter'
+                      value='151'
+                      label="Futur(e) locataire ou futur(e) proprietaire"
+                      onChange={(e) => setUserRole(e.target.value)}
+                    />
+                    <Form.Check
+                      type='radio'
+                      name='userRole'
+                      id='landlord'
+                      value='1230'
+                      label="Proprietaire de biens immobiliers"
+                      onChange={(e) => setUserRole(e.target.value)}
+                    />
+                    <Form.Check
+                      type='radio'
+                      name='userRole'
+                      id='professionnal'
+                      value='1232'
+                      label="Professionnel(le) immobilier(e)"
+                      onChange={(e) => setUserRole(e.target.value)}
+                    />
+                  </Form.Group>
+
+
+                  <Form.Group controlId="su-name" className="mb-4">
+                    <Form.Label>Nom et prénom</Form.Label>
                     <Form.Control
                       placeholder="Entrer votre nom et prenom"
                       required
@@ -151,6 +205,24 @@ const SignupLightPage = () => {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                     />
+                  </Form.Group>
+                  <Form.Group className='mb-2'>
+                    <Form.Label>Numéro de téléphone</Form.Label>
+                    <PhoneInput
+                      country={'tg'}
+                      value={phone}
+                      onChange={(phone) => setPhone(phone)}
+                      enableSearch={true}
+                      inputProps={{
+                        name: 'phone',
+                        required: true,
+                        autoFocus: true,
+                        className: 'form-control w-100 form-control-lg',
+                      }}
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      Veuillez saisir un numéro de téléphone valide.
+                    </Form.Control.Feedback>
                   </Form.Group>
                   <Form.Group className="mb-4">
                     <Form.Label htmlFor="su-password">Mot de passe <span className="fs-sm text-muted">min. 8 caracteres</span></Form.Label>

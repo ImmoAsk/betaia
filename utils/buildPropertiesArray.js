@@ -18,7 +18,7 @@ function buildPropertiesArray  (properties)  {
     return propertiesArrayCustomized;
   }
  function createPropertyObject (property){
-    console.log(property)
+    //console.log(property)
     let _objetProperty={
       nuo:property.nuo,
       href: getPropertyFullUrl(property.pays.code,property.offre.denomination,property.categorie_propriete.denomination,property.ville.denomination,property.quartier.denomination,property.nuo),

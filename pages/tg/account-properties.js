@@ -10,18 +10,38 @@ import { buildPropertiesArray, getHumanReadablePrice } from '../../utils/general
 import { useSession, getSession } from 'next-auth/react'
 import { Row, Col } from 'react-bootstrap';
 import PropertiesList from '../../components/iacomponents/PropertiesList'
-import { get } from 'http'
+import { API_URL, BASE_URL, IMAGE_URL } from '../../utils/settings'
+import DeletePropertyModal from '../../components/iacomponents/DeleteProperty/DeletePropertyModal'
+import AddNewImagesModal from '../../components/iacomponents/AddNewImagesProperty/AddNewImagesModal'
+import RePostPropertyModal from '../../components/iacomponents/RePost/RePostPropertyModal'
+
+
+
 const AccountPropertiesPage = ({ _userProperties, _handledProjets, _handlingProjets }) => {
 
   // Properties array
   _userProperties = buildPropertiesArray(_userProperties);
   _handledProjets = buildPropertiesArray(_handledProjets);
   _handlingProjets = buildPropertiesArray(_handlingProjets);
+
   const [editPropertyShow, setEditPropertyShow] = useState(false);
   const handleEditPropertyClose = () => setEditPropertyShow(false);
   const handleEditPropertyShow = () => setEditPropertyShow(true);
+
+  const [deletePropertyShow, setDeletePropertyShow] = useState(false);
+  const handleDeletePropertyClose = () => setDeletePropertyShow(false);
+  const handleDeletePropertyShow = () => setDeletePropertyShow(true);
+
+  const [repostPropertyShow, setRePostPropertyShow] = useState(false);
+  const handleRePostPropertyClose = () => setRePostPropertyShow(false);
+  const handleRePostPropertyShow = () => setRePostPropertyShow(true);
+
   const [newPropertyProjectsTab, setNewPropertyProjectsTab] = useState(false);
   const handledClickNewPropertyProjectsTab = () => setNewPropertyProjectsTab(true);
+
+  const [newImagesPropertyShow, setNewImagesPropertyShow] = useState(false);
+  const handleAddNewImagesPropertyClose = () => setNewImagesPropertyShow(false);
+  const handleAddNewImagesPropertyShow = () => setNewImagesPropertyShow(true);
 
   const [handlingPropertyProjectsTab, setHandlingPropertyProjectsTab] = useState(false);
   const handledClickHandlingPropertyProjectsTab = () => setHandlingPropertyProjectsTab(true);
@@ -40,35 +60,41 @@ const AccountPropertiesPage = ({ _userProperties, _handledProjets, _handlingProj
     }
   }
 
+  const handleDeletePropertyModal = () => {
+    //e.preventDefault();
+    if (session) {
+      handleDeletePropertyShow();
+    } else {
+      handleSignInToUp(e);
+    }
+  }
+
+  const handleRePostPropertyModal = () => {
+    //e.preventDefault();
+    if (session) {
+      handleRePostPropertyShow();
+    } else {
+      handleSignInToUp(e);
+    }
+  }
+
+  const handleAddNewImagesPropertyModal = () => {
+    //e.preventDefault();
+    if (session) {
+      handleAddNewImagesPropertyShow();
+    } else {
+      handleSignInToUp(e);
+    }
+  }
+
   //console.log(properties);
   const deleteAll = (e) => {
     e.preventDefault();
-    //userProperties=[];
-    //setProperties([])
   }
-  const getNewPropertyProjects = (properties) => {
-    return (<PropertiesList properties={properties} />)
-  }
-  const getHandledPropertyProjects = (properties) => {
-    return (<PropertiesList properties={properties} />)
-  }
-  const getHandlingPropertyProjects = (properties) => {
-    return (<PropertiesList properties={properties} />)
-  }
-  const columnStyle = { 
+  const columnStyle = {
     height: '650px', // Adjust the height as needed
     overflowY: 'scroll', // Enable vertical scrolling
   };
-  const navComponent = (
-    <Nav variant='tabs' defaultActiveKey='published' className='border-bottom mb-2'>
-      <Nav.Item className='mb-2'>
-        <Nav.Link eventKey='published'>
-          <i className='fi-file fs-base me-2'></i>
-          Nouvels non traites
-        </Nav.Link>
-      </Nav.Item>
-    </Nav>
-  );
   return (
     <RealEstatePageLayout
       pageTitle='Portofolio immobilier'
@@ -84,6 +110,35 @@ const AccountPropertiesPage = ({ _userProperties, _handledProjets, _handlingProj
           property={propertyModal}
         />
       }
+
+      {
+        deletePropertyShow && <DeletePropertyModal
+          centered
+          size='lg'
+          show={deletePropertyShow}
+          onHide={handleDeletePropertyClose}
+          property={propertyModal}
+        />
+      }
+
+      {
+        repostPropertyShow && <RePostPropertyModal
+          centered
+          size='lg'
+          show={repostPropertyShow}
+          onHide={handleRePostPropertyClose}
+          property={propertyModal}
+        />
+      }
+      {
+        newImagesPropertyShow && <AddNewImagesModal
+          centered
+          size='lg'
+          show={newImagesPropertyShow}
+          onHide={handleAddNewImagesPropertyClose}
+          property={propertyModal}
+        />
+      }
       <RealEstateAccountLayout accountPageTitle='Portofolio immobilier' >
         <div className='d-flex align-items-center justify-content-between mb-3'>
           <h1 className='h2 mb-0'>Portofolio immobiliers</h1>
@@ -93,7 +148,6 @@ const AccountPropertiesPage = ({ _userProperties, _handledProjets, _handlingProj
           </a>
         </div>
         <p className='pt-1 mb-4'>Tous vos biens immobiliers en vente, location et ms en indisponibitlite....</p>
-
         <Nav
           variant='tabs'
           defaultActiveKey='published'
@@ -164,18 +218,37 @@ const AccountPropertiesPage = ({ _userProperties, _handledProjets, _handlingProj
                   {
                     icon: 'fi-trash',
                     label: 'Rendre indisponible',
-                    props: { onClick: () => console.log('Deactivate property') }
+                    props: {
+                      onClick: (event) => {
+                        event.stopPropagation();
+                        event.preventDefault();
+                        setPropertyModal(property);
+                        handleDeletePropertyModal();
+                      }
+                    }
+                  },
+                  {
+                    icon: 'fi-image',
+                    label: 'Ajouter de nouvelles images',
+                    props: {
+                      onClick: (event) => {
+                        event.stopPropagation();
+                        event.preventDefault();
+                        setPropertyModal(property);
+                        handleAddNewImagesPropertyModal();
+                      }
+                    }
                   }
                 ]}
                 className={indx === userProperties.length - 1 ? '' : 'mb-4'}
               />
             )) : <div className='text-center pt-2 pt-md-4 pt-lg-5 pb-2 pb-md-0'>
               <i className='fi-home display-6 text-muted mb-4'></i>
-              <h2 className='h5 mb-4'>Vous n'avez aucun bien immobilier enrollé!</h2>
+              <h2 className='h5 mb-4'>Aucun bien immobilier en location!</h2>
               <Link href='/tg/add-property' passHref>
                 <Button variant='primary'>
                   <i className='fi-plus fs-sm me-2'></i>
-                  Enroller un bien immobilier
+                  Lister un bien immobilier
                 </Button>
               </Link>
             </div>}
@@ -183,7 +256,7 @@ const AccountPropertiesPage = ({ _userProperties, _handledProjets, _handlingProj
 
           {/* Second Column */}
           <Col style={columnStyle}>
-          {_handledProjets.length ? _handledProjets.map((property, indx) => (
+            {_handledProjets.length ? _handledProjets.map((property, indx) => (
               <PropertyCard
                 key={indx}
                 href={property.href}
@@ -226,18 +299,37 @@ const AccountPropertiesPage = ({ _userProperties, _handledProjets, _handlingProj
                   {
                     icon: 'fi-trash',
                     label: 'Rendre indisponible',
-                    props: { onClick: () => console.log('Deactivate property') }
+                    props: {
+                      onClick: (event) => {
+                        event.stopPropagation();
+                        event.preventDefault();
+                        setPropertyModal(property);
+                        handleDeletePropertyModal();
+                      }
+                    }
+                  },
+                  {
+                    icon: 'fi-image',
+                    label: 'Ajouter de nouvelles images',
+                    props: {
+                      onClick: (event) => {
+                        event.stopPropagation();
+                        event.preventDefault();
+                        setPropertyModal(property);
+                        handleAddNewImagesPropertyModal();
+                      }
+                    }
                   }
                 ]}
                 className={indx === userProperties.length - 1 ? '' : 'mb-4'}
               />
             )) : <div className='text-center pt-2 pt-md-4 pt-lg-5 pb-2 pb-md-0'>
               <i className='fi-home display-6 text-muted mb-4'></i>
-              <h2 className='h5 mb-4'>Vous n'avez aucun bien immobilier enrollé!</h2>
+              <h2 className='h5 mb-4'>Aucun bien immobilier en vente!</h2>
               <Link href='/tg/add-property' passHref>
                 <Button variant='primary'>
                   <i className='fi-plus fs-sm me-2'></i>
-                  Enroller un bien immobilier
+                  Lister un bien immobilier
                 </Button>
               </Link>
             </div>}
@@ -245,7 +337,7 @@ const AccountPropertiesPage = ({ _userProperties, _handledProjets, _handlingProj
 
           {/* Third Column */}
           <Col style={columnStyle}>
-          {_handlingProjets.length ? _handlingProjets.map((property, indx) => (
+            {_handlingProjets.length ? _handlingProjets.map((property, indx) => (
               <PropertyCard
                 key={indx}
                 href={property.href}
@@ -263,43 +355,27 @@ const AccountPropertiesPage = ({ _userProperties, _handledProjets, _handlingProj
                 horizontal
                 dropdown={[
                   {
-                    // href: '#', // Optionally pass href prop to convert dropdown item to Next link
-                    icon: 'fi-edit',
-                    label: 'Editer',
+                    icon: 'fi-power',
+                    label: 'Remettre sur le marche immobilier',
                     props: {
                       onClick: (event) => {
                         event.stopPropagation();
                         event.preventDefault();
                         setPropertyModal(property);
-                        handleEditPropertyModal();
+                        handleRePostPropertyModal();
                       }
                     }
                   },
-                  {
-                    icon: 'fi-flame',
-                    label: 'Promouvoir',
-                    props: { onClick: () => console.log('Promote property') }
-                  },
-                  {
-                    icon: 'fi-power',
-                    label: 'Rendre invisible',
-                    props: { onClick: () => console.log('Deactivate property') }
-                  },
-                  {
-                    icon: 'fi-trash',
-                    label: 'Rendre indisponible',
-                    props: { onClick: () => console.log('Deactivate property') }
-                  }
                 ]}
                 className={indx === userProperties.length - 1 ? '' : 'mb-4'}
               />
             )) : <div className='text-center pt-2 pt-md-4 pt-lg-5 pb-2 pb-md-0'>
               <i className='fi-home display-6 text-muted mb-4'></i>
-              <h2 className='h5 mb-4'>Vous n'avez aucun bien immobilier enrollé!</h2>
+              <h2 className='h5 mb-4'>Aucun bien immobilier indisponible!</h2>
               <Link href='/tg/add-property' passHref>
                 <Button variant='primary'>
                   <i className='fi-plus fs-sm me-2'></i>
-                  Enroller un bien immobilier
+                  Lister un bien immobilier
                 </Button>
               </Link>
             </div>}
@@ -309,30 +385,9 @@ const AccountPropertiesPage = ({ _userProperties, _handledProjets, _handlingProj
     </RealEstatePageLayout>
   )
 }
-
-
+// Fetch data from API in getServerSideProps using statut as an input variable
 export async function getServerSideProps(context) {
   const session = await getSession(context);
-  if (session) {
-    const userid = session ? session.user.id : 0;
-    // Fetch data from external API
-    var dataAPIresponse = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getPropertiesByKeyWords(orderBy:{order:DESC,column:NUO},user_id:1,offre_id:"1",statut:1,limit:150){surface,badge_propriete{badge{badge_name,badge_image}},id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,nuitee,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{id,denomination,minus_denomination},visuels{uri,position}}}`);
-    var _userProperties = await dataAPIresponse.json();
-
-    var handledProjets = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getPropertiesByKeyWords(orderBy:{order:DESC,column:NUO},user_id:1,offre_id:"2",statut:1,limit:150){surface,badge_propriete{badge{badge_name,badge_image}},id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,nuitee,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination,id,minus_denomination},visuels{uri,position}}}`);
-    var _handledProjets = await handledProjets.json();
-
-    var handlingProjets = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getPropertiesByKeyWords(orderBy:{order:DESC,column:NUO},user_id:1,statut:2,limit:150){surface,badge_propriete{badge{badge_name,badge_image}},id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,nuitee,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination,id,minus_denomination},visuels{uri,position}}}`);
-    var _handlingProjets = await handlingProjets.json();
-
-    _userProperties = _userProperties.data.getPropertiesByKeyWords;
-    _handledProjets = _handledProjets.data.getPropertiesByKeyWords;
-    _handlingProjets = _handlingProjets.data.getPropertiesByKeyWords;
-    return {
-      props: { _userProperties, _handledProjets, _handlingProjets },
-    }
-
-  } 
   if (!session) {
     return {
       redirect: {
@@ -341,7 +396,44 @@ export async function getServerSideProps(context) {
       },
     };
   }
-  return { props: { session } };
+
+  // Check if the user is an admin or property owner
+  if (session?.user?.roleId == '1200' || session?.user?.roleId == '1231') {
+    console.log(session?.user?.roleId)
+    // Admin role
+    var dataAPIresponse = await fetch(`${API_URL}?query={getPropertiesByKeyWords(orderBy:{order:DESC,column:NUO},offre_id:"1",statut:1,limit:50){surface,badge_propriete{badge{badge_name,badge_image}},id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,nuitee,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{id,denomination,minus_denomination},visuels{uri,position}}}`);
+    var _userProperties = await dataAPIresponse.json();
+
+    var handledProjets = await fetch(`${API_URL}?query={getPropertiesByKeyWords(orderBy:{order:DESC,column:NUO},offre_id:"2",statut:1,limit:50){surface,badge_propriete{badge{badge_name,badge_image}},id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,nuitee,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination,id,minus_denomination},visuels{uri,position}}}`);
+    var _handledProjets = await handledProjets.json();
+
+    var handlingProjets = await fetch(`${API_URL}?query={getPropertiesByKeyWords(orderBy:{order:DESC,column:NUO},statut:2,limit:50){surface,badge_propriete{badge{badge_name,badge_image}},id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,nuitee,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination,id,minus_denomination},visuels{uri,position}}}`);
+    var _handlingProjets = await handlingProjets.json();
+
+    _userProperties = _userProperties.data.getPropertiesByKeyWords;
+    _handledProjets = _handledProjets.data.getPropertiesByKeyWords;
+    _handlingProjets = _handlingProjets.data.getPropertiesByKeyWords;
+  } else {
+    // Property owner
+    var dataAPIresponse = await fetch(`${API_URL}?query={getPropertiesByKeyWords(orderBy:{order:DESC,column:NUO},user_id:${Number(session?.user?.id)},offre_id:"1",statut:1,limit:50){surface,badge_propriete{badge{badge_name,badge_image}},id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,nuitee,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{id,denomination,minus_denomination},visuels{uri,position}}}`);
+    var _userProperties = await dataAPIresponse.json();
+
+    var handledProjets = await fetch(`${API_URL}?query={getPropertiesByKeyWords(orderBy:{order:DESC,column:NUO},user_id:${Number(session?.user?.id)},offre_id:"2",statut:1,limit:50){surface,badge_propriete{badge{badge_name,badge_image}},id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,nuitee,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination,id,minus_denomination},visuels{uri,position}}}`);
+    var _handledProjets = await handledProjets.json();
+
+    var handlingProjets = await fetch(`${API_URL}?query={getPropertiesByKeyWords(orderBy:{order:DESC,column:NUO},user_id:${Number(session?.user?.id)},statut:2,limit:50){surface,badge_propriete{badge{badge_name,badge_image}},id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,nuitee,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination,id,minus_denomination},visuels{uri,position}}}`);
+    var _handlingProjets = await handlingProjets.json();
+
+    _userProperties = _userProperties.data.getPropertiesByKeyWords;
+
+    _handledProjets = _handledProjets.data.getPropertiesByKeyWords;
+    _handlingProjets = _handlingProjets.data.getPropertiesByKeyWords;
+
+  }
+  //console.log(_userProperties);
+  return {
+    props: { _userProperties, _handledProjets, _handlingProjets },
+  };
 }
 
 export default AccountPropertiesPage
