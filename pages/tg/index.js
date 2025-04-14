@@ -34,6 +34,7 @@ import { useRouter } from 'next/router';
 import { getHumanReadablePrice } from '../../utils/generalUtils'
 import { API_URL } from '../../utils/settings'
 import SuperCategoryProperties from '../../components/iacomponents/SuperCategoryList/SuperCategoryProperties'
+import ImageSized from '../../components/iacomponents/ImageSized'
 const HomePage = () => {
 
   const router = useRouter();
@@ -253,11 +254,11 @@ const HomePage = () => {
 
           </Col>
           <Col md={{ span: 5, order: 2 }} lg={5} xl={5} className='mb-1 mb-lg-3'>
-            <ImageLoader
-              src='/images/tg/welcome_image.png'
+            <ImageSized
+              imageUri='/images/tg/welcome_image.png'
               width={800}
               height={500}
-              alt='Hero image'
+              alt='Bienvenue sur ImmoAsk'
             />
           </Col>
         </Row>
@@ -386,7 +387,7 @@ const HomePage = () => {
           <SwiperSlide>
             <Card className='card-hover border-0 h-100 pb-2 pb-sm-3 px-sm-3 text-center mx-2'>
               <div className='d-flex justify-content-center my-3'>
-                <ImageLoader src='/images/tg/illustrations/acheter_immeuble.png' width={256} height={190} alt='Image' />
+                <ImageSized imageUri='/images/tg/illustrations/acheter_immeuble.png' width={256} height={190} alt={"Acheter un immeuble"}/>
               </div>
               <Card.Body>
                 <h2 className='h4 card-title'>Acheter un immeuble</h2>
@@ -404,7 +405,7 @@ const HomePage = () => {
           <SwiperSlide>
             <Card className='card-hover border-0 h-100 pb-2 pb-sm-3 px-sm-3 text-center mx-2'>
               <div className='d-flex justify-content-center my-3'>
-                <ImageLoader src='/images/tg/illustrations/lister_immeuble.png' width={256} height={190} alt='Image' />
+                <ImageSized imageUri="/images/tg/illustrations/lister_immeuble.png" width={256} height={190} alt={"Lister un immeuble sur ImmoAsk"}/>
               </div>
               <Card.Body>
                 <h2 className='h4 card-title'>Lister un immeuble</h2>
@@ -422,7 +423,7 @@ const HomePage = () => {
           <SwiperSlide>
             <Card className='card-hover border-0 h-100 pb-2 pb-sm-3 px-sm-3 text-center mx-2'>
               <div className='d-flex justify-content-center my-3'>
-                <ImageLoader src='/images/tg/illustrations/lancer_requete_immobiliere.png' width={256} height={190} alt='Image' />
+                <ImageSized imageUri='/images/tg/illustrations/lancer_requete_immobiliere.png' width={256} height={190} alt={"Lancer un projet immobilier"} />
               </div>
               <Card.Body>
                 <h2 className='h4 card-title'>Lancer un projet immobilier</h2>
@@ -456,7 +457,7 @@ const HomePage = () => {
           <SwiperSlide>
             <Card className='card-hover border-0 h-100 pb-2 pb-sm-3 px-sm-3 text-center mx-2'>
               <div className='d-flex justify-content-center my-3'>
-                <ImageLoader src='/images/tg/illustrations/creer_experience.png' width={256} height={190} alt='Image' />
+                <ImageSized imageUri='/images/tg/illustrations/creer_experience.png' width={256} height={190} alt={"Créer de l'experience"} />
               </div>
               <Card.Body>
                 <h2 className='h4 card-title'>Créer de l'experience</h2>
@@ -473,7 +474,7 @@ const HomePage = () => {
           <SwiperSlide>
             <Card className='card-hover border-0 h-100 pb-2 pb-sm-3 px-sm-3 text-center mx-2'>
               <div className='d-flex justify-content-center my-3'>
-                <ImageLoader src='/images/tg/illustrations/lancer_entreprise.png' width={256} height={190} alt='Image' />
+                <ImageSized imageUri='/images/tg/illustrations/lancer_entreprise.png' width={256} height={190} alt={"Lancer une entreprise"}/>
               </div>
               <Card.Body>
                 <h2 className='h4 card-title'>Lancer une entreprise</h2>
@@ -490,7 +491,7 @@ const HomePage = () => {
           <SwiperSlide>
             <Card className='card-hover border-0 h-100 pb-2 pb-sm-3 px-sm-3 text-center mx-2'>
               <div className='d-flex justify-content-center my-3'>
-                <ImageLoader src='/images/tg/illustrations/trouver_logement.png' width={256} height={190} alt='Image' />
+                <ImageSized imageUri='/images/tg/illustrations/trouver_logement.png' width={256} height={190} alt={"Trouver un logement"}/>
               </div>
               <Card.Body>
                 <h2 className='h4 card-title'>Trouver un logement</h2>
