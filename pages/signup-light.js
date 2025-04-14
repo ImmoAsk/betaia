@@ -79,6 +79,23 @@ const SignupLightPage = () => {
       });
 
       if (response.data?.data?.register?.status === "SUCCESS") {
+        // Send welcome email
+        const emailData = {
+          query: `mutation SendWelcomeEmail($input: SendWelcomeEmailInput!) {
+            subscribeUser(input: $input)
+          }`,
+          variables: {
+            input: {
+              email: formData.email,
+              name: formData.name
+            }
+          }
+        };
+        await axios.post(API_URL, emailData, {
+          headers: { 'Content-Type': 'application/json' }
+        });
+        // Redirect to sign-in page
+
         setAccountCreatedNotification("Votre compte a bien été créé. Vous pouvez maintenant vous connecter.");
         router.push("/auth/signin");
       }
