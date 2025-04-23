@@ -291,7 +291,7 @@ export default function PropertyContractModal({
         <div className="row mx-0">
           <div className="col-md-6 border-end-md p-4 p-sm-5">
             <h2 className="h3 mb-2 mb-sm-2">
-              Creattion du contrat immobiler N°{" "}
+              Creation du contrat immobiler N°{" "}
             </h2>
 
             <div className="d-flex align-items-center py-3 mb-3">
