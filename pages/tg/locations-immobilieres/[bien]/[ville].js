@@ -41,15 +41,16 @@ const Popup = dynamic(() =>
 )
 import 'leaflet/dist/leaflet.css'
 import RentingList from '../../../../components/iacomponents/RentingList'
-import {buildPropertiesArray} from '../../../../utils/generalUtils'
+import { buildPropertiesArray } from '../../../../utils/generalUtils'
 import FormSearchOffcanvas from '../../../../components/iacomponents/FormSearchOffcanvas'
 import { useMockPaginate } from '../../../../customHooks/usePagination'
 import IAPaginaation from '../../../../components/iacomponents/IAPagination'
 import { API_URL } from '../../../../utils/settings'
+import OffCanvasFilter from '../../../../components/iacomponents/FilterSearch/OffCanvasFilter'
 
 
 
-const CatalogPage = ({_rentingProperties,bienId,soffreId,villeId}) => {
+const CatalogPage = ({ _rentingProperties, bienId, soffreId, villeId }) => {
 
   // Add extra class to body
   useEffect(() => {
@@ -64,9 +65,9 @@ const CatalogPage = ({_rentingProperties,bienId,soffreId,villeId}) => {
   const { ville } = router.query;
 
   const categoryParam = 'rent';
-  const ocategory=bienId;
-  const ooffer=soffreId;
-  const oville=villeId;
+  const ocategory = bienId;
+  const ooffer = soffreId;
+  const oville = villeId;
 
   //immeubleType= router.query.type
   // Media query for displaying Offcanvas on screens larger than 991px
@@ -327,12 +328,26 @@ const CatalogPage = ({_rentingProperties,bienId,soffreId,villeId}) => {
         break
     }
   }
-  
+
   const humanOfferTitle = categoryParamTitle(categoryParam);
-  const pageTitle = capitalizeFirstLetter(bien) + " en " + humanOfferTitle + " , "+ capitalizeFirstLetter(ville);
+  const pageTitle = capitalizeFirstLetter(bien) + " en " + humanOfferTitle + " , " + capitalizeFirstLetter(ville);
   //const { status, data:propertiesByOCTD, error, isFetching,isLoading,isError }  = usePropertiesByOCTD("1","1","5","2" );
-  console.log(_rentingProperties);
-  const rentingProperties = buildPropertiesArray(_rentingProperties);
+  // Offcanvas container
+  const [filteredProperties, setFilteredProperties] = useState([]);
+  const [rentingProperties, setRentingProperties] = useState([]);
+
+  // Build default rentingProperties from _rentingProperties if needed
+  useEffect(() => {
+    const initial = buildPropertiesArray(_rentingProperties);
+    setRentingProperties(initial);
+  }, [_rentingProperties]);
+
+  const handleFilterSubmit = (data) => {
+    setFilteredProperties(data);
+    console.log("Filtered data:", data);
+    const processed = buildPropertiesArray(data);
+    setRentingProperties(processed);
+  };
   const { data: session } = useSession();
   return (
     <RealEstatePageLayout
@@ -345,15 +360,12 @@ const CatalogPage = ({_rentingProperties,bienId,soffreId,villeId}) => {
       <Container fluid className='mt-5 pt-5 p-0'>
         <Row className='g-0 mt-n3'>
           {/* Filters sidebar (Offcanvas on screens < 992px) */}
-          <Col
-            ref={offcanvasContainer}
-            as='aside'
-            lg={4}
-            xl={3}
-            className='border-top-lg border-end-lg shadow-sm px-3 px-xl-4 px-xxl-5 pt-lg-2'
-          >
-            <FormSearchOffcanvas oville={oville} ocategory={ocategory} parentData={parentData} onChildDataChange={handleParentDataChange} bathroomsValue={bathroomsValue} bedroomsValue={bedroomsValue} PriceRange={PriceRange} isDesktop={isDesktop} amenities={amenities} bathrooms={bathrooms} bedrooms={bedrooms} handleClose={handleClose} options={options} offcanvasContainer={offcanvasContainer} propertyType={propertyType}/>
-          </Col>
+          <OffCanvasFilter
+            show={show}
+            handleClose={handleClose}
+            isDesktop={isDesktop}
+            onFilterSubmit={handleFilterSubmit}
+          />
 
 
           {/* Content */}
@@ -453,7 +465,7 @@ const CatalogPage = ({_rentingProperties,bienId,soffreId,villeId}) => {
             {/* Title + Map toggle */}
             <div className='d-sm-flex align-items-center justify-content-between pb-3 pb-sm-4'>
               <h1 className='h2 mb-sm-0'>{pageTitle}</h1>
-              <a
+              {/* <a
                 href='#'
                 className='d-inline-block fw-bold text-decoration-none py-1'
                 onClick={(e) => {
@@ -463,7 +475,7 @@ const CatalogPage = ({_rentingProperties,bienId,soffreId,villeId}) => {
               >
                 <i className='fi-map me-2'></i>
                 Vue carte
-              </a>
+              </a> */}
             </div>
 
             {/* Sorting */}
@@ -488,10 +500,10 @@ const CatalogPage = ({_rentingProperties,bienId,soffreId,villeId}) => {
             </div>
 
             {/* Catalog grid */}
-            
+
 
             {/* Pagination */}
-            <IAPaginaation dataPagineted={rentingProperties}/>
+            <IAPaginaation dataPagineted={rentingProperties} />
           </Col>
         </Row>
       </Container>
@@ -516,20 +528,20 @@ export async function getServerSideProps(context) {
   const _jsonville = await _ville.json();
 
   const _bien = await fetch(`${API_URL}?query={getCategoryIdByCategorieName(minus_denomination:"${toLowerCaseString(bien)}"){denomination,id,code}}`);
-  const _jsonbien= await _bien.json();
+  const _jsonbien = await _bien.json();
 
-  const bienId=_jsonbien.data.getCategoryIdByCategorieName;
-  console.log("BienId: "+ bienId);
-  const villeId=_jsonville.data.getTownIdByTownName;
-  
-  const offreId="1";
+  const bienId = _jsonbien.data.getCategoryIdByCategorieName;
+  console.log("BienId: " + bienId);
+  const villeId = _jsonville.data.getTownIdByTownName;
+
+  const offreId = "1";
   // Fetch data from external API
   let dataAPIresponse = await fetch(`${API_URL}?query={getPropertiesByKeyWords(limit:200,orderBy:{column:NUO,order:DESC},offre_id:"${offreId}",ville_id:"${villeId.id}",categorie_id:"${bienId.id}")
   {badge_propriete{badge{badge_name,badge_image}},visuels{uri,position},id,surface,nuitee,lat_long,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination,id,minus_denomination}}}`);
   let _rentingProperties = await dataAPIresponse.json();
   //console.log(_rentingProperties.data.getPropertiesByKeyWords);
   _rentingProperties = _rentingProperties.data.getPropertiesByKeyWords;
-  const soffreId = {id:"1",denomination:"louer"};
-  return { props: { _rentingProperties,bienId,soffreId,villeId } }
+  const soffreId = { id: "1", denomination: "louer" };
+  return { props: { _rentingProperties, bienId, soffreId, villeId } }
 }
 export default CatalogPage

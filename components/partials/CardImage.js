@@ -2,6 +2,7 @@ import Link from 'next/link'
 import ImageLoader from '../ImageLoader'
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
 import Tooltip from 'react-bootstrap/Tooltip'
+import ImageSized from '../iacomponents/ImageSized'
 
 const CardImage = ({ horizontal, images, href, badges, wishlistButton, light }) => {
 
@@ -19,7 +20,7 @@ const CardImage = ({ horizontal, images, href, badges, wishlistButton, light }) 
         width={images[0][1]}
         height={images[0][2]}
         alt={images[0][3]}
-        light={light ? 1 : 0}
+         light={light ? 1 : 0}
       />}
       {href ? <Link href={href}>
         <a className='img-overlay'></a>

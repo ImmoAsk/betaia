@@ -785,10 +785,10 @@ function SinglePropertyAltPage({ property }) {
                       Vérifier la disponibilité
                     </Button>
                   </div>
-                  <Link href="#">
+                  <Link href="https://www.whatsapp.com/channel/0029Va8UsGT6mYPQ1aIvdm25">
                     <a className="d-inline-block mb-4 pb-2 text-decoration-none">
                       <i className="fi-help me-2 mt-n1 align-middle"></i>
-                      FAQ
+                      Abonnez-vous à FlashImmo sur WhatsApp – Gratuit et instantané
                     </a>
                   </Link>
                   {property.meubles.length > 0 && (

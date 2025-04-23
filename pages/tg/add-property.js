@@ -712,13 +712,14 @@ const AddPropertyPage = () => {
                     <Select
                         {...register('quarter')}
                         name="quarter"
+                        isDisabled={!propertyData.town}
                         value={quarterSelectedOption} // Pre-select based on propertyData
                         onChange={(selected) => handleChange({ target: { name: 'quarter', value: selected?.value || '' } })}
                         options={quarterList}
                         placeholder="Preciser le quartier"
                         className={`react-select-container ${errors.offer ? 'is-invalid' : ''}`}
                         classNamePrefix="react-select"
-                      />
+                    />
 
                     {errors.quarter && (
                       <Form.Control.Feedback type="invalid" tooltip>
