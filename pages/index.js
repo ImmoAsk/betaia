@@ -293,7 +293,7 @@ const IndexPage = () => {
                     <i className='fi-cash fs-lg text-muted me-2'></i>
                     <span className='text-muted'>Budget</span>
                     <div className='range-slider pe-0 pe-sm-3'>
-                      <Nouislider
+                      {/* <Nouislider
                         range={{min: 20000, max: 1500000000}}
                         start={1000}
                         format={{
@@ -303,7 +303,7 @@ const IndexPage = () => {
                         connect={`lower`}
                         tooltips
                         className='range-slider-ui'
-                      />
+                      /> */}
                     </div>
                   </div>
                   <Button variant='primary btn-icon px-3 w-100 w-sm-auto flex-shrink-0'>
