@@ -42,6 +42,7 @@ import { buildPropertiesArray } from '../../../../../utils/generalUtils'
 import FormSearchOffcanvas from '../../../../../components/iacomponents/FormSearchOffcanvas'
 import IAPaginaation from '../../../../../components/iacomponents/IAPagination'
 import { API_URL } from '../../../../../utils/settings'
+import OffCanvasFilter from '../../../../../components/iacomponents/FilterSearch/OffCanvasFilter'
 
 
   const CatalogPage = ({ _rentingProperties, bienId, villeId, quartierId, soffreId }) => {
@@ -326,10 +327,22 @@ import { API_URL } from '../../../../../utils/settings'
     const pageTitle = capitalizeFirstLetter(bien) + " en " + humanOfferTitle + " , " + capitalizeFirstLetter(quartier) + " , " + capitalizeFirstLetter(ville);
     //const { status, data:propertiesByOCTD, error, isFetching,isLoading,isError }  = usePropertiesByOCTD("1","1","5","2" );
     //console.log(_rentingProperties);
-    const rentingProperties = buildPropertiesArray(_rentingProperties);
+    // Offcanvas container
+  const [filteredProperties, setFilteredProperties] = useState([]);
+  const [rentingProperties, setRentingProperties] = useState([]);
 
+  // Build default rentingProperties from _rentingProperties if needed
+  useEffect(() => {
+    const initial = buildPropertiesArray(_rentingProperties);
+    setRentingProperties(initial);
+  }, [_rentingProperties]);
 
-    const [parentData, setParentData] = useState('Aklakou');
+  const handleFilterSubmit = (data) => {
+    setFilteredProperties(data);
+    console.log("Filtered data:", data);
+    const processed = buildPropertiesArray(data);
+    setRentingProperties(processed);
+  };
 
     const handleParentDataChange = (newData) => {
       setParentData(newData);
@@ -345,16 +358,12 @@ import { API_URL } from '../../../../../utils/settings'
         <Container fluid className='mt-5 pt-5 p-0'>
           <Row className='g-0 mt-n3'>
             {/* Filters sidebar (Offcanvas on screens < 992px) */}
-            <Col
-              ref={offcanvasContainer}
-              as='aside'
-              lg={4}
-              xl={3}
-              className='border-top-lg border-end-lg shadow-sm px-3 px-xl-4 px-xxl-5 pt-lg-2'
-            >
-              <FormSearchOffcanvas oville={oville} ocategory={ocategory} parentData={parentData} onChildDataChange={handleParentDataChange} bathroomsValue={bathroomsValue} bedroomsValue={bedroomsValue} PriceRange={PriceRange} isDesktop={isDesktop} amenities={amenities} bathrooms={bathrooms} bedrooms={bedrooms} handleClose={handleClose} options={options} offcanvasContainer={offcanvasContainer} propertyType={propertyType} />
-            </Col>
-
+           <OffCanvasFilter
+            show={show}
+            handleClose={handleClose}
+            isDesktop={isDesktop}
+            onFilterSubmit={handleFilterSubmit}
+           />
 
             {/* Content */}
             <Col lg={8} xl={9} className='position-relative overflow-hidden pb-5 pt-4 px-3 px-xl-4 px-xxl-5'>
@@ -462,7 +471,7 @@ import { API_URL } from '../../../../../utils/settings'
                 <h1 className='h2 mb-sm-0'>{pageTitle}</h1>
 
 
-                <a
+                {/* <a
                   href='#'
                   className='d-inline-block fw-bold text-decoration-none py-1'
                   onClick={(e) => {
@@ -472,7 +481,7 @@ import { API_URL } from '../../../../../utils/settings'
                 >
                   <i className='fi-map me-2'></i>
                   Vue carte
-                </a>
+                </a> */}
               </div>
 
               {/* Sorting */}
@@ -514,97 +523,6 @@ import { API_URL } from '../../../../../utils/settings'
     )
   }
 
-
-  /* export async function getServerSideProps(context) {
-
-    let { bien,ville,quartier } = context.query;
-
-    const _ville = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getTownIdByTownName(minus_denomination:"${toLowerCaseString(ville)}")
-  {denomination,id,code}}`);
-    const _jsonville = await _ville.json();
-
-    const _quartier = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getDistrictIdByDistrictName(minus_denomination:"${toLowerCaseString(quartier)}")
-  {denomination,id,code,minus_denomination}}`);
-    const _jsonquartier = await _quartier.json();
-
-    const _bien = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getCategoryIdByCategorieName(minus_denomination:"${toLowerCaseString(bien)}"){denomination,id,code}}`);
-    const _jsonbien = await _bien.json();
-
-    const bienId = _jsonbien.data.getCategoryIdByCategorieName;
-    //console.log("BienId: "+ bienId.id);
-
-    const villeId = _jsonville.data.getTownIdByTownName;
-
-    //console.log("VilleId: "+ villeId);
-
-    const quartierId = _jsonquartier.data.getDistrictIdByDistrictName;
-    //console.log("QuarrtierId: "+ quartierId);
-
-    const offreId = "2";
-    // Fetch data from external API
-
-
-    try {
-      const baseUrl = "https://immoaskbetaapi.omnisoft.africa/public/api/v2";
-      const commonQuery = `limit:10,orderBy:{column:NUO,order:DESC},offre_id:"${offreId}",ville_id:"${villeId}",quartier_id:"${quartierId}"`;
-
-      // Fetch rural lands if `bienId` is "13"
-      const ruralLandsPromise =
-        bienId === "13"
-          ? fetch(`${baseUrl}?query={getPropertiesByKeyWords(${commonQuery},categorie_id:"6"){badge_propriete{badge{badge_name,badge_image}},visuels{uri,position},id,surface,lat_long,nuo,usage,offre{denomination,id},categorie_propriete{denomination,id},pays{code,id},piece,titre,garage,cout_mensuel,ville{denomination,id},wc_douche_interne,cout_vente,quartier{denomination,id,minus_denomination}}}`)
-          : null;
-
-      // Fetch town lands if `bienId` is "13"
-      const townLandsPromise =
-        bienId === "13"
-          ? fetch(`${baseUrl}?query={getPropertiesByKeyWords(${commonQuery},categorie_id:"7"){badge_propriete{badge{badge_name,badge_image}},visuels{uri,position},id,surface,lat_long,nuo,usage,offre{denomination,id},categorie_propriete{denomination,id},pays{code,id},piece,titre,garage,cout_mensuel,ville{denomination,id},wc_douche_interne,cout_vente,quartier{denomination,id,minus_denomination}}}`)
-          : null;
-
-      // Fetch main dataset
-      const dataAPIResponse = await fetch(`${baseUrl}?query={getPropertiesByKeyWords(${commonQuery},categorie_id:"${bienId}"){badge_propriete{badge{badge_name,badge_image}},visuels{uri,position},id,surface,lat_long,nuo,usage,offre{denomination,id},categorie_propriete{denomination,id},pays{code,id},piece,titre,garage,cout_mensuel,ville{denomination,id},wc_douche_interne,cout_vente,quartier{denomination,id,minus_denomination}}}`);
-
-      // Parse responses
-      const ruralLands = ruralLandsPromise
-        ? await ruralLandsPromise.then((res) => res.json())
-        : { data: { getPropertiesByKeyWords: [] } };
-      const townLands = townLandsPromise
-        ? await townLandsPromise.then((res) => res.json())
-        : { data: { getPropertiesByKeyWords: [] } };
-      const mainProperties = await dataAPIResponse.json();
-      const soffreId = { id: "1", denomination: "louer" };
-      // Merge all properties
-      const allProperties = [
-        ...ruralLands.data.getPropertiesByKeyWords,
-        ...townLands.data.getPropertiesByKeyWords,
-        ...mainProperties.data.getPropertiesByKeyWords,
-      ];
-
-      return {
-        props: {
-          _rentingProperties: allProperties,
-          soffreId,
-          quartierId,
-          villeId,
-          bienId,
-        },
-      };
-    } catch (error) {
-      console.error("Error fetching properties:", error);
-      return {
-        props: {
-          _rentingProperties: [],
-        },
-      };
-    }
-     let dataAPIresponse = await fetch(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getPropertiesByKeyWords(limit:10,orderBy:{column:NUO,order:DESC},offre_id:"${offreId}",ville_id:"${villeId.id}",quartier_id:"${quartierId.id}",categorie_id:"${bienId.id}")
-    {badge_propriete{badge{badge_name,badge_image}},visuels{uri,position},id,surface,lat_long,nuo,usage,offre{denomination,id},categorie_propriete{denomination,id},pays{code,id},piece,titre,garage,cout_mensuel,ville{denomination,id},wc_douche_interne,cout_vente,quartier{denomination,id,minus_denomination}}}`);
-    let _rentingProperties = await dataAPIresponse.json();
-  
-    
-    _rentingProperties = _rentingProperties.data.getPropertiesByKeyWords;
-    
-    return { props: { _rentingProperties,soffreId, quartierId,villeId,bienId} }
-  } */
     export async function getServerSideProps(context) {
       const { bien, ville, quartier } = context.query;
     

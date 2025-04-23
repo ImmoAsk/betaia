@@ -21,13 +21,13 @@ function toLowerCaseString(inputString) {
 }
 
 
-const getLastPage=(totalItems)=>{
-    var reminder = totalItems%6;
-    var totalPages= totalItems/6;
-    if(reminder===0){ var lastPage=totalPages ;}
-    if(reminder!=0){ var lastPage=Math.floor(totalPages)+1;}
+const getLastPage = (totalItems) => {
+    var reminder = totalItems % 6;
+    var totalPages = totalItems / 6;
+    if (reminder === 0) { var lastPage = totalPages; }
+    if (reminder != 0) { var lastPage = Math.floor(totalPages) + 1; }
     return lastPage;
-  }
+}
 
 function buildPropertiesArray(properties) {
 
@@ -38,7 +38,7 @@ function buildPropertiesArray(properties) {
     }
     properties.map((property) => {
         const _objetProperty = createPropertyObject(property);
-        
+
         tempPropertyArray.push(_objetProperty);
     });
     let propertiesArrayCustomized = tempPropertyArray;
@@ -52,7 +52,7 @@ const formatDate = (dateString) => {
 };
 function createPropertyObject(property) {
     //console.log("Before Processing - Property: ", property);
-    
+
     if (!property.pays) {
         console.error("🚨 Error: property.pays is undefined!");
         return null;
@@ -60,13 +60,13 @@ function createPropertyObject(property) {
 
     let _objetProperty = {
         nuo: property?.nuo,
-        href: getPropertyFullUrl(property?.pays?.code, property?.offre?.denomination, 
-                                 property?.categorie_propriete?.denomination, 
-                                 property?.ville?.denomination, 
-                                 property?.quartier?.minus_denomination, 
-                                 property?.nuo),
+        href: getPropertyFullUrl(property?.pays?.code, property?.offre?.denomination,
+            property?.categorie_propriete?.denomination,
+            property?.ville?.denomination,
+            property?.quartier?.minus_denomination,
+            property?.nuo),
         images: [[getFirstImageArray(property.visuels), 467, 305, 'Image']],
-        img: [getFirstImageArray(property.visuels),735,389,'Image'],
+        img: [getFirstImageArray(property.visuels), 735, 389, 'Image'],
         title: `N°${property?.nuo}: ${property?.categorie_propriete?.denomination} à ${property?.offre?.denomination} | ${property?.surface}m²`,
         category: property?.usage,
         id: property?.id,
@@ -83,14 +83,14 @@ function createPropertyObject(property) {
 
 
 function getHumanReadablePrice(property) {
-    let price = property.cout_mensuel === 0 
-        ? numeral(property.cout_vente).format('0,0') + " XOF/vie" 
+    let price = property.cout_mensuel === 0
+        ? numeral(property.cout_vente).format('0,0') + " XOF/vie"
         : numeral(property.cout_mensuel).format('0,0') + " XOF/mois";
 
     if (property.nuitee > 0) {
         price = numeral(property.nuitee).format('0,0') + " XOF/nuitée";
     }
-    
+
     return price;
 }
 
@@ -117,7 +117,7 @@ function formatRealEstateAgents(owners) {
     return owners.map((owner) => {
         return {
             value: String(owner.id),
-            label: owner.name +"@"+owner.organisation.name_organisation,
+            label: owner.name + "@" + owner.organisation.name_organisation,
         };
     });
 }
@@ -151,7 +151,7 @@ function formatDistrictsOptions(districts) {
     });
 }
 
-const OFFER_MAP = { 1: "locations", 2: "achats" ,3:"investissements", 4:"bails"};
+const OFFER_MAP = { 1: "locations", 2: "achats", 3: "investissements", 4: "bails" };
 const CATEGORY_MAP = {
     1: "Villa",
     2: "Appartement",
@@ -183,9 +183,10 @@ const CATEGORY_MAP = {
     28: "Bar-restaurant",
     29: "Espace commercial",
     30: "Garage",
-    31: "Salle de conference"}
-  ;
-const USAGE_MAP = { 1: "logements", 3: "immeubles commerciaux" ,5: "sejours" ,7: "achats" };
+    31: "Salle de conference"
+}
+    ;
+const USAGE_MAP = { 1: "logements", 3: "immeubles commerciaux", 5: "sejours", 7: "achats" };
 const TOWN_MAP = {
     1: "Lome",
     2: "Kpalime",
@@ -202,8 +203,8 @@ const TOWN_MAP = {
     13: "Togoville",
     14: "Agbodrafo",
     15: "Koudassi"
-  }
-  ;
+}
+    ;
 const DISTRICT_MAP = {
     1: "Novissi",
     2: "Adetikope",
@@ -308,14 +309,14 @@ const DISTRICT_MAP = {
 
 function createCatalogTitle(category, offer, town, district, usage) {
     let titleParts = [];
-    
+
     if (offer && OFFER_MAP[offer]) titleParts.push(OFFER_MAP[offer]);
     if (category && CATEGORY_MAP[category]) titleParts.push(CATEGORY_MAP[category]);
     if (usage && USAGE_MAP[usage]) titleParts.push(USAGE_MAP[usage]);
     if (district && DISTRICT_MAP[district]) titleParts.push(`à ${DISTRICT_MAP[district]}`);
     else if (town && TOWN_MAP[town]) titleParts.push(`à ${TOWN_MAP[town]}`);
-    
-    return titleParts.length ? "Catalogue immobilier de "+ titleParts.join(" ") : "Catalogue des biens immobiliers";
+
+    return titleParts.length ? "Catalogue immobilier de " + titleParts.join(" ") : "Catalogue des biens immobiliers";
 }
 
 function createTop6PropertiesIn(properties) {
@@ -329,7 +330,7 @@ function createTop6PropertiesIn(properties) {
     return top6Properties;
 }
 
-function createNestedArray(inputArray,rows, cols) {
+function createNestedArray(inputArray, rows, cols) {
     if (inputArray.length !== rows * cols) {
         throw new Error("Invalid input: The array length must match rows * cols");
     }
@@ -339,5 +340,5 @@ function createNestedArray(inputArray,rows, cols) {
         Array.from({ length: cols }, () => (inputArray[index++]))
     );
 }
-export { createTop6PropertiesIn,createCatalogTitle, formatDate,getHumanReadablePrice,formatDistrictsOptions,formatTownsOptions,buildPropertiesArray,replaceSpacesWithAny,getLastPage,createPropertyObject,capitalizeFirstLetter, replaceSpacesWithDots, toLowerCaseString,formatPropertyOwners,formatRealEstateAgents};
+export { createTop6PropertiesIn, createCatalogTitle, formatDate, getHumanReadablePrice, formatDistrictsOptions, formatTownsOptions, buildPropertiesArray, replaceSpacesWithAny, getLastPage, createPropertyObject, capitalizeFirstLetter, replaceSpacesWithDots, toLowerCaseString, formatPropertyOwners, formatRealEstateAgents };
 

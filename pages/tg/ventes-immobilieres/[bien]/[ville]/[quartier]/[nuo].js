@@ -472,9 +472,9 @@ function SinglePropertyAltPage({ property }) {
                   </ul>
                   <div className='justify-content-between mb-2'>
                     {property.prevente > 0 &&
-                    <Button size='md' className='w-100' variant='outline-primary' onClick={handlePreventeShow}>Payer la souscription</Button>}
+                      <Button size='md' className='w-100' variant='outline-primary' onClick={handlePreventeShow}>Payer la souscription</Button>}
                   </div>
-                 
+
                   {/* Property details card */}
                   <Card className='border-0 bg-secondary mb-2'>
                     <Card.Body>
@@ -504,10 +504,10 @@ function SinglePropertyAltPage({ property }) {
                             <li className='mt-2 mb-0'><b>Douches: </b>{property && property.wc_douche_interne}</li>
                           </>
                         }
-                        {property && property.prevente === 0 &&  property.est_meuble === 0 && property.super_categorie === "acquisition" &&(
+                        {property && property.prevente === 0 && property.est_meuble === 0 && property.super_categorie === "acquisition" && (
                           <li className="mt-2 mb-0">
                             <b>Frais d'assistance: </b>
-                            {property && property.cout_assistance_client*100} % du prix de vente 
+                            {property && property.cout_assistance_client * 100} % du prix de vente
                           </li>
                         )}
                       </ul>
@@ -542,10 +542,10 @@ function SinglePropertyAltPage({ property }) {
                     </div>
                   }
 
-                  <Link href='#'>
-                    <a className='d-inline-block mb-4 pb-2 text-decoration-none'>
-                      <i className='fi-help me-2 mt-n1 align-middle'></i>
-                      FAQ
+                  <Link href="https://www.whatsapp.com/channel/0029Va8UsGT6mYPQ1aIvdm25">
+                    <a className="d-inline-block mb-4 pb-2 text-decoration-none">
+                      <i className="fi-help me-2 mt-n1 align-middle"></i>
+                      Abonnez-vous à FlashImmo sur WhatsApp – Gratuit et instantané
                     </a>
                   </Link>
                   {property.meubles.length > 0 &&
