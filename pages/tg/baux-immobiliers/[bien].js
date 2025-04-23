@@ -92,65 +92,65 @@ const CatalogPage = ({_rentingProperties}) => {
   ]
 
   // Price range slider
-  const PriceRange = () => {
-    const [minRange, setMinRange] = useState(categoryParam === 'sale' ? 90000 : 1100)
-    const [maxRange, setMaxRange] = useState(categoryParam === 'sale' ? 250000 : 3000)
+  // const PriceRange = () => {
+  //   const [minRange, setMinRange] = useState(categoryParam === 'sale' ? 90000 : 1100)
+  //   const [maxRange, setMaxRange] = useState(categoryParam === 'sale' ? 250000 : 3000)
 
-    const handleInputChange = e => {
-      if (e.target.name === 'minRange') {
-        setMinRange(e.target.value)
-      } else {
-        setMaxRange(e.target.value)
-      }
-    }
+  //   const handleInputChange = e => {
+  //     if (e.target.name === 'minRange') {
+  //       setMinRange(e.target.value)
+  //     } else {
+  //       setMaxRange(e.target.value)
+  //     }
+  //   }
 
-    const handleSliderChange = sliderVal => {
-      let sliderMinVal = Math.round(sliderVal[0].replace(/\D/g,''))
-      let sliderMaxVal = Math.round(sliderVal[1].replace(/\D/g,''))
-      setMinRange(sliderMinVal)
-      setMaxRange(sliderMaxVal)
-    }
+  //   const handleSliderChange = sliderVal => {
+  //     let sliderMinVal = Math.round(sliderVal[0].replace(/\D/g,''))
+  //     let sliderMaxVal = Math.round(sliderVal[1].replace(/\D/g,''))
+  //     setMinRange(sliderMinVal)
+  //     setMaxRange(sliderMaxVal)
+  //   }
 
-    return (
-      <>
-        <Nouislider
-          range={{min: categoryParam === 'sale' ? 30000 : 200, max: categoryParam === 'sale' ? 500000 : 5000}}
-          start={[minRange, maxRange]}
-          format={{
-            to: value => 'XOF ' + parseInt(value, 10),
-            from: value => Number(value)
-          }}
-          connect
-          tooltips
-          className='range-slider-ui'
-          onChange={handleSliderChange}
-        />
-        <div className='d-flex align-items-center'>
-          <div className='w-100 pe-2'>
-            <InputGroup>
-              <InputGroup.Text className='fs-base'>XOF</InputGroup.Text>
-              <Form.Control
-                name='minRange'
-                value={minRange}
-                onChange={handleInputChange}
-              />
-            </InputGroup>
-          </div>
-          <div className='text-muted'>—</div>
-          <div className='w-100 ps-2'>
-            <InputGroup>
-              <InputGroup.Text className='fs-base'>XOF</InputGroup.Text>
-              <Form.Control
-                name='maxRange'
-                value={maxRange}
-                onChange={handleInputChange}
-              />
-            </InputGroup>
-          </div>
-        </div>
-      </>
-    )
-  }
+  //   return (
+  //     <>
+  //       <Nouislider
+  //         range={{min: categoryParam === 'sale' ? 30000 : 200, max: categoryParam === 'sale' ? 500000 : 5000}}
+  //         start={[minRange, maxRange]}
+  //         format={{
+  //           to: value => 'XOF ' + parseInt(value, 10),
+  //           from: value => Number(value)
+  //         }}
+  //         connect
+  //         tooltips
+  //         className='range-slider-ui'
+  //         onChange={handleSliderChange}
+  //       />
+  //       <div className='d-flex align-items-center'>
+  //         <div className='w-100 pe-2'>
+  //           <InputGroup>
+  //             <InputGroup.Text className='fs-base'>XOF</InputGroup.Text>
+  //             <Form.Control
+  //               name='minRange'
+  //               value={minRange}
+  //               onChange={handleInputChange}
+  //             />
+  //           </InputGroup>
+  //         </div>
+  //         <div className='text-muted'>—</div>
+  //         <div className='w-100 ps-2'>
+  //           <InputGroup>
+  //             <InputGroup.Text className='fs-base'>XOF</InputGroup.Text>
+  //             <Form.Control
+  //               name='maxRange'
+  //               value={maxRange}
+  //               onChange={handleInputChange}
+  //             />
+  //           </InputGroup>
+  //         </div>
+  //       </div>
+  //     </>
+  //   )
+  // }
 
   // Bedrooms number
   const [bedroomsValue, setBedroomsValue] = useState('')

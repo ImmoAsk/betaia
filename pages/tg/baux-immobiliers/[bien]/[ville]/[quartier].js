@@ -100,7 +100,7 @@ const CatalogPage = ({_rentingProperties,bienId,villeId,quartierId,soffreId}) =>
   ]
 
   // Price range slider
-  const PriceRange = () => {
+  /* const PriceRange = () => {
     const [minRange, setMinRange] = useState(categoryParam === 'sale' ? 90000 : 1100)
     const [maxRange, setMaxRange] = useState(categoryParam === 'sale' ? 250000 : 3000)
 
@@ -158,7 +158,7 @@ const CatalogPage = ({_rentingProperties,bienId,villeId,quartierId,soffreId}) =>
         </div>
       </>
     )
-  }
+  } */
 
   // Bedrooms number
   const [bedroomsValue, setBedroomsValue] = useState('')

@@ -16,9 +16,9 @@ import Button from 'react-bootstrap/Button'
 import Breadcrumb from 'react-bootstrap/Breadcrumb'
 import Pagination from 'react-bootstrap/Pagination'
 import ImageLoader from '../../../../../components/ImageLoader'
-import Nouislider from 'nouislider-react'
+//import Nouislider from 'nouislider-react'
 import 'simplebar/dist/simplebar.min.css'
-import 'nouislider/distribute/nouislider.css'
+//import 'nouislider/distribute/nouislider.css'
 import { capitalizeFirstLetter, toLowerCaseString } from '../../../../../utils/generalUtils'
 
 const MapContainer = dynamic(() =>
@@ -96,7 +96,7 @@ import OffCanvasFilter from '../../../../../components/iacomponents/FilterSearch
     ]
 
     // Price range slider
-    const PriceRange = () => {
+    /* const PriceRange = () => {
       const [minRange, setMinRange] = useState(categoryParam === 'sale' ? 90000 : 1100)
       const [maxRange, setMaxRange] = useState(categoryParam === 'sale' ? 250000 : 3000)
 
@@ -154,7 +154,7 @@ import OffCanvasFilter from '../../../../../components/iacomponents/FilterSearch
           </div>
         </>
       )
-    }
+    } */
 
     // Bedrooms number
     const [bedroomsValue, setBedroomsValue] = useState('')

@@ -20,7 +20,7 @@ import { Navigation, Pagination, EffectFade } from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { useSession } from 'next-auth/react'
 import axios from "axios";
-import 'nouislider/distribute/nouislider.css'
+//import 'nouislider/distribute/nouislider.css'
 import 'swiper/css'
 import 'swiper/css/navigation'
 import 'swiper/css/pagination'
