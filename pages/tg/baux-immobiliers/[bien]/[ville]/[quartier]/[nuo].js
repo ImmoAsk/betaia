@@ -41,7 +41,7 @@ function SinglePropertyAltPage({ property }) {
   const router = useRouter()
   const { nuo, bien, quartier, ville } = router.query;
 
- 
+
   // Message modal state
   // Sign in modal
   //const propertyCard= createPropertyObject(property);
@@ -398,32 +398,32 @@ function SinglePropertyAltPage({ property }) {
                   <ul className='d-flex mb-4 list-unstyled fs-sm'>
                     <li className='me-3 pe-3'>
 
-                    {   property.cout_vente > 0 && 
+                      {property.cout_vente > 0 &&
                         <>
-                        <h3 className='h5 mb-2'>Prix d'achat:</h3>
+                          <h3 className='h5 mb-2'>Prix d'achat:</h3>
                           <h2 className='h5 mb-4 pb-2'>
                             XOF {property && property.cout_vente}
                             <span className='d-inline-block ms-1 fs-base fw-normal text-body'>/vie</span>
                           </h2>
-                          <Button size='md' className='w-100' variant='outline-primary' onClick={handleSigninShow}>Planifier une visite</Button> 
-                        </> 
-                    }
+                          <Button size='md' className='w-100' variant='outline-primary' onClick={handleSigninShow}>Planifier une visite</Button>
+                        </>
+                      }
                     </li>
 
                     <li className='me-3 pe-3 border-end'>
-                  
-                    {   property.cout_mensuel > 0 && 
+
+                      {property.cout_mensuel > 0 &&
                         <>
-                        <h3 className='h5 mb-2'>Bail mensuel:</h3>
+                          <h3 className='h5 mb-2'>Bail mensuel:</h3>
                           <h2 className='h5 mb-4 pb-2'>
                             XOF {property && property.cout_mensuel}
                             <span className='d-inline-block ms-1 fs-base fw-normal text-body'>/mois</span>
                           </h2>
-                          <Button size='md' className='w-100' variant='outline-primary' onClick={handleSigninShow}>Planifier une visite</Button> 
-                        </> 
-                    }
+                          <Button size='md' className='w-100' variant='outline-primary' onClick={handleSigninShow}>Planifier une visite</Button>
+                        </>
+                      }
                     </li>
-                    
+
                   </ul>
 
 
@@ -437,18 +437,18 @@ function SinglePropertyAltPage({ property }) {
                         <li className='mt-2 mb-0'><b>Document de propriété: </b>{property && property.papier_propriete}</li>
                         {property.salon > 0 &&
                           <>
-                          <li className='mt-2 mb-0'><b>Salon: </b>{property && property.salon}</li>
+                            <li className='mt-2 mb-0'><b>Salon: </b>{property && property.salon}</li>
                           </>
                         }
 
                         {property.piece > 0 &&
                           <>
-                          <li className='mt-2 mb-0'><b>Chambres+salon: </b>{property && property.piece}+{property && property.salon}</li>
+                            <li className='mt-2 mb-0'><b>Chambres+salon: </b>{property && property.piece}+{property && property.salon}</li>
                           </>
                         }
-                        { property.wc_douche_interne > 0 &&
+                        {property.wc_douche_interne > 0 &&
                           <>
-                          <li className='mt-2 mb-0'><b>Douches: </b>{property && property.wc_douche_interne}</li>
+                            <li className='mt-2 mb-0'><b>Douches: </b>{property && property.wc_douche_interne}</li>
                           </>
                         }
                       </ul>
@@ -460,10 +460,10 @@ function SinglePropertyAltPage({ property }) {
                   <div className='justify-content-between mb-2'>
                     <Button size='lg' className='w-100 outline-primary' onClick={handleSignupShow}>Vérifier la disponibilité</Button>
                   </div>
-                  <Link href='#'>
-                    <a className='d-inline-block mb-4 pb-2 text-decoration-none'>
-                      <i className='fi-help me-2 mt-n1 align-middle'></i>
-                      FAQ
+                  <Link href="https://www.whatsapp.com/channel/0029Va8UsGT6mYPQ1aIvdm25">
+                    <a className="d-inline-block mb-4 pb-2 text-decoration-none">
+                      <i className="fi-help me-2 mt-n1 align-middle"></i>
+                      Abonnez-vous à FlashImmo sur WhatsApp – Gratuit et instantané
                     </a>
                   </Link>
                   {property.meubles.length > 0 &&
@@ -526,8 +526,8 @@ function SinglePropertyAltPage({ property }) {
           )}
 
         </Container>
-        )
-        }
+      )
+      }
 
     </RealEstatePageLayout>
   )

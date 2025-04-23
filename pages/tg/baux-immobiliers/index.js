@@ -24,30 +24,31 @@ import Nouislider from 'nouislider-react'
 import 'simplebar/dist/simplebar.min.css'
 import 'nouislider/distribute/nouislider.css'
 
-const MapContainer = dynamic(() => 
+const MapContainer = dynamic(() =>
   import('react-leaflet').then(mod => mod.MapContainer),
   { ssr: false }
 )
-const TileLayer = dynamic(() => 
+const TileLayer = dynamic(() =>
   import('react-leaflet').then(mod => mod.TileLayer),
   { ssr: false }
 )
-const CustomMarker = dynamic(() => 
+const CustomMarker = dynamic(() =>
   import('../../../components/partials/CustomMarker'),
   { ssr: false }
 )
-const Popup = dynamic(() => 
+const Popup = dynamic(() =>
   import('react-leaflet').then(mod => mod.Popup),
   { ssr: false }
 )
 import 'leaflet/dist/leaflet.css'
 import RentingList from '../../../components/iacomponents/RentingList'
-import {buildPropertiesArray} from '../../../utils/generalUtils'
+import { buildPropertiesArray } from '../../../utils/generalUtils'
 import IAPaginaation from '../../../components/iacomponents/IAPagination'
 import { API_URL } from '../../../utils/settings'
+import OffCanvasFilter from '../../../components/iacomponents/FilterSearch/OffCanvasFilter'
 
-const CatalogPage = ({_rentingProperties}) => {
-    
+const CatalogPage = ({ _rentingProperties }) => {
+
   // Add extra class to body
   useEffect(() => {
     const body = document.querySelector('body')
@@ -57,10 +58,10 @@ const CatalogPage = ({_rentingProperties}) => {
   const { data: session } = useSession();
   // Query param (Switch between Rent and Sale category)
   const router = useRouter(),
-        // categoryParam = router.query.category === 'sale' ? 'sale' : 'rent'
-        categoryParam ='bailler';
-        //immeubleType= router.query.type
-        // Media query for displaying Offcanvas on screens larger than 991px
+    // categoryParam = router.query.category === 'sale' ? 'sale' : 'rent'
+    categoryParam = 'bailler';
+  //immeubleType= router.query.type
+  // Media query for displaying Offcanvas on screens larger than 991px
   const isDesktop = useMediaQuery({ query: '(min-width: 992px)' })
 
   // Offcanvas container
@@ -73,15 +74,15 @@ const CatalogPage = ({_rentingProperties}) => {
 
   // Property type checkboxes
   const propertyType = [
-    {value: 'Chambre salon', checked: false},
-    {value: 'Appartement', checked: true},
-    {value: 'Chambre', checked: false},
-    {value: 'Bureau', checked: false},
-    {value: 'Immeuble commercial', checked: false},
-    {value: 'Terrain', checked: false},
-    {value: 'Mur commercial', checked: false},
-    {value: 'Espace co-working', checked: false},
-    {value: 'Villa', checked: false}
+    { value: 'Chambre salon', checked: false },
+    { value: 'Appartement', checked: true },
+    { value: 'Chambre', checked: false },
+    { value: 'Bureau', checked: false },
+    { value: 'Immeuble commercial', checked: false },
+    { value: 'Terrain', checked: false },
+    { value: 'Mur commercial', checked: false },
+    { value: 'Espace co-working', checked: false },
+    { value: 'Villa', checked: false }
   ]
 
   // Price range slider
@@ -98,8 +99,8 @@ const CatalogPage = ({_rentingProperties}) => {
     }
 
     const handleSliderChange = sliderVal => {
-      let sliderMinVal = Math.round(sliderVal[0].replace(/\D/g,''))
-      let sliderMaxVal = Math.round(sliderVal[1].replace(/\D/g,''))
+      let sliderMinVal = Math.round(sliderVal[0].replace(/\D/g, ''))
+      let sliderMaxVal = Math.round(sliderVal[1].replace(/\D/g, ''))
       setMinRange(sliderMinVal)
       setMaxRange(sliderMaxVal)
     }
@@ -107,7 +108,7 @@ const CatalogPage = ({_rentingProperties}) => {
     return (
       <>
         <Nouislider
-          range={{min: categoryParam === 'sale' ? 30000 : 200, max: categoryParam === 'sale' ? 500000 : 5000}}
+          range={{ min: categoryParam === 'sale' ? 30000 : 200, max: categoryParam === 'sale' ? 500000 : 5000 }}
           start={[minRange, maxRange]}
           format={{
             to: value => 'XOF ' + parseInt(value, 10),
@@ -148,46 +149,46 @@ const CatalogPage = ({_rentingProperties}) => {
   // Bedrooms number
   const [bedroomsValue, setBedroomsValue] = useState('')
   const bedrooms = [
-    {name: 'Studio', value: 'studio'},
-    {name: '1', value: '1'},
-    {name: '2', value: '2'},
-    {name: '3', value: '3'},
-    {name: '4+', value: '4+'}
+    { name: 'Studio', value: 'studio' },
+    { name: '1', value: '1' },
+    { name: '2', value: '2' },
+    { name: '3', value: '3' },
+    { name: '4+', value: '4+' }
   ]
 
   // Bathrooms number
   const [bathroomsValue, setBathroomsValue] = useState('')
   const bathrooms = [
-    {name: '1', value: '1'},
-    {name: '2', value: '2'},
-    {name: '3', value: '3'},
-    {name: '4', value: '4'}
+    { name: '1', value: '1' },
+    { name: '2', value: '2' },
+    { name: '3', value: '3' },
+    { name: '4', value: '4' }
   ]
 
   // Amenities checkboxes
   const amenities = [
-    {value: 'Air conditioning', checked: true},
-    {value: 'Balcony', checked: false},
-    {value: 'Garage', checked: true},
-    {value: 'Gym', checked: false},
-    {value: 'Parking', checked: false},
-    {value: 'Pool', checked: false},
-    {value: 'Security cameras', checked: false},
-    {value: 'WiFi', checked: true},
-    {value: 'Laundry', checked: false},
-    {value: 'Dishwasher', checked: false}
+    { value: 'Air conditioning', checked: true },
+    { value: 'Balcony', checked: false },
+    { value: 'Garage', checked: true },
+    { value: 'Gym', checked: false },
+    { value: 'Parking', checked: false },
+    { value: 'Pool', checked: false },
+    { value: 'Security cameras', checked: false },
+    { value: 'WiFi', checked: true },
+    { value: 'Laundry', checked: false },
+    { value: 'Dishwasher', checked: false }
   ]
 
   // Pets checkboxes
   const pets = [
-    {value: 'Cats allowed', checked: false},
-    {value: 'Dogs allowed', checked: false}
+    { value: 'Cats allowed', checked: false },
+    { value: 'Dogs allowed', checked: false }
   ]
 
   // Additional options checkboxes
   const options = [
-    {value: 'Verified', checked: false},
-    {value: 'Featured', checked: false}
+    { value: 'Verified', checked: false },
+    { value: 'Featured', checked: false }
   ]
 
   // Map popup state
@@ -586,31 +587,45 @@ const CatalogPage = ({_rentingProperties}) => {
     let titleFromCategory
     switch (categoryParam) {
       case 'bailler':
-        titleFromCategory="Baux immobiliers"
+        titleFromCategory = "Baux immobiliers"
         return titleFromCategory
         break
       case 'sale':
-        titleFromCategory="Ventes immobilières"
+        titleFromCategory = "Ventes immobilières"
         return titleFromCategory
         break
       case 'rent':
-        titleFromCategory="Locations immobilières"
+        titleFromCategory = "Locations immobilières"
         return titleFromCategory
         break
       case 'invest':
-        titleFromCategory="Investissements immobiliers"
+        titleFromCategory = "Investissements immobiliers"
         return titleFromCategory
         break
       default:
-        titleFromCategory="Locations immobilières"
+        titleFromCategory = "Locations immobilières"
         return titleFromCategory
         break
     }
   }
-  const rentingProperties = buildPropertiesArray(_rentingProperties);
+  const [filteredProperties, setFilteredProperties] = useState([]);
+  const [rentingProperties, setRentingProperties] = useState([]);
+
+  // Build default rentingProperties from _rentingProperties if needed
+  useEffect(() => {
+    const initial = buildPropertiesArray(_rentingProperties);
+    setRentingProperties(initial);
+  }, [_rentingProperties]);
+
+  const handleFilterSubmit = (data) => {
+    setFilteredProperties(data);
+    console.log("Filtered data:", data);
+    const processed = buildPropertiesArray(data);
+    setRentingProperties(processed);
+  };
   return (
     <RealEstatePageLayout
-      pageTitle={"Immeubles en "+categoryParamTitle(categoryParam)}
+      pageTitle={"Immeubles en " + categoryParamTitle(categoryParam)}
       activeNav='Catalog'
       userLoggedIn={session ? true : false}
     >
@@ -619,199 +634,14 @@ const CatalogPage = ({_rentingProperties}) => {
       <Container fluid className='mt-5 pt-5 p-0'>
         <Row className='g-0 mt-n3'>
           {/* Filters sidebar (Offcanvas on screens < 992px) */}
-          <Col
-            ref={offcanvasContainer}
-            as='aside'
-            lg={4}
-            xl={3}
-            className='border-top-lg border-end-lg shadow-sm px-3 px-xl-4 px-xxl-5 pt-lg-2'
-          >
-            <Offcanvas
-              show={isDesktop ? true : show}
-              onHide={handleClose}
-              backdrop={isDesktop ? false : true}
-              scroll={isDesktop ? true : false}
-              container={offcanvasContainer}
-              className='offcanvas-expand-lg'
-            >
-              <Offcanvas.Header closeButton>
-                <Offcanvas.Title as='h5'>Filtres</Offcanvas.Title>
-              </Offcanvas.Header>
-
-              {/* Nav (switch between Rent / Sale) */}
-              {/* <Offcanvas.Header className='d-block border-bottom pt-0 pt-lg-4 px-lg-0'>
-                <Nav variant='tabs' className='mb-0'>
-                  <Nav.Item>
-                    <Link href='/real-estate/catalog?category=rent' passHref>
-                      <Nav.Link active={categoryParam === 'rent' ? true : false}>
-                        <i className='fi-rent fs-base me-2'></i>
-                        A louer
-                      </Nav.Link>
-                    </Link>
-                  </Nav.Item>
-                  <Nav.Item>
-                    <Link href='/real-estate/catalog?category=sale' passHref>
-                      <Nav.Link active={categoryParam === 'sale' ? true : false}>
-                        <i className='fi-home fs-base me-2'></i>
-                        A vendre
-                      </Nav.Link>
-                    </Link>
-                  </Nav.Item>
-          
-                <Nav.Item className='mt-1'>
-                    <Link href='/real-estate/catalog?category=invest' passHref>
-                      <Nav.Link active={categoryParam === 'invest' ? true : false}>
-                        <i className='fi-home fs-base me-2'></i>
-                        A investir
-                      </Nav.Link>
-                    </Link>
-                  </Nav.Item>
-                  <Nav.Item className='mt-1'>
-                    <Link href='/real-estate/catalog?category=bailler' passHref>
-                      <Nav.Link active={categoryParam === 'bailler' ? true : false}>
-                        <i className='fi-home fs-base me-2'></i>
-                        A bailler
-                      </Nav.Link>
-                    </Link>
-                  </Nav.Item>
-                  
-                </Nav>
-              </Offcanvas.Header> */}
-
-              {/* Offcanvas body */}
-              <Offcanvas.Body className='py-lg-4'>
-                <div className='pb-4 mb-2'>
-                  <h3 className='h6'>Situation géographique</h3>
-                  <Form.Select defaultValue='Lome' className='mb-2'>
-                    <option value='default' disabled>Choisir la ville</option>
-                    <option value='Tsevie'>Tsevie</option>
-                    <option value='Kpalime'>Kpalime</option>
-                    <option value='Notse'>Notse</option>
-                    <option value='Lome'>Lome</option>
-                    <option value='Aneho'>Aneho</option>
-                  </Form.Select>
-                  <Form.Select defaultValue='default'>
-                    <option value='default' disabled>Choisir le quartier</option>
-                    <option value='Kagome'>Kagome</option>
-                    <option value='Adakpame'>Adakpame</option>
-                    <option value='Bè'>Bè</option>
-                    <option value='Be Kpota'>Be-Kpota</option>
-                    <option value='Decon'>Decon</option>
-                  </Form.Select>
-                </div>
-                <div className='pb-4 mb-2'>
-                  <h3 className='h6'>Type de biens immobiliers</h3>
-                  <SimpleBar autoHide={false} className='simplebar-no-autohide' style={{maxHeight: '11rem'}}>
-                    {propertyType.map(({value, checked}, indx) => (
-                      <Form.Check
-                        key={indx}
-                        id={`type-${indx}`}
-                        value={value}
-                        defaultChecked={checked}
-                        label={<><span className='fs-sm'>{value}</span></>}  
-                      />
-                    ))}
-                  </SimpleBar>
-                </div>
-                <div className='pb-4 mb-2'>
-                  <h3 className='h6'>Budget prévu</h3>
-                  <PriceRange />
-                </div>
-                <div className='pb-4 mb-2'>
-                  <h3 className='h6 pt-1'>Chambres à coucher &amp; Salles de douche</h3>
-                  <label className='d-block fs-sm mb-1'>Chambres à coucher</label>
-                  <ButtonGroup size='sm'>
-                    {bedrooms.map((bedroom, indx) => (
-                      <ToggleButton
-                        key={indx}
-                        type='radio'
-                        id={`bedrooms-${indx}`}
-                        name='bedrooms'
-                        value={bedroom.value}
-                        checked={bedroomsValue === bedroom.value}
-                        onChange={(e) => setBedroomsValue(e.currentTarget.value)}
-                        variant='outline-secondary fw-normal'
-                      >{bedroom.name}</ToggleButton>
-                    ))}
-                  </ButtonGroup>
-                  <label className='d-block fs-sm pt-2 my-1'>Salles de douche</label>
-                  <ButtonGroup size='sm'>
-                    {bathrooms.map((bathroom, indx) => (
-                      <ToggleButton
-                        key={indx}
-                        type='radio'
-                        id={`bathrooms-${indx}`}
-                        name='bathrooms'
-                        value={bathroom.value}
-                        checked={bathroomsValue === bathroom.value}
-                        onChange={(e) => setBathroomsValue(e.currentTarget.value)}
-                        variant='outline-secondary fw-normal'
-                      >{bathroom.name}</ToggleButton>
-                    ))}
-                  </ButtonGroup>
-                </div>
-                <div className='pb-4 mb-2'>
-                  <h3 className='h6 pt-1'>Surface en m²</h3>
-                  <div className='d-flex align-items-center'>
-                    <Form.Control type='number' min={20} max={500} step={10} placeholder='Min' className='w-100' />
-                    <div className='mx-2'>&mdash;</div>
-                    <Form.Control type='number' min={20} max={500} step={10} placeholder='Max' className='w-100' />
-                  </div> 
-                </div>
-                <div className='pb-4 mb-2'>
-                  <h3 className='h6'>Intérieur & Exterieur</h3>
-                  <SimpleBar autoHide={false} className='simplebar-no-autohide' style={{maxHeight: '11rem'}}>
-                    {amenities.map(({value, checked}, indx) => (
-                      <Form.Check
-                        key={indx}
-                        id={`amenity-${indx}`}
-                        value={value}
-                        defaultChecked={checked}
-                        label={<><span className='fs-sm'>{value}</span></>}  
-                      />
-                    ))}
-                  </SimpleBar>
-                </div>
-                {/* <div className='pb-4 mb-2'>
-                  <h3 className='h6'>Pets</h3>
-                  {pets.map(({value, checked}, indx) => (
-                    <Form.Check
-                      key={indx}
-                      id={`pets-${indx}`}
-                      value={value}
-                      defaultChecked={checked}
-                      label={<><span className='fs-sm'>{value}</span></>}  
-                    />
-                  ))}
-                </div> */}
-                <div className='pb-4 mb-2'>
-                  <h3 className='h6'>Options additionnelles</h3>
-                  {options.map(({value, checked}, indx) => (
-                    <Form.Check
-                      key={indx}
-                      id={`options-${indx}`}
-                      value={value}
-                      defaultChecked={checked}
-                      label={<><span className='fs-sm'>{value}</span></>}  
-                    />
-                  ))}
-                </div>
-                <div className='border-top py-4'>
-                  <Button variant='outline-primary'>
-                    <i className='fi-rotate-right me-2'></i>
-                    Reinititialiser les filtres
-                  </Button>
-                </div>
-              </Offcanvas.Body>
-            </Offcanvas>
-          </Col>
+          <OffCanvasFilter show={show} isDesktop={isDesktop} handleClose={handleClose} onFilterSubmit={handleFilterSubmit}/>
 
 
           {/* Content */}
           <Col lg={8} xl={9} className='position-relative overflow-hidden pb-5 pt-4 px-3 px-xl-4 px-xxl-5'>
 
             {/* Map popup */}
-            <div className={`map-popup${showMap ? ' show': ''}`}>
+            <div className={`map-popup${showMap ? ' show' : ''}`}>
               <Button
                 size='sm'
                 variant='light btn-icon shadow-sm rounded-circle'
@@ -889,7 +719,7 @@ const CatalogPage = ({_rentingProperties}) => {
             {/* Title + Map toggle */}
             <div className='d-sm-flex align-items-center justify-content-between pb-3 pb-sm-4'>
               <h1 className='h2 mb-sm-0'>{categoryParamTitle(categoryParam)}</h1>
-              <a
+              {/* <a
                 href='#'
                 className='d-inline-block fw-bold text-decoration-none py-1'
                 onClick={(e) => {
@@ -899,7 +729,7 @@ const CatalogPage = ({_rentingProperties}) => {
               >
                 <i className='fi-map me-2'></i>
                 Vue carte
-              </a>
+              </a> */}
             </div>
 
             {/* Sorting */}
@@ -924,10 +754,10 @@ const CatalogPage = ({_rentingProperties}) => {
             </div>
 
             {/* Catalog grid */}
-           
+
 
             {/* Pagination */}
-            <IAPaginaation dataPagineted={rentingProperties}/>
+            <IAPaginaation dataPagineted={rentingProperties} />
           </Col>
         </Row>
       </Container>
@@ -941,8 +771,8 @@ const CatalogPage = ({_rentingProperties}) => {
   )
 }
 
-export async function getServerSideProps(context) {  
-  const offreId="4";
+export async function getServerSideProps(context) {
+  const offreId = "4";
   // Fetch data from external API
   let dataAPIresponse = await fetch(`${API_URL}?query={getPropertiesByKeyWords(limit:24,orderBy:{column:NUO,order:DESC},offre_id:"${offreId}")
   {badge_propriete{badge{badge_name,badge_image}},visuels{uri,position},id,surface,lat_long,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination,id,minus_denomination}}}`);

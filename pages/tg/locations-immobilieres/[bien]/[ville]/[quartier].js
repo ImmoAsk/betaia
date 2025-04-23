@@ -40,6 +40,7 @@ import FormSearchOffcanvas from '../../../../../components/iacomponents/FormSear
 import { useMockPaginate } from '../../../../../customHooks/usePagination'
 import IAPaginaation from '../../../../../components/iacomponents/IAPagination'
 import { API_URL } from '../../../../../utils/settings'
+import OffCanvasFilter from '../../../../../components/iacomponents/FilterSearch/OffCanvasFilter'
 
 
 const CatalogPage = ({_rentingProperties,bienId,villeId,quartierId,soffreId}) => {
@@ -74,7 +75,21 @@ const CatalogPage = ({_rentingProperties,bienId,villeId,quartierId,soffreId}) =>
   const isDesktop = useMediaQuery({ query: '(min-width: 992px)' })
 
   // Offcanvas container
-  const offcanvasContainer = useRef(null)
+  const [filteredProperties, setFilteredProperties] = useState([]);
+  const [rentingProperties, setRentingProperties] = useState([]);
+
+  // Build default rentingProperties from _rentingProperties if needed
+  useEffect(() => {
+    const initial = buildPropertiesArray(_rentingProperties);
+    setRentingProperties(initial);
+  }, [_rentingProperties]);
+
+  const handleFilterSubmit = (data) => {
+    setFilteredProperties(data);
+    console.log("Filtered data:",data);
+    const processed = buildPropertiesArray(data);
+    setRentingProperties(processed);
+  };
 
   // Offcanvas show/hide
   const [show, setShow] = useState(false)
@@ -326,12 +341,9 @@ const CatalogPage = ({_rentingProperties,bienId,villeId,quartierId,soffreId}) =>
   const pageTitle = capitalizeFirstLetter(bien) + " en " + humanOfferTitle + " , " + capitalizeFirstLetter(quartier) + " , " + capitalizeFirstLetter(ville);
   //const { status, data:propertiesByOCTD, error, isFetching,isLoading,isError }  = usePropertiesByOCTD("1","1","5","2" );
   //console.log(_rentingProperties);
-  const rentingProperties = buildPropertiesArray(_rentingProperties);
-  const [parentData, setParentData] = useState('Aklakou');
+  //const rentingProperties = buildPropertiesArray(_rentingProperties);
   const { data: session } = useSession();
-  const handleParentDataChange = (newData) => {
-    setParentData(newData);
-  };
+
   return (
     <RealEstatePageLayout
       pageTitle={pageTitle}
@@ -343,15 +355,12 @@ const CatalogPage = ({_rentingProperties,bienId,villeId,quartierId,soffreId}) =>
       <Container fluid className='mt-5 pt-5 p-0'>
         <Row className='g-0 mt-n3'>
           {/* Filters sidebar (Offcanvas on screens < 992px) */}
-          <Col
-            ref={offcanvasContainer}
-            as='aside'
-            lg={4}
-            xl={3}
-            className='border-top-lg border-end-lg shadow-sm px-3 px-xl-4 px-xxl-5 pt-lg-2'
-          >
-           <FormSearchOffcanvas oville={oville} ocategory={ocategory} parentData={parentData} onChildDataChange={handleParentDataChange} bathroomsValue={bathroomsValue} bedroomsValue={bedroomsValue} PriceRange={PriceRange} isDesktop={isDesktop} amenities={amenities} bathrooms={bathrooms} bedrooms={bedrooms} handleClose={handleClose} options={options} offcanvasContainer={offcanvasContainer} propertyType={propertyType}/>
-          </Col>
+          <OffCanvasFilter
+            show={show}
+            handleClose={handleClose}
+            isDesktop={isDesktop}
+            onFilterSubmit={handleFilterSubmit}
+          />
 
 
           {/* Content */}
@@ -460,7 +469,7 @@ const CatalogPage = ({_rentingProperties,bienId,villeId,quartierId,soffreId}) =>
                 <h1 className='h2 mb-sm-0'>{pageTitle}</h1>
               
               
-              <a
+              {/* <a
                 href='#'
                 className='d-inline-block fw-bold text-decoration-none py-1'
                 onClick={(e) => {
@@ -470,7 +479,7 @@ const CatalogPage = ({_rentingProperties,bienId,villeId,quartierId,soffreId}) =>
               >
                 <i className='fi-map me-2'></i>
                 Vue carte
-              </a>
+              </a> */}
             </div>
             
             {/* Sorting */}
