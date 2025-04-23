@@ -21,8 +21,8 @@ import PropertyCard from '../../../components/PropertyCard'
 import SimpleBar from 'simplebar-react'
 import Nouislider from 'nouislider-react'
 import 'simplebar/dist/simplebar.min.css'
-import 'nouislider/distribute/nouislider.css'
-import 'leaflet/dist/leaflet.css'
+//import 'nouislider/distribute/nouislider.css'
+//import 'leaflet/dist/leaflet.css'
 import { useSession } from 'next-auth/react'
 import RentingList from '../../../components/iacomponents/RentingList'
 import {buildPropertiesArray} from '../../../utils/generalUtils'
@@ -93,7 +93,7 @@ const CatalogPage = ({_rentingProperties}) => {
   ]
   const { data: session } = useSession();
   // Price range slider
-  const PriceRange = () => {
+  /* const PriceRange = () => {
     const [minRange, setMinRange] = useState(categoryParam === 'sale' ? 90000 : 1100)
     const [maxRange, setMaxRange] = useState(categoryParam === 'sale' ? 250000 : 3000)
 
@@ -151,7 +151,7 @@ const CatalogPage = ({_rentingProperties}) => {
         </div>
       </>
     )
-  }
+  } */
 
   // Bedrooms number
   const [bedroomsValue, setBedroomsValue] = useState('')
