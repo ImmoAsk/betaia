@@ -20,9 +20,9 @@ import Pagination from 'react-bootstrap/Pagination'
 import ImageLoader from '../../../components/ImageLoader'
 import PropertyCard from '../../../components/PropertyCard'
 import SimpleBar from 'simplebar-react'
-import Nouislider from 'nouislider-react'
+//import Nouislider from 'nouislider-react'
 import 'simplebar/dist/simplebar.min.css'
-import 'nouislider/distribute/nouislider.css'
+//import 'nouislider/distribute/nouislider.css'
 
 const MapContainer = dynamic(() => 
   import('react-leaflet').then(mod => mod.MapContainer),
