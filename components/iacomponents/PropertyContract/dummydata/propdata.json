@@ -1,0 +1,47 @@
+[
+  {
+    "property_id": "PR001",
+    "property_description": "A cozy 2-bedroom apartment located in the heart of downtown. Ideal for small families or professionals.",
+    "property_image": "https://example.com/images/property1.jpg",
+    "property_type": "Apartment",
+    "property_rent": 1200,
+    "property_offer": "First month rent free for new tenants",
+    "property_location": "123 Main Street, Downtown, Springfield"
+  },
+  {
+    "property_id": "PR002",
+    "property_description": "Spacious 3-bedroom house with a large backyard. Perfect for a growing family, close to schools and parks.",
+    "property_image": "https://example.com/images/property2.jpg",
+    "property_type": "House",
+    "property_rent": 1800,
+    "property_offer": "5% discount for long-term leases (12 months or more)",
+    "property_location": "456 Oak Street, Suburbia, Oakville"
+  },
+  {
+    "property_id": "PR003",
+    "property_description": "Modern studio apartment with panoramic views of the city. Includes gym and pool access.",
+    "property_image": "https://example.com/images/property3.jpg",
+    "property_type": "Studio",
+    "property_rent": 950,
+    "property_offer": "Free utilities for the first 3 months",
+    "property_location": "789 Skyview Blvd, Uptown, Metropolis"
+  },
+  {
+    "property_id": "PR004",
+    "property_description": "Charming 1-bedroom cottage near the beach. Perfect for individuals or couples who love seaside living.",
+    "property_image": "https://example.com/images/property4.jpg",
+    "property_type": "Cottage",
+    "property_rent": 1100,
+    "property_offer": "No security deposit for first-time renters",
+    "property_location": "12 Seaside Lane, Oceanview, Clearwater"
+  },
+  {
+    "property_id": "PR005",
+    "property_description": "Luxurious penthouse with 4 bedrooms, a home theater, and a private elevator. A dream property for those seeking ultimate comfort and style.",
+    "property_image": "https://example.com/images/property5.jpg",
+    "property_type": "Penthouse",
+    "property_rent": 4500,
+    "property_offer": "Free parking space for the first 6 months",
+    "property_location": "101 Sunset Blvd, Skyline Tower, City Center"
+  }
+]

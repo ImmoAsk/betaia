@@ -1,0 +1,52 @@
+[
+  {
+    "landlord_id": "LL001",
+    "landlord_fullname": "John Doe",
+    "landlord_address": "123 Elm Street, Springfield",
+    "landlord_phoneNumber": "+1-555-1234",
+    "landlord_pobox": "PO Box 101",
+    "landlord_email": "johndoe@example.com",
+    "landlord_picture": "https://example.com/images/johndoe.jpg",
+    "landlord_nationality": "American"
+  },
+  {
+    "landlord_id": "LL002",
+    "landlord_fullname": "Fatima Al-Sayed",
+    "landlord_address": "45 Pearl Tower, Doha",
+    "landlord_phoneNumber": "+974-5588-1234",
+    "landlord_pobox": "PO Box 2244",
+    "landlord_email": "fatima.sayed@example.qa",
+    "landlord_picture": "https://example.com/images/fatima.jpg",
+    "landlord_nationality": "Qatari"
+  },
+  {
+    "landlord_id": "LL003",
+    "landlord_fullname": "Chen Wei",
+    "landlord_address": "88 Nanjing Rd, Shanghai",
+    "landlord_phoneNumber": "+86-21-1234-5678",
+    "landlord_pobox": "PO Box 3010",
+    "landlord_email": "chenwei@example.cn",
+    "landlord_picture": "https://example.com/images/chenwei.jpg",
+    "landlord_nationality": "Chinese"
+  },
+  {
+    "landlord_id": "LL004",
+    "landlord_fullname": "Amina Yusuf",
+    "landlord_address": "10 Nairobi West, Kenya",
+    "landlord_phoneNumber": "+254-722-000-111",
+    "landlord_pobox": "PO Box 7766",
+    "landlord_email": "amina.yusuf@example.ke",
+    "landlord_picture": "https://example.com/images/amina.jpg",
+    "landlord_nationality": "Kenyan"
+  },
+  {
+    "landlord_id": "LL005",
+    "landlord_fullname": "Carlos Rivera",
+    "landlord_address": "23 Calle Principal, Bogotá",
+    "landlord_phoneNumber": "+57-1-2345678",
+    "landlord_pobox": "PO Box 4567",
+    "landlord_email": "carlos.rivera@example.co",
+    "landlord_picture": "https://example.com/images/carlos.jpg",
+    "landlord_nationality": "Colombian"
+  }
+]
