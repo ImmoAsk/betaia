@@ -21,9 +21,9 @@ import Pagination from 'react-bootstrap/Pagination'
 import ImageLoader from '../../components/ImageLoader'
 import PropertyCard from '../../components/PropertyCard'
 import SimpleBar from 'simplebar-react'
-import Nouislider from 'nouislider-react'
+//import Nouislider from 'nouislider-react'
 import 'simplebar/dist/simplebar.min.css'
-import 'nouislider/distribute/nouislider.css'
+//import 'nouislider/distribute/nouislider.css'
 import 'dotenv/config'
 const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -145,7 +145,7 @@ const CatalogPage = ({ categoryParam, offerParam, usageParam,townParam, district
   ]
 
   // Price range slider
-  const PriceRange = () => {
+  /* const PriceRange = () => {
     const [minRange, setMinRange] = useState(categoryParam === 'sale' ? 90000 : 1100)
     const [maxRange, setMaxRange] = useState(categoryParam === 'sale' ? 250000 : 3000)
 
@@ -203,7 +203,7 @@ const CatalogPage = ({ categoryParam, offerParam, usageParam,townParam, district
         </div>
       </>
     )
-  }
+  } */
 
   // Bedrooms number
   const [bedroomsValue, setBedroomsValue] = useState('')

@@ -19,9 +19,9 @@ import Pagination from 'react-bootstrap/Pagination'
 import ImageLoader from '../../../components/ImageLoader'
 import PropertyCard from '../../../components/PropertyCard'
 import SimpleBar from 'simplebar-react'
-import Nouislider from 'nouislider-react'
+//import Nouislider from 'nouislider-react'
 import 'simplebar/dist/simplebar.min.css'
-import 'nouislider/distribute/nouislider.css'
+//import 'nouislider/distribute/nouislider.css'
 
 const MapContainer = dynamic(() => 
   import('react-leaflet').then(mod => mod.MapContainer),
@@ -82,7 +82,7 @@ const CatalogPage = ({_rentingProperties}) => {
   ]
 
   // Price range slider
-  const PriceRange = () => {
+  /* const PriceRange = () => {
     const [minRange, setMinRange] = useState(categoryParam === 'sale' ? 90000 : 1100)
     const [maxRange, setMaxRange] = useState(categoryParam === 'sale' ? 250000 : 3000)
 
@@ -140,7 +140,7 @@ const CatalogPage = ({_rentingProperties}) => {
         </div>
       </>
     )
-  }
+  } */
 
   // Bedrooms number
   const [bedroomsValue, setBedroomsValue] = useState('')
