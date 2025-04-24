@@ -36,6 +36,7 @@ import PayVisitModal from '../../../../../../components/iacomponents/PayVisitMod
 import CheckAvailabilityModal from '../../../../../../components/iacomponents/CheckAvailabilityModal'
 import RentNegociationModal from '../../../../../../components/iacomponents/RentNegociationModal'
 import AskNuiteePriceModal from '../../../../../../components/iacomponents/AskNuiteePriceModal'
+import { API_URL } from '../../../../../../utils/settings'
 
 function SinglePropertyAltPage({ property }) {
 
@@ -54,7 +55,7 @@ function SinglePropertyAltPage({ property }) {
   const [rentNegociationShow, setRentNegociationShow] = useState(false)
   const handleRentNegociationClose = () => setRentNegociationShow(false)
   const handleRentNegociationShow = () => setRentNegociationShow(true)
-  
+
 
   const [askNuiteePriceShow, setAskNuiteePriceShow] = useState(false)
   const handleAskNuiteePriceClose = () => setAskNuiteePriceShow(false)
@@ -73,9 +74,9 @@ function SinglePropertyAltPage({ property }) {
 
   const handleRentNegociationModal = (e) => {
     e.preventDefault()
-    if(session){
+    if (session) {
       handleRentNegociationShow();
-    } else{
+    } else {
       handleSignInToUp(e);
     }
   }
@@ -84,7 +85,7 @@ function SinglePropertyAltPage({ property }) {
     e.preventDefault()
     handleAskNuiteePriceShow()
   }
-  
+
   const { data: session } = useSession();
   const router = useRouter()
   const { nuo, bien, quartier, ville } = router.query;
@@ -125,7 +126,7 @@ function SinglePropertyAltPage({ property }) {
     defineUnauthenticatedThumbNails();
   }, []);
   const getRecommendProperties = () => {
-    axios.get(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getRecommendProperties(first:5,offre_id:"1",nuo:${property.nuo},quartier_id:"${property.quartier.id}",categorie_id:"${property.categorie_propriete.id}"){data{surface,badge_propriete{badge{badge_name,badge_image}},id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination},visuels{uri}}}}`).
+    axios.get(`${API_URL}?query={getRecommendProperties(first:5,offre_id:"1",nuo:${property.nuo},quartier_id:"${property.quartier.id}",categorie_id:"${property.categorie_propriete.id}"){data{surface,badge_propriete{badge{badge_name,badge_image}},id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination},visuels{uri}}}}`).
       then((res) => {
         setRecommendProperties(res.data.data.getRecommendProperties.data.map((propertyr) => {
           //const { status, data:badges_property, error, isFetching,isLoading,isError }  = usePropertyBadges(property.id);
@@ -238,7 +239,7 @@ function SinglePropertyAltPage({ property }) {
     )
   }
 
- 
+
 
   { !property && <h4 className='mt-5 mb-lg-5 mb-4 pt-5 pb-lg-5'>Ce bien immobilier n'existe pas encore</h4> }
   //{isError && <h4 className='mt-5 mb-lg-5 mb-4 pt-5 pb-lg-5'>Une erreur: {error.message}</h4>}
@@ -385,17 +386,37 @@ function SinglePropertyAltPage({ property }) {
                           </Dropdown.Toggle>
                         </OverlayTrigger>
                         <Dropdown.Menu align='end' className='my-1'>
-                          <Dropdown.Item as='button'>
-                            <i className='fi-facebook fs-base opacity-75 me-2'></i>
-                            Facebook
+                          <Dropdown.Item as="button">
+                            <Link href={`https://www.facebook.com/sharer/sharer.php?u=${window.location.href}`}>
+                              <a>
+                                <i className="fi-facebook fs-base opacity-75 me-2"></i>
+                                Facebook
+                              </a>
+                            </Link>
                           </Dropdown.Item>
-                          <Dropdown.Item as='button'>
-                            <i className='fi-twitter fs-base opacity-75 me-2'></i>
-                            Twitter
+                          <Dropdown.Item as="button">
+                            <Link href={`https://api.whatsapp.com/send?text=${window.location.href}`}>
+                              <a>
+                                <i className="fi-whatsapp fs-base opacity-75 me-2"></i>
+                                WhatsApp
+                              </a>
+                            </Link>
                           </Dropdown.Item>
-                          <Dropdown.Item as='button'>
-                            <i className='fi-instagram fs-base opacity-75 me-2'></i>
-                            Instagram
+                          <Dropdown.Item as="button">
+                            <Link href={`https://twitter.com/intent/tweet?url=${window.location.href}`}>
+                              <a>
+                                <i className="fi-x fs-base opacity-75 me-2"></i>
+                                Twitter
+                              </a>
+                            </Link>
+                          </Dropdown.Item>
+                          <Dropdown.Item as="button">
+                            <Link href={`https://www.linkedin.com/shareArticle?mini=true&url=${window.location.href}`}>
+                              <a>
+                                <i className="fi-linkedin fs-base opacity-75 me-2"></i>
+                                LinkedIn
+                              </a>
+                            </Link>
                           </Dropdown.Item>
                         </Dropdown.Menu>
                       </Dropdown>
@@ -405,41 +426,41 @@ function SinglePropertyAltPage({ property }) {
                   {/* Price */}
 
                   <ul className='d-flex mb-4 list-unstyled fs-sm'>
-                  <li className='me-3 pe-3 border-end'>
-                    {!property ? <span className="sr-only">En chargement...</span>
-                    : <>
-                      {property.cout_mensuel > 0 &&
-                        <>
-                          <h3 className='h5 mb-2'>Loyer mensuel</h3>
-                          <h2 className='h3 mb-4 pb-2'>
-                            {property && property.cout_mensuel} <sup>XOF/mois</sup>
-                            
-                          </h2>
-                          <Button size='md' className='w-100' variant='outline-primary' onClick={handleRentNegociationModal}>Negocier le loyer</Button>
+                    <li className='me-3 pe-3 border-end'>
+                      {!property ? <span className="sr-only">En chargement...</span>
+                        : <>
+                          {property.cout_mensuel > 0 &&
+                            <>
+                              <h3 className='h5 mb-2'>Loyer mensuel</h3>
+                              <h2 className='h3 mb-4 pb-2'>
+                                {property && property.cout_mensuel} <sup>XOF/mois</sup>
+
+                              </h2>
+                              <Button size='md' className='w-100' variant='outline-primary' onClick={handleRentNegociationModal}>Negocier le loyer</Button>
+                            </>
+                          }
                         </>
                       }
-                    </>
-                  }
-                  </li>
-                    <li className='me-3 pe-3'>
-                    { !property? <span className="sr-only">En chargement...</span>
-                    :<>
-                    {   property.part_min_investissement > 0 && 
-                        <>
-                        <h3 className='h5 mb-2'>Part minimal d'investi</h3>
-                          <h2 className='h6 mb-4 pb-2'>
-                            {property && property.part_min_investissement}<sup>XOF</sup>
-                            <span className='d-inline-block ms-1 fs-base fw-normal text-body'>/pierre</span>
-                          </h2>
-                          <Button size='md' className='w-100' variant='outline-primary' onClick={handleRentNegociationModal}>Réserver maintenant</Button> 
-                        </> 
-                    }
-                    </>  
-                  }
                     </li>
-                    
+                    <li className='me-3 pe-3'>
+                      {!property ? <span className="sr-only">En chargement...</span>
+                        : <>
+                          {property.part_min_investissement > 0 &&
+                            <>
+                              <h3 className='h5 mb-2'>Part minimal d'investi</h3>
+                              <h2 className='h6 mb-4 pb-2'>
+                                {property && property.part_min_investissement}<sup>XOF</sup>
+                                <span className='d-inline-block ms-1 fs-base fw-normal text-body'>/pierre</span>
+                              </h2>
+                              <Button size='md' className='w-100' variant='outline-primary' onClick={handleRentNegociationModal}>Réserver maintenant</Button>
+                            </>
+                          }
+                        </>
+                      }
+                    </li>
+
                   </ul>
-                  
+
 
 
                   {/* Property details card */}
@@ -553,7 +574,7 @@ export async function getServerSideProps(context) {
   try {
     // Fetch data from external API
     const dataAPIresponse = await fetch(
-      `https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={propriete(nuo:${nuo}){tarifications{id,mode,currency,montant},id,cout_visite,est_disponible,nuo,garage,est_meuble,titre,descriptif,surface,usage,cuisine,salon,piece,wc_douche_interne,cout_mensuel,nuitee,cout_vente,categorie_propriete{denomination,id},infrastructures{denomination,icone},meubles{libelle,icone},badge_propriete{id,date_expiration,badge{id,badge_name,badge_image}},pays{id,code,denomination},ville{denomination,id},quartier{id,denomination,minus_denomination},adresse{libelle},offre{denomination},visuels{uri,position},user{id}}}`
+      `${API_URL}?query={propriete(nuo:${nuo}){tarifications{id,mode,currency,montant},id,cout_visite,est_disponible,nuo,garage,est_meuble,titre,descriptif,surface,usage,cuisine,salon,piece,wc_douche_interne,cout_mensuel,nuitee,cout_vente,categorie_propriete{denomination,id},infrastructures{denomination,icone},meubles{libelle,icone},badge_propriete{id,date_expiration,badge{id,badge_name,badge_image}},pays{id,code,denomination},ville{denomination,id},quartier{id,denomination,minus_denomination},adresse{libelle},offre{denomination},visuels{uri,position},user{id}}}`
     );
 
     // Check if the response is OK (status 200-299)

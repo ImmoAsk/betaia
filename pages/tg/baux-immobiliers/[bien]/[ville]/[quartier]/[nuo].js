@@ -377,17 +377,37 @@ function SinglePropertyAltPage({ property }) {
                           </Dropdown.Toggle>
                         </OverlayTrigger>
                         <Dropdown.Menu align='end' className='my-1'>
-                          <Dropdown.Item as='button'>
-                            <i className='fi-facebook fs-base opacity-75 me-2'></i>
-                            Facebook
+                          <Dropdown.Item as="button">
+                            <Link href={`https://www.facebook.com/sharer/sharer.php?u=${window.location.href}`}>
+                              <a>
+                                <i className="fi-facebook fs-base opacity-75 me-2"></i>
+                                Facebook
+                              </a>
+                            </Link>
                           </Dropdown.Item>
-                          <Dropdown.Item as='button'>
-                            <i className='fi-twitter fs-base opacity-75 me-2'></i>
-                            Twitter
+                          <Dropdown.Item as="button">
+                            <Link href={`https://api.whatsapp.com/send?text=${window.location.href}`}>
+                              <a>
+                                <i className="fi-whatsapp fs-base opacity-75 me-2"></i>
+                                WhatsApp
+                              </a>
+                            </Link>
                           </Dropdown.Item>
-                          <Dropdown.Item as='button'>
-                            <i className='fi-instagram fs-base opacity-75 me-2'></i>
-                            Instagram
+                          <Dropdown.Item as="button">
+                            <Link href={`https://twitter.com/intent/tweet?url=${window.location.href}`}>
+                              <a>
+                                <i className="fi-x fs-base opacity-75 me-2"></i>
+                                Twitter
+                              </a>
+                            </Link>
+                          </Dropdown.Item>
+                          <Dropdown.Item as="button">
+                            <Link href={`https://www.linkedin.com/shareArticle?mini=true&url=${window.location.href}`}>
+                              <a>
+                                <i className="fi-linkedin fs-base opacity-75 me-2"></i>
+                                LinkedIn
+                              </a>
+                            </Link>
                           </Dropdown.Item>
                         </Dropdown.Menu>
                       </Dropdown>
