@@ -1,57 +1,62 @@
-import { useState } from 'react'
+import { useState } from "react";
 
-import { getSession, useSession } from 'next-auth/react'
-import RealEstatePageLayout from '../../partials/RealEstatePageLayout'
-import PublicBoardSideBar from './PublicBoardSideBar'
+import { getSession, useSession } from "next-auth/react";
+import RealEstatePageLayout from "../../partials/RealEstatePageLayout";
+import PublicBoardSideBar from "./PublicBoardSideBar";
+import { Button } from "react-bootstrap";
+import InquiryFormModal from "./InquiryForm";
 
-const RealEstateAgencyPublicBoard = ({ accountPageTitle, children }) => {
-
+const RealEstateAgencyPublicBoard = ({
+  accountPageTitle,
+  children,
+  onSelectType,
+}) => {
   // State to control Collapse
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
 
   const locataire = [
     {
       id: 1,
       accessStatut: 1,
-      ressourceName: 'Paiement de loyers',
-      resourcelink: '/tg/account-help',
-      icon: 'fi-help'
+      ressourceName: "Paiement de loyers",
+      resourcelink: "/tg/account-help",
+      icon: "fi-help",
     },
     {
       id: 2,
       accessStatut: 1,
-      ressourceName: 'Tableau immobilier',
-      resourcelink: '/tg/account-properties',
-      icon: 'fi-home'
+      ressourceName: "Tableau immobilier",
+      resourcelink: "/tg/account-properties",
+      icon: "fi-home",
     },
     {
       id: 3,
       accessStatut: 1,
-      ressourceName: 'Notifications',
-      resourcelink: '/tg/account-notifications',
-      icon: 'fi-bell'
+      ressourceName: "Notifications",
+      resourcelink: "/tg/account-notifications",
+      icon: "fi-bell",
     },
     {
       id: 4,
       accessStatut: 1,
-      ressourceName: 'Biens immobiliers à visiter',
-      resourcelink: '/tg/account-wishlist',
-      icon: 'fi-heart'
+      ressourceName: "Biens immobiliers à visiter",
+      resourcelink: "/tg/account-wishlist",
+      icon: "fi-heart",
     },
     {
       id: 5,
       accessStatut: 1,
-      ressourceName: 'Mon logement actuel',
-      resourcelink: '/tg/account-location',
-      icon: 'fi-home'
+      ressourceName: "Mon logement actuel",
+      resourcelink: "/tg/account-location",
+      icon: "fi-home",
     },
     {
       id: 6,
       accessStatut: 1,
-      ressourceName: 'Assurance immobilière',
-      resourcelink: '/tg/account-insurance',
-      icon: 'fi-home'
-    }
+      ressourceName: "Assurance immobilière",
+      resourcelink: "/tg/account-insurance",
+      icon: "fi-home",
+    },
   ];
   const { data: session } = useSession();
   //console.log(session);
@@ -59,14 +64,15 @@ const RealEstateAgencyPublicBoard = ({ accountPageTitle, children }) => {
   //console.log(roleId);
 
   return (
-    <RealEstatePageLayout 
-      pageTitle={accountPageTitle}>
-        <PublicBoardSideBar accountPageTitle={accountPageTitle}>
-          {children}
-        </PublicBoardSideBar>
+    <RealEstatePageLayout pageTitle={accountPageTitle}>
+      <PublicBoardSideBar
+        onSelectType={onSelectType}
+        accountPageTitle={accountPageTitle}
+      >
+        {children}
+      </PublicBoardSideBar>
     </RealEstatePageLayout>
-  )
-}
+  );
+};
 
-
-export default RealEstateAgencyPublicBoard
+export default RealEstateAgencyPublicBoard;
