@@ -1,10 +1,10 @@
 "use client";
 import { useState } from "react";
 import { useSession } from "next-auth/react";
-import PublicBoardSideBar from "../../../components/iacomponents/RealEstateAgency/PublicBoardSideBar";
 import RealEstateAgencyPublicBoard from "../../../components/iacomponents/RealEstateAgency/RealEstateAgencyPublicBoard";
 import { Container } from "react-bootstrap";
 import RealEstateProperty from "../../../components/iacomponents/RealEstateAgency/newprop";
+import PropertyAds from "../../../components/iacomponents/RealEstateAgency/PropertyAds";
 
 const Organisation = ({
   accountPageTitle,
@@ -25,7 +25,8 @@ const Organisation = ({
       accountPageTitle="Mon organisation"
       onSelectType={setSelectedType}
     >
-      <Container fluid className="pt-5 pb-lg-4 mt-5 mb-sm-2">
+      <PropertyAds />
+      <Container fluid className=" pb-lg-4 mb-sm-2">
         <RealEstateProperty selectedType={selectedType} />
       </Container>
     </RealEstateAgencyPublicBoard>

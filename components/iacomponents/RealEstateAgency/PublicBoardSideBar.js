@@ -10,6 +10,7 @@ import CardNav from "../../CardNav";
 import StarRating from "../../StarRating";
 import Avatar from "../../Avatar";
 import InquiryFormModal from "./InquiryForm";
+import PropertyTypeCounter from "./propertyTypeCounter";
 
 const PublicBoardSideBar = ({
   accountPageTitle,
@@ -65,10 +66,12 @@ const PublicBoardSideBar = ({
                       contact@immoask.com
                     </a>
                   </li>
-                  <InquiryFormModal />
                 </ul>
               </div>
             </div>
+            <Row className="mb-4">
+              <InquiryFormModal />
+            </Row>
             {/* Enroller une propriété */}
             <Button
               variant="outline-secondary"
@@ -80,22 +83,11 @@ const PublicBoardSideBar = ({
               <i className="fi-align-justify me-2"></i>
               Menu
             </Button>
+            <div>
+              <PropertyTypeCounter />
+            </div>{" "}
             <Collapse in={open} className="d-md-block">
               <div id="account-menu">
-                {/* <CardNav className='pt-3'>
-                  <CardNav.Item href='/tg/catalog' icon='fi-home'>
-                    Sejours
-                  </CardNav.Item>
-                  <CardNav.Item href='/tg/catalog' icon='fi-apartment'>
-                    Logements
-                  </CardNav.Item>
-                  <CardNav.Item href='/tg/catalog' icon='fi-home'>
-                    Entreprises
-                  </CardNav.Item>
-                  <CardNav.Item href='/tg/catalog' icon='fi-apartment'>
-                    Acquisitions
-                  </CardNav.Item>
-                </CardNav> */}
                 <CardNav className="pt-3">
                   <CardNav.Item
                     icon="fi-home"
@@ -121,10 +113,37 @@ const PublicBoardSideBar = ({
                   >
                     Acquisitions
                   </CardNav.Item>
+                  <CardNav.Item>
+                    <div className="d-flex flex-column mt-3 gap-3">
+                      <a
+                        href="https://facebook.com"
+                        target="_blank"
+                        className="text-primary fs-5 text-decoration-none"
+                      >
+                        <i className="fi-facebook me-2"></i>Facebook Link
+                      </a>
+                      <a
+                        href="https://twitter.com"
+                        target="_blank"
+                        className="text-info fs-5 text-decoration-none"
+                      >
+                        <i className="fi-twitter me-2"></i>Twitter Link
+                      </a>
+                      <a
+                        href="https://instagram.com"
+                        className="text-primary fs-5 text-decoration-none"
+                      >
+                        <i className="fi-instagram me-2"></i>Instagram Link
+                      </a>
+                    </div>
+                  </CardNav.Item>
                 </CardNav>
               </div>
             </Collapse>
           </div>
+          <Row className="mt-4 p-2">
+            <InquiryFormModal />
+          </Row>
         </Col>
 
         {/* Page content */}
@@ -132,7 +151,6 @@ const PublicBoardSideBar = ({
           {children}
         </Col>
       </Row>
-      <InquiryFormModal />
     </Container>
   );
 };
