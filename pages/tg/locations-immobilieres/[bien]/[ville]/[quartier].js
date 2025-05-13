@@ -13,9 +13,9 @@ import InputGroup from 'react-bootstrap/InputGroup'
 import Button from 'react-bootstrap/Button'
 import Breadcrumb from 'react-bootstrap/Breadcrumb'
 import ImageLoader from '../../../../../components/ImageLoader'
-import Nouislider from 'nouislider-react'
+//import Nouislider from 'nouislider-react'
 import 'simplebar/dist/simplebar.min.css'
-import 'nouislider/distribute/nouislider.css'
+//import 'nouislider/distribute/nouislider.css'
 import { capitalizeFirstLetter,toLowerCaseString } from '../../../../../utils/generalUtils'
 
 const MapContainer = dynamic(() =>
@@ -110,7 +110,7 @@ const CatalogPage = ({_rentingProperties,bienId,villeId,quartierId,soffreId}) =>
   ]
 
   // Price range slider
-  const PriceRange = () => {
+  /* const PriceRange = () => {
     const [minRange, setMinRange] = useState(categoryParam === 'sale' ? 90000 : 1100)
     const [maxRange, setMaxRange] = useState(categoryParam === 'sale' ? 250000 : 3000)
 
@@ -168,7 +168,7 @@ const CatalogPage = ({_rentingProperties,bienId,villeId,quartierId,soffreId}) =>
         </div>
       </>
     )
-  }
+  } */
 
   // Bedrooms number
   const [bedroomsValue, setBedroomsValue] = useState('')

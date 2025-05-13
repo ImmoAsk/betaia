@@ -1,0 +1,131 @@
+[
+  {
+    "property_location": "123 Main St, New York, NY",
+    "property_rent": 2500,
+    "property_description": "Modern one-bedroom apartment in the heart of Manhattan.",
+    "property_id": "NY1001",
+    "property_type": "Sejours",
+    "property_image": "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=700&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aG91c2V8ZW58MHx8MHx8fDA%3D"
+  },
+  {
+    "property_location": "22 Park Ave, Brooklyn, NY",
+    "property_rent": 2200,
+    "property_description": "Bright apartment close to parks and subways.",
+    "property_id": "NY1002",
+    "property_type": "Sejours",
+    "property_image": "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=700&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aG91c2V8ZW58MHx8MHx8fDA%3D"
+  },
+  {
+    "property_location": "98 Lexington Ave, Jersey City, NJ",
+    "property_rent": 2100,
+    "property_description": "Updated apartment with city views and balcony.",
+    "property_id": "NJ1003",
+    "property_type": "Sejours",
+    "property_image": "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=700&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aG91c2V8ZW58MHx8MHx8fDA%3D"
+  },
+  {
+    "property_location": "409 Queen St, Philadelphia, PA",
+    "property_rent": 1900,
+    "property_description": "Charming apartment in a historic building.",
+    "property_id": "PA1004",
+    "property_type": "Sejours",
+    "property_image": "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=700&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aG91c2V8ZW58MHx8MHx8fDA%3D"
+  },
+  {
+    "property_location": "456 Maple Dr, Austin, TX",
+    "property_rent": 1800,
+    "property_description": "Cozy two-bedroom house with backyard in a quiet neighborhood.",
+    "property_id": "TX2001",
+    "property_type": "Logements",
+    "property_image": "https://images.unsplash.com/photo-1591825729269-caeb344f6df2?w=700&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8YWlyYm5ifGVufDB8fDB8fHww"
+  },
+  {
+    "property_location": "12 Oak Lane, Boulder, CO",
+    "property_rent": 2400,
+    "property_description": "Three-bedroom house near mountain trails.",
+    "property_id": "CO2002",
+    "property_type": "Logements",
+    "property_image": "https://images.unsplash.com/photo-1591825729269-caeb344f6df2?w=700&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8YWlyYm5ifGVufDB8fDB8fHww"
+  },
+  {
+    "property_location": "77 Birch Rd, Madison, WI",
+    "property_rent": 1600,
+    "property_description": "Affordable house with a finished basement.",
+    "property_id": "WI2003",
+    "property_type": "Logements",
+    "property_image": "https://images.unsplash.com/photo-1591825729269-caeb344f6df2?w=700&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8YWlyYm5ifGVufDB8fDB8fHww"
+  },
+  {
+    "property_location": "305 Willow Ct, Nashville, TN",
+    "property_rent": 2000,
+    "property_description": "Newly renovated house in a family-friendly area.",
+    "property_id": "TN2004",
+    "property_type": "Logements",
+    "property_image": "https://images.unsplash.com/photo-1591825729269-caeb344f6df2?w=700&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8YWlyYm5ifGVufDB8fDB8fHww"
+  },
+
+  {
+    "property_location": "101 High St, Boston, MA",
+    "property_rent": 1500,
+    "property_description": "Studio loft in a renovated historic building downtown.",
+    "property_id": "MA4001",
+    "property_type": "Entreprises",
+    "property_image": "https://img.freepik.com/free-photo/hand-holding-house-real-estate-property-model_53876-129010.jpg?t=st=1746192960~exp=1746196560~hmac=d21918d500eafc50eb099152cbe2cbd72dd72cfe7b5f5155bd230ff535febc54&w=740"
+  },
+  {
+    "property_location": "204 King St, Charleston, SC",
+    "property_rent": 1300,
+    "property_description": "Charming studio with exposed brick and high ceilings.",
+    "property_id": "SC4002",
+    "property_type": "Entreprises",
+    "property_image": "https://img.freepik.com/free-photo/hand-holding-house-real-estate-property-model_53876-129010.jpg?t=st=1746192960~exp=1746196560~hmac=d21918d500eafc50eb099152cbe2cbd72dd72cfe7b5f5155bd230ff535febc54&w=740"
+  },
+  {
+    "property_location": "89 Pine St, Portland, OR",
+    "property_rent": 1400,
+    "property_description": "Modern studio with open floor plan and lots of light.",
+    "property_id": "OR4003",
+    "property_type": "Entreprises",
+    "property_image": "https://img.freepik.com/free-photo/hand-holding-house-real-estate-property-model_53876-129010.jpg?t=st=1746192960~exp=1746196560~hmac=d21918d500eafc50eb099152cbe2cbd72dd72cfe7b5f5155bd230ff535febc54&w=740"
+  },
+  {
+    "property_location": "67 Beacon St, Hartford, CT",
+    "property_rent": 1200,
+    "property_description": "Compact and efficient studio ideal for students.",
+    "property_id": "CT4004",
+    "property_type": "Entreprises",
+    "property_image": "https://img.freepik.com/free-photo/hand-holding-house-real-estate-property-model_53876-129010.jpg?t=st=1746192960~exp=1746196560~hmac=d21918d500eafc50eb099152cbe2cbd72dd72cfe7b5f5155bd230ff535febc54&w=740"
+  },
+  {
+    "property_location": "789 Ocean Ave, Santa Monica, CA",
+    "property_rent": 3200,
+    "property_description": "Spacious condo with ocean view and modern amenities.",
+    "property_id": "CA3001",
+    "property_type": "Acquisitions",
+    "property_image": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=700&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8ZW50ZXJwcmlzZXxlbnwwfHwwfHx8MA%3D%3D"
+  },
+  {
+    "property_location": "410 Marina Blvd, Miami, FL",
+    "property_rent": 2900,
+    "property_description": "Luxury condo with pool and private beach access.",
+    "property_id": "FL3002",
+    "property_type": "Acquisitions",
+    "property_image": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=700&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8ZW50ZXJwcmlzZXxlbnwwfHwwfHx8MA%3D%3D"
+  },
+  {
+    "property_location": "123 Harbor St, Seattle, WA",
+    "property_rent": 3100,
+    "property_description": "Stylish condo with rooftop deck and water views.",
+    "property_id": "WA3003",
+    "property_type": "Acquisitions",
+    "property_image": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=700&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8ZW50ZXJwcmlzZXxlbnwwfHwwfHx8MA%3D%3D"
+  },
+  {
+    "property_location": "50 Pearl St, San Diego, CA",
+    "property_rent": 3000,
+    "property_description": "Modern condo close to shops and public transit.",
+    "property_id": "CA3004",
+    "property_type": "Acquisitions",
+    "property_image": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=700&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8ZW50ZXJwcmlzZXxlbnwwfHwwfHx8MA%3D%3D"
+  }
+]
