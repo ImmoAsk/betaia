@@ -15,7 +15,7 @@
       {
         "href": "/tg/catalog?categorie=5",
         "media": "fi-shop",
-        "title": "Chambre salon",
+        "title": "Appart. meublé",
         "count": 10
       },
       {
@@ -39,7 +39,7 @@
       {
         "href": "/tg/catalog?categorie=19",
         "media": "fi-house-chosen",
-        "title": "Immeuble commercial",
+        "title": "Villa meublée",
         "count": 5
       },
       {
@@ -57,19 +57,19 @@
       {
         "href": "/tg/catalog?categorie=20",
         "media": "fi-parking",
-        "title": "Espaces co-working",
+        "title": "Co-working",
         "count": 3
       },
       {
         "href": "/tg/catalog?categorie=29",
         "media": "fi-parking",
-        "title": "Espace commercial",
+        "title": "Fermes agricoles",
         "count": 10
       },
       {
         "href": "/tg/catalog?categorie=4",
         "media": "fi-single-bed",
-        "title": "Chambre",
+        "title": "Studio meublé",
         "count": 1
       }
     ],
@@ -89,7 +89,7 @@
       {
         "href": "/tg/catalog?categorie=rent",
         "media": "fi-tg-buy",
-        "title": "Immeuble commercial",
+        "title": "Villa meublée",
         "count": 5
       },
       {

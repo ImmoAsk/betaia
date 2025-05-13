@@ -1,3 +1,6 @@
+import Nouislider from "nouislider-react";
+import { Col, FormGroup, Row ,DropdownSelect,Button} from "react-bootstrap";
+
 export default function RealEstateSearchBar({townkeyw,disctrictkeyw,offerkeyw,categorykeyw,rangekeyw}){
     return(
         <Row className='mt-lg-1'>

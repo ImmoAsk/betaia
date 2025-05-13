@@ -90,13 +90,8 @@ const PropertyContractPage = ({ _newContracts, _acceptedContracts, _declinedCont
           <h1 className='h2 mb-0'>Contrats immobiliers</h1>
           <div className='d-flex align-items-right'>
             <a href='#' className='fw-bold text-decoration-none' onClick={createPropertyContractModal}>
-              <i className='fi-cash mt-n1 me-2'></i>
-              Creer un contrat d'habitation 
-            </a>
-            <span className='mx-2'>|</span>
-            <a href='#' className='fw-bold text-decoration-none' onClick={createPropertyContractModal}>
               <i className='fi-link mt-n1 me-2'></i>
-              Creer un contrat commercial
+              Créer un contrat immobilier
             </a>
           </div>
         </div>

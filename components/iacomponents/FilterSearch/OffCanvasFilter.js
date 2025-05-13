@@ -138,6 +138,8 @@ const OffCanvasFilter = ({ show, handleClose, isDesktop, onFilterSubmit }) => {
                         value={townSelectedOption} // Pre-select based on propertyData
                         onChange={(selected) => setCity(selected.value)}
                         options={townList}
+                        isSearchable
+                        isClearable
                         placeholder="Preciser la ville"
                         className={`react-select-container mb-2`}
                         classNamePrefix="react-select"
@@ -149,6 +151,8 @@ const OffCanvasFilter = ({ show, handleClose, isDesktop, onFilterSubmit }) => {
                         onChange={(selected) => setDistrict(selected.value)}
                         isDisabled={!city} // Disable if no city is selected
                         options={quarterList}
+                        isSearchable
+                        isClearable
                         placeholder="Preciser le quartier"
                         className={`react-select-container mb-2`}
                         classNamePrefix="react-select"
@@ -161,6 +165,8 @@ const OffCanvasFilter = ({ show, handleClose, isDesktop, onFilterSubmit }) => {
                         onChange={(selected) => setPropertyTypeSelected(selected.value)}
                         options={propertyTypeOptions}
                         placeholder="Preciser type"
+                        isSearchable
+                        isClearable
                         className={`react-select-container`}
                         classNamePrefix="react-select"
                     />
