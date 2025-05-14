@@ -1,0 +1,34 @@
+/* Carousel.module.css */
+
+/* Mobile First (Default) */
+.carouselSlide {
+  height: 600px; /* base height for small devices */
+}
+
+/* Small devices (≥576px) */
+@media (min-width: 576px) {
+  .carouselSlide {
+    height: 700px;
+  }
+}
+
+/* Medium devices (≥768px) */
+@media (min-width: 768px) {
+  .carouselSlide {
+    height: 65vh;
+  }
+}
+
+/* Large devices (≥992px) */
+@media (min-width: 992px) {
+  .carouselSlide {
+    height: 70vh;
+  }
+}
+
+/* Extra-large devices (≥1200px) */
+@media (min-width: 1200px) {
+  .carouselSlide {
+    height: 72vh;
+  }
+}

@@ -14,11 +14,28 @@ const useFilterSubmit = () => {
     bathrooms,
     surfaceMin,
     surfaceMax,
+    budgetMin,
+    budgetMax,
+    garage,
+    cautionAvance,
     amenities,
     options
   }) => {
     setLoading(true);
-
+    console.log("Submitting filters:", {
+      city,
+      district,
+      propertyType,
+      category,
+      bedrooms,
+      bathrooms,
+      surfaceMin,
+      surfaceMax,
+      budgetMin,
+      budgetMax,
+      garage,
+      cautionAvance,
+    });
     try {
       let query = `query={getPropertiesByKeyWords(limit:100,orderBy:{column:NUO,order:DESC}`;
 
@@ -45,6 +62,26 @@ const useFilterSubmit = () => {
       }
       if (surfaceMax) {
         query += `,surface_max:${surfaceMax}`;
+      }
+      if (category && category === '1' && budgetMax) {
+        query += `,rentMax:${Number(budgetMax)}`;
+      }
+      if (category && category === '1' && budgetMin) {
+        query += `,rentMin:${Number(budgetMin)}`;
+      }
+
+       if (category && category === '2' && budgetMax) {
+        query += `,buyMax:${Number(budgetMax)}`;
+      }
+      if (category && category === '2' && budgetMin) {
+        query += `,buyMin:${Number(budgetMin)}`;
+      }
+      
+      if (cautionAvance) {
+        query += `,caution_avance:\"${cautionAvance}\"`;
+      }
+      if (garage) {
+        query += `,garage:${garage}`;
       }
       /* if (amenities && amenities.length > 0) {
         query += `,amenities:[${amenities.map(a => `\"${a}\"`).join(',')}]`;

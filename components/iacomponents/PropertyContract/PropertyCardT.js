@@ -1,6 +1,6 @@
 import { Card } from "react-bootstrap";
 
-export default function PropertyCard({ property, onSelect, selected }) {
+export default function PropertyCardT({ property, onSelect, selected }) {
   return (
     <Card
       className={`h-50 ${selected ? "border-primary" : ""}`}

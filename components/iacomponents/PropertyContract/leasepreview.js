@@ -1,133 +1,116 @@
 "use client";
 
+import { format } from "date-fns"; // optional: for nicer date formatting
+
 export default function LeasePreview({ data, previewRef }) {
+  // Calcul du dépôt de garantie
   const depositAmount = (parseInt(data.monthlyRent) * 3).toLocaleString();
+
+  // Date du contrat
+  const today = format(new Date(), "dd/MM/yyyy");
 
   return (
     <div ref={previewRef}>
-      <h2 className="text-center mb-4">RESIDENTIAL LEASE AGREEMENT</h2>
+      {/* Titre principal */}
+      <h2 className="text-center mb-4">Contrat de Bail {data.lease_type}</h2>
+
+      {/* Date de signature */}
       <p className="text-center">
-        <strong>YEAR TWO THOUSAND AND TWENTY-FOUR, ON THE {Date()}</strong>
+        <strong>Fait à Lomé, le {today}</strong>
       </p>
 
-      <p>
-        <strong>BETWEEN THE UNDERSIGNED:</strong>
-      </p>
+      {/* Informations sur le bailleur */}
+      <section className="mb-4">
+        <p><strong>ENTRE LES SOUSSIGNÉS :</strong></p>
+        <p>
+          <strong>{data.landlord_fullname}</strong>, demeurant à{" "}
+          <strong>{data.landlord_address}</strong>, titulaire de la pièce
+          d'identité n° <strong>{data.landlord_id}</strong>, Tél :{" "}
+          <strong>{data.landlord_phoneNumber}</strong>,{" "}
+          <strong>{data.landlord_pobox}</strong> ; de nationalité{" "}
+          <strong>{data.landlord_nationality}</strong>.<br />
+          Ci-après dénommé <strong>« LE BAILLEUR »</strong>.
+        </p>
+      </section>
 
-      <p>
-        <strong>{data.landlord_fullname}</strong>, residing in{" "}
-        <strong>{data.landlord_address}</strong>, holder of ID card No.{" "}
-        <strong>{data.landlord_id}</strong>, Tel:{" "}
-        <strong>{data.landlord_phoneNumber}</strong>,{" "}
-        <strong>{data.landlord_pobox}</strong>; of{" "}
-        <strong>{data.landlord_nationality} nationality</strong>,<br />
-        Hereinafter referred to as <strong>“THE LESSOR”</strong>, a term that
-        shall also apply, where appropriate, to his legal representatives.
-      </p>
+      {/* Informations sur le locataire */}
+      <section className="mb-4">
+        <p><strong>D'UNE PART, ET :</strong></p>
+        <p>
+          M./Mme <strong>{data.tenant_fullname}</strong>, demeurant à Lomé, quartier{" "}
+          <strong>{data.tenant_address}</strong>, titulaire de la pièce d'identité
+          n° <strong>{data.tenant_id}</strong> délivrée le{" "}
+          <strong>{data.tenant_idissueddate}</strong>. Tél :{" "}
+          <strong>{data.tenant_phoneNumber}</strong>.<br />
+          Né(e) à <strong>{data.tenant_hometown}</strong> le{" "}
+          <strong>{data.tenant_dateofbirth}</strong>, de nationalité{" "}
+          <strong>{data.tenant_nationality}</strong>.<br />
+          {/* En cas d'urgence, contacter :{" "}
+          <strong>{data.emergencycontact_name}</strong>, quartier{" "}
+          <strong>{data.emergencycontact_address}</strong>, Tél :{" "}
+          <strong>{data.emergencycontact_phonenumber}</strong>.<br /> */}
+          Ci-après dénommé <strong>« LE LOCATAIRE »</strong>.
+        </p>
+      </section>
 
-      <p>
-        <strong>OF THE FIRST PART, AND</strong>
-      </p>
+      <p><strong>D'AUTRE PART,</strong></p>
+      <p>Il a été convenu ce qui suit :</p>
 
-      <p>
-        Mr/Mrs. <strong>{data.tenant_fullname} </strong>residing in Lomé,{" "}
-        <strong>{data.tenant_address} </strong>
-        neighborhood, holder of national ID card / voter card / passport No.{" "}
-        <strong>{data.tenant_id}</strong>, issued on{" "}
-        <strong>{data.tenant_idissueddate}</strong>, Tel:
-        <strong> {data.tenant_phoneNumber}</strong>
-        <br />
-        Born in (City/Prefecture) <strong>
-          {data.tenant_hometown}
-        </strong> on <strong>{data.tenant_dateofbirth}</strong>, of{" "}
-        <strong>{data.tenant_nationality} nationality.</strong>
-        <br />
-        In case of an accident or illness, contact:{" "}
-        <strong>Mr./Mrs. {data.emergencycontact_name}</strong>, residing in
-        Lomé, <strong>{data.emergencycontact_address}</strong> neighborhood,
-        Tel: <strong>{data.emergencycontact_phonenumber}</strong>.<br />
-        Hereinafter referred to as <strong>“THE TENANT”</strong>
-      </p>
+      <hr />
 
-      <p>
-        <strong>OF THE SECOND PART</strong>
-      </p>
+      {/* Article 1 : Objet */}
+      <section className="mb-4">
+        <h5><strong>Article 1 : OBJET</strong></h5>
+        <p>
+          Le BAILLEUR loue au LOCATAIRE, à usage exclusivement résidentiel, les locaux
+          situés à <strong>{data.property_location}</strong>. Le locataire déclare
+          avoir visité et accepté les lieux loués.
+        </p>
+      </section>
 
-      <p>The following has been agreed upon:</p>
+      <hr />
 
-      <hr></hr>
+      {/* Article 4 : Durée */}
+      <section className="mb-4">
+        <h5><strong>Article 4 : DURÉE – PRISE D’EFFET</strong></h5>
+        <p>
+          Le bail est consenti pour une <strong>durée ferme d’un (1) an</strong>,
+          renouvelable tacitement sauf préavis de <strong>deux (2) mois</strong> avant
+          échéance.<br />
+          Il <strong>prend effet le {data.leaseStart}</strong> et{" "}
+          <strong>expire le {data.leaseEnd}</strong>.
+        </p>
+      </section>
 
-      <h5>
-        <strong>Article 1: PURPOSE</strong>
-      </h5>
-      <p>
-        By this agreement, <strong>THE LESSOR</strong> leases, for residential
-        use only, the premises located in{" "}
-        <strong>{data.property_location}</strong> neighborhood, to the Tenant
-        who accepts under the terms described herein. The Tenant declares that
-        they have inspected the premises and found them suitable for the
-        intended purpose.
-      </p>
+      <hr />
 
-      <hr></hr>
+      {/* Article 5 : Loyer */}
+      <section className="mb-4">
+        <h5><strong>Article 5 : LOYER</strong></h5>
+        <p>
+          Le loyer est fixé à <strong>{parseInt(data.monthlyRent).toLocaleString()} francs CFA</strong>
+          par mois, payable <strong>trimestriellement, semestriellement ou annuellement</strong>,
+          par tout moyen légal contre reçu valable.
+        </p>
+      </section>
 
-      {/* <h5>Article 2: CONDITION OF THE PREMISES</h5>
-      <p>
-        The <strong>entry and exit condition reports</strong> shall be drawn up
-        jointly by both parties. <br />
-        The <strong>entry condition report</strong> is annexed to this
-        agreement.
-      </p>
-      <hr></hr> */}
+      <hr />
 
-      {/* <h5>Article 3: OCCUPANCY TERMS</h5>
-      <p>
-        The Tenant shall{" "}
-        <strong>
-          occupy the premises exclusively for residential purposes. Subletting
-          is strictly prohibited.
-        </strong>
-      </p>
-      <hr></hr> */}
-      <h5>Article 4: TERM – COMMENCEMENT</h5>
-      <p>
-        This lease is signed for a <strong>fixed term of one (1) year</strong>,
-        renewable by written amendment or <strong>tacit renewal</strong>, unless
-        expressly terminated by either party with{" "}
-        <strong>two (2) months’ notice </strong> the end date. <br />
-        The lease <strong>begins on {data.leaseStart} </strong> and{" "}
-        <strong>ends on{data.leaseEnd}</strong>.
-      </p>
-      <hr></hr>
-      <h5>Article 5: RENT</h5>
-      <p>
-        The lease is granted for a{" "}
-        <strong>
-          monthly rent of {parseInt(data.monthlyRent).toLocaleString()} CFA
-          francs
-        </strong>
-        , which the Tenant agrees to pay{" "}
-        <strong> quarterly, semi-annually, or annually,</strong>
-        directly to the LESSOR or any individual formally appointed by the
-        Lessor . Rent shall be paid by <strong>any legal means</strong> against
-        a <strong>valid and final receipt.</strong>
-      </p>
-      <hr></hr>
-      <h5>Article 6: SECURITY DEPOSIT AND GUARANTEE</h5>
-      <p>
-        The Tenant shall pay a{" "}
-        <strong>security deposit equal to three (3) months’ rent</strong>, i.e.,
-        the sum of <strong>{depositAmount} CFA francs</strong>, at the time of
-        signing this agreement. <br /> The deposit will be returned to the
-        Tenant <strong>one (1) month after vacating</strong>, provided all{" "}
-        <strong>end-of-lease obligations</strong> are met, especially any
-        necessary repairs as noted in comparison with the entry condition
-        report.
-      </p>
-      <hr></hr>
+      {/* Article 6 : Dépôt de garantie */}
+      <section className="mb-4">
+        <h5><strong>Article 6 : DÉPÔT DE GARANTIE</strong></h5>
+        <p>
+          Un dépôt de garantie de <strong>{depositAmount} francs CFA</strong> est exigé
+          lors de la signature. Ce dépôt sera restitué <strong>un (1) mois</strong>
+          après restitution des lieux, sous réserve des réparations éventuelles.
+        </p>
+      </section>
 
+      <hr />
+
+      {/* Clôture */}
       <p className="mt-5">
-        Made and signed in Lomé, in two (2) original copies.
+        Fait et signé à Lomé, en deux (2) exemplaires originaux.
       </p>
     </div>
   );
