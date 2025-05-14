@@ -13,6 +13,52 @@ import { getSession, useSession } from 'next-auth/react'
 import { useRessourceByRole } from '../../customHooks/realEstateHooks'
 import MediumRealEstateAgencyCard from '../iacomponents/RealEstateAgency/MediumRealEstateAgencyCard'
 
+const SuperAdminActionButtons = () => {
+  const [showMenu, setShowMenu] = useState(false);
+
+  const toggleMenu = () => setShowMenu(prev => !prev);
+
+  return (
+    <>
+     <div className="flex items-center space-x-2 mb-3">
+        <Link href="/tg/add-property" passHref>
+          <Button as="a" size="lg" className="w-100 mb-3">
+            <i className="fi-plus me-2"></i>
+            Lister un immeuble
+          </Button>
+        </Link>
+  
+        <div className="position-relative">
+          {/* 3-dot icon */}
+          <Button
+            variant="outline-primary"
+            size="lg"
+            className="w-100 d-flex justify-content-center align-items-center"
+            onClick={toggleMenu}
+          >
+            <i className="fi-dots-vertical"></i> {/* You can also use bi-three-dots-vertical if Bootstrap Icons */}
+          </Button>
+
+          {/* Dropdown menu */}
+          {showMenu && (
+            <div
+              className="position-absolute bg-white border rounded shadow p-2 mt-2"
+              style={{ zIndex: 10, width: '100%' }}
+            >
+              <Link href="/tg/add-project" passHref>
+                <a className="dropdown-item mb-2 d-block text-decoration-none">Lancer un projet immobilier</a>
+              </Link>
+              <Link href="/tg/account-contracts" passHref>
+                <a className="dropdown-item d-block text-decoration-none">Créer un contrat immobilier</a>
+              </Link>
+            </div>
+          )}
+        </div>
+        </div>
+    </>
+  );
+};
+
 const RealEstateAccountLayout = ({ accountPageTitle, children }) => {
 
   // State to control Collapse
@@ -102,24 +148,36 @@ const RealEstateAccountLayout = ({ accountPageTitle, children }) => {
                 </ul>
               </div>
             </div>
-            {
-              roleId === 1 &&
-              <Link href='/tg/add-project' passHref>
-                <Button as='a' size='lg' className='w-100 mb-3'>
-                  <i className='fi-plus me-2'></i>
+            {(roleId === 1200) && (
+              <SuperAdminActionButtons />
+            )}
+            {(roleId === 151) && (
+              <Link href="/tg/add-project" passHref>
+                <Button as="a" size="lg" className="w-100 mb-3">
+                  <i className="fi-plus me-2"></i>
                   Lancer un projet immobilier
                 </Button>
               </Link>
-            }
-            {
-              roleId > 1 &&
-              <Link href='/tg/add-property' passHref>
-                <Button as='a' size='lg' className='w-100 mb-3'>
-                  <i className='fi-plus me-2'></i>
+            )}
+
+            {(roleId === 1232) && (
+              <Link href="/tg/add-property" passHref>
+                <Button as="a" size="lg" className="w-100 mb-3">
+                  <i className="fi-plus me-2"></i>
                   Lister un immeuble
                 </Button>
               </Link>
-            }
+            )}
+
+            {(roleId === 1230) && (
+              <Link href="/tg/account-contracts" passHref>
+                <Button as="a" size="lg" className="w-100 mb-3">
+                  <i className="fi-file me-2"></i>
+                  Créer un contrat immobilier
+                </Button>
+              </Link>
+            )}
+
 
 
 

@@ -372,12 +372,12 @@ const AccountPropertiesPage = ({ _userProperties, _handledProjets, _handlingProj
             )) : <div className='text-center pt-2 pt-md-4 pt-lg-5 pb-2 pb-md-0'>
               <i className='fi-home display-6 text-muted mb-4'></i>
               <h2 className='h5 mb-4'>Aucun bien immobilier indisponible!</h2>
-              <Link href='/tg/add-property' passHref>
+              {/* <Link href='/tg/add-property' passHref>
                 <Button variant='primary'>
                   <i className='fi-plus fs-sm me-2'></i>
                   Lister un bien immobilier
                 </Button>
-              </Link>
+              </Link> */}
             </div>}
           </Col>
         </Row>

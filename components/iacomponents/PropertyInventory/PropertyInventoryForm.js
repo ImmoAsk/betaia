@@ -1,150 +1,220 @@
-import { useState } from "react";
-import { Container, Row, Col, Card, Form, Button } from "react-bootstrap";
+import React from "react";
+import { Form, Button } from "react-bootstrap";
+import Select from "react-select";
+import { properties, defaultInventoryItems, itemState } from "./constants";
 import styles from "./InventoryForm.module.css";
 
+const propertyOptions = properties.map((property) => ({
+  value: property.id,
+  label: property.title,
+  image: property.image_url,
+  data: property,
+}));
 
-const properties = [
-  {
-    id: 1,
-    title: "Villa Moderne à Lomé",
-    image_url: "https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/proprietes/rhfxcIo8hvLIGRMllttUj74tUhMddIxz64OdKsfM.png"
-  },
-  {
-    id: 2,
-    title: "Appartement Chic à Kara",
-    image_url: "https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/proprietes/rhfxcIo8hvLIGRMllttUj74tUhMddIxz64OdKsfM.png"
-  },
-  {
-    id: 3,
-    title: "Maison Traditionnelle à Aného",
-    image_url: "https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/proprietes/rhfxcIo8hvLIGRMllttUj74tUhMddIxz64OdKsfM.png"
-  },
-  {
-    id: 4,
-    title: "Studio Confort à Sokodé",
-    image_url: "https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/proprietes/rhfxcIo8hvLIGRMllttUj74tUhMddIxz64OdKsfM.png"
-  },
-  {
-    id: 5,
-    title: "Studio Confort à Sokodé",
-    image_url: "https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/proprietes/rhfxcIo8hvLIGRMllttUj74tUhMddIxz64OdKsfM.png"
-  },
-  {
-    id: 6,
-    title: "Studio Confort à Sokodé",
-    image_url: "https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/proprietes/rhfxcIo8hvLIGRMllttUj74tUhMddIxz64OdKsfM.png"
-  },
-  {
-    id: 7,
-    title: "Studio Confort à Sokodé",
-    image_url: "https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/proprietes/rhfxcIo8hvLIGRMllttUj74tUhMddIxz64OdKsfM.png"
-  }
-];
+const inventoryItemOptions = defaultInventoryItems.map((item) => ({
+  value: item.id,
+  label: item.name,
+}));
 
-const defaultInventoryItems = ["Chaise", "Table", "Lit", "Armoire", "Canapé"];
+const itemStateOptions = itemState.map((state) => ({
+  value: state.id,
+  label: state.name,
+}));
 
-export default function PropertyInventoryForm() {
-  const [selectedPropertyId, setSelectedPropertyId] = useState(null);
-  const [formData, setFormData] = useState({
-    item: defaultInventoryItems[0],
-    state: "",
-    amount: 1,
-    image: null
-  });
+// Custom option component for property select with thumbnail
+const PropertyOption = ({ innerProps, data, isSelected }) => (
+  <div
+    {...innerProps}
+    className={`d-flex align-items-center p-2 ${isSelected ? "bg-light" : ""}`}
+    style={{ cursor: "pointer" }}
+  >
+    <img
+      src={data.image}
+      alt={data.label}
+      style={{
+        width: 32,
+        height: 32,
+        marginRight: 10,
+        objectFit: "cover",
+        borderRadius: 4,
+      }}
+    />
+    <div>{data.label}</div>
+  </div>
+);
 
-  const handleChange = (e) => {
-    const { name, value, type, files } = e.target;
-    setFormData({
-      ...formData,
-      [name]: type === "file" ? files[0] : value
-    });
+export default function PropertyInventoryForm({
+  formData,
+  setFormData,
+  onSubmit,
+  onAddRecord,
+  onCancel,
+  selectedProperty,
+  setSelectedProperty,
+  currentItems = [],
+}) {
+  const handlePropertyChange = (selected) => {
+    setSelectedProperty(selected?.data || null);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Submitting inventory for property:", selectedPropertyId, formData);
+  const handleItemChange = (selected) => {
+    setFormData({ ...formData, item: selected?.value || "" });
+  };
+
+  const handleStateChange = (selected) => {
+    setFormData({ ...formData, state: selected?.value || "" });
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value, type, files } = e.target;
+
+    if (type === "file") {
+      setFormData({ ...formData, image: files[0] || null });
+    } else if (type === "number") {
+      setFormData({
+        ...formData,
+        [name]: Math.max(1, parseInt(value, 10) || 1),
+      });
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
+  };
+
+  const isFormValid = () => {
+    return (
+      formData.item &&
+      formData.state &&
+      formData.quantity >= 1 &&
+      formData.value >= 1
+    );
   };
 
   return (
-    <Container className="my-4">
-      <h2 className="mb-4">Pour quelle propriete ?</h2>
-      <Row className={`${styles.horizontalScroll} mb-4`}>
-        {properties.map((property) => (
-          <Col xs={6} md={3} key={property.id} className="mb-3">
-            <Card
-              onClick={() => setSelectedPropertyId(property.id)}
-              border={selectedPropertyId === property.id ? "primary" : "light"}
-              className={`${styles.propertyCard} mx-2`}
-            >
-              <Card.Img variant="top" src={property.image_url} alt={property.title} />
-              <Card.Body>
-                <Card.Text className="text-center">{property.title}</Card.Text>
-              </Card.Body>
-            </Card>
-          </Col>
-        ))}
-      </Row>
+    <div className="inventory-form p-3">
+      <h4>
+        {selectedProperty
+          ? `Etat de lieux de la propriete N°${selectedProperty.id}`
+          : "Nouvel inventaire"}
+      </h4>
 
-      {selectedPropertyId && (
-        <Form onSubmit={handleSubmit}>
-          <Form.Group className="mb-3">
-            <Form.Label>Selectionner un a un les elements a inventorier</Form.Label>
-            <Form.Select
-              name="item"
-              value={formData.item}
-              onChange={handleChange}
-              required
-            >
-              {defaultInventoryItems.map((item, index) => (
-                <option key={index} value={item}>{item}</option>
-              ))}
-            </Form.Select>
-          </Form.Group>
+      <Form>
+        <Form.Group className="mb-4">
+          <Form.Label className="fw-bold">Pour quelle propriete?</Form.Label>
+          <Select
+            options={propertyOptions}
+            onChange={handlePropertyChange}
+            placeholder="Sélectionner une propriété..."
+            isClearable
+            isDisabled={currentItems.length > 0}
+            components={{ Option: PropertyOption }}
+            className="mb-3"
+          />
+          {currentItems.length > 0 && (
+            <div className="text-muted small">
+              <em>
+                Property selection is disabled while items are added. Clear
+                items to change property.
+              </em>
+            </div>
+          )}
+        </Form.Group>
 
-          <Form.Group className="mb-3">
-            <Form.Label>État</Form.Label>
-            <Form.Select
-              name="state"
-              value={formData.state}
-              onChange={handleChange}
-              required
-            >
-              <option value="">Sélectionner l'état</option>
-              <option value="Neuf">Neuf</option>
-              <option value="Bon">Bon</option>
-              <option value="Usé">Usé</option>
-              <option value="Endommagé">Endommagé</option>
-            </Form.Select>
-          </Form.Group>
+        {selectedProperty && (
+          <>
+            <Form.Group className="mb-3">
+              <Form.Label>Item</Form.Label>
+              <Select
+                options={inventoryItemOptions}
+                onChange={handleItemChange}
+                value={
+                  formData.item
+                    ? inventoryItemOptions.find(
+                        (opt) => opt.value === formData.item
+                      )
+                    : null
+                }
+                placeholder="Select an item..."
+                isClearable
+              />
+            </Form.Group>
 
-          <Form.Group className="mb-3">
-            <Form.Label>Quantité</Form.Label>
-            <Form.Control
-              type="number"
-              name="amount"
-              min="1"
-              value={formData.amount}
-              onChange={handleChange}
-              required
-            />
-          </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>State</Form.Label>
+              <Select
+                options={itemStateOptions}
+                onChange={handleStateChange}
+                value={
+                  formData.state
+                    ? itemStateOptions.find(
+                        (opt) => opt.value === formData.state
+                      )
+                    : null
+                }
+                placeholder="Select item state..."
+                isClearable
+              />
+            </Form.Group>
 
-          <Form.Group className="mb-3">
-            <Form.Label>Image</Form.Label>
-            <Form.Control
-              type="file"
-              name="image"
-              accept="image/*"
-              onChange={handleChange}
-            />
-          </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Quantity</Form.Label>
+              <Form.Control
+                type="number"
+                name="quantity"
+                min="1"
+                value={formData.quantity}
+                onChange={handleInputChange}
+              />
+            </Form.Group>
 
-          <Button variant="primary" type="submit">
-            Enregistrer l'inventaire
-          </Button>
-        </Form>
-      )}
-    </Container>
+            <Form.Group className="mb-3">
+              <Form.Label>Value</Form.Label>
+              <Form.Control
+                type="number"
+                name="value"
+                min="1"
+                value={formData.value}
+                onChange={handleInputChange}
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-4">
+              <Form.Label>Image</Form.Label>
+              <Form.Control
+                type="file"
+                accept="image/*"
+                onChange={handleInputChange}
+              />
+              {formData.image && (
+                <div className="mt-2">
+                  <img
+                    src={URL.createObjectURL(formData.image)}
+                    alt="Preview"
+                    style={{ maxWidth: "100%", maxHeight: "200px" }}
+                  />
+                </div>
+              )}
+            </Form.Group>
+
+            <div className="d-flex gap-2 mt-4">
+              <Button
+                variant="outline-secondary"
+                onClick={onCancel}
+                className="w-50"
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="primary"
+                onClick={onAddRecord}
+                disabled={!isFormValid()}
+                className="w-50"
+              >
+                Add Record
+              </Button>
+            </div>
+          </>
+        )}
+      </Form>
+    </div>
   );
 }
-

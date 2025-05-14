@@ -1,206 +1,269 @@
-import { useState } from 'react';
-import Modal from 'react-bootstrap/Modal';
-import Form from 'react-bootstrap/Form';
-import Button from 'react-bootstrap/Button';
-import CloseButton from 'react-bootstrap/CloseButton';
-import CardProperty from '../CardProperty'
-import { useQuery } from '@tanstack/react-query';
-import { useSession } from 'next-auth/react';
-import 'react-phone-input-2/lib/style.css';
-import axios from 'axios';
-import { API_URL } from '../../../utils/settings';
-import PropertyInventoryForm from './PropertyInventoryForm';
+import { useState, useEffect } from "react";
+import { Modal, Alert, Button } from "react-bootstrap";
+import PropertyInventoryForm from "./PropertyInventoryForm";
+import PropertyInventoryPreview from "./PropertyInventoryPreview";
+import { defaultInventoryItems } from "./constants";
+import { v4 as uuidv4 } from "uuid";
+import "react-phone-input-2/lib/style.css";
 
+export default function PropertyInventoryModal({
+  type,
+  show,
+  onHide,
+  onSubmit,
+  existingInventories = [],
+}) {
+  const [formData, setFormData] = useState({
+    item: "",
+    state: "",
+    quantity: 1,
+    value: 1,
+    image: null,
+  });
+  const [currentItems, setCurrentItems] = useState([]);
+  const [selectedProperty, setSelectedProperty] = useState(null);
+  const [showWarning, setShowWarning] = useState(false);
+  const [showDuplicateAlert, setShowDuplicateAlert] = useState(false);
+  const [duplicateItem, setDuplicateItem] = useState(null);
+  const [existingProperty, setExistingProperty] = useState(null);
 
-const fetchPropertyData = async (nuo) => {
-  const query = `
-    query GetProperty($nuo: Int!) {
-      propriete(nuo: $nuo) {
-        id
-        nuo
-        garage
-        est_meuble
-        titre
-        descriptif
-        surface
-        usage
-        cuisine
-        salon
-        piece
-        wc_douche_interne
-        cout_mensuel
-        nuitee
-        cout_vente
-        tarifications {
-          id
-          mode
-          currency
-          montant
-        }
-        categorie_propriete {
-          denomination
-          id
-        }
-        infrastructures {
-          id
-          denomination
-          icone
-        }
-        meubles {
-          libelle
-          icone
-        }
-        badge_propriete {
-          id
-          date_expiration
-          badge {
-            id
-            badge_name
-            badge_image
-          }
-        }
-        pays {
-          id
-          code
-          denomination
-        }
-        ville {
-          denomination
-          id
-        }
-        quartier {
-          id
-          denomination
-        }
-        adresse {
-          libelle
-          id
-        }
-        offre {
-          id
-          denomination
-        }
-        visuels {
-          uri
-        }
-        user {
-          id
-        }
+  // Check if an item already exists in the inventory for the selected property
+  const checkForDuplicateItem = (itemId) => {
+    // Find if property exists in existing inventories
+    const inventoryList =
+      type === "entry" ? existingInventories.entry : existingInventories.exit;
+    const existingPropInventory = inventoryList?.find(
+      (inv) => inv.property.id === selectedProperty.id
+    );
+
+    // If property exists, check if item exists
+    if (existingPropInventory) {
+      const existingItem = existingPropInventory.items.find(
+        (item) => item.item === itemId
+      );
+      if (existingItem) {
+        return {
+          exists: true,
+          property: existingPropInventory.property,
+          item: existingItem,
+        };
       }
     }
-  `;
-  
-  const response = await axios.post(
-    API_URL,
-    {
-      query,
-      variables: { nuo },
-    }
-  );
 
-  if (response.data.errors) {
-    throw new Error('Failed to fetch property data');
-  }
+    return { exists: false };
+  };
 
-  return response.data.data.propriete;
-};
-const PropertyInventoryModal = ({onSwap, pillButtons, ...props }) => {
+  const handleAddRecord = () => {
+    if (!selectedProperty || !formData.item || !formData.state) return;
 
+    // Check if the item already exists for this property
+    const { exists, property, item } = checkForDuplicateItem(formData.item);
 
-  const [propertyModal, setPropertyModal] = useState(null);
-  
-    /* const { data, isLoading, isError } = useQuery(
-      ['propertyModal', property.nuo],
-      () => fetchPropertyData(property.nuo),
-      {
-        onSuccess: (data) => setPropertyModal(data),
-        enabled: !!property.nuo, // Ensures that `nuo` exists before fetching
-      }
-    ); */
-  
-
-  const [requestAvailability, setRequestAvailability] = useState('');
-  const [firstName, setFirstName] = useState('');
-  const [validated, setValidated] = useState(false);
-  const [disponibiliteNotification, setDisponibiliteNotification] = useState(null);
-
-  const { data: session } = useSession();
-
-  // Adjust validation logic based on session
-  const isFormValid = true;
-
-  // Form submission handler
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-
-    // Validate form inputs
-    if (!isFormValid) {
-      console.log("Le formulaire n'est pas valide. Veuillez vérifier les champs.");
-      setValidated(true);
+    if (exists) {
+      // Set the duplicate item and show alert
+      setDuplicateItem({
+        id: uuidv4(),
+        item: formData.item,
+        itemName:
+          defaultInventoryItems.find((d) => d.id === formData.item)?.name ||
+          formData.item,
+        state: formData.state,
+        quantity: formData.quantity,
+        value: formData.value,
+        image: formData.image ? URL.createObjectURL(formData.image) : null,
+      });
+      setExistingProperty(property);
+      setShowDuplicateAlert(true);
       return;
     }
-    // Prepare GraphQL mutation for rent disponibilite
-    const disponibilite_data = {
-      query: `mutation UpdatePropertyStatus($input: UpdateProprieteStatusInput!) {
-        updateProprieteStatus(input: $input) {
-          id
-        }
-      }`,
-      variables: {
-        input: {
-          id: 1,
-          statut: 2,
-        }
-      }
-    };
-    console.log("Before Mutation: ", disponibilite_data)
-    try {
-      const response = await axios.post(API_URL, disponibilite_data, {
-        headers: { 'Content-Type': 'application/json' }
-      });
 
-      if (Number(response.data?.data?.updateProprieteStatus?.id) >= 1) {
-        setDisponibiliteNotification("Le biens immobiler est bien rendu indisponible. Mettez en vente ou en location d'autres biens immobiliers.");
-      }
-    } catch (error) {
-      console.error("Error during disponibilite:", error);
+    // Create new item with UUID
+    const newItem = {
+      id: uuidv4(),
+      item: formData.item,
+      itemName:
+        defaultInventoryItems.find((d) => d.id === formData.item)?.name ||
+        formData.item,
+      state: formData.state,
+      quantity: formData.quantity,
+      value: formData.value,
+      image: formData.image ? URL.createObjectURL(formData.image) : null,
+    };
+
+    setCurrentItems((prev) => [...prev, newItem]);
+    setFormData({ item: "", state: "", quantity: 1, value: 1, image: null });
+    setShowWarning(false); // Reset warning when user adds an item
+  };
+
+  // Handle when user confirms replacing a duplicate item
+  const handleDuplicateReplace = () => {
+    if (duplicateItem) {
+      setCurrentItems((prev) => [...prev, duplicateItem]);
+      setFormData({ item: "", state: "", quantity: 1, value: 1, image: null });
+      setDuplicateItem(null);
+      setExistingProperty(null);
+      setShowDuplicateAlert(false);
+    }
+  };
+
+  // Handle when user cancels replacing a duplicate item
+  const handleDuplicateCancel = () => {
+    setDuplicateItem(null);
+    setExistingProperty(null);
+    setShowDuplicateAlert(false);
+    setFormData({ item: "", state: "", quantity: 1, value: 1, image: null });
+  };
+
+  const handleFinalSubmit = () => {
+    if (!selectedProperty || currentItems.length === 0) return;
+    onSubmit({ property: selectedProperty, items: currentItems });
+  };
+
+  // Handle editing an existing item
+  const handleEditItem = (item) => {
+    // Populate form with item details
+    setFormData({
+      item: item.item,
+      itemName: item.itemName,
+      state: item.state,
+      quantity: item.quantity,
+      value: item.value,
+      image: item.image,
+    });
+
+    // Remove the item from current items
+    setCurrentItems(currentItems.filter((i) => i.id !== item.id));
+  };
+
+  // Handle deleting an item
+  const handleDeleteItem = (itemId) => {
+    setCurrentItems(currentItems.filter((i) => i.id !== itemId));
+  };
+
+  // Handle clearing all items
+  const handleClearItems = () => {
+    setFormData({ item: "", state: "", quantity: 1, value: 1, image: null });
+    setCurrentItems([]);
+  };
+
+  const handleCancel = () => {
+    // Show warning if there are unsaved items
+    if (currentItems.length > 0 && !showWarning) {
+      setShowWarning(true);
+      return;
     }
 
-    setValidated(true);
+    // Reset form and close modal
+    handleClearItems();
+    setShowWarning(false);
+    onHide();
   };
-  //console.log("Property In Delete Modal: ", property);
-  //const propertyCard = createPropertyObject(property);
 
   return (
-    <Modal {...props} className='signin-modal'>
-      <Modal.Body className='px-0 py-2 py-sm-0'>
-        <CloseButton
-          onClick={props.onHide}
-          aria-label='Close modal'
-          className='position-absolute top-0 end-0 mt-3 me-3'
-        />
-        <div className='row mx-0'>
-          <div className='col-md-6 border-end-md p-4 p-sm-5'>
-            <h2 className='h3 mb-2 mb-sm-2'>Etat de lieux de propriete N° </h2>
-
-            <div className='d-flex align-items-center py-3 mb-3'>
-              <>Propriete ici</>
+    <Modal
+      show={show}
+      onHide={handleCancel}
+      size="xl"
+      backdrop="static"
+      centered
+    >
+      <Modal.Header closeButton>
+        <Modal.Title>
+          {type === "entry"
+            ? "Create Entry Inventory"
+            : "Create Exit Inventory"}
+        </Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        {showWarning && (
+          <Alert variant="warning" className="mb-3">
+            <Alert.Heading>Unsaved Changes</Alert.Heading>
+            <p>
+              You have {currentItems.length} unsaved inventory items. Are you
+              sure you want to close this form? All your changes will be lost.
+            </p>
+            <div className="d-flex justify-content-end">
+              <Button
+                variant="outline-secondary"
+                className="me-2"
+                onClick={() => setShowWarning(false)}
+              >
+                Continue Editing
+              </Button>
+              <Button
+                variant="danger"
+                onClick={() => {
+                  handleClearItems();
+                  setShowWarning(false);
+                  onHide();
+                }}
+              >
+                Discard Changes
+              </Button>
             </div>
-          </div>
+          </Alert>
+        )}
 
-          <div className='col-md-6 p-4 p-sm-5'>
-            <h3 className='h4'>
-              Etat de lieux de la propriete N°
-            </h3>
-            <>
-              <PropertyInventoryForm/>
-              {disponibiliteNotification && <div className="alert alert-success mt-3">{disponibiliteNotification}</div>}
-            </>
+        {showDuplicateAlert && duplicateItem && (
+          <Alert variant="warning" className="mb-3">
+            <Alert.Heading>Duplicate Item Detected</Alert.Heading>
+            <p>
+              This item "{duplicateItem.itemName}" already exists in the
+              inventory for property "{existingProperty?.title}". Do you want to
+              replace the existing item?
+            </p>
+            <div className="d-flex justify-content-between align-items-start mt-3">
+              <div>
+                <strong>Existing item:</strong>
+                <ul className="mt-2">
+                  <li>State: {duplicateItem.state}</li>
+                  <li>Quantity: {duplicateItem.quantity}</li>
+                  <li>Value: ${duplicateItem.value}</li>
+                </ul>
+              </div>
+              <div className="d-flex">
+                <Button
+                  variant="outline-secondary"
+                  className="me-2"
+                  onClick={handleDuplicateCancel}
+                >
+                  Cancel
+                </Button>
+                <Button variant="warning" onClick={handleDuplicateReplace}>
+                  Replace Existing
+                </Button>
+              </div>
+            </div>
+          </Alert>
+        )}
+
+        <div className="d-flex" style={{ gap: 20 }}>
+          <div style={{ flex: 1 }}>
+            <PropertyInventoryForm
+              formData={formData}
+              setFormData={setFormData}
+              onSubmit={handleFinalSubmit}
+              onAddRecord={handleAddRecord}
+              onCancel={handleCancel}
+              selectedProperty={selectedProperty}
+              setSelectedProperty={setSelectedProperty}
+              currentItems={currentItems}
+            />
+          </div>
+          <div style={{ flex: 1 }}>
+            <PropertyInventoryPreview
+              modalType={type}
+              selectedProperty={selectedProperty}
+              currentFormItem={formData}
+              currentItems={currentItems}
+              onConfirmAdd={handleAddRecord}
+              onSubmitAll={handleFinalSubmit}
+              onEditItem={handleEditItem}
+              onDeleteItem={handleDeleteItem}
+            />
           </div>
         </div>
       </Modal.Body>
     </Modal>
-  )
+  );
 }
-
-export default PropertyInventoryModal;

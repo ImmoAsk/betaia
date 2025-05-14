@@ -1,11 +1,11 @@
 import { Col } from "react-bootstrap";
 import PropertyInventory from "./PropertyInventory";
 
-export default function PropertyInventoryList({ projects }) {
+export default function PropertyInventoryList({ inventories }) {
     return(
-        projects && projects.map((project, indx) => (
+        inventories && inventories.map((inventory, indx) => (
             <>
-                <PropertyInventory project={project} key={indx} />
+                <PropertyInventory inventory={inventory} key={indx} />
             </>
         )))
     

@@ -1,12 +1,24 @@
-.horizontal-scroll {
-    display: flex;
-    overflow-x: auto;
-    padding-bottom: 1rem;
-  }
+.horizontalScroll {
+  width: 100%;
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  align-items: stretch;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scroll-snap-align: start;
+  scroll-behavior: smooth;
+  padding-bottom: 1rem;
+}
   
-  .property-card {
-    min-width: 200px;
-    flex-shrink: 0;
-    cursor: pointer;
-  }
-  
+.propertyCard {
+  align-items: center;
+  gap: 5px;
+  min-width: 50px;
+  /* flex: 0 0 auto; */
+  width: 80px;
+  height: 100%;
+  margin: 0 10px;
+  cursor: pointer;
+  /* transition: 0.2s; */
+}

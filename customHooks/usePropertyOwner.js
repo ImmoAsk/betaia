@@ -1,12 +1,25 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import 'dotenv/config';
-const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
-function useLandLord(role){
-  return useQuery(["landlords",role],
-  ()=> axios.get(`${apiUrl}?query={getPropertyOwners(role_id:${role})
-  {id,name,organisation{logo,name_organisation,status,id}}}`).then(res=>res.data.data.getPropertyOwners));
+import { API_URL } from "../utils/settings";
+
+function useLandLord(role) {
+  return useQuery(["landlords", role], () => {
+    const query = `{getPropertyOwners(role_id:${role}){id,name,phone,email,organisation{logo,name_organisation,status,id}}}`;
+    const fullUrl = `${API_URL}?query=${encodeURIComponent(query)}`;
+    console.log("Landlord fetch URL:", fullUrl); // ✅ Log full URL
+
+    return axios.get(fullUrl).then(res => res.data.data.getPropertyOwners);
+  });
 }
 
+function useTenant(role) {
+  return useQuery(["tenants", role], () => {
+    const query = `{getPropertyOwners(role_id:${role}){id,name,phone,email,organisation{logo,name_organisation,status,id}}}`;
+    const fullUrl = `${API_URL}?query=${encodeURIComponent(query)}`;
+    console.log("Tenant fetch URL:", fullUrl); // ✅ Log full URL
 
-export{useLandLord}
+    return axios.get(fullUrl).then(res => res.data.data.getPropertyOwners);
+  });
+}
+
+export { useLandLord, useTenant };
