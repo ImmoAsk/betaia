@@ -41,7 +41,7 @@ const PropertyContractPage = ({ _newContracts, _acceptedContracts, _declinedCont
   const [isMobile, setIsMobile] = useState(false);
 
   const { data: session } = useSession();
-
+  const roleId = Number(session && session.user.roleId);
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 992);
@@ -88,12 +88,13 @@ const PropertyContractPage = ({ _newContracts, _acceptedContracts, _declinedCont
       <RealEstateAccountLayout accountPageTitle='Contrats immobiliers'>
         <div className='d-flex align-items-center justify-content-between mb-3'>
           <h1 className='h2 mb-0'>Contrats immobiliers</h1>
+          {(roleId === 1230 || roleId === 1200) && (
           <div className='d-flex align-items-right'>
             <a href='#' className='fw-bold text-decoration-none' onClick={createPropertyContractModal}>
               <i className='fi-link mt-n1 me-2'></i>
               Créer un contrat immobilier
             </a>
-          </div>
+          </div>)}
         </div>
         <p className='pt-1 mb-4'>
           Trouvez ici tous les contrats immobiliers par des locataires potentiels pour vos biens en location et bails

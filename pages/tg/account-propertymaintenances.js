@@ -42,6 +42,7 @@ const PropertyMaintenancePage = ({ _newMaintenances, _acceptedMaintenances, _dec
 
   const { data: session } = useSession();
 
+  const roleId = Number(session && session.user.roleId);
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 992);
@@ -83,17 +84,20 @@ const PropertyMaintenancePage = ({ _newMaintenances, _acceptedMaintenances, _dec
   return (
     <RealEstatePageLayout pageTitle='Maintenances immobiliers' activeNav='Account' userLoggedIn>
       {propertyMaintenanceShow && (
-        <PropertyMaintenanceModal centered size='lg' show={propertyMaintenanceShow} onHide={() => setPropertyMaintenanceShow(false)}/>
+        <PropertyMaintenanceModal centered size='lg' show={propertyMaintenanceShow} onHide={() => setPropertyMaintenanceShow(false)} />
       )}
       <RealEstateAccountLayout accountPageTitle='Maintenances immobiliers'>
         <div className='d-flex align-items-center justify-content-between mb-3'>
-          <h1 className='h2 mb-0'>Maintenances immobiliers</h1>
-          <div className='d-flex align-items-right'>
-            <a href='#' className='fw-bold text-decoration-none' onClick={createPropertyMaintenanceModal}>
-              <i className='fi-cash mt-n1 me-2'></i>
-              Lancer une maintenance
-            </a>
-          </div>
+          <h1 className='h2 mb-0'>Maintenances immobilieres</h1>
+          {(roleId === 151 || roleId === 1200) && (
+            <div className='d-flex align-items-right'>
+              <a href='#' className='fw-bold text-decoration-none' onClick={createPropertyMaintenanceModal}>
+                <i className='fi-cash mt-n1 me-2'></i>
+                Lancer une maintenance
+              </a>
+            </div>
+          )}
+
         </div>
         <p className='pt-1 mb-4'>
           Trouvez ici toutes les maintenances par des locataires potentiels pour vos biens en location et bails

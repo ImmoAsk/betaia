@@ -38,7 +38,8 @@ const CATEGORY_MAP = {
     28: "Bar-restaurant",
     29: "Espace commercial",
     30: "Garage",
-    31: "Salle de conference"
+    31: "Salle de conference",
+    32: "Ferme agricole",
 }
     ;
 const USAGE_MAP = { 1: "logements", 3: "immeubles commerciaux", 5: "sejours", 7: "achats" };

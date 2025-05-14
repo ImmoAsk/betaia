@@ -18,6 +18,10 @@ const OffCanvasFilter = ({ show, handleClose, isDesktop, onFilterSubmit }) => {
     const [selectedOptions, setSelectedOptions] = useState([]);
     const [surfaceMin, setSurfaceMin] = useState('');
     const [surfaceMax, setSurfaceMax] = useState('');
+    const [budgetMin, setBudgetMin] = useState('');
+    const [budgetMax, setBudgetMax] = useState('');
+    const [cautionAvance, setCautionAvance] = useState('');
+    const [garage, setGarage] = useState('');
     const propertyTypeOptions = [
         { value: '', label: 'Selectionner la propriete' },
         { value: '1', label: 'Villa' },
@@ -80,6 +84,10 @@ const OffCanvasFilter = ({ show, handleClose, isDesktop, onFilterSubmit }) => {
             bathrooms: bathroomsValue,
             surfaceMin,
             surfaceMax,
+            budgetMin,
+            budgetMax,
+            cautionAvance,
+            garage,
             amenities: selectedAmenities,
             options: selectedOptions,
         };
@@ -191,6 +199,52 @@ const OffCanvasFilter = ({ show, handleClose, isDesktop, onFilterSubmit }) => {
                             onChange={(e) => setBathroomsValue(e.target.value)}
                         />
                     </div>
+
+                    <h3 className='h6 pt-3'>Budget</h3>
+                    <div className='d-flex'>
+                        <Form.Control
+                            type='number'
+                            min={1}
+                            max={10}
+                            placeholder='Min'
+                            value={budgetMin}
+                            onChange={(e) => setBudgetMin(e.target.value)}
+                            className='me-2'
+                        />
+                        <Form.Control
+                            type='number'
+                            min={0}
+                            max={10}
+                            placeholder='Max'
+                            value={budgetMax}
+                            onChange={(e) => setBudgetMax(e.target.value)}
+                        />
+                    </div>
+                    <h3 className='h6 pt-3'>Cautions et Avances</h3>
+                    <div className='d-flex'>
+                        <Form.Control
+                            type='number'
+                            min={3}
+                            max={12}
+                            placeholder='Nombre de mois'
+                            value={cautionAvance}
+                            onChange={(e) => setCautionAvance(e.target.value)}
+                            className='me-2'
+                        />
+                    </div>
+                    <h3 className='h6 pt-3'>Garage</h3>
+                    <div className='d-flex'>
+                        <Form.Control
+                            type='number'
+                            min={1}
+                            max={10}
+                            placeholder='Nombre de voitures'
+                            value={garage}
+                            onChange={(e) => setGarage(e.target.value)}
+                            className='me-2'
+                        />
+                    </div>
+
 
                     {/* <h3 className='h6 pt-3'>Surface en m²</h3>
                     <div className='d-flex'>

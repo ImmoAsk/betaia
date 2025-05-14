@@ -16,7 +16,7 @@ import IconBox from '../../components/IconBox'
 import PropertyCard from '../../components/PropertyCard'
 import SocialButton from '../../components/SocialButton'
 import StarRating from '../../components/StarRating'
-import { Navigation, Pagination, EffectFade } from 'swiper'
+import { Navigation, Pagination, EffectFade, Autoplay } from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { useSession } from 'next-auth/react'
 import axios from "axios";
@@ -25,6 +25,7 @@ import 'swiper/css'
 import 'swiper/css/navigation'
 import 'swiper/css/pagination'
 import 'swiper/css/effect-fade'
+import styles from './Carousel.module.css'
 import getPropertyFullUrl from '../../utils/getPropertyFullURL'
 import getFirstImageArray from '../../utils/formatFirsImageArray'
 import buildPropertyBadge from '../../utils/buildPropertyBadge'
@@ -121,6 +122,19 @@ const HomePage = () => {
       </Link>
     )
   };
+  const displayCreationContractButton = () => {
+    return (
+      <Link href="/tg/account-contracts" passHref>
+        <Button
+          size="lg"
+          variant="outline-primary"
+        >
+          <i className="fi-file me-2"></i>
+          Créer <span className='d-none d-sm-inline'>un contrat immobilier</span>
+        </Button>
+      </Link>
+    );
+  };
   const handleAcquisitionRedirect = () => {
     router.push('/tg/catalog?usage=7');
   };
@@ -134,6 +148,29 @@ const HomePage = () => {
     getRTProperties();
   }, []);
 
+  const carouselSlides = [
+    {
+      bgImage: '/images/tg/housing_welcome.png',
+      title: 'Trouvez un logement ou achetez en toute sécurité',
+      subtitle: 'Villas, appartements, terrains, bureaux et magasins disponibles auprès de propriétaires et agents certifiés.',
+      buttonLabel: 'Explorer le catalogue',
+      buttonLink: '/tg/catalog'
+    },
+    {
+      bgImage: '/images/tg/sejour_welcome.png',
+      title: 'Boostez votre visibilité immobilière',
+      subtitle: 'Devenez agent immobilier et augmentez vos revenus jusqu’à 35 % grâce à notre marketing automatisé.',
+      buttonLabel: 'Lister un immeuble',
+      buttonLink: '/tg/add-property'
+    },
+    {
+      bgImage: '/images/tg/vente_welcome.png',
+      title: 'Gérez vos biens sans stress',
+      subtitle: 'Contrats, états des lieux, paiements et maintenance centralisés sur une seule plateforme.',
+      buttonLabel: 'Créer un contrat immobilier',
+      buttonLink: '/tg/account-contracts'
+    }
+  ];
 
 
   return (
@@ -232,8 +269,8 @@ const HomePage = () => {
 
 
       {/* Hero */}
-      <Container as='section' className='pt-5 my-5 pb-lg-4'>
-        <Row className='pt-0 pt-md-2 pt-lg-0'>
+      <Container as='section' className='pt-5 my-5 pb-lg-0' fluid>
+        {/* <Row className='pt-0 pt-md-2 pt-lg-0'>
           <Col md={{ span: 7, order: 1 }} lg={7} xl={7} className='pt-xl-5 pe-lg-0 mb-3 text-md-start text-center'>
             <h1 className='mt-lg-0 mb-md-4 mb-3 pt-md-4 pb-lg-2'>Trouver aisément un logement, et acheter en sécurité un immeuble</h1>
             <p className='display-relative lead me-lg-n5'>
@@ -243,8 +280,15 @@ const HomePage = () => {
               <b>Gérer. Investir. Louer. Vendre </b> <br />
             </p>
 
-            {session ? displayCreationProjectButton() : displayCreationAccountButton()}
-            {/* <span className='d-none d-lg-block position-absolute top-50 end-0 translate-middle-y border-end' style={{width: '1px', height: '30px'}}></span> */}
+            {session ? (
+              session.user.roleId === "1230" || session.user.roleId === "1200" ? displayCreationContractButton()
+                : session.user.roleId === "1232" || session.user.roleId === "1200" ? displayCreationProjectButton()
+                  : session.user.roleId === "151" ? displayCreationProjectButton()
+                    : null
+            ) : (
+              displayCreationAccountButton()
+            )}
+    
 
             <Link href='/tg/add-property' passHref>
               <Button className='outline-primary order-lg-3 ms-2' size='lg'>
@@ -262,13 +306,80 @@ const HomePage = () => {
               alt='Bienvenue sur ImmoAsk'
             />
           </Col>
+        </Row> */}
+        <Row className='pt-0 pt-md-2 pt-lg-0'>
+          <Col lg={6} xs={12} className='mb-lg-0'>
+            <Swiper
+              modules={[Navigation, Pagination, Autoplay]}
+              navigation
+              pagination={{ clickable: true }}
+              loop
+              grabCursor
+              autoplay={{
+                delay: 2000,         // Time between slides (in ms)
+                disableOnInteraction: false // Keeps autoplay running after interaction
+              }}
+              //style={{ height: '750px' }}
+              className={`swiper-nav-onhover  ${styles.carouselSlide}`}
+            >
+              {carouselSlides.map((slide, index) => (
+                <SwiperSlide key={index} className='bg-light'>
+                  <div
+                    className={`d-flex flex-column justify-content-center align-items-center text-white text-center px-4 ${styles.carouselSlide}`}
+                    style={{
+                      backgroundImage: `url(${slide.bgImage})`,
+                      backgroundSize: 'cover',
+                      borderRadius: '0.5rem',
+                      opacity: 0.85,
+                      backgroundPosition: 'center'
+                    }}
+                  >
+                    <h2 className="mb-2 h2 fw-bold text-white">{slide.title}</h2>
+                    <p className="pb-2 h3 opacity-70 text-white">{slide.subtitle}</p>
+                    <Link href={slide.buttonLink} passHref>
+                      <a className="btn btn-primary">{slide.buttonLabel}</a>
+                    </Link>
+                  </div>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          </Col>
+          <Col lg={6} xs={12} className='mb-3 mb-lg-0'>
+            <Row xs={2} sm={3} lg={4} className='g-3 g-xl-4'>
+              {propertyCategories[0].map((category, indx) => (
+                <Col key={indx}>
+                  <IconBox
+                    href={category.href}
+                    media={category.media}
+                    mediaShape='circle'
+                    title={category.title}
+                    type='card-shadow'
+                    align='center'
+                  />
+                </Col>
+              ))}
+              {propertyCategories[1].map((category, indx) => (
+                <Col key={indx}>
+                  <IconBox
+                    href={category.href}
+                    media={category.media}
+                    mediaShape='circle'
+                    title={category.title}
+                    type='card-shadow'
+                    align='center'
+                  />
+                </Col>
+              ))}
+            </Row>
+          </Col>
         </Row>
+        {/* The fixed height should be set to swiper container in order for vertical slider to work */}
 
       </Container>
 
 
       {/* Categories */}
-      <Container as='section' className='mb-2'>
+      {/* <Container as='section' className='mb-2'>
         <Row xs={2} sm={3} lg={6} className='g-3 g-xl-4'>
           {propertyCategories[0].map((category, indx) => (
             <Col key={indx}>
@@ -283,7 +394,21 @@ const HomePage = () => {
             </Col>
           ))}
         </Row>
-      </Container>
+        <Row xs={2} sm={3} lg={6} className='g-3 g-xl-4 mt-3'>
+          {propertyCategories[1].map((category, indx) => (
+            <Col key={indx}>
+              <IconBox
+                href={category.href}
+                media={category.media}
+                mediaShape='circle'
+                title={category.title}
+                type='card-shadow'
+                align='center'
+              />
+            </Col>
+          ))}
+        </Row>
+      </Container> */}
 
 
       {/* Services (carousel on screens < 992px) */}

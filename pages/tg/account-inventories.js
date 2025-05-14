@@ -48,7 +48,7 @@ const PropertyInventoryPage = ({ _newInventory, _acceptedInventory, _declinedInv
   const [comparativeInventories, setComparativeInventories] = useState([]);
 
   const { data: session } = useSession();
-
+  const roleId = Number(session && session.user.roleId);
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 992);
@@ -246,6 +246,7 @@ const PropertyInventoryPage = ({ _newInventory, _acceptedInventory, _declinedInv
       <RealEstateAccountLayout accountPageTitle="Etat de lieux">
         <div className="d-flex align-items-center justify-content-between mb-3">
           <h1 className="h2 mb-0">Etat de lieux</h1>
+          {(roleId === 1230 || roleId === 1200) && (
           <div className="d-flex align-items-right">
             <a
               href="#"
@@ -264,7 +265,7 @@ const PropertyInventoryPage = ({ _newInventory, _acceptedInventory, _declinedInv
               <i className="fi-link mt-n1 me-2" id="exit"></i>
               Creer un etat des lieux de sortie
             </a>
-          </div>
+          </div>)}
         </div>
         <p className="pt-1 mb-4">
           Trouvez ici tous les etats des lieux pour les biens immobiliers en

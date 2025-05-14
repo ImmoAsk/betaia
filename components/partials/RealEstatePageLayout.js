@@ -119,6 +119,20 @@ const RealEstatePageLayout = (props) => {
     );
   };
 
+  const displayCreationContractButton = () => {
+    return (
+      <Link href="/tg/account-contracts" passHref>
+        <Button
+          size="sm"
+          variant="outline-primary d-none d-lg-block order-lg-3"
+        >
+          <i className="fi-file me-2"></i>
+          Créer un contrat immobilier
+        </Button>
+      </Link>
+    );
+  };
+
   const displayCreationProjectButton = () => {
     return (
       <Link href="/tg/add-project" passHref>
@@ -218,9 +232,8 @@ const RealEstatePageLayout = (props) => {
           as={StickyNavbar}
           expand="lg"
           bg="light"
-          className={`fixed-top${
-            props.navbarExtraClass ? ` ${props.navbarExtraClass}` : ""
-          }`}
+          className={`fixed-top${props.navbarExtraClass ? ` ${props.navbarExtraClass}` : ""
+            }`}
         >
           <Container fluid>
             <Link href="/tg" passHref>
@@ -241,7 +254,7 @@ const RealEstatePageLayout = (props) => {
 
             {props.userLoggedIn ? (
               <Dropdown className="d-none d-lg-block order-lg-3 my-n2 me-3">
-                <Link href="/tg/account-info" passHref>
+                <Link href="/tg/account-properties" passHref>
                   <Dropdown.Toggle
                     as={Nav.Link}
                     className="dropdown-toggle-flush d-flex py-1 px-0"
@@ -339,9 +352,15 @@ const RealEstatePageLayout = (props) => {
             ) : (
               <></>
             )}
-            {session
-              ? displayCreationProjectButton()
-              : displayCreationAccountButton()}
+            {session ? (
+              session.user.roleId === "1230" || session.user.roleId === "1200"
+                ? displayCreationContractButton()
+                : session.user.roleId === "1232" || session.user.roleId === "151"
+                  ? displayCreationProjectButton()
+                  : null
+            ) : (
+              displayCreationAccountButton()
+            )}
 
             <Link href="/tg/add-property" passHref>
               <Button

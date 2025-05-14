@@ -3,31 +3,31 @@
       {
         "href": "/tg/catalog?categorie=2",
         "media": "fi-apartment",
-        "title": "Appartement",
+        "title": "Appartements",
         "count": 4
       },
       {
         "href": "/tg/catalog?categorie=1",
         "media": "fi-apartment",
-        "title": "Villa",
+        "title": "Villas",
         "count": 2
       },
       {
         "href": "/tg/catalog?categorie=5",
         "media": "fi-shop",
-        "title": "Appart. meublé",
+        "title": "Appart. meublés",
         "count": 10
       },
       {
         "href": "/tg/catalog?categorie=15",
         "media": "fi-rent",
-        "title": "Studio",
+        "title": "Studios",
         "count": 9
       },
       {
-        "href": "/tg/catalog?categorie=13",
+        "href": "/tg/catalog?categorie=7",
         "media": "fi-rent",
-        "title": "Terrains",
+        "title": "Terrains urbains",
         "count": 17
       },
       {
@@ -39,7 +39,7 @@
       {
         "href": "/tg/catalog?categorie=19",
         "media": "fi-house-chosen",
-        "title": "Villa meublée",
+        "title": "Villas meublées",
         "count": 5
       },
       {
@@ -61,42 +61,54 @@
         "count": 3
       },
       {
-        "href": "/tg/catalog?categorie=29",
+        "href": "/tg/catalog?categorie=32",
         "media": "fi-parking",
         "title": "Fermes agricoles",
-        "count": 10
+        "count": 32
       },
       {
         "href": "/tg/catalog?categorie=4",
         "media": "fi-single-bed",
-        "title": "Studio meublé",
+        "title": "Studios meublés",
         "count": 1
       }
     ],
     [
       {
-        "href": "/tg/catalog?categorie=rent",
+        "href": "/tg/catalog?categorie=31",
         "media": "fi-single-bed",
-        "title": "Bureau",
+        "title": "Salles de conférence",
         "count": 29
       },
       {
-        "href": "/tg/catalog?categorie=sale",
-        "media": "fi-computer",
-        "title": "Magasins",
+        "href": "/tg/catalog?categorie=28",
+        "media": "fi-single-bed",
+        "title": "Bar-restaurants",
         "count": 30
       },
       {
-        "href": "/tg/catalog?categorie=rent",
-        "media": "fi-tg-buy",
-        "title": "Villa meublée",
+        "href": "/tg/catalog?categorie=25",
+        "media": "fi-apartment",
+        "title": "Hotels",
         "count": 5
       },
       {
-        "href": "/tg/catalog?categorie=sale",
-        "media": "fi-parking",
-        "title": "Bureaux co-working",
+        "href": "/tg/catalog?categorie=21",
+        "media": "fi-apartment",
+        "title": "Villas luxueuses",
         "count": 3
+      },
+      {
+        "href": "/tg/catalog?categorie=6",
+        "media": "fi-rent",
+        "title": "Terrains ruraux",
+        "count": 17
+      },
+      {
+        "href": "/tg/catalog?categorie=27",
+        "media": "fi-rent",
+        "title": "Chambres d'hôtels",
+        "count": 17
       }
     ]
   ]
