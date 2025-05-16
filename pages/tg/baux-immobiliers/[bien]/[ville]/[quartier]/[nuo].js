@@ -354,7 +354,11 @@ function SinglePropertyAltPage({ property }) {
                   <div className='d-flex align-items-center justify-content-between mb-3'>
                     <div>
                       <Badge bg='success' className='me-2 mb-2'>Vérifié</Badge>
-                      <Badge bg='info' className='me-2 mb-2'>Nouvel</Badge>
+                      {property && property.statut === 2 && (
+                        <Badge bg="danger" className="me-2 mb-2">
+                          Il est baille actuellement
+                        </Badge>
+                      )}
                     </div>
 
                     {/* Wishlist + Sharing */}
@@ -582,7 +586,7 @@ export async function getServerSideProps(context) {
   try {
     // Fetch data from external API
     const dataAPIresponse = await fetch(
-      `https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={propriete(nuo:${nuo}){tarifications{id,mode,currency,montant},id,cout_visite,est_disponible,nuo,garage,est_meuble,titre,descriptif,surface,usage,cuisine,salon,piece,wc_douche_interne,cout_mensuel,nuitee,cout_vente,categorie_propriete{denomination,id},infrastructures{denomination,icone},meubles{libelle,icone},badge_propriete{id,date_expiration,badge{id,badge_name,badge_image}},pays{id,code,denomination},ville{denomination,id},quartier{id,denomination,minus_denomination},adresse{libelle},offre{denomination,id},visuels{uri,position},user{id}}}`
+      `https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={propriete(nuo:${nuo}){tarifications{id,mode,currency,montant},id,statut,super_categorie,prevente,cout_visite,est_disponible,nuo,garage,est_meuble,titre,descriptif,surface,usage,cuisine,salon,piece,wc_douche_interne,cout_mensuel,nuitee,cout_vente,categorie_propriete{denomination,id},infrastructures{denomination,icone},meubles{libelle,icone},badge_propriete{id,date_expiration,badge{id,badge_name,badge_image}},pays{id,code,denomination},ville{denomination,id},quartier{id,denomination,minus_denomination},adresse{libelle},offre{denomination,id},visuels{uri,position},user{id}}}`
     );
 
     // Check if the response is OK (status 200-299)
