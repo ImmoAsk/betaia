@@ -265,8 +265,6 @@ function SinglePropertyAltPage({ property }) {
       pageCoverImage={`${getFirstImageArray(property.visuels)}`}
       pageUrl={`${BASE_URL}/tg/ventes-immobilieres/${bien}/${ville}/${quartier}/${nuo}`}
     >
-
-
       {/* Message modal */}
       {/* Sign in modal */}
       {signinShow && <PayVisitModal
@@ -376,10 +374,10 @@ function SinglePropertyAltPage({ property }) {
                     <div>
                       <Badge bg='success' className='me-2 mb-2'>Vérifié</Badge>
                       {property && property.statut === 2 && (
-                                              <Badge bg="danger" className="me-2 mb-2">
-                                                Il est vendu actuellement
-                                              </Badge>
-                                            )}
+                        <Badge bg="danger" className="me-2 mb-2">
+                          Il est vendu actuellement
+                        </Badge>
+                      )}
                     </div>
 
                     {/* Wishlist + Sharing */}
@@ -395,7 +393,7 @@ function SinglePropertyAltPage({ property }) {
                       <Dropdown className='d-inline-block'>
                         <OverlayTrigger
                           placement='top'
-                          overlay={<Tooltip>Share</Tooltip>}
+                          overlay={<Tooltip>Partager</Tooltip>}
                         >
                           <Dropdown.Toggle variant='icon btn-light-primary btn-xs shadow-sm rounded-circle ms-2 mb-2'>
                             <i className='fi-share'></i>
@@ -467,8 +465,18 @@ function SinglePropertyAltPage({ property }) {
                                 XOF {property && property.cout_vente}
                                 <span className='d-inline-block ms-1 fs-base fw-normal text-body'>/vie</span>
                               </h2>
-                              {property.prevente == 0 &&
-                                <Button size='md' className='w-100' variant='outline-primary' onClick={handleSigninShow}>Planifier une visite</Button>}
+
+                              {property.prevente === 0 && property.statut === 2 ? (
+                                <>
+                                </>
+                              ) : (<Button
+                                size="md"
+                                className="w-100"
+                                variant="outline-primary"
+                                onClick={handleSigninShow}
+                              >
+                                Planifier une visite
+                              </Button>)}
                             </>
                           }
                         </>
@@ -511,10 +519,22 @@ function SinglePropertyAltPage({ property }) {
 
                   </ul>
                   <div className='justify-content-between mb-2'>
-                    {property.prevente > 0 &&
+                    {property.prevente > 0 && property.statut != 2 &&
                       <Button size='md' className='w-100' variant='outline-primary' onClick={handlePreventeShow}>Payer la souscription</Button>}
                   </div>
 
+                  {property && property.statut === 2 && (
+                    <div className="justify-content-between mb-2">
+
+
+                      <Link href='/tg/add-project' passHref>
+
+                        <Button size='lg' variant='outline-primary' className='w-100'>
+                          Soumettre plutot votre requete
+                        </Button>
+                      </Link>
+                    </div>
+                  )}
                   {/* Property details card */}
                   <Card className='border-0 bg-secondary mb-2'>
                     <Card.Body>
@@ -567,20 +587,32 @@ function SinglePropertyAltPage({ property }) {
                     </Card>
 
                   }
-                  {property.prevente > 0 &&
+                  {property.prevente > 0 && property.statut != 2 &&
                     <Button size='md' className='w-100' variant='outline-primary' onClick={handlePreventeShow}>Payer la souscription</Button>}
 
-                  {property.prevente == 0 &&
+                  {property.prevente == 0 && property.statut != 2 &&
                     <div className='justify-content-between mb-2'>
                       <Button size='lg' className='w-100' variant='outline-primary' onClick={handleSigninShow}>Planifier une visite</Button>
                     </div>
                   }
 
-                  {property.prevente == 0 &&
+                  {property.prevente == 0 && property.statut != 2 &&
                     <div className='justify-content-between mb-2'>
                       <Button size='lg' className='w-100 outline-primary' onClick={handleSignupShow}>Vérifier la disponibilité</Button>
                     </div>
                   }
+                  {property && property.statut === 2 && (
+                    <div className="justify-content-between mb-2">
+
+
+                      <Link href='/tg/add-project' passHref>
+
+                        <Button size='lg' variant='outline-primary' className='w-100'>
+                          Soumettre plutot votre requete
+                        </Button>
+                      </Link>
+                    </div>
+                  )}
 
                   <Link href="https://www.whatsapp.com/channel/0029Va8UsGT6mYPQ1aIvdm25">
                     <a className="d-inline-block mb-4 pb-2 text-decoration-none">
