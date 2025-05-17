@@ -420,7 +420,7 @@ function SinglePropertyAltPage({ property }) {
                     </ul>
                   </div>
                 </div>
-                <div className="d-block d-md-none">
+                {/* <div className="d-block d-md-none">
                   <div className="d-flex align-items-center justify-content-between mb-3">
                     <ul className="d-flex mb-2 list-unstyled fs-sm">
                       <li className="me-3 pe-3 border-end">
@@ -435,13 +435,21 @@ function SinglePropertyAltPage({ property }) {
                           Il est recommandé de lire le contrat de location
                           avant de procéder au paiement
                         </p>
-                        <Button
+                        {property && property.statut === 2 ? (
+                          <Link href='/tg/add-project' passHref>
+
+                            <Button size='md' variant='primary' className='w-45'>
+                              Soumettre plutot votre requete
+                            </Button>
+                          </Link>
+                        ) : (<Button
                           size="md"
-                          className="w-45 outline-primary"
+                          className="w-45"
+                          variant="primary"
                           onClick={handleSignupShow}
                         >
                           Vérifier la disponibilité
-                        </Button>
+                        </Button>)}
                       </li>
                       <li className="me-3 pe-3">
                         <h3 className="h5 mb-2">Visite immobiliere</h3>
@@ -464,18 +472,25 @@ function SinglePropertyAltPage({ property }) {
                             </p>
                           </>
                         )}
-                        <Button
+                        {property && property.statut === 2 ? (
+                          <Link href='/tg/add-project' passHref>
+
+                            <Button size='md' variant='primary' className='w-45'>
+                              Soumettre plutot votre requete
+                            </Button>
+                          </Link>
+                        ) : (<Button
                           size="md"
                           className="w-45"
-                          variant="outline-primary"
-                          onClick={handleSigninShow}
+                          variant="primary"
+                          onClick={handleSignupShow}
                         >
                           Planifier une visite
-                        </Button>
+                        </Button>)}
                       </li>
                     </ul>
                   </div>
-                </div>
+                </div> */}
                 {/* Overview */}
                 <h2 className="h5">Descriptif immobilier</h2>
                 <p className="mb-4 pb-2">{property && property.descriptif}</p>
@@ -601,21 +616,26 @@ function SinglePropertyAltPage({ property }) {
                                 Il est recommandé de lire le contrat de location
                                 avant de procéder au paiement
                               </p>
-                              <Button
+
+
+                              {property && property.statut === 2 ? (
+                                <>
+                                </>
+                              ) : (<Button
                                 size="md"
                                 className="w-100"
                                 variant="outline-primary"
                                 onClick={handleRentNegociationModal}
                               >
-                                Negocier le loyer
-                              </Button>
+                                Négocier le loyer
+                              </Button>)}
                             </li>
                             <li className="me-3 pe-3">
                               <h3 className="h5 mb-2">Visite immobiliere</h3>
                               {property.cout_visite <= 0 && (
                                 <><h2 className="h4 mb-2">0 XOF</h2>
                                   <p className="text-body p">
-                                    Le proprietaire ou l'agent immobiliere vous offre le droit de visite.
+                                    Le propriétaire ou l'agent immobilier vous offre le droit de visite.
                                   </p></>
                               )}
                               {property.cout_visite > 0 && (
@@ -624,19 +644,22 @@ function SinglePropertyAltPage({ property }) {
                                   {property && property.cout_visite} XOF
                                 </h2>
                                   <p className="text-body p">
-                                    Le droit de visite est paye pour supporter la
-                                    prospection et tous les risques lies.
+                                    Le droit de visite est payé pour supporter la
+                                    prospection et tous les risques liés.
                                   </p></>
                               )}
-
-                              <Button
+                              {property && property.statut === 2 ? (
+                                <>
+                                </>
+                              ) : (<Button
                                 size="md"
                                 className="w-100"
                                 variant="outline-primary"
                                 onClick={handleSigninShow}
                               >
                                 Planifier une visite
-                              </Button>
+                              </Button>)}
+
                             </li>
                           </>
                         )}
@@ -663,14 +686,19 @@ function SinglePropertyAltPage({ property }) {
                                 Il est recommandé de lire le contrat de location
                                 avant de procéder au paiement
                               </p>
-                              <Button
+                              {property && property.statut === 2 ? (
+                                <>
+
+
+                                </>
+                              ) : (<Button
                                 size="md"
                                 className="w-100"
                                 variant="outline-primary"
                                 onClick={handleRentNegociationModal}
                               >
-                                Negocier le loyer
-                              </Button>
+                                Négocier le loyer
+                              </Button>)}
                             </li>
                             <li className="me-3 pe-3">
                               <h3 className="h5 mb-2">Nuitée</h3>
@@ -679,14 +707,20 @@ function SinglePropertyAltPage({ property }) {
                                 Le propriétaire n'a pas précisé la nuitée.
                                 Formuler une demande de nuitée en temps.
                               </p>
-                              <Button
+
+                              {property && property.statut === 2 ? (
+                                <>
+
+
+                                </>
+                              ) : (<Button
                                 size="md"
                                 className="w-100"
                                 variant="outline-primary"
                                 onClick={handleNuiteePriceModal}
                               >
                                 Demander la nuitée
-                              </Button>
+                              </Button>)}
                             </li>
                           </>
                         )}
@@ -713,14 +747,19 @@ function SinglePropertyAltPage({ property }) {
                                 Il est recommandé de lire le contrat de location
                                 avant de procéder au paiement
                               </p>
-                              <Button
+                              {property && property.statut === 2 ? (
+                                <>
+
+
+                                </>
+                              ) : (<Button
                                 size="md"
                                 className="w-100"
                                 variant="outline-primary"
                                 onClick={handleRentNegociationModal}
                               >
-                                Negocier le loyer
-                              </Button>
+                                Négocier le loyer
+                              </Button>)}
                             </li>
                             <li className="me-3 pe-3">
                               <h3 className="h5 mb-2">Nuitée</h3>
@@ -734,22 +773,38 @@ function SinglePropertyAltPage({ property }) {
                                 Il est recommandé de lire l'inventaire des
                                 meubles avant de procéder au paiement
                               </p>
-                              <Button
+
+
+                              {property && property.statut === 2 ? (
+                                <>
+
+
+                                </>
+                              ) : (<Button
                                 size="md"
                                 className="w-100"
                                 variant="outline-primary"
                                 onClick={handleBookFurnishedPropertyModal}
                               >
                                 Réserver maintenant
-                              </Button>
+                              </Button>)}
                             </li>
                           </>
                         )}
                     </ul>
                   )}
+                  <div className="justify-content-between mb-2">
 
+                    {property && property.statut === 2 && (
+                      <Link href='/tg/add-project' passHref>
+
+                        <Button size='lg' variant='outline-primary' className='w-100'>
+                          Soumettre plutot votre requete
+                        </Button>
+                      </Link>)}
+                  </div>
                   {/* Property details card */}
-                  <Card className="border-0 bg-secondary mb-3" sm={12} md={12}>
+                  <Card className="border-0 bg-secondary mb-3 w-100" sm={12} md={12} lg={12}>
                     <Card.Body>
                       <h5 className="mb-0 pb-3">
                         Détails clés du bien immobilier
@@ -805,23 +860,37 @@ function SinglePropertyAltPage({ property }) {
                     </Card.Body>
                   </Card>
                   <div className="justify-content-between mb-2">
-                    <Button
+
+                    {property && property.statut === 2 ? (
+                      <>
+
+
+                      </>
+                    ) : (<Button
                       size="lg"
                       className="w-100"
                       variant="outline-primary"
                       onClick={handleSigninShow}
                     >
                       Planifier une visite
-                    </Button>
+                    </Button>)}
                   </div>
                   <div className="justify-content-between mb-2">
-                    <Button
+                    {property && property.statut === 2 ? (
+                      <Link href='/tg/add-project' passHref>
+
+                        <Button size='lg' variant='primary' className='w-100'>
+                          Soumettre plutot votre requete
+                        </Button>
+                      </Link>
+                    ) : (<Button
                       size="lg"
-                      className="w-100 outline-primary"
+                      className="w-100"
+                      variant="primary"
                       onClick={handleSignupShow}
                     >
                       Vérifier la disponibilité
-                    </Button>
+                    </Button>)}
                   </div>
                   <Link href="https://www.whatsapp.com/channel/0029Va8UsGT6mYPQ1aIvdm25">
                     <a className="d-inline-block mb-4 pb-2 text-decoration-none">
