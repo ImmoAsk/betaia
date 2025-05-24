@@ -20,14 +20,25 @@ const SuperAdminActionButtons = () => {
 
   return (
     <>
-     <div className="flex items-center space-x-2 mb-3">
+      <div className="flex items-center space-x-2 mb-3">
         <Link href="/tg/add-property" passHref>
           <Button as="a" size="lg" className="w-100 mb-3">
             <i className="fi-plus me-2"></i>
             Lister un immeuble
           </Button>
         </Link>
-  
+
+        <Link href="/tg/account-socialmedia" passHref>
+          <Button 
+            variant='outline-primary'
+            as="a"
+            size="lg" 
+            className="w-100 mb-3"
+          >
+            Manage Social Media
+          </Button>
+        </Link>
+
         <div className="position-relative">
           {/* 3-dot icon */}
           <Button
@@ -36,25 +47,30 @@ const SuperAdminActionButtons = () => {
             className="w-100 d-flex justify-content-center align-items-center"
             onClick={toggleMenu}
           >
-            <i className="fi-dots-vertical"></i> {/* You can also use bi-three-dots-vertical if Bootstrap Icons */}
+            <i className="fi-dots-vertical"></i>{" "}
+            {/* You can also use bi-three-dots-vertical if Bootstrap Icons */}
           </Button>
 
           {/* Dropdown menu */}
           {showMenu && (
             <div
               className="position-absolute bg-white border rounded shadow p-2 mt-2"
-              style={{ zIndex: 10, width: '100%' }}
+              style={{ zIndex: 10, width: "100%" }}
             >
               <Link href="/tg/add-project" passHref>
-                <a className="dropdown-item mb-2 d-block text-decoration-none">Lancer un projet immobilier</a>
+                <a className="dropdown-item mb-2 d-block text-decoration-none">
+                  Lancer un projet immobilier
+                </a>
               </Link>
               <Link href="/tg/account-contracts" passHref>
-                <a className="dropdown-item d-block text-decoration-none">Créer un contrat immobilier</a>
+                <a className="dropdown-item d-block text-decoration-none">
+                  Créer un contrat immobilier
+                </a>
               </Link>
             </div>
           )}
         </div>
-        </div>
+      </div>
     </>
   );
 };
