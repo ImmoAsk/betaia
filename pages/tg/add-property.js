@@ -75,47 +75,6 @@ const AddPropertyPage = () => {
     }
   }, []); // Runs only once on component mount
 
-  // Preview modal
-  const [previewShow, setPreviewShow] = useState(false);
-  const handlePreviewClose = () => { setPreviewShow(false) };
-  const handlePreviewShow = () => { setPreviewShow(true) }
-  // Overview collapse state
-  const [overviewOpen, setOverviewOpen] = useState(false);
-
-  // Amenities collapse state
-  const [amenitiesOpen, setAmenitiesOpen] = useState(false)
-
-  // Amenities array
-  const amenitiesPreview = [
-    [
-      { icon: 'fi-wifi', title: 'Free WiFi' },
-      { icon: 'fi-thermometer', title: 'Heating' },
-      { icon: 'fi-dish', title: 'Dishwasher' },
-      { icon: 'fi-parking', title: 'Parking place' },
-      { icon: 'fi-snowflake', title: 'Air conditioning' },
-      { icon: 'fi-iron', title: 'Iron' },
-      { icon: 'fi-tv', title: 'TV' },
-      { icon: 'fi-laundry', title: 'Laundry' },
-      { icon: 'fi-cctv', title: 'Security cameras' }
-    ],
-    [
-      { icon: 'fi-no-smoke', title: 'No smocking' },
-      { icon: 'fi-pet', title: 'Cats' },
-      { icon: 'fi-swimming-pool', title: 'Swimming pool' },
-      { icon: 'fi-double-bed', title: 'Double bed' },
-      { icon: 'fi-bed', title: 'Single bed' }
-    ]
-  ]
-  // Anchor lnks
-  const anchors = [
-    { to: 'basic-info', label: 'Informations basiques', completed: true },
-    { to: 'location', label: 'Stuation géographique', completed: true },
-    { to: 'details', label: 'Détails sur le bien immobilier', completed: true },
-    { to: 'price', label: 'Tarification', completed: false },
-    { to: 'photos', label: 'Photos / video', completed: false },
-    { to: 'contacts', label: 'Conditions d\'accès', completed: true }
-  ]
-
 
   // Amenities (checkboxes)
   const amenities = [
@@ -133,12 +92,6 @@ const AddPropertyPage = () => {
     { value: 'Stationnement externe', checked: true },
     { value: 'Chauffage', checked: true },
     { value: 'Cameras de sécurités', checked: false }
-  ]
-
-  // Pets (checkboxes)
-  const pets = [
-    { value: 'Cats allowed', checked: false },
-    { value: 'Dogs allowed', checked: false }
   ]
 
   // Register Filepond plugins
@@ -614,8 +567,6 @@ const AddPropertyPage = () => {
   const townList = formatTownsOptions(villes)
   const quarterList = formatDistrictsOptions(quartiers)
   const propertyOwnerOptions = [...new Set([...realEstateAgents, ...propertyOwners])];
-
-
   // Get the selected option value from propertyData
   const propertyOwnerSelectedOption = propertyOwnerOptions.find((option) => option.value === propertyData?.user_id);
   const propertyTypeSelectedOption = propertyTypeOptions.find((option) => option.value === propertyData?.type);

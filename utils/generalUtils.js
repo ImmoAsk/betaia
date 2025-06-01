@@ -429,5 +429,15 @@ function get_title_description(response) {
    
 
 }
-export { get_title_description, createTop6PropertiesIn, formatLandlordTenants, formatLandlordPropertiesOptions, createCatalogTitle, formatDate, getHumanReadablePrice, formatDistrictsOptions, formatTownsOptions, buildPropertiesArray, replaceSpacesWithAny, getLastPage, createPropertyObject, capitalizeFirstLetter, replaceSpacesWithDots, toLowerCaseString, formatPropertyOwners, formatRealEstateAgents };
+
+function canAccessMoreOptionsProperty (user, propertyOwnerId)  {
+  if (!user) return false;
+
+  const isSuperAdmin = user.roleId === '1200'; // Assuming '1200' is the role ID for super admin
+  const isOwnerRole = ['1232', '1230'].includes(user.roleId);
+  const isOwner = user.id === propertyOwnerId;
+
+  return isSuperAdmin || (isOwnerRole && isOwner);
+};
+export { canAccessMoreOptionsProperty,get_title_description,createPropertyObject, createTop6PropertiesIn, formatLandlordTenants, formatLandlordPropertiesOptions, createCatalogTitle, formatDate, getHumanReadablePrice, formatDistrictsOptions, formatTownsOptions, buildPropertiesArray, replaceSpacesWithAny, getLastPage, capitalizeFirstLetter, replaceSpacesWithDots, toLowerCaseString, formatPropertyOwners, formatRealEstateAgents };
 

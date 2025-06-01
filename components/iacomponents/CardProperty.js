@@ -18,9 +18,9 @@ export default function CardProperty({property}){
               }
             }}
             footer={[
-              ['fi-bed', property.amenities[0]],
-              ['fi-bath', property.amenities[1]],
-              ['fi-car', property.amenities[2]]
+              ['fi-bed', property?.amenities[0]],
+              ['fi-bath', property?.amenities[1]],
+              ['fi-car', property?.amenities[2]],
             ]}
             className='h-100'
           />
