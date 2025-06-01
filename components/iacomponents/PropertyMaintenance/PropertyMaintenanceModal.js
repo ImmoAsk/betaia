@@ -3,8 +3,6 @@ import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import CloseButton from "react-bootstrap/CloseButton";
-import CardProperty from "../CardProperty";
-import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import "react-phone-input-2/lib/style.css";
 import axios from "axios";
@@ -12,122 +10,24 @@ import { API_URL } from "../../../utils/settings";
 import { FileText, Upload, X } from "lucide-react";
 import Select from "react-select";
 
-const fetchPropertyData = async (nuo) => {
-  const query = `
-    query GetProperty($nuo: Int!) {
-      propriete(nuo: $nuo) {
-        id
-        nuo
-        garage
-        est_meuble
-        titre
-        descriptif
-        surface
-        usage
-        cuisine
-        salon
-        piece
-        wc_douche_interne
-        cout_mensuel
-        nuitee
-        cout_vente
-        tarifications {
-          id
-          mode
-          currency
-          montant
-        }
-        categorie_propriete {
-          denomination
-          id
-        }
-        infrastructures {
-          id
-          denomination
-          icone
-        }
-        meubles {
-          libelle
-          icone
-        }
-        badge_propriete {
-          id
-          date_expiration
-          badge {
-            id
-            badge_name
-            badge_image
-          }
-        }
-        pays {
-          id
-          code
-          denomination
-        }
-        ville {
-          denomination
-          id
-        }
-        quartier {
-          id
-          denomination
-        }
-        adresse {
-          libelle
-          id
-        }
-        offre {
-          id
-          denomination
-        }
-        visuels {
-          uri
-        }
-        user {
-          id
-        }
-      }
-    }
-  `;
-
-  const response = await axios.post(API_URL, {
-    query,
-    variables: { nuo },
-  });
-
-  if (response.data.errors) {
-    throw new Error("Failed to fetch property data");
-  }
-
-  return response.data.data.propriete;
-};
 
 // Mock maintenance types for dropdown
 const maintenanceTypes = [
-  { id: "plumbing", name: "Plumbing" },
-  { id: "electrical", name: "Electrical" },
-  { id: "hvac", name: "HVAC" },
-  { id: "structural", name: "Structural" },
-  { id: "roofing", name: "Roofing" },
-  { id: "painting", name: "Painting" },
-  { id: "flooring", name: "Flooring" },
-  { id: "appliance-repair", name: "Appliance Repair" },
-  { id: "landscaping", name: "Landscaping" },
-  { id: "pest-control", name: "Pest Control" },
-  { id: "security-system", name: "Security System" },
+  { id: "plumbing", name: "Plomberie" },
+  { id: "electrical", name: "Électricité" },
+  { id: "hvac", name: "Chauffage, ventilation et climatisation" },
+  { id: "structural", name: "Structure" },
+  { id: "roofing", name: "Toiture" },
+  { id: "painting", name: "Peinture" },
+  { id: "flooring", name: "Revêtement de sol" },
+  { id: "appliance-repair", name: "Réparation d’appareils" },
+  { id: "landscaping", name: "Aménagement paysager" },
+  { id: "pest-control", name: "Lutte antiparasitaire" },
+  { id: "security-system", name: "Système de sécurité" },
 ];
 
 const PropertyMaintenanceModal = ({ onSwap, pillButtons, ...props }) => {
-  // const [propertyModal, setPropertyModal] = useState(null);
 
-  /* const { data, isLoading, isError } = useQuery(
-      ['propertyModal', property.nuo],
-      () => fetchPropertyData(property.nuo),
-      {
-        onSuccess: (data) => setPropertyModal(data),
-        enabled: !!property.nuo, // Ensures that `nuo` exists before fetching
-      }
-    ); */
 
   // Form state
   const [formData, setFormData] = useState({
@@ -144,8 +44,7 @@ const PropertyMaintenanceModal = ({ onSwap, pillButtons, ...props }) => {
   const [errors, setErrors] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
 
-  const [disponibiliteNotification, setDisponibiliteNotification] =
-    useState(null);
+  const [disponibiliteNotification, setDisponibiliteNotification] =useState(null);
 
   // File input refs
   const fileInputRef = useRef();
@@ -275,15 +174,17 @@ const PropertyMaintenanceModal = ({ onSwap, pillButtons, ...props }) => {
     }
     // Prepare GraphQL mutation for rent disponibilite
     const disponibilite_data = {
-      query: `mutation UpdatePropertyStatus($input: UpdateProprieteStatusInput!) {
-        updateProprieteStatus(input: $input) {
-          id
+      query: `mutation CreateMaintenanceRequest($input: MaintenanceInput!) {
+        createMaintenance(input: $input) {
+          status,message
         }
       }`,
       variables: {
         input: {
-          id: 1,
-          statut: 2,
+          user_id: Number(session?.user?.id),
+          categorie: formData.maintenanceType,
+          description : formData.description,
+          images: formData.files[0].name,
         },
       },
     };
@@ -293,10 +194,18 @@ const PropertyMaintenanceModal = ({ onSwap, pillButtons, ...props }) => {
         headers: { "Content-Type": "application/json" },
       });
 
-      if (Number(response.data?.data?.updateProprieteStatus?.id) >= 1) {
+      if (response.data?.data?.createMaintenance?.status ==="success") {
+
         setDisponibiliteNotification(
-          "Le biens immobiler est bien rendu indisponible. Mettez en vente ou en location d'autres biens immobiliers."
+          "La demande de maintenance est envoyée avec succès. Nous vous revenons sous peu."
+        );  
+        console.log("Response: ", response.data?.data?.createMaintenance);
+      } else {
+        setDisponibiliteNotification(
+          response.data?.data?.createMaintenance?.message ||
+            "Une erreur s'est produite lors de l'envoi de la demande de maintenance."
         );
+        console.log("Response: ", response.data?.data?.createMaintenance);
       }
     } catch (error) {
       console.error("Error during disponibilite:", error);
@@ -329,18 +238,18 @@ const PropertyMaintenanceModal = ({ onSwap, pillButtons, ...props }) => {
         />
         <div className="row mx-0">
           <div className="col-md-6 p-4 p-sm-5">
-            <h3 className="h4">Maintenances immobilieres N°. Bonne chance !</h3>
+            <h3 className="h4">Maintenance immobiliere </h3>
             <Form noValidate validated={validated} onSubmit={handleSubmit}>
               {/*Maintainence Type Dropdown */}
               <Form.Group className="mb-3" controlId="maintenanceType">
-                <Form.Label>Maintenance Type</Form.Label>
+                <Form.Label>Type de maintenance</Form.Label>
                 <Select
                   options={maintenanceTypeOptions}
                   value={selectedMaintenanceType}
                   onChange={(option) =>
                     setFormData({
                       ...formData,
-                      maintenanceType: option?.value || "",
+                      maintenanceType: option?.label || "",
                     })
                   }
                   isSearchable
@@ -363,7 +272,7 @@ const PropertyMaintenanceModal = ({ onSwap, pillButtons, ...props }) => {
                   value={formData.description}
                   onChange={handleInputChange}
                   // isInValid={!!errors.description}
-                  placeholder="Please describe the issue in detail..."
+                  placeholder="Decrire un peu..."
                 />
                 {errors.description && (
                   <Form.Control.Feedback type="inValid">
@@ -374,7 +283,7 @@ const PropertyMaintenanceModal = ({ onSwap, pillButtons, ...props }) => {
 
               {/* File upload */}
               <Form.Group className="mb-3">
-                <Form.Label>Attachments</Form.Label>
+                <Form.Label>Preuves</Form.Label>
                 <div
                   ref={dragAreaRef}
                   className="border rounded p-3 text-center"
@@ -383,7 +292,7 @@ const PropertyMaintenanceModal = ({ onSwap, pillButtons, ...props }) => {
                   onDrop={handleDrop}
                 >
                   <Upload size={32} className="mb-2 text-primary" />
-                  <p>Drag and Drop files here or</p>
+                  <p>Cliquer et deposer ou</p>
 
                   <input
                     type="file"
@@ -397,10 +306,10 @@ const PropertyMaintenanceModal = ({ onSwap, pillButtons, ...props }) => {
                     variant="outline-primary"
                     onClick={() => fileInputRef.current.click()}
                   >
-                    Browse files
+                    Telecharger des fichiers
                   </Button>
                   <p className="mt-2 text-muted small">
-                    Accepted file types: Images & PDFs
+                    Types de fichiers acceptes: Images & PDFs
                   </p>
                 </div>
                 {errors.files && (
@@ -410,7 +319,7 @@ const PropertyMaintenanceModal = ({ onSwap, pillButtons, ...props }) => {
                 {/* File lists */}
                 {formData.files.length > 0 && (
                   <div className="mt-3">
-                    <p className="mb-2">Selected Files:</p>
+                    <p className="mb-2">Fichiers selectionnes:</p>
                     <div
                       className="border rounded p-2"
                       style={{ maxHeight: "150px", overflow: "auto" }}
@@ -442,14 +351,14 @@ const PropertyMaintenanceModal = ({ onSwap, pillButtons, ...props }) => {
                 {/* Form Buttons */}
                 <div className="d-flex justify-content-between gap-2 mt-4">
                   <Button className="w-50" variant="primary" type="submit">
-                    Submit request
+                    Soumettre
                   </Button>
                   <Button
                     className="w-50"
                     variant="outline-secondary"
                     onClick={handleCancel}
                   >
-                    Cancel
+                    Annuler
                   </Button>
                 </div>
               </Form.Group>
@@ -466,7 +375,7 @@ const PropertyMaintenanceModal = ({ onSwap, pillButtons, ...props }) => {
             </h2>
             <div className="card shadow-sm mb-4">
               <div className="card-header bg-light">
-                <h5 className="card-title mb-0">Maintenance Request</h5>
+                <h5 className="card-title mb-0">Requete de maintenance</h5>
               </div>
               <div className="card-body">
                 <div className="mb-3">
@@ -477,13 +386,13 @@ const PropertyMaintenanceModal = ({ onSwap, pillButtons, ...props }) => {
 
                 <div className="mb-3">
                   <p className="card-text" style={{ whiteSpace: "pre-wrap" }}>
-                    {formData.description || "No description provided"}
+                    {formData.description || "Aucune description fournie"}
                   </p>
                 </div>
 
                 <div>
                   {formData.files.length === 0 ? (
-                    <p className="text-muted fst-italic">No files attached</p>
+                    <p className="text-muted fst-italic">Aucun fichier attache</p>
                   ) : (
                     <div className="row row-cols-2 row-cols-md-4 g-3">
                       {formData.files.map((file, i) => (

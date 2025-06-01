@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Card, Badge, Button } from 'react-bootstrap';
 import { API_URL } from '../../../utils/settings';
 import { formatDate } from '../../../utils/generalUtils';
+import { useSession } from 'next-auth/react';
 const getBadgeProps = (statut) => {
     switch (statut) {
         case 0:
@@ -11,7 +12,7 @@ const getBadgeProps = (statut) => {
         case 2:
             return { text: "Refusée", variant: "faded-accent danger" };
         default:
-            return { text: "Negociation", variant: "faded-accent" };
+            return { text: "Maintenance", variant: "faded-accent" };
     }
 };
 
@@ -43,7 +44,7 @@ const updateNegotiation = async ({ negociationOffer, statut }) => {
 };
 
 
-const PropertyContract = ({ project }) => {
+const PropertyMaintenance = ({ project }) => {
     const { text, variant } = getBadgeProps(project?.statut);
     const { data: session } = useSession();
     const role = session?.user?.roleId
@@ -79,19 +80,19 @@ const PropertyContract = ({ project }) => {
                     </div>
                     <h3 className="h6 card-title pt-1 mb-3">
                         <p className="text-nav text-decoration-none">
-                            Le contrat de bail de LOCATAIRE pour la propriété
-                            No. {project.propriete.nuo} est en cours de validation.
+                            La demande de {project?.categorie} pour la propriété
+                            No. {project?.propriete?.nuo} est en cours de validation.
                         </p>
                     </h3>
                     <div className="fs-sm">
                         <span className="text-nowrap me-3">
                             <i className="fi-calendar text-muted me-1"></i>
-                            {formatDate(project.date_negociation)}
+                            {formatDate(project?.created_at)}
                         </span>
                     </div>
 
                     {/* Show Accept and Decline buttons when project.statut === 0 */}
-                    {(role === '1230' || role === '1200') && project.statut === 0 && (
+                    {(role === '1230' || role === '1200') && project?.statut === 0 && (
                     <div className="d-flex justify-content-center mt-3">
                         <button
                             className="btn btn-outline-secondary me-2 flex-grow-1"
@@ -113,4 +114,4 @@ const PropertyContract = ({ project }) => {
     );
 };
 
-export default PropertyContract;
+export default PropertyMaintenance;

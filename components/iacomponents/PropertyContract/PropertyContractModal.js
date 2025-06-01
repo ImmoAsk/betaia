@@ -5,115 +5,20 @@ import { useSession } from "next-auth/react";
 import axios from "axios";
 import { Form, Button, Card, Row, Col } from "react-bootstrap";
 import Select from "react-select";
-
 import leaseData from "./dummydata/leaseData.json";
-//import landlords from "./dummydata/landlords.json";
-//import tenants from "./dummydata/tenants.json";
-
 import LeasePreview from "./leasepreview";
 import LandlordPropertyCard from "./LandlordPropertyCard";
 import { useUserProperties } from "../../../customHooks/realEstateHooks";
 import {
   buildPropertiesArray,
   formatLandlordPropertiesOptions,
+  formatLandlordTenants,
   formatPropertyOwners,
 } from "../../../utils/generalUtils";
-
 import { API_URL } from "../../../utils/settings";
-import { useLandLord, useTenant } from "../../../customHooks/usePropertyOwner";
-import { set } from "nprogress";
+import { useLandLord, useLandlordTenant, useTenant } from "../../../customHooks/usePropertyOwner";
 import AddTenantModal from "../Tenants/AddTenantModal";
 
-
-const fetchPropertyData = async (nuo) => {
-  const query = `
-    query GetProperty($nuo: Int!) {
-      propriete(nuo: $nuo) {
-        id
-        nuo
-        garage
-        est_meuble
-        titre
-        descriptif
-        surface
-        usage
-        cuisine
-        salon
-        piece
-        wc_douche_interne
-        cout_mensuel
-        nuitee
-        cout_vente
-        tarifications {
-          id
-          mode
-          currency
-          montant
-        }
-        categorie_propriete {
-          denomination
-          id
-        }
-        infrastructures {
-          id
-          denomination
-          icone
-        }
-        meubles {
-          libelle
-          icone
-        }
-        badge_propriete {
-          id
-          date_expiration
-          badge {
-            id
-            badge_name
-            badge_image
-          }
-        }
-        pays {
-          id
-          code
-          denomination
-        }
-        ville {
-          denomination
-          id
-        }
-        quartier {
-          id
-          denomination
-        }
-        adresse {
-          libelle
-          id
-        }
-        offre {
-          id
-          denomination
-        }
-        visuels {
-          uri
-        }
-        user {
-          id
-        }
-      }
-    }
-  `;
-
-  const response = await axios.post(API_URL, {
-    query,
-    variables: { nuo },
-  });
-
-  if (response.data.errors) {
-    throw new Error("Failed to fetch property data");
-  }
-
-  return response.data.data.propriete;
-};
 
 export default function PropertyContractModal({
   onSwap,
@@ -138,8 +43,14 @@ export default function PropertyContractModal({
   const isFormValid = true;
   const { data: session } = useSession();
   //const userId = session?.user?.id ?? 0;
-  const userId = session?.user?.id ?? 0;
-  const { data: landlordPropertiesData } = useUserProperties(userId);
+  // Add this computed value after defining selectedProperty and session
+  const dynamicUserId = selectedLandlord?.id || session?.user?.id || 0;
+  // With this:
+  const { data: landlordPropertiesData } = useUserProperties(dynamicUserId);
+
+
+
+  const { data: tenants } = useLandlordTenant(dynamicUserId);
 
   const [landlordProperties, setLandlordProperties] = useState([]);
 
@@ -163,15 +74,19 @@ export default function PropertyContractModal({
     }
     // Prepare GraphQL mutation for rent disponibilite
     const disponibilite_data = {
-      query: `mutation UpdatePropertyStatus($input: UpdateProprieteStatusInput!) {
-        updateProprieteStatus(input: $input) {
+      query: `mutation CreationPropertyAgreement($input: ContratInput!) {
+        createContrat(input: $input) {
           id
         }
       }`,
       variables: {
         input: {
-          id: 1,
-          statut: 2,
+          propriete_id: Number(selectedProperty?.id),
+          type_contrat: Number(formData.lease_type),
+          date_debut: formData.leaseStart,
+          montant_final: Number(formData.monthlyRent),
+          locataire_id: Number(selectedTenant?.id),
+          proprietaire_id: Number(dynamicUserId),
         },
       },
     };
@@ -181,9 +96,9 @@ export default function PropertyContractModal({
         headers: { "Content-Type": "application/json" },
       });
 
-      if (Number(response.data?.data?.updateProprieteStatus?.id) >= 1) {
+      if (Number(response.data?.data?.createContrat?.id) >= 1) {
         setDisponibiliteNotification(
-          "Le biens immobiler est bien rendu indisponible. Mettez en vente ou en location d'autres biens immobiliers."
+          "Le contrat de location a été créé avec succès."
         );
       }
     } catch (error) {
@@ -287,8 +202,10 @@ export default function PropertyContractModal({
   const propertyOwnerSelectedOption = propertyOwners.find((option) => option.value === selectedLandlord?.value);
 
 
-  const { data: tenants } = useTenant(userId);
-  const housingTenants = formatPropertyOwners(tenants);
+
+
+
+  const housingTenants = formatLandlordTenants(tenants);
   const tenantsSelectedOption = housingTenants.find((option) => option.value === selectedTenant?.value);
   const [showModal, setShowModal] = useState(false);
   const [tenantData, setTenantData] = useState({});
@@ -321,7 +238,12 @@ export default function PropertyContractModal({
             <h2 className="h3 mb-4 mb-sm-2">
               Création du contrat immobiler N° {selectedProperty?.nuo}
             </h2>
-            <Form>
+            {disponibiliteNotification && (
+                <div className="alert alert-success mt-3">
+                  {disponibiliteNotification}
+                </div>
+              )}
+            <Form noValidate validated={validated} onSubmit={handleSubmit}>
               <Form.Group className="mb-4 mt-2">
                 <Form.Label>Quel est le type de contrat immobilier ?</Form.Label>
                 <div className="d-flex">
@@ -330,8 +252,8 @@ export default function PropertyContractModal({
                     type="radio"
                     label="Résidentiel"
                     name="lease_type"
-                    value="Résidentiel"
-                    checked={formData.lease_type === "Résidentiel"}
+                    value="1"
+                    checked={formData.lease_type === "1"}
                     onChange={handleChange}
                   />
                   <Form.Check
@@ -339,27 +261,30 @@ export default function PropertyContractModal({
                     type="radio"
                     label="Commercial"
                     name="lease_type"
-                    value="Commercial"
-                    checked={formData.lease_type === "Commercial"}
+                    value="2"
+                    checked={formData.lease_type === "2"}
                     onChange={handleChange}
                   />
 
                 </div>
               </Form.Group>
-              <Form.Group className="mb-4 mt-2">
-                <Form.Label>Qui est le propriétaire ou le gestionnaire immobilier ?</Form.Label>
-                <Select
-                  name="selectedLandlord"
-                  value={propertyOwnerSelectedOption}
-                  onChange={(landlord) => handleLandlordSelect(landlord)}
-                  options={propertyOwners}
-                  isSearchable
-                  isClearable
-                  placeholder="Sélectionnez le propriétaire ou le gestionnaire immobilier"
-                  className={`react-select-container ${selectedLandlord?.id === propertyOwnerSelectedOption?.value ? "border-primary" : ""}`}
-                  classNamePrefix="react-select"
-                />
-              </Form.Group>
+              {session?.user?.roleId === "1200" && (
+                <Form.Group className="mb-4 mt-2">
+                  <Form.Label>Qui est le propriétaire ou le gestionnaire immobilier ?</Form.Label>
+                  <Select
+                    name="selectedLandlord"
+                    value={propertyOwnerSelectedOption}
+                    onChange={(landlord) => handleLandlordSelect(landlord)}
+                    options={propertyOwners}
+                    isSearchable
+                    isClearable
+                    placeholder="Sélectionnez le propriétaire ou le gestionnaire immobilier"
+                    className={`react-select-container ${selectedLandlord?.id === propertyOwnerSelectedOption?.value ? "border-primary" : ""}`}
+                    classNamePrefix="react-select"
+                  />
+                </Form.Group>
+              )}
+
               <Form.Group className="mb-4 mt-2">
                 <Form.Label>Quelle est la propriété concernée ?</Form.Label>
                 <Select
@@ -403,12 +328,12 @@ export default function PropertyContractModal({
                       onClose={handleModalClose}
                       onSubmit={handleTenantSubmit}
                       tenantData={tenantData}
+                      landlordId={selectedLandlord?.id}
                       setTenantData={setTenantData}
                     />
                   </>
                 </Col>
               </Row>
-
               <Form.Group className="mb-4 mt-2">
                 <Form.Label>Quel est le montant final du loyer convenu ? (CFA)</Form.Label>
                 <Form.Control
@@ -455,16 +380,17 @@ export default function PropertyContractModal({
                   Annuler
                 </Button>
               </div>
+              {disponibiliteNotification && (
+                <div className="alert alert-success mt-3">
+                  {disponibiliteNotification}
+                </div>
+              )}
             </Form>
           </div>
           <div className="col-md-5 p-4 p-sm-5">
-            {/*  <h3 className="h4">Bail a usage d'habitation N° {selectedProperty?.nuo}. Bonne chance !</h3> */}
-            <Form noValidate validated={validated} onSubmit={handleSubmit}>
               <>
                 {" "}
-
                 <LeasePreview data={formData} previewRef={previewRef} />
-
                 {/* Download PDF button */}
                 <div className="text-end">
                   <Button variant="primary" onClick={handleDownload}>
@@ -472,13 +398,11 @@ export default function PropertyContractModal({
                   </Button>
                 </div>
               </>
-
               {disponibiliteNotification && (
                 <div className="alert alert-success mt-3">
                   {disponibiliteNotification}
                 </div>
               )}
-            </Form>
           </div>
           <div className="col-md-1"></div>
         </div>

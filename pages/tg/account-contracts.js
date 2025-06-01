@@ -11,7 +11,7 @@ import PropertyContractModal from '../../components/iacomponents/PropertyContrac
 // Helper function to fetch Contracts by statut for property owner
 async function fetchContractsByStatut(statut, proprietaireID) {
   const dataAPIresponse = await fetch(
-    `${API_URL}?query={getContractsByKeyWords(statut:${statut},proprietaire_id:${proprietaireID},orderBy:{order:DESC,column:ID}){id,statut,,montant_final,propriete{id,nuo}}}`
+    `${API_URL}?query={getContractsByKeyWords(statut:${statut},proprietaire_id:${proprietaireID},orderBy:{order:DESC,column:ID}){id,statut,type_contrat,date_debut,montant_final,propriete{id,nuo},locataire{id,name,phone}}}`
   );
   const responseData = await dataAPIresponse.json();
   return responseData.data ? responseData.data.getContractsByKeyWords : [];
@@ -19,7 +19,7 @@ async function fetchContractsByStatut(statut, proprietaireID) {
 
 async function fetchRenterContractsByStatut(statut, userID) {
   const dataAPIresponse = await fetch(
-    `${API_URL}?query={getContractsByKeyWords(statut:${statut},locataire_id:${userID},orderBy:{order:DESC,column:ID}){id,statut,montant_final,propriete{id,nuo}}}`
+    `${API_URL}?query={getContractsByKeyWords(statut:${statut},locataire_id:${userID},orderBy:{order:DESC,column:ID}){id,statut,type_contrat,date_debut,montant_final,propriete{id,nuo},locataire{id,name,phone}}}`
   );
   const responseData = await dataAPIresponse.json();
   return responseData.data ? responseData.data.getContractsByKeyWords : [];
@@ -28,7 +28,7 @@ async function fetchRenterContractsByStatut(statut, userID) {
 // Helper function to fetch Contracts by statut for admin
 async function fetchContractsByStatutByRole(statut) {
   const dataAPIresponse = await fetch(
-    `${API_URL}?query={getContractsByKeyWords(statut:${statut},orderBy:{order:DESC,column:ID}){id,statut,montant_final,propriete{id,nuo}}}`
+    `${API_URL}?query={getContractsByKeyWords(statut:${statut},orderBy:{order:DESC,column:ID}){id,statut,date_debut,type_contrat,montant_final,propriete{id,nuo},locataire{id,name,phone}}}`
   );
   const responseData = await dataAPIresponse.json();
   return responseData.data ? responseData.data.getContractsByKeyWords : [];

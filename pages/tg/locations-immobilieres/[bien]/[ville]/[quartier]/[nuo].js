@@ -32,10 +32,13 @@ import CheckAvailabilityModal from "../../../../../../components/iacomponents/Ch
 import RentNegociationModal from "../../../../../../components/iacomponents/RentNegociationModal";
 import AskNuiteePriceModal from "../../../../../../components/iacomponents/AskNuiteePriceModal";
 import ImageComponent from "../../../../../../components/iacomponents/ImageComponent";
-import { getHumanReadablePrice } from "../../../../../../utils/generalUtils";
+import { canAccessMoreOptionsProperty, createPropertyObject, getHumanReadablePrice } from "../../../../../../utils/generalUtils";
 import BookFurnishedPropertyModal from "../../../../../../components/iacomponents/BookFurnishedPropertyModal";
 import DetailRealEstateAgency from "../../../../../../components/iacomponents/DetailRealEstateAgency";
 import { API_URL, BASE_URL, IMAGE_URL } from "../../../../../../utils/settings";
+import AddNewImagesModal from "../../../../../../components/iacomponents/AddNewImagesProperty/AddNewImagesModal";
+import DeletePropertyModal from "../../../../../../components/iacomponents/DeleteProperty/DeletePropertyModal";
+import EditPropertyModal from "../../../../../../components/iacomponents/EditPropertyModal";
 
 function SinglePropertyAltPage({ property }) {
   // Sign in modal
@@ -65,6 +68,19 @@ function SinglePropertyAltPage({ property }) {
   const [askNuiteePriceShow, setAskNuiteePriceShow] = useState(false);
   const handleAskNuiteePriceClose = () => setAskNuiteePriceShow(false);
   const handleAskNuiteePriceShow = () => setAskNuiteePriceShow(true);
+
+
+  const [newImagesPropertyShow, setNewImagesPropertyShow] = useState(false);
+  const handleAddNewImagesPropertyClose = () => setNewImagesPropertyShow(false);
+  const handleAddNewImagesPropertyShow = () => setNewImagesPropertyShow(true);
+
+  const [editPropertyShow, setEditPropertyShow] = useState(false);
+  const handleEditPropertyClose = () => setEditPropertyShow(false);
+  const handleEditPropertyShow = () => setEditPropertyShow(true);
+
+  const [deletePropertyShow, setDeletePropertyShow] = useState(false);
+  const handleDeletePropertyClose = () => setDeletePropertyShow(false);
+  const handleDeletePropertyShow = () => setDeletePropertyShow(true);
   // Swap modals
   const handleSignInToUp = (e) => {
     e.preventDefault();
@@ -175,6 +191,31 @@ function SinglePropertyAltPage({ property }) {
         );
       });
   };
+  const handleAddNewImagesPropertyModal = () => {
+    //e.preventDefault();
+    if (session) {
+      handleAddNewImagesPropertyShow();
+    } else {
+      handleSignInToUp(e);
+    }
+  }
+
+  const handleEditPropertyModal = () => {
+    //e.preventDefault();
+    if (session) {
+      handleEditPropertyShow();
+    } else {
+      handleSignInToUp(e);
+    }
+  }
+  const handleDeletePropertyModal = () => {
+    //e.preventDefault();
+    if (session) {
+      handleDeletePropertyShow();
+    } else {
+      handleSignInToUp(e);
+    }
+  }
 
   useEffect(() => {
     getRecommendProperties();
@@ -276,8 +317,8 @@ function SinglePropertyAltPage({ property }) {
       </h4>
     );
   }
-  // <img src=${session ? thumbnails[index] : 'https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/proprietes/' + Unconnectedhumbnails[index]} alt='ImmoAsk Thumbnail'/>
-  return (
+
+ return (
     <RealEstatePageLayout
       pageTitle={`${property.categorie_propriete.denomination} à louer, ${property.ville.denomination}, ${property.quartier.denomination} | No. ${nuo} | Togo`}
       userLoggedIn={session ? true : false}
@@ -310,6 +351,36 @@ function SinglePropertyAltPage({ property }) {
         />
       )}
 
+      {
+        newImagesPropertyShow && <AddNewImagesModal
+          centered
+          size='lg'
+          show={newImagesPropertyShow}
+          onHide={handleAddNewImagesPropertyClose}
+          property={createPropertyObject(property)} // Pass the property object to the modal component as a propproperty}
+        />
+      }
+
+      {
+        editPropertyShow && <EditPropertyModal
+          centered
+          size='lg'
+          show={editPropertyShow}
+          onHide={handleEditPropertyClose}
+          property={createPropertyObject(property)}
+        />
+      }
+
+      {
+        deletePropertyShow && <DeletePropertyModal
+          centered
+          size='lg'
+          show={deletePropertyShow}
+          onHide={handleDeletePropertyClose}
+          property={createPropertyObject(property)}
+        />
+      }
+
       {/* Sign up modal */}
       {rentNegociationShow && (
         <RentNegociationModal
@@ -340,6 +411,8 @@ function SinglePropertyAltPage({ property }) {
           property={property}
         />
       )}
+
+
       {property && (
         <Container as="section">
           <Container as="section" className="mt-5 mb-lg-5 mb-4 pt-5 pb-lg-5">
@@ -420,77 +493,6 @@ function SinglePropertyAltPage({ property }) {
                     </ul>
                   </div>
                 </div>
-                {/* <div className="d-block d-md-none">
-                  <div className="d-flex align-items-center justify-content-between mb-3">
-                    <ul className="d-flex mb-2 list-unstyled fs-sm">
-                      <li className="me-3 pe-3 border-end">
-                        <h3 className="h5 mb-2">Loyer mensuel</h3>
-                        <h2 className="h4 mb-2">
-                          {property && property.cout_mensuel} XOF
-                          <span className="d-inline-block ms-1 fs-base fw-normal text-body">
-                            /mois
-                          </span>
-                        </h2>
-                        <p className="text-body p">
-                          Il est recommandé de lire le contrat de location
-                          avant de procéder au paiement
-                        </p>
-                        {property && property.statut === 2 ? (
-                          <Link href='/tg/add-project' passHref>
-
-                            <Button size='md' variant='primary' className='w-45'>
-                              Soumettre plutot votre requete
-                            </Button>
-                          </Link>
-                        ) : (<Button
-                          size="md"
-                          className="w-45"
-                          variant="primary"
-                          onClick={handleSignupShow}
-                        >
-                          Vérifier la disponibilité
-                        </Button>)}
-                      </li>
-                      <li className="me-3 pe-3">
-                        <h3 className="h5 mb-2">Visite immobiliere</h3>
-                        {property.cout_visite <= 0 && (
-                          <>
-                            <h2 className="h4 mb-2">0 XOF</h2>
-                            <p className="text-body p">
-                              Le propriétaire ou l'agent immobilier vous offre le droit de visite.
-                            </p>
-                          </>
-                        )}
-                        {property.cout_visite > 0 && (
-                          <>
-                            <h2 className="h4 mb-2">
-                              {property && property.cout_visite} XOF
-                            </h2>
-                            <p className="text-body p">
-                              Le droit de visite est payé pour supporter la
-                              prospection et tous les risques liés.
-                            </p>
-                          </>
-                        )}
-                        {property && property.statut === 2 ? (
-                          <Link href='/tg/add-project' passHref>
-
-                            <Button size='md' variant='primary' className='w-45'>
-                              Soumettre plutot votre requete
-                            </Button>
-                          </Link>
-                        ) : (<Button
-                          size="md"
-                          className="w-45"
-                          variant="primary"
-                          onClick={handleSignupShow}
-                        >
-                          Planifier une visite
-                        </Button>)}
-                      </li>
-                    </ul>
-                  </div>
-                </div> */}
                 {/* Overview */}
                 <h2 className="h5">Descriptif immobilier</h2>
                 <p className="mb-4 pb-2">{property && property.descriptif}</p>
@@ -592,6 +594,57 @@ function SinglePropertyAltPage({ property }) {
 
                         </Dropdown.Menu>
                       </Dropdown>
+                      {canAccessMoreOptionsProperty(session?.user, property.user.id) && (
+                        <Dropdown className="d-inline-block">
+                        <OverlayTrigger
+                          placement="top"
+                          overlay={<Tooltip>Gerer plus d'options</Tooltip>}
+                        >
+                          <Dropdown.Toggle variant="icon btn-light-primary btn-xs shadow-sm rounded-circle ms-2 mb-2">
+                            <i className="fi-dots-vertical"></i>
+                          </Dropdown.Toggle>
+                        </OverlayTrigger>
+                        <Dropdown.Menu align="end" className="my-1">
+                          <Dropdown.Item as="button">
+          
+                              <a target="_blank" rel="noopener noreferrer" onClick={handleAddNewImagesPropertyModal}>
+                                <i className="fi-image fs-base opacity-75 me-2"></i>
+                                Mettre plus d'images
+                              </a>
+                            
+                          </Dropdown.Item>
+
+                          <Dropdown.Item as="button">
+                           
+                              <a target="_blank" rel="noopener noreferrer" onClick={console.log("Mettre en avant")}>
+                                <i className="fi-flame fs-base opacity-75 me-2"></i>
+                                Mettre en avant
+                              </a>
+                            
+                          </Dropdown.Item>
+
+                          <Dropdown.Item as="button">
+
+                              <a target="_blank" rel="noopener noreferrer" onClick={handleEditPropertyModal}>
+                                <i className="fi-edit fs-base opacity-75 me-2"></i>
+                                Editer
+                              </a>
+                            
+                          </Dropdown.Item>
+
+                          <Dropdown.Item as="button">
+      
+                              <a target="_blank" rel="noopener noreferrer" onClick={handleDeletePropertyModal}>
+                                <i className="fi-trash fs-base opacity-75 me-2"></i>
+                                Rendre indisponible
+                              </a>
+                            
+                          </Dropdown.Item>
+
+                        </Dropdown.Menu>
+                      </Dropdown>
+                      )}
+                      
                     </div>
                   </div>
 

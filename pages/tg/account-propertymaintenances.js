@@ -11,16 +11,16 @@ import PropertyMaintenanceModal from '../../components/iacomponents/PropertyMain
 // Helper function to fetch Maintenances by statut for property owner
 async function fetchMaintenancesByStatut(statut, proprietaireID) {
   const dataAPIresponse = await fetch(
-    `${API_URL}?query={getMaintenancesByKeyWords(statut:${statut},proprietaire_id:${proprietaireID},orderBy:{order:DESC,column:ID}){id,statut,,montant_final,propriete{id,nuo}}}`
+    `${API_URL}?query={getMaintenancesByKeyWords(statut:${statut},proprietaire_id:${proprietaireID},orderBy:{order:DESC,column:ID}){id,statut,created_at,description,categorie,propriete{id,nuo}}}`
   );
   const responseData = await dataAPIresponse.json();
   return responseData.data ? responseData.data.getMaintenancesByKeyWords : [];
 }
 
 async function fetchRenterMaintenancesByStatut(statut, userID) {
-  const dataAPIresponse = await fetch(
-    `${API_URL}?query={getMaintenancesByKeyWords(statut:${statut},locataire_id:${userID},orderBy:{order:DESC,column:ID}){id,statut,montant_final,propriete{id,nuo}}}`
-  );
+  const fullURL = `${API_URL}?query={getMaintenancesByKeyWords(statut:${statut},user_id:${userID},orderBy:{order:DESC,column:ID}){id,statut,created_at,description,categorie,propriete{id,nuo}}}`;
+  const dataAPIresponse = await fetch(fullURL);
+  console.log("URL:", fullURL);
   const responseData = await dataAPIresponse.json();
   return responseData.data ? responseData.data.getMaintenancesByKeyWords : [];
 }
@@ -28,7 +28,7 @@ async function fetchRenterMaintenancesByStatut(statut, userID) {
 // Helper function to fetch Maintenances by statut for admin
 async function fetchMaintenancesByStatutByRole(statut) {
   const dataAPIresponse = await fetch(
-    `${API_URL}?query={getMaintenancesByKeyWords(statut:${statut},orderBy:{order:DESC,column:ID}){id,statut,montant_final,propriete{id,nuo}}}`
+    `${API_URL}?query={getMaintenancesByKeyWords(statut:${statut},orderBy:{order:DESC,column:ID}){id,statut,created_at,description,categorie,propriete{id,nuo}}}`
   );
   const responseData = await dataAPIresponse.json();
   return responseData.data ? responseData.data.getMaintenancesByKeyWords : [];
@@ -42,7 +42,7 @@ const PropertyMaintenancePage = ({ _newMaintenances, _acceptedMaintenances, _dec
 
   const { data: session } = useSession();
 
-  const roleId = Number(session && session.user.roleId);
+  const roleId = Number(session?.user?.roleId || 0);
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 992);
@@ -82,11 +82,11 @@ const PropertyMaintenancePage = ({ _newMaintenances, _acceptedMaintenances, _dec
   };
 
   return (
-    <RealEstatePageLayout pageTitle='Maintenances immobiliers' activeNav='Account' userLoggedIn>
+    <RealEstatePageLayout pageTitle='Maintenances immobilieres' activeNav='Account' userLoggedIn>
       {propertyMaintenanceShow && (
         <PropertyMaintenanceModal centered size='lg' show={propertyMaintenanceShow} onHide={() => setPropertyMaintenanceShow(false)} />
       )}
-      <RealEstateAccountLayout accountPageTitle='Maintenances immobiliers'>
+      <RealEstateAccountLayout accountPageTitle='Maintenances immobilieres'>
         <div className='d-flex align-items-center justify-content-between mb-3'>
           <h1 className='h2 mb-0'>Maintenances immobilieres</h1>
           {(roleId === 151 || roleId === 1200) && (

@@ -36,17 +36,10 @@ const AccountPropertiesPage = ({ _userProperties, _handledProjets, _handlingProj
   const handleRePostPropertyClose = () => setRePostPropertyShow(false);
   const handleRePostPropertyShow = () => setRePostPropertyShow(true);
 
-  const [newPropertyProjectsTab, setNewPropertyProjectsTab] = useState(false);
-  const handledClickNewPropertyProjectsTab = () => setNewPropertyProjectsTab(true);
-
   const [newImagesPropertyShow, setNewImagesPropertyShow] = useState(false);
   const handleAddNewImagesPropertyClose = () => setNewImagesPropertyShow(false);
   const handleAddNewImagesPropertyShow = () => setNewImagesPropertyShow(true);
 
-  const [handlingPropertyProjectsTab, setHandlingPropertyProjectsTab] = useState(false);
-  const handledClickHandlingPropertyProjectsTab = () => setHandlingPropertyProjectsTab(true);
-  const [handledPropertyProjectsTab, setHandledPropertyProjectsTab] = useState(false);
-  const handledClickHandledPropertyProjectsTab = () => setHandledPropertyProjectsTab(true);
   const [propertyModal, setPropertyModal] = useState({});
 
   const { data: session } = useSession();
@@ -92,7 +85,7 @@ const AccountPropertiesPage = ({ _userProperties, _handledProjets, _handlingProj
     e.preventDefault();
   }
   const columnStyle = {
-    height: '650px', // Adjust the height as needed
+    height: '800px', // Adjust the height as needed
     overflowY: 'scroll', // Enable vertical scrolling
   };
   return (
