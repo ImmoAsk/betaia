@@ -130,7 +130,7 @@ const EditPropertyModal = ({ property, onSwap, pillButtons, ...props }) => {
             {propertyModal ? (
               <EditProperty propriete={propertyModal} />
             ) : (
-              <p>Loading property details...</p>
+              <p>Chargement des données de la propriété...</p>
             )}
           </div>
         </div>

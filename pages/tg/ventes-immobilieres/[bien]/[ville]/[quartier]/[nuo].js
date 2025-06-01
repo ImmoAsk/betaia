@@ -12,8 +12,6 @@ import Tooltip from 'react-bootstrap/Tooltip'
 import Dropdown from 'react-bootstrap/Dropdown'
 import Badge from 'react-bootstrap/Badge'
 import Card from 'react-bootstrap/Card'
-import ImageLoader from '../../../../../../components/ImageLoader'
-import PropertyCard from '../../../../../../components/PropertyCard'
 import { Navigation, Pagination } from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import 'swiper/css'
@@ -21,8 +19,6 @@ import 'swiper/css/navigation'
 import 'swiper/css/pagination'
 import axios from 'axios'
 import { useEffect } from 'react'
-import Modal from 'react-bootstrap/Modal'
-import Form from 'react-bootstrap/Form'
 import getPropertyFullUrl from '../../../../../../utils/getPropertyFullURL'
 import getFirstImageArray from '../../../../../../utils/formatFirsImageArray'
 import buildPropertyBadge from '../../../../../../utils/buildPropertyBadge'
@@ -34,11 +30,14 @@ import RecommendPropertyList from '../../../../../../components/iacomponents/Rec
 import PayVisitModal from '../../../../../../components/iacomponents/PayVisitModal'
 import CheckAvailabilityModal from '../../../../../../components/iacomponents/CheckAvailabilityModal'
 import ImageComponent from "../../../../../../components/iacomponents/ImageComponent";
-import { getHumanReadablePrice } from '../../../../../../utils/generalUtils'
+import { canAccessMoreOptionsProperty, getHumanReadablePrice,createPropertyObject } from '../../../../../../utils/generalUtils'
 import DetailRealEstateAgency from '../../../../../../components/iacomponents/DetailRealEstateAgency'
 import { API_URL, BASE_URL } from '../../../../../../utils/settings'
 import PreSellingModal from '../../../../../../components/iacomponents/PreSelling/PreSellingModal'
 import Model3DList from '../../../../../../components/iacomponents/Model3D/Model3DList'
+import DeletePropertyModal from '../../../../../../components/iacomponents/DeleteProperty/DeletePropertyModal'
+import EditPropertyModal from '../../../../../../components/iacomponents/EditPropertyModal'
+import AddNewImagesModal from '../../../../../../components/iacomponents/AddNewImagesProperty/AddNewImagesModal'
 
 function SinglePropertyAltPage({ property }) {
   const { data: session } = useSession();
@@ -57,6 +56,18 @@ function SinglePropertyAltPage({ property }) {
   const [preventeShow, setPreventeShow] = useState(false);
   const handlePreventeClose = () => setPreventeShow(false);
   const handlePreventeShow = () => setPreventeShow(true);
+
+  const [newImagesPropertyShow, setNewImagesPropertyShow] = useState(false);
+  const handleAddNewImagesPropertyClose = () => setNewImagesPropertyShow(false);
+  const handleAddNewImagesPropertyShow = () => setNewImagesPropertyShow(true);
+
+  const [editPropertyShow, setEditPropertyShow] = useState(false);
+  const handleEditPropertyClose = () => setEditPropertyShow(false);
+  const handleEditPropertyShow = () => setEditPropertyShow(true);
+
+  const [deletePropertyShow, setDeletePropertyShow] = useState(false);
+  const handleDeletePropertyClose = () => setDeletePropertyShow(false);
+  const handleDeletePropertyShow = () => setDeletePropertyShow(true);
   // Sign up modal
   const [signupShow, setSignupShow] = useState(false)
   const handleSignupClose = () => setSignupShow(false)
@@ -122,7 +133,31 @@ function SinglePropertyAltPage({ property }) {
         }));
       });
   }
+  const handleAddNewImagesPropertyModal = () => {
+    //e.preventDefault();
+    if (session) {
+      handleAddNewImagesPropertyShow();
+    } else {
+      handleSignInToUp(e);
+    }
+  }
 
+  const handleEditPropertyModal = () => {
+    //e.preventDefault();
+    if (session) {
+      handleEditPropertyShow();
+    } else {
+      handleSignInToUp(e);
+    }
+  }
+  const handleDeletePropertyModal = () => {
+    //e.preventDefault();
+    if (session) {
+      handleDeletePropertyShow();
+    } else {
+      handleSignInToUp(e);
+    }
+  }
 
   useEffect(() => {
     getRecommendProperties();
@@ -217,42 +252,6 @@ function SinglePropertyAltPage({ property }) {
     )
   }
 
-  // Amenities collapse state
-  const [amenitiesOpen, setAmenitiesOpen] = useState(false)
-
-  // Amenities array
-  const amenities = [
-    [
-      { icon: 'fi-wifi', title: 'Free WiFi' },
-      { icon: 'fi-thermometer', title: 'Heating' },
-      { icon: 'fi-dish', title: 'Dishwasher' },
-      { icon: 'fi-parking', title: 'Parking place' },
-      { icon: 'fi-snowflake', title: 'Air conditioning' },
-      { icon: 'fi-iron', title: 'Iron' },
-      { icon: 'fi-tv', title: 'TV' },
-      { icon: 'fi-laundry', title: 'Laundry' },
-      { icon: 'fi-cctv', title: 'Security cameras' },
-      { icon: 'fi-no-smoke', title: 'No smocking' }
-    ],
-    [
-      { icon: 'fi-double-bed', title: 'Double bed' },
-      { icon: 'fi-bed', title: 'Single bed' }
-    ],
-    [
-      { icon: 'fi-swimming-pool', title: 'Zener Agoe 2 Lions' },
-      { icon: 'fi-cafe', title: 'Bonici Agoe 2 lions' },
-      { icon: 'fi-spa', title: 'Eglise Tout feu Tout flamme' },
-      { icon: 'fi-cocktail', title: 'Eglise Nouvelle' }
-    ]
-  ]
-
-  const infrastructures = [
-    { icon: 'fi-swimming-pool', title: 'Zener Agoe 2 Lions' },
-    { icon: 'fi-cafe', title: 'Bonici Agoe 2 lions' },
-    { icon: 'fi-spa', title: 'Eglise Tout feu Tout flamme' },
-    { icon: 'fi-cocktail', title: 'Eglise Nouvelle' }
-  ]
-
   { !property && <h4 className='mt-5 mb-lg-5 mb-4 pt-5 pb-lg-5'>Ce bien immobilier n'existe pas encore</h4> }
   //{isError && <h4 className='mt-5 mb-lg-5 mb-4 pt-5 pb-lg-5'>Une erreur: {error.message}</h4>}
 
@@ -294,6 +293,36 @@ function SinglePropertyAltPage({ property }) {
         onSwap={handlePreventeShow}
         property={property}
       />}
+
+      {
+        newImagesPropertyShow && <AddNewImagesModal
+          centered
+          size='lg'
+          show={newImagesPropertyShow}
+          onHide={handleAddNewImagesPropertyClose}
+          property={createPropertyObject(property)} // Pass the property object to the modal component as a propproperty}
+        />
+      }
+
+      {
+        editPropertyShow && <EditPropertyModal
+          centered
+          size='lg'
+          show={editPropertyShow}
+          onHide={handleEditPropertyClose}
+          property={createPropertyObject(property)}
+        />
+      }
+
+      {
+        deletePropertyShow && <DeletePropertyModal
+          centered
+          size='lg'
+          show={deletePropertyShow}
+          onHide={handleDeletePropertyClose}
+          property={createPropertyObject(property)}
+        />
+      }
       {/* Post content */}
       {property && (
         <Container as='section'>
@@ -450,6 +479,56 @@ function SinglePropertyAltPage({ property }) {
 
                         </Dropdown.Menu>
                       </Dropdown>
+                      {canAccessMoreOptionsProperty(session?.user, property.user.id) && (
+                        <Dropdown className="d-inline-block">
+                          <OverlayTrigger
+                            placement="top"
+                            overlay={<Tooltip>Gerer plus d'options</Tooltip>}
+                          >
+                            <Dropdown.Toggle variant="icon btn-light-primary btn-xs shadow-sm rounded-circle ms-2 mb-2">
+                              <i className="fi-dots-vertical"></i>
+                            </Dropdown.Toggle>
+                          </OverlayTrigger>
+                          <Dropdown.Menu align="end" className="my-1">
+                            <Dropdown.Item as="button">
+
+                              <a target="_blank" rel="noopener noreferrer" onClick={handleAddNewImagesPropertyModal}>
+                                <i className="fi-image fs-base opacity-75 me-2"></i>
+                                Mettre plus d'images
+                              </a>
+
+                            </Dropdown.Item>
+
+                            <Dropdown.Item as="button">
+
+                              <a target="_blank" rel="noopener noreferrer" onClick={console.log("Mettre en avant")}>
+                                <i className="fi-flame fs-base opacity-75 me-2"></i>
+                                Mettre en avant
+                              </a>
+
+                            </Dropdown.Item>
+
+                            <Dropdown.Item as="button">
+
+                              <a target="_blank" rel="noopener noreferrer" onClick={handleEditPropertyModal}>
+                                <i className="fi-edit fs-base opacity-75 me-2"></i>
+                                Editer
+                              </a>
+
+                            </Dropdown.Item>
+
+                            <Dropdown.Item as="button">
+
+                              <a target="_blank" rel="noopener noreferrer" onClick={handleDeletePropertyModal}>
+                                <i className="fi-trash fs-base opacity-75 me-2"></i>
+                                Rendre indisponible
+                              </a>
+
+                            </Dropdown.Item>
+
+                          </Dropdown.Menu>
+                        </Dropdown>
+                      )}
                     </div>
                   </div>
 

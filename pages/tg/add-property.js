@@ -25,7 +25,6 @@ import FilePondPluginImageResize from 'filepond-plugin-image-resize'
 import FilePondPluginImageTransform from 'filepond-plugin-image-transform'
 import Select from 'react-select';
 var FormData = require('form-data');
-var formData = new FormData();
 import 'filepond/dist/filepond.min.css'
 import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css'
 
@@ -48,10 +47,11 @@ const CustomMarker = dynamic(() =>
 import 'leaflet/dist/leaflet.css'
 import { useLandLord } from '../../customHooks/usePropertyOwner';
 import { format } from 'path';
-import { formatDistrictsOptions, formatPropertyOwners,formatRealEstateAgents, formatTownsOptions } from '../../utils/generalUtils';
+import { formatDistrictsOptions, formatPropertyOwners, formatRealEstateAgents, formatTownsOptions, get_title_description } from '../../utils/generalUtils';
 import { API_URL } from '../../utils/settings';
 import useListTowns from '../../customHooks/useListTowns';
 import useListQuarters from '../../customHooks/useListQuarters';
+import { get } from 'http';
 
 
 const AddPropertyPage = () => {
@@ -75,47 +75,6 @@ const AddPropertyPage = () => {
     }
   }, []); // Runs only once on component mount
 
-  // Preview modal
-  const [previewShow, setPreviewShow] = useState(false);
-  const handlePreviewClose = () => { setPreviewShow(false) };
-  const handlePreviewShow = () => { setPreviewShow(true) }
-  // Overview collapse state
-  const [overviewOpen, setOverviewOpen] = useState(false);
-
-  // Amenities collapse state
-  const [amenitiesOpen, setAmenitiesOpen] = useState(false)
-
-  // Amenities array
-  const amenitiesPreview = [
-    [
-      { icon: 'fi-wifi', title: 'Free WiFi' },
-      { icon: 'fi-thermometer', title: 'Heating' },
-      { icon: 'fi-dish', title: 'Dishwasher' },
-      { icon: 'fi-parking', title: 'Parking place' },
-      { icon: 'fi-snowflake', title: 'Air conditioning' },
-      { icon: 'fi-iron', title: 'Iron' },
-      { icon: 'fi-tv', title: 'TV' },
-      { icon: 'fi-laundry', title: 'Laundry' },
-      { icon: 'fi-cctv', title: 'Security cameras' }
-    ],
-    [
-      { icon: 'fi-no-smoke', title: 'No smocking' },
-      { icon: 'fi-pet', title: 'Cats' },
-      { icon: 'fi-swimming-pool', title: 'Swimming pool' },
-      { icon: 'fi-double-bed', title: 'Double bed' },
-      { icon: 'fi-bed', title: 'Single bed' }
-    ]
-  ]
-  // Anchor lnks
-  const anchors = [
-    { to: 'basic-info', label: 'Informations basiques', completed: true },
-    { to: 'location', label: 'Stuation géographique', completed: true },
-    { to: 'details', label: 'Détails sur le bien immobilier', completed: true },
-    { to: 'price', label: 'Tarification', completed: false },
-    { to: 'photos', label: 'Photos / video', completed: false },
-    { to: 'contacts', label: 'Conditions d\'accès', completed: true }
-  ]
-
 
   // Amenities (checkboxes)
   const amenities = [
@@ -135,12 +94,6 @@ const AddPropertyPage = () => {
     { value: 'Cameras de sécurités', checked: false }
   ]
 
-  // Pets (checkboxes)
-  const pets = [
-    { value: 'Cats allowed', checked: false },
-    { value: 'Dogs allowed', checked: false }
-  ]
-
   // Register Filepond plugins
   registerPlugin(
     FilePondPluginFileValidateType,
@@ -155,6 +108,7 @@ const AddPropertyPage = () => {
 
   // State declarations
   const [imagesProperty, setImagesProperty] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [propertyCreatedNotification, setPropertyCreatedNotification] = useState(null);
   // Form values
   const [propertyData, setPropertyData] = useState({
@@ -209,7 +163,7 @@ const AddPropertyPage = () => {
 
   // Use Form options
   const formOptions = { resolver: yupResolver(validationSchema) };
-  const { register, handleSubmit, setValue,formState } = useForm(formOptions);
+  const { register, handleSubmit, setValue, formState } = useForm(formOptions);
   const { errors } = formState;
   const get_property_usage = () => {
     let usage = 0;
@@ -267,6 +221,49 @@ const AddPropertyPage = () => {
     }
 
     return super_categorie;
+  };
+  const createPropertyData = () => {
+    const propertyData_one = {
+      piece: Number(propertyData.bedRooms),
+      salon: Number(propertyData.livingRooms),
+      pays: propertyData.country,
+      surface: Number(propertyData.area),
+      cout_mensuel: Number(propertyData.monthPrice),
+      cout_vente: Number(propertyData.buyPrice),
+      nuitee: Number(propertyData.dayPrice),
+      part_min_investissement: Number(propertyData.investmentPrice),
+      garage: Number(propertyData.parkings),
+      eau: getLabel(waterOptions, propertyData.water),
+      electricite: getLabel(electricityOptions, propertyData.electricity),
+      categorie: getLabel(propertyTypeOptions, propertyData.type),
+      offre: getLabel(propertyOfferOptions, propertyData.offer),
+      ville: getLabel(townList, propertyData.town),
+      quartier: getLabel(quarterList, propertyData.quarter),
+      adresse: propertyData.address,
+      lat_long: `${userLocation}`, // Static, should be dynamic if required
+      piscine: Number(propertyData.pool),
+      gardien_securite: Number(propertyData.security),
+      cuisine: getLabel(kitchenOptions, propertyData.kitchen),
+      jardin: Number(propertyData.garden),
+      menage: Number(propertyData.household),
+      etage: Number(propertyData.floor),
+      caution_avance: Number(propertyData.cautionGuarantee),
+      honoraire: Number(propertyData.honorary),
+      balcon: Number(propertyData.balcony),
+      terrasse_balcon: Number(propertyData.terraces),
+      cout_visite: Number(propertyData.visitRight),
+      wc_douche_interne: `${propertyData.inBathRooms}` || "1",
+      wc_douche_externe: `${propertyData.outBathRooms}` || "0",
+      conditions_access: propertyData.otherConditions,
+      est_present_bailleur: Number(propertyData.owner),
+      est_meuble: Number(propertyData.furnished),
+    };
+    return propertyData_one;
+  };
+
+  const getLabel = (options, value) => {
+    const match = options.find(o => o.value === value);
+    return match?.label || "";
   };
   const buildAppendMapFileUpload = (event) => {
     event.preventDefault();
@@ -358,6 +355,133 @@ const AddPropertyPage = () => {
     buildAppendMapFileUpload(event);
   };
 
+  // Function to generate description from property JSON
+  const generateDescription = async () => {
+    setLoading(true);
+    // Prepare GraphQL mutation for rent disponibilite
+    console.log("Before Mutation: ", createPropertyData());
+    const generate_description_data = {
+      query: `mutation GeneratePropertyDescription($input: GeneratePropertyDescriptionInput!) {
+        generateWithImmoAskIntuition(input: $input)
+      }`,
+      variables: {
+        input: {
+          description_actuelle: `${JSON.stringify(createPropertyData()).replace(/"/g, '\\"')}`,
+        },
+      },
+    };
+    //console.log("Before Mutation: ", generate_description_data);
+    try {
+      const response = await axios.post(API_URL, generate_description_data, {
+        headers: { "Content-Type": "application/json" },
+      });
+
+      // 1. Get the raw JSON string
+      //console.log("Response: ", response)
+      const raw = response.data?.data?.generateWithImmoAskIntuition;
+      console.log("Raw response: ", raw);
+      if (raw) {
+        try {
+          // 2. Parse the string as JSON
+          const parsed = JSON.parse(raw);
+          console.log("Parsed response: ", parsed);
+          // 3. Get the content field from the first choice
+          const content = parsed?.choices?.[0]?.message?.content;
+          console.log("Content: ", content);
+          // 4. Extract the JSON block from the markdown-style string
+          const jsonMatch = content?.match(/```json\s*([\s\S]*?)\s*```/);
+
+          if (jsonMatch && jsonMatch[1]) {
+            const contentJson = JSON.parse(jsonMatch[1]);
+
+            // 5. Get the description
+            const description = contentJson.description;
+            console.log("Extracted description:", description);
+
+            // Do what you need with it (e.g., update state)
+            setPropertyData(prev => ({
+              ...prev,
+              description
+            }));
+            setLoading(false);
+          } else {
+            console.error("Could not extract JSON from content.");
+          }
+        } catch (err) {
+          console.error("Parsing error:", err);
+        }
+      } else {
+        console.error("No GenerateWithImmoAskIntuition data found.");
+      }
+    } catch (error) {
+      console.error("Error during Generation:", error);
+    }
+    console.log("After Mutation: ", description);
+  };
+
+  // Function to refine the current description
+  const refineDescription = async () => {
+    //const description = propertyData.description || ''; // Use current description or empty string
+    setLoading(true);
+    // Prepare GraphQL mutation for rent disponibilite
+    const refine_description_data = {
+      query: `mutation RefinePropertyDescription($input: RefinePropertyDescriptionInput!) {
+        refineWithImmoAskIntuition(input: $input)
+      }`,
+      variables: {
+        input: {
+          description_actuelle: propertyData.description,
+        },
+      },
+    };
+    console.log("Before Mutation: ", refine_description_data);
+    try {
+      const response = await axios.post(API_URL, refine_description_data, {
+        headers: { "Content-Type": "application/json" },
+      });
+
+      // 1. Get the raw JSON string
+      //console.log("Response: ", response)
+      const raw = response.data?.data?.refineWithImmoAskIntuition;
+      console.log("Raw response: ", raw);
+      if (raw) {
+        try {
+          // 2. Parse the string as JSON
+          const parsed = JSON.parse(raw);
+          console.log("Parsed response: ", parsed);
+          // 3. Get the content field from the first choice
+          const content = parsed?.choices?.[0]?.message?.content;
+          console.log("Content: ", content);
+          // 4. Extract the JSON block from the markdown-style string
+          const jsonMatch = content?.match(/```json\s*([\s\S]*?)\s*```/);
+
+          if (jsonMatch && jsonMatch[1]) {
+            const contentJson = JSON.parse(jsonMatch[1]);
+
+            // 5. Get the description
+            const description = contentJson.description;
+            console.log("Extracted description:", description);
+
+            // Do what you need with it (e.g., update state)
+            setPropertyData(prev => ({
+              ...prev,
+              description
+            }));
+            setLoading(false);
+          } else {
+            console.error("Could not extract JSON from content.");
+          }
+        } catch (err) {
+          console.error("Parsing error:", err);
+        }
+      } else {
+        console.error("No refineWithImmoAskIntuition data found.");
+      }
+    } catch (error) {
+      console.error("Error during disponibilite:", error);
+    }
+    console.log("After Mutation: ", propertyData.description);
+  };
 
 
   const handleChange = (e) => {
@@ -405,22 +529,44 @@ const AddPropertyPage = () => {
     { value: '5', label: 'Mettre en investissement' }
   ];
 
+  const electricityOptions = [
+    { value: '', label: 'Choisir le type d\'electricite' },
+    { value: '0', label: 'Pas d\'electricite' },
+    { value: '1', label: 'CEET, Compteur commun' },
+    { value: '2', label: 'CEET, Compteur personnel' },
+  ];
+
+  const waterOptions = [
+    { value: '', label: 'Choisir le type d\'eau' },
+    { value: '0', label: 'Pas d\'eau a l\'interieur' },
+    { value: '1', label: 'TDE, Compteur commun' },
+    { value: '2', label: 'Forage, Compteur personnel' },
+    { value: '3', label: 'Forage, Compteur commun' },
+  ];
+
+  const kitchenOptions = [
+    { value: '', label: 'Choisir le type de cuisine' },
+    { value: '0', label: 'Pas de cuisine' },
+    { value: '1', label: 'Cuisine interne normale' },
+    { value: '2', label: 'Cuisine americaine' },
+    { value: '3', label: 'Cuisine externe normale' },
+    { value: '4', label: 'Cuisine interne normale' },
+  ];
+
   const propertyManagerOptions = [
     { value: `${session?.user?.id}`, label: 'Je suis le gestionnaire ou proprietaire' },
   ];
-  
-  const { status: villesStatus,data: villes } = useListTowns(228);
-  const { status: quartiersStatus,data: quartiers} = useListQuarters(Number(propertyData?.town));
+
+  const { status: villesStatus, data: villes } = useListTowns(228);
+  const { status: quartiersStatus, data: quartiers } = useListQuarters(Number(propertyData?.town));
 
   const { status, data: landlords1230, error, isFetching, isLoading, isError } = useLandLord(1230);
   const { status: status1232, data: landlords1232, error: error1232, isFetching: isFetching1232, isLoading: isLoading1232, isError: isError1232 } = useLandLord(1232);
-  const propertyOwners= formatPropertyOwners(landlords1230)
-  const realEstateAgents= formatRealEstateAgents(landlords1232)
+  const propertyOwners = formatPropertyOwners(landlords1230)
+  const realEstateAgents = formatRealEstateAgents(landlords1232)
   const townList = formatTownsOptions(villes)
   const quarterList = formatDistrictsOptions(quartiers)
   const propertyOwnerOptions = [...new Set([...realEstateAgents, ...propertyOwners])];
-
-
   // Get the selected option value from propertyData
   const propertyOwnerSelectedOption = propertyOwnerOptions.find((option) => option.value === propertyData?.user_id);
   const propertyTypeSelectedOption = propertyTypeOptions.find((option) => option.value === propertyData?.type);
@@ -428,6 +574,9 @@ const AddPropertyPage = () => {
 
   const townSelectedOption = townList.find((option) => option.value === propertyData?.town);
   const quarterSelectedOption = quarterList.find((option) => option.value === propertyData?.quarter);
+
+
+
   return (
     <RealEstatePageLayout
       pageTitle='Lister un bien immobilier'
@@ -584,7 +733,7 @@ const AddPropertyPage = () => {
                         className={`react-select-container ${errors.offer ? 'is-invalid' : ''}`}
                         classNamePrefix="react-select"
                       />
-                      
+
 
                       {errors.offer ? (
                         <Form.Control.Feedback type="invalid" tooltip>
@@ -687,15 +836,15 @@ const AddPropertyPage = () => {
                     </Form.Label>
 
                     <Select
-                        {...register('town')}
-                        name="town"
-                        value={townSelectedOption} // Pre-select based on propertyData
-                        onChange={(selected) => handleChange({ target: { name: 'town', value: selected?.value || '' } })}
-                        options={townList}
-                        placeholder="Preciser la ville"
-                        className={`react-select-container ${errors.offer ? 'is-invalid' : ''}`}
-                        classNamePrefix="react-select"
-                      />
+                      {...register('town')}
+                      name="town"
+                      value={townSelectedOption} // Pre-select based on propertyData
+                      onChange={(selected) => handleChange({ target: { name: 'town', value: selected?.value || '' } })}
+                      options={townList}
+                      placeholder="Preciser la ville"
+                      className={`react-select-container ${errors.offer ? 'is-invalid' : ''}`}
+                      classNamePrefix="react-select"
+                    />
 
                     {errors.town && (
                       <Form.Control.Feedback type="invalid" tooltip>
@@ -710,15 +859,15 @@ const AddPropertyPage = () => {
                     </Form.Label>
 
                     <Select
-                        {...register('quarter')}
-                        name="quarter"
-                        isDisabled={!propertyData.town}
-                        value={quarterSelectedOption} // Pre-select based on propertyData
-                        onChange={(selected) => handleChange({ target: { name: 'quarter', value: selected?.value || '' } })}
-                        options={quarterList}
-                        placeholder="Preciser le quartier"
-                        className={`react-select-container ${errors.offer ? 'is-invalid' : ''}`}
-                        classNamePrefix="react-select"
+                      {...register('quarter')}
+                      name="quarter"
+                      isDisabled={!propertyData.town}
+                      value={quarterSelectedOption} // Pre-select based on propertyData
+                      onChange={(selected) => handleChange({ target: { name: 'quarter', value: selected?.value || '' } })}
+                      options={quarterList}
+                      placeholder="Preciser le quartier"
+                      className={`react-select-container ${errors.offer ? 'is-invalid' : ''}`}
+                      classNamePrefix="react-select"
                     />
 
                     {errors.quarter && (
@@ -1063,18 +1212,28 @@ const AddPropertyPage = () => {
                   </Form.Group>
                 </>}
 
-                <Form.Group controlId='description'>
-                  <Form.Label className='pb-1 mb-2 d-block fw-bold'>Description</Form.Label>
+                <Form.Group controlId="description">
+                  <div className="d-flex justify-content-between align-items-center mb-2">
+                    <Form.Label className="fw-bold mb-0">Description</Form.Label>
+                    {session && session.user && (session.user.roleId === '1200') && (
+                      <div>
+                        <Button variant="outline-secondary" size="sm" className="me-2" onClick={refineDescription} disabled={loading}>Reformuler la description</Button>
+                        <Button variant="primary" size="sm" onClick={generateDescription} disabled={loading}>Generer la description</Button>
+                      </div>
+                    )
+                    }
+                  </div>
                   <Form.Control
                     {...register('description')}
-                    as='textarea'
+                    as="textarea"
                     rows={5}
-                    placeholder='Decrire le bien immobilier'
-                    name='description'
+                    placeholder="Décrire le bien immobilier"
+                    name="description"
                     value={propertyData.description}
                     required
-                    onChange={handleChange} />
-                  <Form.Text>1000 caractères aumoins</Form.Text>
+                    onChange={handleChange}
+                  />
+                  <Form.Text>1000 caractères au moins</Form.Text>
                 </Form.Group>
               </section>
 

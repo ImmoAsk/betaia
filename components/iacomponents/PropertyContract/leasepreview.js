@@ -12,7 +12,7 @@ export default function LeasePreview({ data, previewRef }) {
   return (
     <div ref={previewRef}>
       {/* Titre principal */}
-      <h2 className="text-center mb-4">Contrat de Bail {data.lease_type}</h2>
+      <h2 className="text-center mb-4">Contrat de Bail {data.lease_type=="1" ? "Résidentiel":"Commercial"}</h2>
 
       {/* Date de signature */}
       <p className="text-center">
@@ -62,7 +62,7 @@ export default function LeasePreview({ data, previewRef }) {
       <section className="mb-4">
         <h5><strong>Article 1 : OBJET</strong></h5>
         <p>
-          Le BAILLEUR loue au LOCATAIRE, à usage exclusivement résidentiel, les locaux
+          Le BAILLEUR loue au LOCATAIRE, à usage exclusivement {data.lease_type=="1" ? "résidentiel":"commercial"}, les locaux
           situés à <strong>{data.property_location}</strong>. Le locataire déclare
           avoir visité et accepté les lieux loués.
         </p>
@@ -88,8 +88,7 @@ export default function LeasePreview({ data, previewRef }) {
       <section className="mb-4">
         <h5><strong>Article 5 : LOYER</strong></h5>
         <p>
-          Le loyer est fixé à <strong>{parseInt(data.monthlyRent).toLocaleString()} francs CFA</strong>
-          par mois, payable <strong>trimestriellement, semestriellement ou annuellement</strong>,
+          Le loyer est fixé à <strong>{parseInt(data.monthlyRent).toLocaleString()} francs CFA</strong> par mois, payable <strong>trimestriellement, semestriellement ou annuellement</strong>,
           par tout moyen légal contre reçu valable.
         </p>
       </section>
@@ -101,8 +100,7 @@ export default function LeasePreview({ data, previewRef }) {
         <h5><strong>Article 6 : DÉPÔT DE GARANTIE</strong></h5>
         <p>
           Un dépôt de garantie de <strong>{depositAmount} francs CFA</strong> est exigé
-          lors de la signature. Ce dépôt sera restitué <strong>un (1) mois</strong>
-          après restitution des lieux, sous réserve des réparations éventuelles.
+          lors de la signature. Ce dépôt sera restitué <strong>un (1) mois</strong> après restitution des lieux, sous réserve des réparations éventuelles.
         </p>
       </section>
 

@@ -3,9 +3,6 @@ import buildPropertyBadge from "./buildPropertyBadge";
 import getFirstImageArray from "./formatFirsImageArray";
 import getPropertyFullUrl from "./getPropertyFullURL";
 import numeral from "numeral";
-import { usePropertiesBySuperCategory } from "../customHooks/realEstateHooks";
-import { title } from "process";
-
 const OFFER_MAP = { 1: "locations", 2: "achats", 3: "investissements", 4: "bails" };
 const CATEGORY_MAP = {
     1: "Villa",
@@ -272,6 +269,24 @@ function formatPropertyOwners(owners) {
     });
 }
 
+function formatLandlordTenants(tenants) {
+    if (!Array.isArray(tenants)) {
+        console.error('Invalid input: owners must be an array.');
+        return [];
+    }
+
+    return tenants.map((tenant) => {
+        return {
+            value: String(tenant.locataire?.id),
+            label: tenant.locataire?.name,
+            id: tenant.locataire?.id,
+            fullName: tenant.locataire?.name,
+            ownerEmail: tenant.locataire?.email,
+            phoneNumber: tenant.locataire?.phone,
+        };
+    });
+}
+
 function formatRealEstateAgents(owners) {
     if (!Array.isArray(owners)) {
         console.error('Invalid input: owners must be an array.');
@@ -375,5 +390,54 @@ function createNestedArray(inputArray, rows, cols) {
         Array.from({ length: cols }, () => (inputArray[index++]))
     );
 }
-export { createTop6PropertiesIn, formatLandlordPropertiesOptions,createCatalogTitle, formatDate, getHumanReadablePrice, formatDistrictsOptions, formatTownsOptions, buildPropertiesArray, replaceSpacesWithAny, getLastPage, createPropertyObject, capitalizeFirstLetter, replaceSpacesWithDots, toLowerCaseString, formatPropertyOwners, formatRealEstateAgents };
+
+function get_title_description(response) {
+    const raw = response.data.refineWithImmoAskIntuition;
+
+    // Step 1: Remove HTTP headers from the string
+    const [, body] = raw.split("\r\n\r\n"); // Discards the HTTP header part
+
+    // Step 2: Parse the JSON string from body
+    let parsedBody;
+    try {
+        parsedBody = JSON.parse(body);
+    } catch (e) {
+        console.error("Failed to parse body JSON:", e);
+    }
+
+    // Step 3: Get the content from the assistant's message
+    const messageContent = parsedBody?.choices?.[0]?.message?.content || "";
+
+    // Step 4: Extract the JSON block inside the markdown (```json\n...\n```)
+    const jsonBlockMatch = messageContent.match(/```json\n([\s\S]+?)\n```/);
+
+    if (!jsonBlockMatch) {
+        console.error("JSON block not found in assistant message");
+    }
+
+    let reformulationData;
+    try {
+        reformulationData = JSON.parse(jsonBlockMatch[1]); // Parse the extracted JSON string
+    } catch (e) {
+        console.error("Failed to parse reformulation JSON:", e);
+    }
+
+    // Step 5: Access titre and description
+    //const titre = reformulationData?.reformulation?.titre;
+    const description = reformulationData?.reformulation?.description;
+    return {description};
+   
+
+}
+
+function canAccessMoreOptionsProperty (user, propertyOwnerId)  {
+  if (!user) return false;
+
+  const isSuperAdmin = user.roleId === '1200'; // Assuming '1200' is the role ID for super admin
+  const isOwnerRole = ['1232', '1230'].includes(user.roleId);
+  const isOwner = user.id === propertyOwnerId;
+
+  return isSuperAdmin || (isOwnerRole && isOwner);
+};
+export { canAccessMoreOptionsProperty,get_title_description,createPropertyObject, createTop6PropertiesIn, formatLandlordTenants, formatLandlordPropertiesOptions, createCatalogTitle, formatDate, getHumanReadablePrice, formatDistrictsOptions, formatTownsOptions, buildPropertiesArray, replaceSpacesWithAny, getLastPage, capitalizeFirstLetter, replaceSpacesWithDots, toLowerCaseString, formatPropertyOwners, formatRealEstateAgents };
 
