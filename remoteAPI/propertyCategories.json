@@ -13,7 +13,7 @@
         "count": 2
       },
       {
-        "href": "/tg/catalog?categorie=5",
+        "href": "/tg/catalog?categorie=10",
         "media": "fi-shop",
         "title": "Appart. meublés",
         "count": 10
@@ -22,7 +22,7 @@
         "href": "/tg/catalog?categorie=15",
         "media": "fi-rent",
         "title": "Studios",
-        "count": 9
+        "count": 15
       },
       {
         "href": "/tg/catalog?categorie=7",
@@ -37,10 +37,10 @@
         "count": 37
       },
       {
-        "href": "/tg/catalog?categorie=19",
+        "href": "/tg/catalog?categorie=23",
         "media": "fi-house-chosen",
         "title": "Villas meublées",
-        "count": 5
+        "count": 23
       },
       {
         "href": "/tg/catalog?categorie=12",
@@ -67,10 +67,10 @@
         "count": 32
       },
       {
-        "href": "/tg/catalog?categorie=4",
+        "href": "/tg/catalog?categorie=17",
         "media": "fi-single-bed",
         "title": "Studios meublés",
-        "count": 1
+        "count": 2
       }
     ],
     [
@@ -107,8 +107,14 @@
       {
         "href": "/tg/catalog?categorie=27",
         "media": "fi-rent",
-        "title": "Chambres d'hôtels",
+        "title": "Chambres d'hôtes",
         "count": 17
+      },
+      {
+        "href": "/tg/catalog?categorie=24",
+        "media": "fi-single-bed",
+        "title": "Bureaux meublés",
+        "count": 8
       }
     ]
   ]

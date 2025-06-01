@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Card, Badge, Button } from 'react-bootstrap';
 import { API_URL } from '../../../utils/settings';
 import { formatDate } from '../../../utils/generalUtils';
+import { useSession } from 'next-auth/react';
 const getBadgeProps = (statut) => {
     switch (statut) {
         case 0:
@@ -79,14 +80,14 @@ const PropertyContract = ({ project }) => {
                     </div>
                     <h3 className="h6 card-title pt-1 mb-3">
                         <p className="text-nav text-decoration-none">
-                            Le contrat de bail de LOCATAIRE pour la propriété
-                            No. {project.propriete.nuo} est en cours de validation.
+                            Le contrat de bail {project.type_contrat==1 ? "résidentiel":"commercial"} de {project?.locataire?.name} pour la propriété
+                            No. {project?.propriete?.nuo} est en cours de lecture. Ce contrat debutera le {formatDate(project?.date_debut)}.
                         </p>
                     </h3>
                     <div className="fs-sm">
                         <span className="text-nowrap me-3">
                             <i className="fi-calendar text-muted me-1"></i>
-                            {formatDate(project.date_negociation)}
+                            {formatDate(project?.date_debut)}
                         </span>
                     </div>
 
