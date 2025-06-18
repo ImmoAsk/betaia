@@ -81,7 +81,7 @@ const useFilterSubmit = () => {
         query += `,caution_avance:\"${cautionAvance}\"`;
       }
       if (garage) {
-        query += `,garage:${garage}`;
+        query += `,garage:${Number(garage)}`;
       }
       /* if (amenities && amenities.length > 0) {
         query += `,amenities:[${amenities.map(a => `\"${a}\"`).join(',')}]`;

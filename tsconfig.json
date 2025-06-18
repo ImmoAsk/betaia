@@ -19,7 +19,7 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    "components/iacomponents/TenantPayment/emailTemplate.js"
+    "components/iacomponents/RentCollection/emailTemplate.js"
   ],
   "exclude": ["node_modules"]
 }
