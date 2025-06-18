@@ -4,14 +4,13 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import CloseButton from 'react-bootstrap/CloseButton';
 import CardProperty from './CardProperty';
-import Link from 'next/link';
 import { createPropertyObject } from '../../utils/buildPropertiesArray'
 import { useSession } from 'next-auth/react';
-import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import axios from 'axios';
 import { min } from 'moment'
 import { API_URL } from '../../utils/settings';
+import EmbedSigninForm from './EmbedSignIn/EmbedSigninForm';
 
 const CheckAvailabilityModal = ({ property, onSwap, pillButtons, ...props }) => {
   const [email, setEmail] = useState('');
@@ -24,7 +23,7 @@ const CheckAvailabilityModal = ({ property, onSwap, pillButtons, ...props }) => 
   const { data: session } = useSession();
 
   // Adjust validation logic based on session
-  const isFormValid = session ? true : (email && phone  && firstName);
+  const isFormValid = session && true ;
 
   // Form submission handler
   const handleSubmit = async (event) => {
@@ -104,63 +103,8 @@ const CheckAvailabilityModal = ({ property, onSwap, pillButtons, ...props }) => 
             <h3 className='h4'>
               Verification de disponibilité du bien immobilier N° {property.nuo}. Bonne chance !
             </h3>
-            {!session && <i>✨ Astuce : Créez votre compte <Link href='/signup-light'>
-              <a className='fs-sm'>ici</a>
-            </Link> pour ne plus à remplir votre nom, prénom, email et numéro de téléphone 📱 à chaque fois. 😊</i>}
-            <Form noValidate validated={validated} onSubmit={handleSubmit}>
-              {!session && (
-                <>
-                  <Form.Group className='mb-2'>
-                    <Form.Label>Numéro de téléphone</Form.Label>
-                    <PhoneInput
-                      country={'tg'}
-                      value={phone}
-                      onChange={(phone) => setPhone(phone)}
-                      enableSearch={true}
-                      inputProps={{
-                        name: 'phone',
-                        required: true,
-                        autoFocus: true,
-                        className: 'form-control w-100 form-control-lg',
-                      }}
-                    />
-                    <Form.Control.Feedback type="invalid">
-                      Veuillez saisir un numéro de téléphone valide.
-                    </Form.Control.Feedback>
-                  </Form.Group>
-
-                  <Form.Group controlId='si-email' className='mb-2'>
-                    <Form.Label>Votre email ?</Form.Label>
-                    <Form.Control
-                      type='email'
-                      name='email'
-                      placeholder='Saisir votre email'
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                    />
-                    <Form.Control.Feedback type="invalid">
-                      Veuillez saisir une adresse email valide.
-                    </Form.Control.Feedback>
-                  </Form.Group>
-
-                  <Form.Group controlId='si-firstname' className='mb-2'>
-                    <Form.Label>Votre prénom ?</Form.Label>
-                    <Form.Control
-                      type='text'
-                      name='firstname'
-                      placeholder='Saisir votre prénom'
-                      value={firstName}
-                      onChange={(e) => setFirstName(e.target.value)}
-                      required
-                    />
-                    <Form.Control.Feedback type="invalid">
-                      Veuillez saisir votre prénom.
-                    </Form.Control.Feedback>
-                  </Form.Group>
-                </>
-              )}
-
+            { session ? (
+              <Form noValidate validated={validated} onSubmit={handleSubmit}>
               <Button
                 type='submit'
                 disabled={!isFormValid}
@@ -171,6 +115,13 @@ const CheckAvailabilityModal = ({ property, onSwap, pillButtons, ...props }) => 
               </Button>
               {disponibiliteNotification && <div className="alert alert-success mt-3">{disponibiliteNotification}</div>}
             </Form>
+            ) : (
+
+              <>
+              <h5 className='h6 mb-3'>Connectez-vous pour vérifier la disponibilité</h5>
+              <EmbedSigninForm/>
+              </>
+            )}
           </div>
         </div>
       </Modal.Body>
