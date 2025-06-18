@@ -2,14 +2,14 @@ import { useState } from 'react'
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
-import Link from 'next/link';
 import CloseButton from 'react-bootstrap/CloseButton'
 import CardProperty from './CardProperty'
 import { createPropertyObject } from '../../utils/buildPropertiesArray'
-import { useSession } from 'next-auth/react';
-import PhoneInput from 'react-phone-input-2';
+import { useSession } from "next-auth/react"
 import 'react-phone-input-2/lib/style.css';
 import axios from 'axios';
+import EmbedSigninForm from './EmbedSignIn/EmbedSigninForm';
+import { API_URL } from '../../utils/settings';
 
 const RentNegociationModal = ({ property, onSwap, pillButtons, ...props }) => {
   const [email, setEmail] = useState('');
@@ -17,12 +17,13 @@ const RentNegociationModal = ({ property, onSwap, pillButtons, ...props }) => {
   const [offer, setOffer] = useState('');
   const [firstName, setFirstName] = useState('');
   const [validated, setValidated] = useState(false);
+  //const [csrfToken, setCsrfToken] = useState(null);
   const [negotiationNotification, setNegotiationNotification] = useState(null);
-
-  const { data: session } = useSession();
+  //const [providers, setProviders] = useState(null);
+  const { data: session, status } = useSession();
 
   // Adjust validation logic based on session
-  const isFormValid = session ? offer : (email && phone && offer && firstName);
+  const isFormValid = session && Number(offer) >= 1 ;
 
   // Form submission handler
   const handleSubmit = async (event) => {
@@ -66,7 +67,7 @@ const RentNegociationModal = ({ property, onSwap, pillButtons, ...props }) => {
     };
     console.log("Before Mutation: ", negotiation_data)
     try {
-      const response = await axios.post('https://immoaskbetaapi.omnisoft.africa/public/api/v2', negotiation_data, {
+      const response = await axios.post(API_URL, negotiation_data, {
         headers: { 'Content-Type': 'application/json' }
       });
 
@@ -92,7 +93,7 @@ const RentNegociationModal = ({ property, onSwap, pillButtons, ...props }) => {
         />
         <div className='row mx-0'>
           <div className='col-md-6 border-end-md p-4 p-sm-5'>
-            <h2 className='h3 mb-2 mb-sm-2'>Négociation de loyer</h2>
+            <h3 className='h4 mb-2 mb-sm-2'>Négociation de loyer</h3>
 
             <div className='d-flex align-items-center py-3 mb-3'>
               <CardProperty property={propertyCard} />
@@ -103,91 +104,46 @@ const RentNegociationModal = ({ property, onSwap, pillButtons, ...props }) => {
           </div>
 
           <div className='col-md-6 p-4 p-sm-5'>
-            <h3 className='h4'>
-              Vous êtes sur le point de négocier le loyer pour le bien immobilier N° {property.nuo}. Bonne chance !
-            </h3>
-            {!session && <i>✨ Astuce : Créez votre compte <Link href='/signup-light'>
-              <a className='fs-sm'>ici</a>
-            </Link> pour ne plus à remplir votre nom, prénom, email et numéro de téléphone 📱 à chaque fois. 😊</i>}
-            <Form noValidate validated={validated} onSubmit={handleSubmit}>
-              <Form.Group controlId='si-offer' className='mb-2'>
-                <Form.Label>Quelle est votre offre ?</Form.Label>
-                <Form.Control
-                  type='number'
-                  name='offer'
-                  required
-                  value={offer}
-                  placeholder='Saisir votre offre'
-                  onChange={(e) => setOffer(e.target.value)}
-                />
-                <Form.Control.Feedback type="invalid">
-                  Veuillez saisir une offre valide.
-                </Form.Control.Feedback>
-              </Form.Group>
+            <h4 className='h5'>
+              Vous êtes sur le point de négocier le loyer du bien immobilier N° {property.nuo} 
+            </h4>
+            {session && (
+              <Form noValidate validated={validated} onSubmit={handleSubmit}>
+                <Form.Group controlId='si-offer' className='mb-2'>
+                  <Form.Label>Quelle est votre offre ?</Form.Label>
+                  <Form.Control
+                    type='number'
+                    name='offer'
+                    required
+                    value={offer}
+                    placeholder='Saisir votre offre'
+                    onChange={(e) => setOffer(e.target.value)}
+                  />
+                  <Form.Control.Feedback type="invalid">
+                    Veuillez saisir une offre valide.
+                  </Form.Control.Feedback>
+                </Form.Group>
 
-              {!session && (
-                <>
-                  <Form.Group className='mb-2'>
-                    <Form.Label>Numéro de téléphone</Form.Label>
-                    <PhoneInput
-                      country={'tg'}
-                      value={phone}
-                      onChange={(phone) => setPhone(phone)}
-                      enableSearch={true}
-                      inputProps={{
-                        name: 'phone',
-                        required: true,
-                        autoFocus: true,
-                        className: 'form-control w-100 form-control-lg',
-                      }}
-                    />
-                    <Form.Control.Feedback type="invalid">
-                      Veuillez saisir un numéro de téléphone valide.
-                    </Form.Control.Feedback>
-                  </Form.Group>
+                <Button
+                  type='submit'
+                  disabled={!isFormValid}
+                  size='lg'
+                  variant={`primary ${pillButtons ? 'rounded-pill' : ''} w-100`}
+                >
+                  Négocier le loyer
+                </Button>
+                {negotiationNotification && <div className="alert alert-success mt-3">{negotiationNotification}</div>}
+              </Form>
+            )}
 
-                  <Form.Group controlId='si-email' className='mb-2'>
-                    <Form.Label>Votre email ?</Form.Label>
-                    <Form.Control
-                      type='email'
-                      name='email'
-                      placeholder='Saisir votre email'
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                    />
-                    <Form.Control.Feedback type="invalid">
-                      Veuillez saisir une adresse email valide.
-                    </Form.Control.Feedback>
-                  </Form.Group>
+             {!session && (
+              <>
+              <h5 className='h6 mb-3'>Connectez-vous pour négocier le loyer</h5>
+              <EmbedSigninForm/>
+              </>
+              
+            )}
 
-                  <Form.Group controlId='si-firstname' className='mb-2'>
-                    <Form.Label>Votre prénom ?</Form.Label>
-                    <Form.Control
-                      type='text'
-                      name='firstname'
-                      placeholder='Saisir votre prénom'
-                      value={firstName}
-                      onChange={(e) => setFirstName(e.target.value)}
-                      required
-                    />
-                    <Form.Control.Feedback type="invalid">
-                      Veuillez saisir votre prénom.
-                    </Form.Control.Feedback>
-                  </Form.Group>
-                </>
-              )}
-
-              <Button
-                type='submit'
-                disabled={!isFormValid}
-                size='lg'
-                variant={`primary ${pillButtons ? 'rounded-pill' : ''} w-100`}
-              >
-                Négocier le loyer
-              </Button>
-              {negotiationNotification && <div className="alert alert-success mt-3">{negotiationNotification}</div>}
-            </Form>
           </div>
         </div>
       </Modal.Body>

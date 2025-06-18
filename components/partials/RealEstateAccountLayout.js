@@ -292,7 +292,7 @@ const RealEstateAccountLayout = ({ accountPageTitle, children }) => {
                   >
                     Mot de passe &amp; Sécurité
                   </CardNav.Item>
-                  <CardNav.Item href='/signin-light' icon='fi-logout'>
+                  <CardNav.Item href='/api/auth/signout' icon='fi-logout'>
                     Se déconnecter
                   </CardNav.Item>
                 </CardNav>

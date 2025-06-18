@@ -14,6 +14,7 @@ import axios from 'axios';
 import moment from 'moment';
 import { now } from 'moment/moment'
 import { API_URL } from '../../utils/settings'
+import EmbedSigninForm from './EmbedSignIn/EmbedSigninForm'
 
 const PayVisitModal = ({ property, onSwap, pillButtons, ...props }) => {
   const [email, setEmail] = useState('');
@@ -42,9 +43,7 @@ const PayVisitModal = ({ property, onSwap, pillButtons, ...props }) => {
 };
  
   // Adjust validation based on session status
-  const isFormValid = session 
-    ? visitDate && hourVisit  // Only date and hour if session is valid
-    : email && phone && visitDate && hourVisit && firstName;  // Require all fields for non-session users
+  const isFormValid = session && visitDate && hourVisit 
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -110,8 +109,7 @@ const PayVisitModal = ({ property, onSwap, pillButtons, ...props }) => {
         />
         <div className='row mx-0'>
           <div className='col-md-6 border-end-md p-4 p-sm-5'>
-            <h2 className='h3 mb-2 mb-sm-2'>Visite d'un bien immobilier</h2>
-
+            <h3 className='h4 mb-2 mb-sm-2'>Visite d'un bien immobilier</h3>
             <div className='d-flex align-items-center py-3 mb-3'>
               <CardProperty property={propertyCard} />
             </div>
@@ -121,13 +119,11 @@ const PayVisitModal = ({ property, onSwap, pillButtons, ...props }) => {
           </div>
 
           <div className='col-md-6 p-4 p-sm-5'>
-            <h3 className='h4'>
+            <h4 className='h5'>
               Vous planifiez une visite pour le bien immobilier N° {property.nuo}.
-            </h3>
-            {!session && <i>✨ Astuce : Créez votre compte <Link href='/signup-light'>
-              <a className='fs-sm'>ici</a>
-            </Link> pour ne plus à remplir votre nom, prénom, email et numéro de téléphone 📱 à chaque fois. 😊</i>}
-            <Form noValidate validated={validated} onSubmit={handleSubmit}>
+            </h4>
+            {session && (
+              <Form noValidate validated={validated} onSubmit={handleSubmit}>
               <Form.Group controlId='si-offer' className='mb-2'>
                 <Form.Label>Date et Heure de visite ?</Form.Label>
                 <Form.Control
@@ -143,60 +139,6 @@ const PayVisitModal = ({ property, onSwap, pillButtons, ...props }) => {
                   Preciser une date svp.
                 </Form.Control.Feedback>
               </Form.Group>
-
-              {!session && (
-                <>
-                  <Form.Group className='mb-2'>
-                    <Form.Label>Numéro de téléphone</Form.Label>
-                    <PhoneInput
-                      country={'tg'}
-                      value={phone}
-                      onChange={(phone) => setPhone(phone)}
-                      enableSearch={true}
-                      inputProps={{
-                        name: 'phone',
-                        required: true,
-                        autoFocus: true,
-                        className: 'form-control w-100 form-control-lg',
-                      }}
-                    />
-                    <Form.Control.Feedback type="invalid">
-                      Veuillez saisir un numéro de téléphone valide.
-                    </Form.Control.Feedback>
-                  </Form.Group>
-
-                  <Form.Group controlId='si-email' className='mb-2'>
-                    <Form.Label>Votre email ?</Form.Label>
-                    <Form.Control
-                      type='email'
-                      name='email'
-                      placeholder='Saisir votre email'
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                    />
-                    <Form.Control.Feedback type="invalid">
-                      Veuillez saisir une adresse email valide.
-                    </Form.Control.Feedback>
-                  </Form.Group>
-
-                  <Form.Group controlId='si-firstname' className='mb-2'>
-                    <Form.Label>Votre prénom ?</Form.Label>
-                    <Form.Control
-                      type='text'
-                      name='firstname'
-                      placeholder='Saisir votre prénom'
-                      value={firstName}
-                      onChange={(e) => setFirstName(e.target.value)}
-                      required
-                    />
-                    <Form.Control.Feedback type="invalid">
-                      Veuillez saisir votre prénom.
-                    </Form.Control.Feedback>
-                  </Form.Group>
-                </>
-              )}
-
               <Button
                 type='submit'
                 disabled={!isFormValid}
@@ -207,6 +149,13 @@ const PayVisitModal = ({ property, onSwap, pillButtons, ...props }) => {
               </Button>
               {visiteNotification && <div className="alert alert-success mt-3">{visiteNotification}</div>}
             </Form>
+            )}
+            {!session && (
+              <>
+              <h5 className='h6 mb-3'>Connectez-vous pour planifier une visite</h5>
+              <EmbedSigninForm/>
+              </>
+            )}
           </div>
         </div>
       </Modal.Body>
