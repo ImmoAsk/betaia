@@ -1,7 +1,7 @@
 import { Resend } from "resend";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { EmailTemplate } from "../../components/iacomponents/TenantPayment/emailTemplate";
+import { EmailTemplate } from "../../components/iacomponents/RentCollection/emailTemplate";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -42,7 +42,7 @@ export default async function handler(req, res) {
     const result = await resend.emails.send({
       from: "contact@immoask.com",
       to: tenant_email,
-      subject: "Rent Payment Receipt Confirmation",
+      subject: "Confirmation de paiement de loyer",
       html,
       attachments: [
         {
@@ -53,7 +53,7 @@ export default async function handler(req, res) {
       ],
     });
 
-    return res.status(200).json({ message: "Email sent", result });
+    return res.status(200).json({ message: "Email envoyé avec succès", result });
   } catch (error) {
     console.error("Error sending email:", error);
     return res.status(500).json({ error: "Failed to send email" });

@@ -4,31 +4,32 @@ import RealEstateAccountLayout from "../../components/partials/RealEstateAccount
 import Nav from "react-bootstrap/Nav";
 import { useSession, getSession } from "next-auth/react";
 import { Row, Col } from "react-bootstrap";
-import CheckingAvailabilityList from "../../components/iacomponents/CheckingAvailability/CheckingAvailabilityList";
-import PaymentLinkModal from "../../components/iacomponents/TenantPayment/PaymentLinkModal";
-import AddManualReceipt from "../../components/iacomponents/TenantPayment/AddReceiptModal";
+import PaymentLinkModal from "../../components/iacomponents/RentCollection/PaymentLinkModal";
+import AddManualReceipt from "../../components/iacomponents/RentCollection/ManualReceiptModal";
+import { API_URL } from "../../utils/settings";
+import RentCollectionList from "../../components/iacomponents/RentCollection/RentCollectionList";
 
 // Helper function to fetch negotiations by statut for property owner
 async function fetchNegotiationsByStatut(statut, proprietaireID) {
   const dataAPIresponse = await fetch(
-    `https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getVerificationsDisponibiliteByKeyWords(statut:${statut},proprietaire_id:${proprietaireID},orderBy:{order:DESC,column:ID}){id,verificateur{name,id},created_at,statut,telephone_verificateur,fullname_verificateur,propriete{id,nuo}}}`
+    `${API_URL}?query={getEncaissementsByKeyWords(statut:${statut},user_id:${proprietaireID},orderBy:{order:DESC,column:ID}){id,verificateur{name,id},created_at,statut,telephone_verificateur,fullname_verificateur,propriete{id,nuo}}}`
   );
   const responseData = await dataAPIresponse.json();
   console.log(responseData);
   return responseData.data
-    ? responseData.data.getVerificationsDisponibiliteByKeyWords
+    ? responseData.data.getEncaissementsByKeyWords
     : [];
 }
 
 // Helper function to fetch negotiations by statut for admin
 async function fetchNegotiationsByStatutByRole(statut) {
   const dataAPIresponse = await fetch(
-    `https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getVerificationsDisponibiliteByKeyWords(statut:${statut},orderBy:{order:DESC,column:ID}){id,verificateur{name,id},created_at,statut,telephone_verificateur,fullname_verificateur,propriete{id,nuo}}}`
+    `${API_URL}?query={getEncaissementsByKeyWords(statut:${statut},orderBy:{order:DESC,column:ID}){id,verificateur{name,id},created_at,statut,telephone_verificateur,fullname_verificateur,propriete{id,nuo}}}`
   );
   const responseData = await dataAPIresponse.json();
   console.log(responseData);
   return responseData.data
-    ? responseData.data.getVerificationsDisponibiliteByKeyWords
+    ? responseData.data.getEncaissementsByKeyWords
     : [];
 }
 
@@ -74,7 +75,7 @@ const AccountTenantPaymentsPage = ({
   };
 
   const getHandledNegotiationRentOffers = (projects) => {
-    return <CheckingAvailabilityList projects={projects} />;
+    return <RentCollectionList rents_collection={projects} />;
   };
 
   const columnStyle = {
