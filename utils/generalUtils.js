@@ -207,6 +207,15 @@ const formatDate = (dateString) => {
     const options = { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' };
     return date.toLocaleDateString('fr-FR', options);
 };
+
+function formatDateToFrenchMonthYear(dateString) {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  return new Intl.DateTimeFormat('fr-FR', {
+    year: 'numeric',
+    month: 'long',
+  }).format(date);
+}
 function createPropertyObject(property) {
     //console.log("Before Processing - Property: ", property);
 
@@ -439,5 +448,5 @@ function canAccessMoreOptionsProperty (user, propertyOwnerId)  {
 
   return isSuperAdmin || (isOwnerRole && isOwner);
 };
-export { canAccessMoreOptionsProperty,get_title_description,createPropertyObject, createTop6PropertiesIn, formatLandlordTenants, formatLandlordPropertiesOptions, createCatalogTitle, formatDate, getHumanReadablePrice, formatDistrictsOptions, formatTownsOptions, buildPropertiesArray, replaceSpacesWithAny, getLastPage, capitalizeFirstLetter, replaceSpacesWithDots, toLowerCaseString, formatPropertyOwners, formatRealEstateAgents };
+export { formatDateToFrenchMonthYear,canAccessMoreOptionsProperty,get_title_description,createPropertyObject, createTop6PropertiesIn, formatLandlordTenants, formatLandlordPropertiesOptions, createCatalogTitle, formatDate, getHumanReadablePrice, formatDistrictsOptions, formatTownsOptions, buildPropertiesArray, replaceSpacesWithAny, getLastPage, capitalizeFirstLetter, replaceSpacesWithDots, toLowerCaseString, formatPropertyOwners, formatRealEstateAgents };
 
