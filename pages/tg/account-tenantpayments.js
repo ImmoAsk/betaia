@@ -11,8 +11,9 @@ import RentCollectionList from "../../components/iacomponents/RentCollection/Ren
 
 // Helper function to fetch negotiations by statut for property owner
 async function fetchNegotiationsByStatut(statut, proprietaireID) {
+  console.log("URL", `${API_URL}?query={getEncaissementsByKeyWords(statut:${statut},user_id:${proprietaireID},orderBy:{order:DESC,column:ID}){id,encaisseur{name,id},date_encaissement,statut,date_paiement,type_encaissement,contrat{id,locataire{id,name}}}}`)
   const dataAPIresponse = await fetch(
-    `${API_URL}?query={getEncaissementsByKeyWords(statut:${statut},user_id:${proprietaireID},orderBy:{order:DESC,column:ID}){id,verificateur{name,id},created_at,statut,telephone_verificateur,fullname_verificateur,propriete{id,nuo}}}`
+    `${API_URL}?query={getEncaissementsByKeyWords(statut:${statut},user_id:${proprietaireID},orderBy:{order:DESC,column:ID}){id,encaisseur{name,id},date_encaissement,statut,date_paiement,type_encaissement,contrat{id,locataire{id,name}}}}`
   );
   const responseData = await dataAPIresponse.json();
   console.log(responseData);
@@ -23,9 +24,8 @@ async function fetchNegotiationsByStatut(statut, proprietaireID) {
 
 // Helper function to fetch negotiations by statut for admin
 async function fetchNegotiationsByStatutByRole(statut) {
-  const dataAPIresponse = await fetch(
-    `${API_URL}?query={getEncaissementsByKeyWords(statut:${statut},orderBy:{order:DESC,column:ID}){id,verificateur{name,id},created_at,statut,telephone_verificateur,fullname_verificateur,propriete{id,nuo}}}`
-  );
+  const endpoint = `${API_URL}?query={getEncaissementsByKeyWords(statut:${statut},orderBy:{order:DESC,column:ID}){id,encaisseur{name,id},date_encaissement,statut,date_paiement,type_encaissement,contrat{id,propriete{nuo,categorie_propriete{denomination}},montant_final,locataire{id,name}}}}`
+  const dataAPIresponse = await fetch(endpoint);
   const responseData = await dataAPIresponse.json();
   console.log(responseData);
   return responseData.data
@@ -131,19 +131,19 @@ const AccountTenantPaymentsPage = ({
           <Nav.Item as={Col}>
             <Nav.Link eventKey="published">
               <i className="fi-file fs-base me-2"></i>
-              Paiements de loyers en cours
+              Encaissements de loyers non faits
             </Nav.Link>
           </Nav.Item>
           <Nav.Item as={Col}>
             <Nav.Link eventKey="accepted">
               <i className="fi-archive fs-base me-2"></i>
-              Paiements de loyers partiels
+              Encaissements de loyers partiels
             </Nav.Link>
           </Nav.Item>
           <Nav.Item as={Col}>
             <Nav.Link eventKey="declined">
               <i className="fi-file-clean fs-base me-2"></i>
-              Paiements de loyers complets
+              Encaissements de loyers complets
             </Nav.Link>
           </Nav.Item>
         </Nav>
