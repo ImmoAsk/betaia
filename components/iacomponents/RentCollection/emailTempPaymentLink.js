@@ -9,33 +9,37 @@ export const EmailTemplatePaymentLink = ({
   landlordNumber,
 }) => {
   return (
-    <div style={{ fontFamily: "Arial, sans-serif", lineHeight: 1.6 }}>
-      <div style={{ textAlign: "center" }}>
+    <div style={{ fontFamily: "Helvetica, Arial, sans-serif", fontSize: "16px", color: "#333", padding: "20px", backgroundColor: "#f9f9f9" }}>
+      <div style={{ textAlign: "center", marginBottom: "30px" }}>
         <img
           src="https://immoask.com/images/logo/immoask-logo-cropped.png"
-          alt="Logo"
-          style={{ width: "200px", height: "auto", marginBottom: "20px" }}
+          alt="ImmoAsk Logo"
+          style={{ width: "180px", height: "auto" }}
         />
       </div>
-      <h5 className="mb-3">Payment Link</h5>
-      <p>
-        <strong>Dear {tenantName},</strong>
-      </p>
-      <p>
-        This is a reminder that an amount of <strong>{rentAmount} CFA </strong>
-        is due for the following month(s) <strong>{dueDate}</strong>
-      </p>
 
-      <p>
-        Kindly visit the app to settle these arrears or contact your landlord,{" "}
-        <strong>{landlordName}</strong> on <strong>{landlordNumber}</strong>
-      </p>
+      <div style={{ backgroundColor: "#ffffff", padding: "30px", borderRadius: "8px", boxShadow: "0 0 10px rgba(0,0,0,0.05)" }}>
+        <h2 style={{ color: "#222", marginBottom: "20px" }}>Lien de Paiement - ImmoAsk</h2>
 
-      <p>Thank you.</p>
-      <br />
-      <p>
-        — {landlordName} - {landlordAddress}
-      </p>
+        <p><strong>Bonjour {tenantName},</strong></p>
+
+        <p>
+          Ceci est un rappel que la somme de <strong>{rentAmount} FCFA</strong> est due pour le(s) mois suivant(s) :
+          <strong> {dueDate}</strong>.
+        </p>
+
+        <p>
+          Merci de bien vouloir vous rendre sur l'application pour régler votre loyer, ou contacter votre bailleur,
+          <strong> {landlordName}</strong>, au <strong>{landlordNumber}</strong>.
+        </p>
+
+        <p>Nous vous remercions pour votre confiance.</p>
+
+        <br />
+        <p style={{ fontStyle: "italic", color: "#555" }}>
+          — {landlordName}, {landlordAddress}
+        </p>
+      </div>
     </div>
   );
 };
