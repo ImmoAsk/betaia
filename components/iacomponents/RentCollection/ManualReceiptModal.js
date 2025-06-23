@@ -265,7 +265,7 @@ export default function ManualReceiptModal() {
 
                 {formData.contracts !== "" && landlord_contracts[parseInt(formData.contracts, 10)] && (
                   <div className="mt-4 d-flex gap-3">
-                    <Card style={{ width: "45%", height: "50vh" }}>
+                    <Card>
                       {/* <Card.Img
                         variant="top"
                         src={formData.property_image}

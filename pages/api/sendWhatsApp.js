@@ -15,11 +15,11 @@ export default async function handler(req, res) {
   const rentAmount = parseFloat(property_rent || 0);
   const totalAmount = rentAmount * dates.filter((d) => d.value).length;
 
-  const message = `Dear ${tenant_fullname}, your rent for ${formattedDates} is due. Total: ${totalAmount} CFA. Please log in to immoask.com to pay.`;
+  const message = `Cher(e) ${tenant_fullname}, votre loyer pour ${formattedDates} est dû. Total: ${totalAmount} CFA. Veuillez vous connecter à immoask.com pour payer.`;
 
   try {
     const response = await axios.post(
-      `https://graph.facebook.com/v19.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`,
+      `https://graph.facebook.com/v22.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`,
       {
         messaging_product: "whatsapp",
         to: tenant_phoneNumber,
@@ -35,7 +35,7 @@ export default async function handler(req, res) {
         },
       }
     );
-
+    console.log("WhatsApp API Response:", response.data);
     return res.status(200).json({ success: true, data: response.data });
   } catch (error) {
     console.error("WhatsApp API Error:", error.response?.data || error.message);

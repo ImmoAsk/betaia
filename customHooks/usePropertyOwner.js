@@ -36,7 +36,7 @@ function useLandlordContract(landlord_id) {
   return useQuery(["contracts", landlord_id], async () => {
     const query = `
       {
-        getContractsByKeyWords(proprietaire_id: ${Number(landlord_id)}, statut: 2) {
+        getContractsByKeyWords(proprietaire_id: ${Number(landlord_id)}, statut: 1) {
           id
           date_debut
           date_fin

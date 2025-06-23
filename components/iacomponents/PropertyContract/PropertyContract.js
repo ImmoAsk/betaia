@@ -79,10 +79,18 @@ const PropertyContract = ({ project }) => {
                         </div>
                     </div>
                     <h3 className="h6 card-title pt-1 mb-3">
-                        <p className="text-nav text-decoration-none">
+                        {project?.statut === 0 && (<p className="text-nav text-decoration-none">
                             Le contrat de bail {project.type_contrat==1 ? "résidentiel":"commercial"} de {project?.locataire?.name} pour la propriété
                             No. {project?.propriete?.nuo} est en cours de lecture. Ce contrat debutera le {formatDate(project?.date_debut)}.
-                        </p>
+                        </p>)}
+                        {project?.statut === 1 && (<p className="text-nav text-decoration-none">
+                            Le contrat de bail {project.type_contrat==1 ? "résidentiel":"commercial"} de {project?.locataire?.name} pour la propriété
+                            No. {project?.propriete?.nuo} est en cours d'execution. Ce contrat a commencé le {formatDate(project?.date_debut)}.
+                        </p>)}
+                        {project?.statut === 2 && (<p className="text-nav text-decoration-none">
+                            Le contrat de bail {project.type_contrat==1 ? "résidentiel":"commercial"} de {project?.locataire?.name} pour la propriété
+                            No. {project?.propriete?.nuo} a expiré. Ce contrat a commencé le {formatDate(project?.date_debut)}.
+                        </p>)}
                     </h3>
                     <div className="fs-sm">
                         <span className="text-nowrap me-3">
@@ -92,7 +100,7 @@ const PropertyContract = ({ project }) => {
                     </div>
 
                     {/* Show Accept and Decline buttons when project.statut === 0 */}
-                    {(role === '1230' || role === '1200') && project.statut === 0 && (
+                    {(role === '151' || role === '1200') && project.statut === 0 && (
                     <div className="d-flex justify-content-center mt-3">
                         <button
                             className="btn btn-outline-secondary me-2 flex-grow-1"
