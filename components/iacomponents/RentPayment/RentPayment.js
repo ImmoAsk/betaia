@@ -53,7 +53,7 @@ const updateNegotiation = async ({ negociationOffer, statut }) => {
     }
 };
 
-const RentCollection = ({ rent_collection }) => {
+const RentPayment = ({ rent_collection }) => {
     //   const { text, variant } = getBadgeProps(rent_collection?.statut);
     const { data: session } = useSession();
     const role = session?.user?.roleId;
@@ -87,69 +87,32 @@ const RentCollection = ({ rent_collection }) => {
     return (
         <div className="card-hover">
             <Card key={rent_collection.id} className="mb-3 shadow-sm">
-                {/* <Card.Header className="d-flex align-items-center gap-2 bg-light">
-                    <img
-                        src={rent_collection.property.image_url}
-                        alt={rent_collection.property.title}
-                        style={{
-                            width: 32,
-                            height: 32,
-                            objectFit: "cover",
-                            borderRadius: 4,
-                        }}
-                    />
-                    <span className="fw-bold">{rent_collection.property.title}</span>
-                </Card.Header> */}
                 {rent_collection.statut === 0 && (
                     <Card.Body>
-                        Le locataire {rent_collection?.contrat?.locataire?.name} de {rent_collection?.contrat?.propriete?.categorie_propriete?.denomination} No. {rent_collection?.contrat?.propriete?.nuo} <strong>doit payer</strong>  {rent_collection?.contrat?.montant_final} XOF pour le loyer du {formatDateToFrenchMonthYear(rent_collection?.date_paiement)} ce {formatDate(rent_collection?.date_encaissement)}
+                        Le locataire {rent_collection?.contrat?.locataire?.name} de {rent_collection?.contrat?.propriete?.categorie_propriete?.denomination} No. {rent_collection?.contrat?.propriete?.nuo} <strong>doit payer</strong>  {rent_collection?.contrat?.montant_final} XOF pour le loyer du {formatDateToFrenchMonthYear(rent_collection?.date_transaction)} au plus tard le {formatDate(rent_collection?.date_transaction)}.
                     </Card.Body>
                 )}
 
                 {rent_collection.statut === 1 && (
                     <Card.Body>
-                        Le locataire {rent_collection?.contrat?.locataire?.name} de {rent_collection?.contrat?.propriete?.categorie_propriete?.denomination} No. {rent_collection?.contrat?.propriete?.nuo} <strong>a paye partiellement</strong> a paye partiellement {rent_collection?.contrat?.montant_final} XOF pour le loyer du {formatDateToFrenchMonthYear(rent_collection?.date_paiement)} ce {formatDate(rent_collection?.date_encaissement)}
+                        Le locataire {rent_collection?.contrat?.locataire?.name} de {rent_collection?.contrat?.propriete?.categorie_propriete?.denomination} No. {rent_collection?.contrat?.propriete?.nuo} <strong>a paye partiellement</strong> {rent_collection?.contrat?.montant_final} XOF pour le loyer du {formatDateToFrenchMonthYear(rent_collection?.date_paiement)} ce {formatDate(rent_collection?.date_transaction)}. Il reste un montant de <strong>{rent_collection?.contrat?.montant_final - rent_collection?.montant} XOF</strong> à payer.
                     </Card.Body>
                 )}
 
                 {rent_collection.statut === 2 && (
                     <Card.Body>
-                        Le locataire {rent_collection?.contrat?.locataire?.name} de {rent_collection?.contrat?.propriete?.categorie_propriete?.denomination} No. {rent_collection?.contrat?.propriete?.nuo} <strong>a paye totalement</strong> {rent_collection?.contrat?.montant_final} XOF pour le loyer du {formatDateToFrenchMonthYear(rent_collection?.date_paiement)} ce {formatDate(rent_collection?.date_encaissement)}
+                        Le locataire <strong>{rent_collection?.contrat?.locataire?.name}</strong> du <strong>{rent_collection?.contrat?.propriete?.categorie_propriete?.denomination} N° {rent_collection?.contrat?.propriete?.nuo}</strong> a <strong>entièrement réglé</strong> la somme de <strong>{rent_collection?.contrat?.montant_final} XOF</strong> au titre du loyer du mois de <strong>{formatDateToFrenchMonthYear(rent_collection?.date_transaction)}</strong>, le <strong>{formatDate(rent_collection?.date_transaction)}</strong>.
                     </Card.Body>
                 )}
 
-                {role === "1200" && rent_collection.statut === 0 && (
+                 {role === "151" && rent_collection.statut === 0 && (
                     <Card.Footer className="d-flex justify-content-center mt-3">
                         <Button
                             variant="outline-primary"
                             className="me-2 flex-grow-1"
                             onClick={handleDecline}
                         >
-                            Envoyer un rappel
-                        </Button>
-                    </Card.Footer>
-                )}
-
-                {role === "1200" && rent_collection.statut === 1 && (
-                    <Card.Footer className="d-flex justify-content-center mt-3">
-                        <Button
-                            variant="outline-primary"
-                            className="me-2 flex-grow-1"
-                            onClick={handleDecline}
-                        >
-                            Envoyer un rappel
-                        </Button>
-                    </Card.Footer>
-                )}
-
-                {role === "1200" && rent_collection.statut === 2 && (
-                    <Card.Footer className="d-flex justify-content-center mt-3">
-                        <Button
-                            variant="outline-primary"
-                            className="me-2 flex-grow-1"
-                            onClick={handleDecline}
-                        >
-                            Voir le reçu
+                            Proceder au paiement
                         </Button>
                     </Card.Footer>
                 )}
@@ -158,4 +121,4 @@ const RentCollection = ({ rent_collection }) => {
     );
 };
 
-export default RentCollection;
+export default RentPayment;
