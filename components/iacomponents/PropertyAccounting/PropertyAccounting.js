@@ -90,7 +90,7 @@ const PropertyAccounting = ({ rent_collection }) => {
                 {rent_collection.type_mouvement === "entree" && rent_collection.source_mouvement === "loyer" && (
                     <Card.Body>
                         Revenus locatifs de {rent_collection?.montant} XOF collectés pour la location du bien
-                        ({rent_collection?.contrat?.propriete?.categorie_propriete?.denomination} No. {rent_collection?.contrat?.propriete?.nuo}), enregistrés le {formatDate(rent_collection?.created_at)}.
+                        ({rent_collection?.contrat?.propriete?.categorie_propriete?.denomination} No. {rent_collection?.contrat?.propriete?.nuo}) loué par {rent_collection?.contrat?.locataire?.name}, enregistrés le {formatDate(rent_collection?.created_at)}.
                     </Card.Body>
                 )}
 
