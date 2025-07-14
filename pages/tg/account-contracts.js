@@ -104,7 +104,7 @@ const PropertyContractPage = ({ _newContracts, _acceptedContracts, _declinedCont
           <Nav.Item as={Col}>
             <Nav.Link eventKey='published'>
               <i className='fi-file fs-base me-2'></i>
-              Nouvels contrats
+              Nouveaux contrats
             </Nav.Link>
           </Nav.Item>
           <Nav.Item as={Col}>

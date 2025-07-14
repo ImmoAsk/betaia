@@ -6,6 +6,7 @@ import { useSession, getSession } from 'next-auth/react';
 import { Row, Col } from 'react-bootstrap';
 import PropertyAccountingList from '../../components/iacomponents/PropertyAccounting/PropertyAccountingList';
 import { API_URL } from '../../utils/settings';
+import ManualExitMovementModal from '../../components/iacomponents/PropertyAccounting/ManualExitMovementModal';
 
 // Helper function to fetch negotiations by statut for property owner
 // Fetch accounting movements by type for a specific property owner
@@ -22,6 +23,7 @@ async function fetchAccountingMovementsByTypeForOwner(typeMouvement, proprietair
           created_at
           statut
           montant
+          recu
           type_mouvement
           source_mouvement
           contrat {
@@ -36,7 +38,7 @@ async function fetchAccountingMovementsByTypeForOwner(typeMouvement, proprietair
         }
       }
     `;
-    
+
     const response = await fetch(`${API_URL}?query=${encodeURIComponent(query)}`);
     console.log("Fetching accounting movements for owner:", response.url);
     const json = await response.json();
@@ -62,6 +64,7 @@ async function fetchAccountingMovementsByTypeForAdmin(typeMouvement) {
           created_at
           statut
           montant
+          recu
           type_mouvement
           source_mouvement
           contrat {
@@ -141,6 +144,14 @@ const PropertyAccountingPage = ({ _newNegotiations, _acceptedNegotiations, _decl
       <RealEstateAccountLayout accountPageTitle='Comptabilité des biens immobiliers'>
         <div className='d-flex align-items-center justify-content-between mb-3'>
           <h1 className='h2 mb-0'>Comptabilité des biens immobiliers</h1>
+          { session?.user?.roleId === '1200' && (
+            <div className="d-flex align-items-right">
+            <ManualExitMovementModal />
+
+          </div>
+          )}
+          
+
         </div>
         <p className='pt-1 mb-4'>
           Consulter ici tous les mouvements d'entrées(revenu locatif, retour sur investissement) et de sorties(maintenances, entretiens, assistance) des biens immobiliers en gestion.
@@ -185,7 +196,7 @@ const PropertyAccountingPage = ({ _newNegotiations, _acceptedNegotiations, _decl
                   {getHandledNegotiationRentOffers(_declinedNegotiations)}
                 </Col>
               )}
-              
+
             </>
           ) : (
             <>
