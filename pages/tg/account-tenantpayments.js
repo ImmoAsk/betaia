@@ -97,24 +97,8 @@ const AccountTenantPaymentsPage = ({
         <div className="d-flex align-items-center justify-content-between mb-3">
           <h1 className="h2 mb-0">Etat d'encaissements de loyers</h1>
           <div className="d-flex align-items-right">
-            {/* <a
-              href="#"
-              className="fw-bold text-decoration-none"
-              onClick={handleEditPropertyModal}
-            >
-              <i className="fi-cash mt-n1 me-2"></i>
-              Ajouter un encaissement
-            </a> */}
             <AddManualReceipt />
             <span className="mx-2">|</span>
-            {/* <a
-              href="#"
-              className="fw-bold text-decoration-none"
-              onClick={handleEditPropertyModal}
-            >
-              <i className="fi-link mt-n1 me-2"></i>
-              Creer un lien de paiement
-            </a> */}
             <PaymentLinkModal />
           </div>
         </div>
