@@ -39,6 +39,7 @@ import { API_URL, BASE_URL, IMAGE_URL } from "../../../../../../utils/settings";
 import AddNewImagesModal from "../../../../../../components/iacomponents/AddNewImagesProperty/AddNewImagesModal";
 import DeletePropertyModal from "../../../../../../components/iacomponents/DeleteProperty/DeletePropertyModal";
 import EditPropertyModal from "../../../../../../components/iacomponents/EditPropertyModal";
+import RePostPropertyModal from "../../../../../../components/iacomponents/RePost/RePostPropertyModal";
 
 function SinglePropertyAltPage({ property }) {
   // Sign in modal
@@ -81,6 +82,10 @@ function SinglePropertyAltPage({ property }) {
   const [deletePropertyShow, setDeletePropertyShow] = useState(false);
   const handleDeletePropertyClose = () => setDeletePropertyShow(false);
   const handleDeletePropertyShow = () => setDeletePropertyShow(true);
+
+  const [repostPropertyShow, setRepostPropertyRepostShow] = useState(false);
+  const handlePropertyRepostClose = () => setRepostPropertyRepostShow(false);
+  const handlePropertyRepostShow = () => setRepostPropertyRepostShow(true);
   // Swap modals
   const handleSignInToUp = (e) => {
     e.preventDefault();
@@ -212,6 +217,15 @@ function SinglePropertyAltPage({ property }) {
     //e.preventDefault();
     if (session) {
       handleDeletePropertyShow();
+    } else {
+      handleSignInToUp(e);
+    }
+  }
+
+   const handlePropertyRepostModal = () => {
+    //e.preventDefault();
+    if (session) {
+      handlePropertyRepostShow();
     } else {
       handleSignInToUp(e);
     }
@@ -377,6 +391,16 @@ function SinglePropertyAltPage({ property }) {
           size='lg'
           show={deletePropertyShow}
           onHide={handleDeletePropertyClose}
+          property={createPropertyObject(property)}
+        />
+      }
+
+      {
+        repostPropertyShow && <RePostPropertyModal
+          centered
+          size='lg'
+          show={repostPropertyShow}
+          onHide={handlePropertyRepostClose}
           property={createPropertyObject(property)}
         />
       }
@@ -637,6 +661,15 @@ function SinglePropertyAltPage({ property }) {
                               <a target="_blank" rel="noopener noreferrer" onClick={handleDeletePropertyModal}>
                                 <i className="fi-trash fs-base opacity-75 me-2"></i>
                                 Rendre indisponible
+                              </a>
+                            
+                          </Dropdown.Item>
+
+                          <Dropdown.Item as="button">
+      
+                              <a target="_blank" rel="noopener noreferrer" onClick={handlePropertyRepostModal}>
+                                <i className="fi-trash fs-base opacity-75 me-2"></i>
+                                Remettre en location ou vente
                               </a>
                             
                           </Dropdown.Item>

@@ -279,6 +279,13 @@ const RealEstateAccountLayout = ({ accountPageTitle, children }) => {
                     Adresses des propriétés
                   </CardNav.Item> */}
                   <CardNav.Item
+                    href='/tg/settings'
+                    icon='fi-settings'
+                    active={accountPageTitle === 'Paramètres' ? true : false}
+                  >
+                    Paramètres 
+                  </CardNav.Item>
+                  <CardNav.Item
                     href='/tg/account-info'
                     icon='fi-user'
                     active={accountPageTitle === 'Informations personnelles' ? true : false}

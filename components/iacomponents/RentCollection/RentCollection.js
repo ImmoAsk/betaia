@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Card, ListGroup, Badge, Button } from "react-bootstrap";
-import { API_URL } from "../../../utils/settings";
+import { API_URL, IMAGE_URL } from "../../../utils/settings";
 import { formatDate, formatDateToFrenchMonthYear } from "../../../utils/generalUtils";
 import { useSession } from "next-auth/react";
 
@@ -53,6 +53,23 @@ const updateNegotiation = async ({ negociationOffer, statut }) => {
     }
 };
 
+const renderRentCollectionLink = () => {
+    if (rent_collection.type_mouvement === "sortie" && rent_collection.recu && role === "1200") {
+        return (
+            <Card.Footer>
+                <a
+                    href={`${IMAGE_URL}/recus_encaissements/${rent_collection.recu}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn btn-outline-primary btn-sm w-100"
+                >
+                    Voir le reçu
+                </a>
+            </Card.Footer>
+        );
+    }
+    return null;
+};
 const RentCollection = ({ rent_collection }) => {
     //   const { text, variant } = getBadgeProps(rent_collection?.statut);
     const { data: session } = useSession();
@@ -87,34 +104,21 @@ const RentCollection = ({ rent_collection }) => {
     return (
         <div className="card-hover">
             <Card key={rent_collection.id} className="mb-3 shadow-sm">
-                {/* <Card.Header className="d-flex align-items-center gap-2 bg-light">
-                    <img
-                        src={rent_collection.property.image_url}
-                        alt={rent_collection.property.title}
-                        style={{
-                            width: 32,
-                            height: 32,
-                            objectFit: "cover",
-                            borderRadius: 4,
-                        }}
-                    />
-                    <span className="fw-bold">{rent_collection.property.title}</span>
-                </Card.Header> */}
                 {rent_collection.statut === 0 && (
                     <Card.Body>
-                        Le locataire {rent_collection?.contrat?.locataire?.name} de {rent_collection?.contrat?.propriete?.categorie_propriete?.denomination} No. {rent_collection?.contrat?.propriete?.nuo} <strong>doit payer</strong>  {rent_collection?.contrat?.montant_final} XOF pour le loyer du {formatDateToFrenchMonthYear(rent_collection?.date_paiement)} ce {formatDate(rent_collection?.date_encaissement)}
+                        Le locataire {rent_collection?.contrat?.locataire?.name} de {rent_collection?.contrat?.propriete?.categorie_propriete?.denomination} No. {rent_collection?.contrat?.propriete?.nuo} <strong>doit payer</strong>  {rent_collection?.contrat?.montant_final} XOF pour le loyer du {formatDateToFrenchMonthYear(rent_collection?.date_paiement)} ce {formatDate(rent_collection?.date_paiement)}.
                     </Card.Body>
                 )}
 
                 {rent_collection.statut === 1 && (
                     <Card.Body>
-                        Le locataire {rent_collection?.contrat?.locataire?.name} de {rent_collection?.contrat?.propriete?.categorie_propriete?.denomination} No. {rent_collection?.contrat?.propriete?.nuo} <strong>a paye partiellement</strong> a paye partiellement {rent_collection?.contrat?.montant_final} XOF pour le loyer du {formatDateToFrenchMonthYear(rent_collection?.date_paiement)} ce {formatDate(rent_collection?.date_encaissement)}
+                        Le locataire {rent_collection?.contrat?.locataire?.name} de {rent_collection?.contrat?.propriete?.categorie_propriete?.denomination} No. {rent_collection?.contrat?.propriete?.nuo} <strong>a paye partiellement</strong> a paye partiellement {rent_collection?.contrat?.montant_final} XOF pour le loyer du {formatDateToFrenchMonthYear(rent_collection?.date_paiement)} ce {formatDate(rent_collection?.date_paiement)}
                     </Card.Body>
                 )}
 
                 {rent_collection.statut === 2 && (
                     <Card.Body>
-                        Le locataire {rent_collection?.contrat?.locataire?.name} de {rent_collection?.contrat?.propriete?.categorie_propriete?.denomination} No. {rent_collection?.contrat?.propriete?.nuo} <strong>a paye totalement</strong> {rent_collection?.contrat?.montant_final} XOF pour le loyer du {formatDateToFrenchMonthYear(rent_collection?.date_paiement)} ce {formatDate(rent_collection?.date_encaissement)}
+                        Le locataire {rent_collection?.contrat?.locataire?.name} de {rent_collection?.contrat?.propriete?.categorie_propriete?.denomination} No. {rent_collection?.contrat?.propriete?.nuo} <strong>a paye totalement</strong> {rent_collection?.contrat?.montant_final} XOF pour le loyer du {formatDateToFrenchMonthYear(rent_collection?.date_paiement)} ce {formatDate(rent_collection?.date_paiement)}
                     </Card.Body>
                 )}
 
@@ -143,14 +147,15 @@ const RentCollection = ({ rent_collection }) => {
                 )}
 
                 {role === "1200" && rent_collection.statut === 2 && (
-                    <Card.Footer className="d-flex justify-content-center mt-3">
-                        <Button
-                            variant="outline-primary"
-                            className="me-2 flex-grow-1"
-                            onClick={handleDecline}
+                    <Card.Footer>
+                        <a
+                            href={`${IMAGE_URL}/recus_encaissements/${rent_collection.recu}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="btn btn-outline-primary btn-sm w-100"
                         >
                             Voir le reçu
-                        </Button>
+                        </a>
                     </Card.Footer>
                 )}
             </Card>
