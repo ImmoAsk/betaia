@@ -36,7 +36,6 @@ import { getHumanReadablePrice } from '../../utils/generalUtils'
 import { API_URL } from '../../utils/settings'
 import SuperCategoryProperties from '../../components/iacomponents/SuperCategoryList/SuperCategoryProperties'
 import ImageSized from '../../components/iacomponents/ImageSized'
-import RealEstateSearchBar from '../../components/iacomponents/RealEstateSearchBar'
 const HomePage = () => {
 
   const router = useRouter();
@@ -73,7 +72,7 @@ const HomePage = () => {
 
     axios.get(`${API_URL}?query={get5Properties(orderBy:{column:NUO,order:DESC},limit:5){surface,badge_propriete{badge{badge_name,badge_image}},nuitee,id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination,minus_denomination},visuels{uri,position}}}`).
       then((res) => {
-        setRealTimeProperties(res.data.data.get5Properties.map((property) => {
+        setRealTimeProperties(res.data?.data?.get5Properties.map((property) => {
           //const { status, data:badges_property, error, isFetching,isLoading,isError }  = usePropertyBadges(property.id);
           return {
             href: getPropertyFullUrl(property.pays.code, property.offre.denomination, property.categorie_propriete.denomination, property.ville.denomination, property.quartier.minus_denomination, property.nuo),

@@ -1,7 +1,7 @@
 import { Resend } from "resend";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { EmailTemplate } from "../../components/iacomponents/RentCollection/emailTemplate";
+import { MouvementSortieEmailTemplate } from "../../components/iacomponents/Emails/MouvementSortieEmailTemplate";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -16,6 +16,8 @@ export default async function handler(req, res) {
     tenant_email,
     landlord_fullname,
     landlord_address,
+    montant_mouvement,
+    source_mouvement,
     fileName,
     fileBase64,
     fileType,
@@ -31,18 +33,20 @@ export default async function handler(req, res) {
 
   try {
     const html = renderToStaticMarkup(
-      <EmailTemplate
-        tenantName={tenant_fullname}
+      <MouvementSortieEmailTemplate
+        tenantName={landlord_fullname}
         receiptDates={formattedDates(dates)}
-        landlordName={landlord_fullname}
+        landlordName={"ImmoAsk"}
         landlordAddress={landlord_address}
+        source_mouvement={source_mouvement}
+        montant_mouvement={montant_mouvement} // Assuming montant_mouvement is not provided in
       />
     );
 
     const result = await resend.emails.send({
       from: "contact@immoask.com",
       to: tenant_email,
-      subject: "Confirmation de paiement de loyer",
+      subject: "Enregistrement de mouvement de sortie",
       html,
       attachments: [
         {

@@ -4,31 +4,32 @@ import RealEstateAccountLayout from "../../components/partials/RealEstateAccount
 import Nav from "react-bootstrap/Nav";
 import { useSession, getSession } from "next-auth/react";
 import { Row, Col } from "react-bootstrap";
-import CheckingAvailabilityList from "../../components/iacomponents/CheckingAvailability/CheckingAvailabilityList";
-import PaymentLinkModal from "../../components/iacomponents/TenantPayment/PaymentLinkModal";
-import AddManualReceipt from "../../components/iacomponents/TenantPayment/AddReceiptModal";
+import PaymentLinkModal from "../../components/iacomponents/RentCollection/PaymentLinkModal";
+import AddManualReceipt from "../../components/iacomponents/RentCollection/ManualReceiptModal";
+import { API_URL } from "../../utils/settings";
+import RentCollectionList from "../../components/iacomponents/RentCollection/RentCollectionList";
 
 // Helper function to fetch negotiations by statut for property owner
 async function fetchNegotiationsByStatut(statut, proprietaireID) {
+  console.log("URL", `${API_URL}?query={getEncaissementsByKeyWords(statut:${statut},user_id:${proprietaireID},orderBy:{order:DESC,column:ID}){id,encaisseur{name,id},date_encaissement,recu,statut,date_paiement,type_encaissement,contrat{id,locataire{id,name}}}}`)
   const dataAPIresponse = await fetch(
-    `https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getVerificationsDisponibiliteByKeyWords(statut:${statut},proprietaire_id:${proprietaireID},orderBy:{order:DESC,column:ID}){id,verificateur{name,id},created_at,statut,telephone_verificateur,fullname_verificateur,propriete{id,nuo}}}`
+    `${API_URL}?query={getEncaissementsByKeyWords(statut:${statut},user_id:${proprietaireID},orderBy:{order:DESC,column:ID}){id,encaisseur{name,id},date_encaissement,recu,statut,date_paiement,type_encaissement,contrat{id,locataire{id,name}}}}`
   );
   const responseData = await dataAPIresponse.json();
   console.log(responseData);
   return responseData.data
-    ? responseData.data.getVerificationsDisponibiliteByKeyWords
+    ? responseData.data.getEncaissementsByKeyWords
     : [];
 }
 
 // Helper function to fetch negotiations by statut for admin
 async function fetchNegotiationsByStatutByRole(statut) {
-  const dataAPIresponse = await fetch(
-    `https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getVerificationsDisponibiliteByKeyWords(statut:${statut},orderBy:{order:DESC,column:ID}){id,verificateur{name,id},created_at,statut,telephone_verificateur,fullname_verificateur,propriete{id,nuo}}}`
-  );
+  const endpoint = `${API_URL}?query={getEncaissementsByKeyWords(statut:${statut},orderBy:{order:DESC,column:ID}){id,encaisseur{name,id},date_encaissement,statut,date_paiement,recu,type_encaissement,contrat{id,propriete{nuo,categorie_propriete{denomination}},montant_final,locataire{id,name}}}}`
+  const dataAPIresponse = await fetch(endpoint);
   const responseData = await dataAPIresponse.json();
   console.log(responseData);
   return responseData.data
-    ? responseData.data.getVerificationsDisponibiliteByKeyWords
+    ? responseData.data.getEncaissementsByKeyWords
     : [];
 }
 
@@ -74,7 +75,7 @@ const AccountTenantPaymentsPage = ({
   };
 
   const getHandledNegotiationRentOffers = (projects) => {
-    return <CheckingAvailabilityList projects={projects} />;
+    return <RentCollectionList rents_collection={projects} />;
   };
 
   const columnStyle = {
@@ -96,24 +97,8 @@ const AccountTenantPaymentsPage = ({
         <div className="d-flex align-items-center justify-content-between mb-3">
           <h1 className="h2 mb-0">Etat d'encaissements de loyers</h1>
           <div className="d-flex align-items-right">
-            {/* <a
-              href="#"
-              className="fw-bold text-decoration-none"
-              onClick={handleEditPropertyModal}
-            >
-              <i className="fi-cash mt-n1 me-2"></i>
-              Ajouter un encaissement
-            </a> */}
             <AddManualReceipt />
             <span className="mx-2">|</span>
-            {/* <a
-              href="#"
-              className="fw-bold text-decoration-none"
-              onClick={handleEditPropertyModal}
-            >
-              <i className="fi-link mt-n1 me-2"></i>
-              Creer un lien de paiement
-            </a> */}
             <PaymentLinkModal />
           </div>
         </div>
@@ -130,19 +115,19 @@ const AccountTenantPaymentsPage = ({
           <Nav.Item as={Col}>
             <Nav.Link eventKey="published">
               <i className="fi-file fs-base me-2"></i>
-              Paiements de loyers en cours
+              Encaissements de loyers non faits
             </Nav.Link>
           </Nav.Item>
           <Nav.Item as={Col}>
             <Nav.Link eventKey="accepted">
               <i className="fi-archive fs-base me-2"></i>
-              Paiements de loyers partiels
+              Encaissements de loyers partiels
             </Nav.Link>
           </Nav.Item>
           <Nav.Item as={Col}>
             <Nav.Link eventKey="declined">
               <i className="fi-file-clean fs-base me-2"></i>
-              Paiements de loyers complets
+              Encaissements de loyers complets
             </Nav.Link>
           </Nav.Item>
         </Nav>

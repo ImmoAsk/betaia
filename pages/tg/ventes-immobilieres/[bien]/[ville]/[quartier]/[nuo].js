@@ -38,7 +38,7 @@ import Model3DList from '../../../../../../components/iacomponents/Model3D/Model
 import DeletePropertyModal from '../../../../../../components/iacomponents/DeleteProperty/DeletePropertyModal'
 import EditPropertyModal from '../../../../../../components/iacomponents/EditPropertyModal'
 import AddNewImagesModal from '../../../../../../components/iacomponents/AddNewImagesProperty/AddNewImagesModal'
-
+import RePostPropertyModal from "../../../../../../components/iacomponents/RePost/RePostPropertyModal";
 function SinglePropertyAltPage({ property }) {
   const { data: session } = useSession();
   const router = useRouter()
@@ -73,6 +73,9 @@ function SinglePropertyAltPage({ property }) {
   const handleSignupClose = () => setSignupShow(false)
   const handleSignupShow = () => setSignupShow(true)
 
+  const [repostPropertyShow, setRepostPropertyRepostShow] = useState(false);
+  const handlePropertyRepostClose = () => setRepostPropertyRepostShow(false);
+  const handlePropertyRepostShow = () => setRepostPropertyRepostShow(true);
 
 
 
@@ -154,6 +157,14 @@ function SinglePropertyAltPage({ property }) {
     //e.preventDefault();
     if (session) {
       handleDeletePropertyShow();
+    } else {
+      handleSignInToUp(e);
+    }
+  }
+  const handlePropertyRepostModal = () => {
+    //e.preventDefault();
+    if (session) {
+      handlePropertyRepostShow();
     } else {
       handleSignInToUp(e);
     }
@@ -320,6 +331,16 @@ function SinglePropertyAltPage({ property }) {
           size='lg'
           show={deletePropertyShow}
           onHide={handleDeletePropertyClose}
+          property={createPropertyObject(property)}
+        />
+      }
+
+      {
+        repostPropertyShow && <RePostPropertyModal
+          centered
+          size='lg'
+          show={repostPropertyShow}
+          onHide={handlePropertyRepostClose}
           property={createPropertyObject(property)}
         />
       }
@@ -525,6 +546,14 @@ function SinglePropertyAltPage({ property }) {
                               </a>
 
                             </Dropdown.Item>
+                            <Dropdown.Item as="button">
+      
+                              <a target="_blank" rel="noopener noreferrer" onClick={handlePropertyRepostModal}>
+                                <i className="fi-trash fs-base opacity-75 me-2"></i>
+                                Remettre en location ou vente
+                              </a>
+                            
+                          </Dropdown.Item>
 
                           </Dropdown.Menu>
                         </Dropdown>

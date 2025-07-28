@@ -1,7 +1,7 @@
 import { Resend } from "resend";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { EmailTemplatePaymentLink } from "../../components/iacomponents/TenantPayment/emailTempPaymentLink";
+import { EmailTemplatePaymentLink } from "../../components/iacomponents/RentCollection/emailTempPaymentLink";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 

@@ -89,7 +89,7 @@ const PropertyMaintenancePage = ({ _newMaintenances, _acceptedMaintenances, _dec
       <RealEstateAccountLayout accountPageTitle='Maintenances immobilieres'>
         <div className='d-flex align-items-center justify-content-between mb-3'>
           <h1 className='h2 mb-0'>Maintenances immobilieres</h1>
-          {(roleId === 151 || roleId === 1200) && (
+          {(roleId === 151 || roleId === 1200 || roleId === 1230) && (
             <div className='d-flex align-items-right'>
               <a href='#' className='fw-bold text-decoration-none' onClick={createPropertyMaintenanceModal}>
                 <i className='fi-cash mt-n1 me-2'></i>
