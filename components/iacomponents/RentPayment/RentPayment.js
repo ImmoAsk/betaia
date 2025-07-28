@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Card, ListGroup, Badge, Button } from "react-bootstrap";
-import { API_URL } from "../../../utils/settings";
+import { API_URL, IMAGE_URL } from "../../../utils/settings";
 import { formatDate, formatDateToFrenchMonthYear } from "../../../utils/generalUtils";
 import { useSession } from "next-auth/react";
 
@@ -105,7 +105,7 @@ const RentPayment = ({ rent_collection }) => {
                     </Card.Body>
                 )}
 
-                 {role === "151" && rent_collection.statut === 0 && (
+                {role === "151" && rent_collection.statut === 0 && (
                     <Card.Footer className="d-flex justify-content-center mt-3">
                         <Button
                             variant="outline-primary"
@@ -114,6 +114,19 @@ const RentPayment = ({ rent_collection }) => {
                         >
                             Proceder au paiement
                         </Button>
+                    </Card.Footer>
+                )}
+
+                {rent_collection.statut === 2 && (
+                    <Card.Footer>
+                        <a
+                            href={`${IMAGE_URL}/recus_encaissements/${rent_collection.recu}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="btn btn-outline-primary btn-sm w-100"
+                        >
+                            Voir le reçu
+                        </a>
                     </Card.Footer>
                 )}
             </Card>

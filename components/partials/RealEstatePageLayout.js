@@ -107,13 +107,13 @@ const RealEstatePageLayout = (props) => {
 
   const displayCreationAccountButton = () => {
     return (
-      <Link href="/signup-light" passHref>
+      <Link href="/auth/signin" passHref>
         <Button
           size="sm"
           variant="outline-primary d-none d-lg-block order-lg-3"
         >
           <i className="fi-user me-2"></i>
-          Créer votre compte
+          Se connecter | Créer un compte
         </Button>
       </Link>
     );
@@ -328,6 +328,13 @@ const RealEstatePageLayout = (props) => {
                         );
                       }
                     })}
+
+                  <Link href="/tg/settings" passHref>
+                    <Dropdown.Item>
+                      <i className="fi-settings opacity-60 me-2"></i>
+                      Paramètres
+                    </Dropdown.Item>
+                  </Link>
                   <Link href="/tg/account-info" passHref>
                     <Dropdown.Item>
                       <i className="fi-user opacity-60 me-2"></i>
@@ -370,7 +377,7 @@ const RealEstatePageLayout = (props) => {
               >
                 <i className="fi-building me-2"></i>
                 Lister{" "}
-                <span className="d-none d-sm-inline">votre immeuble</span>
+                <span className="d-none d-sm-inline">un immeuble</span>
               </Button>
             </Link>
 
