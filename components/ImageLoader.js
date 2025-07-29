@@ -79,7 +79,7 @@ const ImageLoader = ({
       alt={alt}
       placeholder={placeholder === false ? 'empty' : 'blur'}
       blurDataURL={`data:image/svg+xml;base64,${toBase64(shimmer(width, height))}`}
-      unoptimized={true} // disables Vercel's automatic optimization
+      unoptimized={true}
     />
   );
 };

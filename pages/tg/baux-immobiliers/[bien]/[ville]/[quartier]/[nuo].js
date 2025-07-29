@@ -12,8 +12,6 @@ import Tooltip from 'react-bootstrap/Tooltip'
 import Dropdown from 'react-bootstrap/Dropdown'
 import Badge from 'react-bootstrap/Badge'
 import Card from 'react-bootstrap/Card'
-import ImageLoader from '../../../../../../components/ImageLoader'
-import PropertyCard from '../../../../../../components/PropertyCard'
 import { Navigation, Pagination } from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import 'swiper/css'
@@ -21,8 +19,6 @@ import 'swiper/css/navigation'
 import 'swiper/css/pagination'
 import axios from 'axios'
 import { useEffect } from 'react'
-import Modal from 'react-bootstrap/Modal'
-import Form from 'react-bootstrap/Form'
 import getPropertyFullUrl from '../../../../../../utils/getPropertyFullURL'
 import getFirstImageArray from '../../../../../../utils/formatFirsImageArray'
 import buildPropertyBadge from '../../../../../../utils/buildPropertyBadge'
@@ -33,9 +29,13 @@ import NearestInfrastructureList from '../../../../../../components/iacomponents
 import RecommendPropertyList from '../../../../../../components/iacomponents/RecommendPropertyList'
 import PayVisitModal from '../../../../../../components/iacomponents/PayVisitModal'
 import CheckAvailabilityModal from '../../../../../../components/iacomponents/CheckAvailabilityModal'
-import { getHumanReadablePrice } from '../../../../../../utils/generalUtils'
+import { canAccessMoreOptionsProperty, getHumanReadablePrice,createPropertyObject } from '../../../../../../utils/generalUtils'
 import ImageComponent from '../../../../../../components/iacomponents/ImageComponent'
-
+import DeletePropertyModal from '../../../../../../components/iacomponents/DeleteProperty/DeletePropertyModal'
+import EditPropertyModal from '../../../../../../components/iacomponents/EditPropertyModal'
+import AddNewImagesModal from '../../../../../../components/iacomponents/AddNewImagesProperty/AddNewImagesModal'
+import RePostPropertyModal from "../../../../../../components/iacomponents/RePost/RePostPropertyModal";
+import { API_URL, BASE_URL, COUNTRY, IMAGE_URL } from '../../../../../../utils/settings'
 function SinglePropertyAltPage({ property }) {
   const { data: session } = useSession();
   const router = useRouter()
@@ -56,7 +56,22 @@ function SinglePropertyAltPage({ property }) {
   const handleSignupClose = () => setSignupShow(false)
   const handleSignupShow = () => setSignupShow(true)
 
+  const [newImagesPropertyShow, setNewImagesPropertyShow] = useState(false);
+  const handleAddNewImagesPropertyClose = () => setNewImagesPropertyShow(false);
+  const handleAddNewImagesPropertyShow = () => setNewImagesPropertyShow(true);
 
+  const [editPropertyShow, setEditPropertyShow] = useState(false);
+  const handleEditPropertyClose = () => setEditPropertyShow(false);
+  const handleEditPropertyShow = () => setEditPropertyShow(true);
+
+  const [deletePropertyShow, setDeletePropertyShow] = useState(false);
+  const handleDeletePropertyClose = () => setDeletePropertyShow(false);
+  const handleDeletePropertyShow = () => setDeletePropertyShow(true);
+
+
+  const [repostPropertyShow, setRepostPropertyRepostShow] = useState(false);
+  const handlePropertyRepostClose = () => setRepostPropertyRepostShow(false);
+  const handlePropertyRepostShow = () => setRepostPropertyRepostShow(true);
 
 
   // Swap modals
@@ -84,7 +99,7 @@ function SinglePropertyAltPage({ property }) {
   const [recommendProperties, setRecommendProperties] = useState([]);
   const defineThumbNails = () => {
     property && property.visuels.map((imgproperty) => {
-      setThumbnails(thumbnails => [...thumbnails, 'https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/proprietes/' + imgproperty.uri]);
+      setThumbnails(thumbnails => [...thumbnails, `${IMAGE_URL}/${imgproperty.uri}`]);
     })
   }
 
@@ -98,7 +113,7 @@ function SinglePropertyAltPage({ property }) {
     defineUnauthenticatedThumbNails();
   }, []);
   const getRecommendProperties = () => {
-    axios.get(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getRecommendProperties(first:5,offre_id:"4",nuo:${property.nuo},quartier_id:"${property.quartier.id}",categorie_id:"${property.categorie_propriete.id}"){data{surface,badge_propriete{badge{badge_name,badge_image}},id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination,minus_denomination,id},visuels{uri,position}}}}`).
+    axios.get(`${API_URL}?query={getRecommendProperties(first:5,offre_id:"4",nuo:${property.nuo},quartier_id:"${property.quartier.id}",categorie_id:"${property.categorie_propriete.id}"){data{surface,badge_propriete{badge{badge_name,badge_image}},id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination,minus_denomination,id},visuels{uri,position}}}}`).
       then((res) => {
         setRecommendProperties(res.data.data.getRecommendProperties.data.map((propertyr) => {
           //const { status, data:badges_property, error, isFetching,isLoading,isError }  = usePropertyBadges(property.id);
@@ -114,6 +129,40 @@ function SinglePropertyAltPage({ property }) {
           }
         }));
       });
+  }
+
+  const handleAddNewImagesPropertyModal = () => {
+    //e.preventDefault();
+    if (session) {
+      handleAddNewImagesPropertyShow();
+    } else {
+      handleSignInToUp(e);
+    }
+  }
+
+  const handleEditPropertyModal = () => {
+    //e.preventDefault();
+    if (session) {
+      handleEditPropertyShow();
+    } else {
+      handleSignInToUp(e);
+    }
+  }
+  const handleDeletePropertyModal = () => {
+    //e.preventDefault();
+    if (session) {
+      handleDeletePropertyShow();
+    } else {
+      handleSignInToUp(e);
+    }
+  }
+  const handlePropertyRepostModal = () => {
+    //e.preventDefault();
+    if (session) {
+      handlePropertyRepostShow();
+    } else {
+      handleSignInToUp(e);
+    }
   }
 
 
@@ -253,9 +302,9 @@ function SinglePropertyAltPage({ property }) {
       pageTitle={`${property.categorie_propriete.denomination} à bailler, ${property.ville.denomination}, ${property.quartier.denomination} | No. ${nuo} | Togo`}
       userLoggedIn={session ? true : false}
       pageDescription={`${property.categorie_propriete.denomination} à bailler, ${property.ville.denomination}, ${property.quartier.denomination}, Togo. ${property.descriptif}`}
-      pageKeywords={`bail immobilier, ${property.categorie_propriete.denomination},immeuble,foncier,investissemt,terrain,maison,${property.ville.denomination}, ${property.quartier.denomination},Togo`}
+      pageKeywords={`bail immobilier, ${property.categorie_propriete.denomination}, immeuble, foncier, investissement, terrain, maison,${property.ville.denomination}, ${property.quartier.denomination},Togo`}
       pageCoverImage={`${getFirstImageArray(property.visuels)}`}
-      pageUrl={`https://www.immoask.com/tg/baux-immobiliers/${bien}/${ville}/${quartier}/${nuo}`}
+      pageUrl={`${BASE_URL}/${COUNTRY}/baux-immobiliers/${bien}/${ville}/${quartier}/${nuo}`}
     >
 
 
@@ -279,6 +328,49 @@ function SinglePropertyAltPage({ property }) {
         onSwap={handleSignUpToIn}
         property={property}
       />}
+
+      {/* Message modal */}
+      {/* Sign in modal */}
+
+      {
+        newImagesPropertyShow && <AddNewImagesModal
+          centered
+          size='lg'
+          show={newImagesPropertyShow}
+          onHide={handleAddNewImagesPropertyClose}
+          property={createPropertyObject(property)} // Pass the property object to the modal component as a propproperty}
+        />
+      }
+
+      {
+        editPropertyShow && <EditPropertyModal
+          centered
+          size='lg'
+          show={editPropertyShow}
+          onHide={handleEditPropertyClose}
+          property={createPropertyObject(property)}
+        />
+      }
+
+      {
+        deletePropertyShow && <DeletePropertyModal
+          centered
+          size='lg'
+          show={deletePropertyShow}
+          onHide={handleDeletePropertyClose}
+          property={createPropertyObject(property)}
+        />
+      }
+
+      {
+        repostPropertyShow && <RePostPropertyModal
+          centered
+          size='lg'
+          show={repostPropertyShow}
+          onHide={handlePropertyRepostClose}
+          property={createPropertyObject(property)}
+        />
+      }
       {/* Post content */}
       {property && (
         <Container as='section'>
@@ -356,7 +448,7 @@ function SinglePropertyAltPage({ property }) {
                       <Badge bg='success' className='me-2 mb-2'>Vérifié</Badge>
                       {property && property.statut === 2 && (
                         <Badge bg="danger" className="me-2 mb-2">
-                          Il est baille actuellement
+                          Il est baillé actuellement
                         </Badge>
                       )}
                     </div>
@@ -428,9 +520,67 @@ function SinglePropertyAltPage({ property }) {
                               </a>
                             </Link>
                           </Dropdown.Item>
-
                         </Dropdown.Menu>
+
                       </Dropdown>
+                      {canAccessMoreOptionsProperty(session?.user, property.user.id) && (
+                        <Dropdown className="d-inline-block">
+                          <OverlayTrigger
+                            placement="top"
+                            overlay={<Tooltip>Gerer plus d'options</Tooltip>}
+                          >
+                            <Dropdown.Toggle variant="icon btn-light-primary btn-xs shadow-sm rounded-circle ms-2 mb-2">
+                              <i className="fi-dots-vertical"></i>
+                            </Dropdown.Toggle>
+                          </OverlayTrigger>
+                          <Dropdown.Menu align="end" className="my-1">
+                            <Dropdown.Item as="button">
+
+                              <a target="_blank" rel="noopener noreferrer" onClick={handleAddNewImagesPropertyModal}>
+                                <i className="fi-image fs-base opacity-75 me-2"></i>
+                                Mettre plus d'images
+                              </a>
+
+                            </Dropdown.Item>
+
+                            <Dropdown.Item as="button">
+
+                              <a target="_blank" rel="noopener noreferrer" onClick={console.log("Mettre en avant")}>
+                                <i className="fi-flame fs-base opacity-75 me-2"></i>
+                                Mettre en avant
+                              </a>
+
+                            </Dropdown.Item>
+
+                            <Dropdown.Item as="button">
+
+                              <a target="_blank" rel="noopener noreferrer" onClick={handleEditPropertyModal}>
+                                <i className="fi-edit fs-base opacity-75 me-2"></i>
+                                Editer
+                              </a>
+
+                            </Dropdown.Item>
+
+                            <Dropdown.Item as="button">
+
+                              <a target="_blank" rel="noopener noreferrer" onClick={handleDeletePropertyModal}>
+                                <i className="fi-trash fs-base opacity-75 me-2"></i>
+                                Rendre indisponible
+                              </a>
+
+                            </Dropdown.Item>
+                            <Dropdown.Item as="button">
+      
+                              <a target="_blank" rel="noopener noreferrer" onClick={handlePropertyRepostModal}>
+                                <i className="fi-trash fs-base opacity-75 me-2"></i>
+                                Remettre en location ou vente
+                              </a>
+                            
+                          </Dropdown.Item>
+
+                          </Dropdown.Menu>
+                        </Dropdown>
+                      )}
                     </div>
                   </div>
 
