@@ -76,6 +76,12 @@ const PropertyAccounting = ({ rent_collection }) => {
             Dépôt bancaire de {montant} XOF provenant des revenus locatifs, enregistré le {formattedDate}.
           </Card.Body>
         );
+      case type_mouvement === "bilan" && source_mouvement === "bilan":
+        return (
+          <Card.Body>
+            Bilan bancaire de {montant} XOF provenant des revenus locatifs, enregistré le {formattedDate}.
+          </Card.Body>
+        );
 
       case type_mouvement === "sortie" && source_mouvement === "autre":
         return (
