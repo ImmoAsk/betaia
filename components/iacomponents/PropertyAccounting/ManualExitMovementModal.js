@@ -165,7 +165,7 @@ export default function ManualExitMovementModal() {
         propriete_id: null, // Assuming no property is selected
         description: `Mouvement de sortie de ${selectedSourceMouvementLabel} de ${formData.amount} CFA pour ${formatDatesList(formData.dates)}`,
         montant: Number(formData.amount),
-        type_mouvement: "sortie",
+        type_mouvement: formData.source_mouvement === "depot" ? "bilan" : "sortie",
         source_mouvement: formData.source_mouvement,
         date_paiement: formData.dates[0].value,
         recu: null,
@@ -431,7 +431,7 @@ export default function ManualExitMovementModal() {
                 <div className="p-3 border rounded bg-light h-100">
                   <h5 className="mb-3">Aperçu du reçu</h5>
                   <p><strong>Bonjour {propertyOwnerSelectedOption.fullName},</strong></p>
-                  <p>Nous venons de creer un mouvement de sortie de <strong>{selectedSourceMouvementLabel}</strong> de <strong>{formData.amount} CFA</strong> pour <strong>{formatDatesList(formData.dates)}</strong> a bien été ajouté dans notre système.</p>
+                  <p>Nous venons de créer un mouvement de sortie de <strong>{selectedSourceMouvementLabel}</strong> de <strong>{formData.amount} CFA</strong> pour <strong>{formatDatesList(formData.dates)}</strong> a bien été ajouté dans notre système.</p>
                   <p>La piece jointe ci-dessous contient le recu de ce mouvement.</p>
                   <p>Merci pour votre confiance.</p>
 
