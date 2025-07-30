@@ -5,11 +5,12 @@ import Nav from 'react-bootstrap/Nav';
 import { useSession, getSession } from 'next-auth/react';
 import { Row, Col } from 'react-bootstrap';
 import CheckingAvailabilityList from '../../components/iacomponents/CheckingAvailability/CheckingAvailabilityList';
+import { API_URL } from '../../utils/settings';
 
 // Helper function to fetch negotiations by statut for property owner
 async function fetchNegotiationsByStatut(statut, proprietaireID) {
   const dataAPIresponse = await fetch(
-    `https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getVerificationsDisponibiliteByKeyWords(statut:${statut},proprietaire_id:${proprietaireID},orderBy:{order:DESC,column:ID}){id,verificateur{name,id},created_at,statut,telephone_verificateur,fullname_verificateur,propriete{id,nuo}}}`
+    `${API_URL}?query={getVerificationsDisponibiliteByKeyWords(statut:${statut},proprietaire_id:${proprietaireID},orderBy:{order:DESC,column:ID}){id,verificateur{name,id,phone},created_at,statut,telephone_verificateur,fullname_verificateur,propriete{id,nuo}}}`
   );
   const responseData = await dataAPIresponse.json();
   console.log(responseData)
@@ -19,7 +20,7 @@ async function fetchNegotiationsByStatut(statut, proprietaireID) {
 // Helper function to fetch negotiations by statut for admin
 async function fetchNegotiationsByStatutByRole(statut) {
   const dataAPIresponse = await fetch(
-    `https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getVerificationsDisponibiliteByKeyWords(statut:${statut},orderBy:{order:DESC,column:ID}){id,verificateur{name,id},created_at,statut,telephone_verificateur,fullname_verificateur,propriete{id,nuo}}}`
+    `${API_URL}?query={getVerificationsDisponibiliteByKeyWords(statut:${statut},orderBy:{order:DESC,column:ID}){id,verificateur{name,id,phone},created_at,statut,telephone_verificateur,fullname_verificateur,propriete{id,nuo}}}`
   );
   const responseData = await dataAPIresponse.json();
   console.log(responseData)

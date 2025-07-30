@@ -64,7 +64,7 @@ const CheckingAvailability = ({ project }) => {
                             <strong>
                                 {project.fullname_verificateur || project.verificateur?.name}
                             </strong>{" "}
-                            {role === '1200' && (project.telephone_verificateur ? `+${project.telephone_verificateur}` : "")} souhaite vérifier la disponibilité de la propriété No. {project.propriete.nuo}
+                            {role === '1200' && (project.telephone_verificateur ? `+${project.telephone_verificateur}` :  project.verificateur?.phone)} souhaite vérifier la disponibilité de la propriété No. {project.propriete.nuo}
                         </p>
                     </h3>
                     <div className="fs-sm">
