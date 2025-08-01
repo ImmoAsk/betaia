@@ -2,16 +2,15 @@ import { useState, useEffect } from 'react';
 import RealEstatePageLayout from '../../components/partials/RealEstatePageLayout';
 import RealEstateAccountLayout from '../../components/partials/RealEstateAccountLayout';
 import Nav from 'react-bootstrap/Nav';
-import EditPropertyModal from '../../components/iacomponents/EditPropertyModal';
 import { useSession, getSession } from 'next-auth/react';
 import { Row, Col } from 'react-bootstrap';
 import RentingNegotiationOfferList from '../../components/iacomponents/RentingNegotiationOfferList';
-import { API_URL, BASE_URL, IMAGE_URL } from '../../utils/settings';
+import { API_URL } from '../../utils/settings';
 
 // Helper function to fetch negotiations by statut for property owner
 async function fetchNegotiationsByStatut(statut, proprietaireID) {
   const dataAPIresponse = await fetch(
-    `${API_URL}?query={getNegotiatiionsByKeyWords(statut:${statut},proprietaire_id:${proprietaireID},orderBy:{order:DESC,column:ID}){id,date_negociation,statut,telephone_negociateur,fullname_negociateur,montant,propriete{id,nuo}}}`
+    `${API_URL}?query={getNegotiatiionsByKeyWords(statut:${statut},proprietaire_id:${proprietaireID},orderBy:{order:DESC,column:ID}){id,date_negociation,statut,telephone_negociateur,negociateur{id,name,phone},fullname_negociateur,montant,propriete{id,nuo}}}`
   );
   const responseData = await dataAPIresponse.json();
   return responseData.data ? responseData.data.getNegotiatiionsByKeyWords : [];
@@ -19,7 +18,7 @@ async function fetchNegotiationsByStatut(statut, proprietaireID) {
 
 async function fetchRenterNegotiationsByStatut(statut, userID) {
   const dataAPIresponse = await fetch(
-    `${API_URL}?query={getNegotiatiionsByKeyWords(statut:${statut},user_id:${userID},orderBy:{order:DESC,column:ID}){id,date_negociation,statut,telephone_negociateur,fullname_negociateur,montant,propriete{id,nuo}}}`
+    `${API_URL}?query={getNegotiatiionsByKeyWords(statut:${statut},user_id:${userID},orderBy:{order:DESC,column:ID}){id,date_negociation,statut,telephone_negociateur,negociateur{id,name,phone},fullname_negociateur,montant,propriete{id,nuo}}}`
   );
   const responseData = await dataAPIresponse.json();
   return responseData.data ? responseData.data.getNegotiatiionsByKeyWords : [];
@@ -28,7 +27,7 @@ async function fetchRenterNegotiationsByStatut(statut, userID) {
 // Helper function to fetch negotiations by statut for admin
 async function fetchNegotiationsByStatutByRole(statut) {
   const dataAPIresponse = await fetch(
-    `${API_URL}?query={getNegotiatiionsByKeyWords(statut:${statut},orderBy:{order:DESC,column:ID}){id,date_negociation,statut,telephone_negociateur,fullname_negociateur,montant,propriete{id,nuo}}}`
+    `${API_URL}?query={getNegotiatiionsByKeyWords(statut:${statut},orderBy:{order:DESC,column:ID}){id,date_negociation,statut,telephone_negociateur,fullname_negociateur,montant,negociateur{id,name,phone},propriete{id,nuo}}}`
   );
   const responseData = await dataAPIresponse.json();
   return responseData.data ? responseData.data.getNegotiatiionsByKeyWords : [];
@@ -87,7 +86,7 @@ const RentingNegociationPage = ({ _newNegotiations, _acceptedNegotiations, _decl
       )} */}
       <RealEstateAccountLayout accountPageTitle='Negociation de loyers'>
         <div className='d-flex align-items-center justify-content-between mb-3'>
-          <h1 className='h2 mb-0'>Negociations de loyers</h1>
+          <h1 className='h2 mb-0'>Négociations de loyers</h1>
         </div>
         <p className='pt-1 mb-4'>
           Trouvez ici toutes les propositions de négociation de loyer envoyées par des locataires potentiels pour vos biens en location et séjours
@@ -97,19 +96,19 @@ const RentingNegociationPage = ({ _newNegotiations, _acceptedNegotiations, _decl
           <Nav.Item as={Col}>
             <Nav.Link eventKey='published'>
               <i className='fi-file fs-base me-2'></i>
-              Negociations non traitées
+              Négociations non traitées
             </Nav.Link>
           </Nav.Item>
           <Nav.Item as={Col}>
             <Nav.Link eventKey='accepted'>
               <i className='fi-archive fs-base me-2'></i>
-              Negociations acceptées
+              Négociations acceptées
             </Nav.Link>
           </Nav.Item>
           <Nav.Item as={Col}>
             <Nav.Link eventKey='declined'>
               <i className='fi-file-clean fs-base me-2'></i>
-              Negociations déclinées
+              Négociations déclinées
             </Nav.Link>
           </Nav.Item>
         </Nav>
