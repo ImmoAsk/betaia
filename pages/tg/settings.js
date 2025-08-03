@@ -19,31 +19,27 @@ export default function SettingsPage() {
   return (
     <RealEstatePageLayout pageTitle='Paramètres' activeNav='VisitProperties' userLoggedIn>
         <RealEstateAccountLayout accountPageTitle='Paramètres'>
-            <Container className="py-4">
+            
             <Row>
                 <Col md={4} className="mb-4">
-                <Card>
-                    <Card.Body>
+                
+                    
                     <RealEstateOrgForm />
-                    </Card.Body>
-                </Card>
+                    
+                
                 </Col>
                 <Col md={4} className="mb-4">
-                <Card>
-                    <Card.Body>
+     
                     <FeaturesToggle />
-                    </Card.Body>
-                </Card>
+                   
                 </Col>
                 <Col md={4} className="mb-4">
-                <Card>
-                    <Card.Body>
+                
                     <VisitsToggle />
-                    </Card.Body>
-                </Card>
+                    
                 </Col>
             </Row>
-            </Container>
+            
         </RealEstateAccountLayout>
     </RealEstatePageLayout>
   );
