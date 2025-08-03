@@ -80,6 +80,29 @@ function useRessourceByRole(role) {
 }
 
 
+function useRessourceByUser(userId) {
+  return useQuery({
+      queryKey: ["user_ressources", userId],
+      queryFn: async () => {
+          const response = await axios.get(`${apiUrl}?query={
+              getListRessourcesByUser(user_id: ${userId},statut:1) {
+                  ressource {
+                      id,
+                      ressourceName,
+                      ressourceLink,
+                      icone,
+                      statut
+                  }
+              }
+          }`);
+          return response.data.data.getListRessourcesByUser;
+      },
+      staleTime: 1000 * 60 * 5, // Cache data for 5 minutes
+      refetchOnWindowFocus: false, // Prevent unnecessary refetching
+  });
+}
+
+
 
 function useUserProperties(user) {
   return useQuery({
@@ -113,4 +136,4 @@ function useUserProperties(user) {
 }
 
 
-export{usePropertiesByOCTD,useRessourceByRole,useUserProperties,usePropertiesBySuperCategory};
+export{usePropertiesByOCTD,useRessourceByRole,useUserProperties,usePropertiesBySuperCategory,useRessourceByUser};
