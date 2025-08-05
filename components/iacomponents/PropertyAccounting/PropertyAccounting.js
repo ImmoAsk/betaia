@@ -69,6 +69,12 @@ const PropertyAccounting = ({ rent_collection }) => {
             ({prop?.categorie_propriete?.denomination} No. {prop?.nuo}), enregistrées le {formattedDate}.
           </Card.Body>
         );
+      case type_mouvement === "sortie" && source_mouvement === "entretien":
+        return (
+          <Card.Body>
+            Frais d’entretien mensuel de {montant} XOF pour les espaces communs, enregistrées le {formattedDate}.
+          </Card.Body>
+        );
 
       case type_mouvement === "sortie" && source_mouvement === "depot":
         return (

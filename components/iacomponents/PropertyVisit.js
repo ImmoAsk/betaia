@@ -107,7 +107,7 @@ const PropertyVisit = ({ project }) => {
                         <p className="text-nav ext-decoration-none">
                             <strong>
                                 {project.fullname_visitor ? project.fullname_visitor : project.visiteur?.name}
-                            </strong> {role === '1200' && (project.telephone_visitor ? project.telephone_visitor : project.visiteur?.phone)} souhaite visiter la propriété No. {project.propriete.nuo} le <strong>{formatDate(project.date_visite)}</strong> a <strong>{project.heure_visite}</strong>
+                            </strong> {role === '1200' || role === '1233' || role === '1234' || role === '1235' && (project.telephone_visitor ? project.telephone_visitor : project.visiteur?.phone)} souhaite visiter la propriété No. {project.propriete.nuo} le <strong>{formatDate(project.date_visite)}</strong> a <strong>{project.heure_visite}</strong>
                         </p>
                     </h3>
                     <div className="fs-sm">
@@ -118,7 +118,7 @@ const PropertyVisit = ({ project }) => {
                     </div>
 
                     {/* Show Accept and Decline buttons when project.statut === 0 */}
-                    {(role === '1230' || role === '1200') && project.statut === 0 && (
+                    {(role === '1230' || role === '1200' || role === '1233' || role === '1234' || role === '1235') && project.statut === 0 && (
                         <>
                         <div className="d-flex justify-content-center mt-3">
                             <button

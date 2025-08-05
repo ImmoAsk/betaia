@@ -349,7 +349,7 @@ export default function ManualExitMovementModal() {
                     <option value="reparation">
                       Maintenance
                     </option>
-                    <option value="reparation">
+                    <option value="entretien">
                       Entretien des espaces communs
                     </option>
                     <option value="commission">

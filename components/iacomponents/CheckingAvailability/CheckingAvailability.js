@@ -64,7 +64,7 @@ const CheckingAvailability = ({ project }) => {
                             <strong>
                                 {project.fullname_verificateur || project.verificateur?.name}
                             </strong>{" "}
-                            {role === '1200' && (project.telephone_verificateur ? `+${project.telephone_verificateur}` :  project.verificateur?.phone)} souhaite vérifier la disponibilité de la propriété No. {project.propriete.nuo}
+                            {role === '1200' || role === '1233' || role === '1234' || role === '1235' && (project.telephone_verificateur ? `+${project.telephone_verificateur}` :  project.verificateur?.phone)} souhaite vérifier la disponibilité de la propriété No. {project.propriete.nuo}
                         </p>
                     </h3>
                     <div className="fs-sm">
@@ -73,7 +73,7 @@ const CheckingAvailability = ({ project }) => {
                             {formatDate(project.created_at)}
                         </span>
                     </div>
-                    {(role === '1230' || role === '1200') && project.statut === 0 && (
+                    {(role === '1230' || role === '1200' || role === '1233' || role === '1234' || role === '1235') && project.statut === 0 && (
                     <div className="d-flex justify-content-center mt-3">
                         <button
                             className="btn btn-outline-secondary me-2 flex-grow-1"
