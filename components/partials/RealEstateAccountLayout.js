@@ -163,8 +163,7 @@ const RealEstateAccountLayout = ({ accountPageTitle, children }) => {
                 </Button>
               </Link>
             )}
-
-            {(roleId === 1232) && (
+            {(roleId === 1232 || roleId === 1233 || roleId === 1234 || roleId === 1235) && (
               <Link href="/tg/add-property" passHref>
                 <Button as="a" size="lg" className="w-100 mb-3">
                   <i className="fi-plus me-2"></i>

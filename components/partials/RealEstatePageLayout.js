@@ -362,7 +362,7 @@ const RealEstatePageLayout = (props) => {
             {session ? (
               session.user.roleId === "1230" || session.user.roleId === "1200"
                 ? displayCreationContractButton()
-                : session.user.roleId === "1232" || session.user.roleId === "151"
+                : session.user.roleId === "1232" || session.user.roleId === "151" || session.user.roleId === "1233" || session.user.roleId === "1234" || session.user.roleId === "1235"
                   ? displayCreationProjectButton()
                   : null
             ) : (
