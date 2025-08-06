@@ -1215,10 +1215,10 @@ const AddPropertyPage = () => {
                 <Form.Group controlId="description">
                   <div className="d-flex justify-content-between align-items-center mb-2">
                     <Form.Label className="fw-bold mb-0">Description</Form.Label>
-                    {session && session.user && (session.user.roleId === '1200') && (
+                    {session && session.user && (['1200', '1233', '1234', '1235'].includes(session.user.roleId)) && (
                       <div>
                         <Button variant="outline-secondary" size="sm" className="me-2" onClick={refineDescription} disabled={loading}>Reformuler la description</Button>
-                        <Button variant="primary" size="sm" onClick={generateDescription} disabled={loading}>Generer la description</Button>
+                        <Button variant="primary" size="sm" onClick={generateDescription} disabled={loading}>Génerer la description</Button>
                       </div>
                     )
                     }
@@ -1240,7 +1240,7 @@ const AddPropertyPage = () => {
               <section id='price' className='p-4 mb-4 border-0 shadow-sm card card-body'>
                 <h2 className='mb-4 h4'>
                   <i className='fi-cash text-primary fs-5 mt-n1 me-2'></i>
-                  Preciser votre tarification immobilière
+                  Préciser votre tarification immobilière
                 </h2>
 
                 {propertyData.offer == '1' && <>
