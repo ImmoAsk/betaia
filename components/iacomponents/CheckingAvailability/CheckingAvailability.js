@@ -64,7 +64,9 @@ const CheckingAvailability = ({ project }) => {
                             <strong>
                                 {project.fullname_verificateur || project.verificateur?.name}
                             </strong>{" "}
-                            {role === '1200' || role === '1233' || role === '1234' || role === '1235' && (project.telephone_verificateur ? `+${project.telephone_verificateur}` :  project.verificateur?.phone)} souhaite vérifier la disponibilité de la propriété No. {project.propriete.nuo}
+                            {['1200', '1233', '1234', '1235'].includes(role) &&
+                                (project.telephone_verificateur ? `+${project.telephone_verificateur}` : project.verificateur?.phone)
+                            } souhaite vérifier la disponibilité de la propriété No. {project.propriete.nuo}
                         </p>
                     </h3>
                     <div className="fs-sm">
@@ -74,23 +76,23 @@ const CheckingAvailability = ({ project }) => {
                         </span>
                     </div>
                     {(role === '1230' || role === '1200' || role === '1233' || role === '1234' || role === '1235') && project.statut === 0 && (
-                    <div className="d-flex justify-content-center mt-3">
-                        <button
-                            className="btn btn-outline-secondary me-2 flex-grow-1"
-                            onClick={handleDecline}
-                        >
-                            Déjà occupé
-                        </button>
-                        <button
-                            className="btn btn-primary flex-grow-1"
-                            onClick={handleAccept}
-                        >
-                            Libre pour visite
-                        </button>
-                    </div>
-                )}
+                        <div className="d-flex justify-content-center mt-3">
+                            <button
+                                className="btn btn-outline-secondary me-2 flex-grow-1"
+                                onClick={handleDecline}
+                            >
+                                Déjà occupé
+                            </button>
+                            <button
+                                className="btn btn-primary flex-grow-1"
+                                onClick={handleAccept}
+                            >
+                                Libre pour visite
+                            </button>
+                        </div>
+                    )}
                 </Card.Body>
-                
+
             </Card>
 
 
