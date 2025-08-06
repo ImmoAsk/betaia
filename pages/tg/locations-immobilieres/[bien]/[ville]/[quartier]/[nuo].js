@@ -473,8 +473,6 @@ function SinglePropertyAltPage({ property }) {
               <Col lg={7} className="pt-lg-2 mb-5 mb-lg-0" sm={12} md={12}>
                 <div className="d-flex flex-column">
                   {/* Gallery */}
-
-
                   <div className="order-lg-1 order-2">
                     <SwiperGallery />
                   </div>
@@ -525,11 +523,7 @@ function SinglePropertyAltPage({ property }) {
                 ) : (
                   <ProRealEstateAgency user={property.user.id} />
                 )}
-
-
-
               </Col>
-
               {/* Sidebar with details */}
               <Col as="aside" lg={5} sm={12} className="pt-lg-2 mb-1 mb-lg-0" md={12}>
                 <div className="ps-lg-2">
@@ -622,7 +616,7 @@ function SinglePropertyAltPage({ property }) {
                         <Dropdown className="d-inline-block">
                         <OverlayTrigger
                           placement="top"
-                          overlay={<Tooltip>Gerer plus d'options</Tooltip>}
+                          overlay={<Tooltip>Gérer plus d'options</Tooltip>}
                         >
                           <Dropdown.Toggle variant="icon btn-light-primary btn-xs shadow-sm rounded-circle ms-2 mb-2">
                             <i className="fi-dots-vertical"></i>

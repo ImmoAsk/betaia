@@ -18,7 +18,8 @@ export default function DetailRealEstateAgency({ user }) {
   if (isLoading) return <LoadingSpinner />;
 
   const organisation = organisationData?.organisation;
-
+  const proName = organisationData?.name || "Kossi ADANOU";
+  const proTel = organisationData?.phone || "+228 91 84 90 90";
   // 🔐 If user is not logged in
   if (!session?.user) {
     return (
@@ -51,9 +52,8 @@ export default function DetailRealEstateAgency({ user }) {
           <p>{organisation.description}</p>
           <footer className="d-flex justify-content-between mt-4">
             <div className="pe-3">
-              <h6 className="mb-0">{organisation.name}</h6>
+              <h6 className="mb-0">{proName}</h6>
               <div className="text-muted fw-normal fs-sm mb-3">Agence immobilière</div>
-
               {organisation.facebook_url && (
                 <SocialButton
                   href={`https://facebook.com/${organisation.facebook_url}`}
@@ -81,6 +81,10 @@ export default function DetailRealEstateAgency({ user }) {
                   className="mb-2"
                 />
               )}
+              <div className="text-muted fw-normal fs-sm mb-3">
+                <i className="fi-phone me-2 align-middle opacity-70"></i>{" "}
+                {proTel}
+              </div>
             </div>
             <div>
               <StarRating rating="4.6" />

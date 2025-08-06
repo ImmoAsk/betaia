@@ -20,7 +20,8 @@ export default function ProRealEstateAgency({ user }) {
   if (isLoading) return <LoadingSpinner />;
 
   const organisation = organisationData?.organisation;
-
+  const proName = organisationData?.name || "Kossi ADANOU";
+  const proTel = organisationData?.phone || "+228 91 84 90 90";
   // 🔒 If user is not authenticated, show alert with CTA
   if (!session?.user) {
     return (
@@ -56,7 +57,7 @@ export default function ProRealEstateAgency({ user }) {
           <p>{organisation.description}</p>
           <footer className="d-flex justify-content-between">
             <div className="pe-3">
-              <h6 className="mb-0">{organisation.name}</h6>
+              <h6 className="mb-0">{proName}</h6>
               <div className="text-muted fw-normal fs-sm mb-3">Agence immobilière</div>
 
               {organisation.facebook_url && (
@@ -86,6 +87,10 @@ export default function ProRealEstateAgency({ user }) {
                   className="mb-2"
                 />
               )}
+              <div className="text-muted fw-normal fs-sm mb-3">
+                <i className="fi-phone me-2 align-middle opacity-70"></i>{" "}
+                {proTel}
+              </div>
             </div>
             <div>
               <StarRating rating="4.8" />
