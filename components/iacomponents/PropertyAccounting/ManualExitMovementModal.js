@@ -6,7 +6,6 @@ import { API_URL } from "../../../utils/settings";
 import { useSession } from 'next-auth/react';
 import { useLandLord, useLandlordContract } from "../../../customHooks/usePropertyOwner";
 import { formatPropertyOwners } from "../../../utils/generalUtils";
-import { set } from "nprogress";
 export default function ManualExitMovementModal() {
   const [showModal, setShowModal] = useState(false);
   const [showPreview, setShowPreview] = useState(false);

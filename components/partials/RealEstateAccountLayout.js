@@ -10,9 +10,10 @@ import Avatar from '../Avatar'
 import StarRating from '../StarRating'
 import CardNav from '../CardNav'
 import { useSession } from 'next-auth/react'
-import { useRessourceByRole, useRessourceByUser } from '../../customHooks/realEstateHooks'
+import { useRessourceByRole, useRessourceByUser, useUser } from '../../customHooks/realEstateHooks'
 import MediumRealEstateAgencyCard from '../iacomponents/RealEstateAgency/MediumRealEstateAgencyCard'
 import { Spinner, Alert } from 'react-bootstrap';
+import { IMAGE_URL } from '../../utils/settings'
 
 const SuperAdminActionButtons = () => {
   const [showMenu, setShowMenu] = useState(false);
@@ -116,12 +117,15 @@ const RealEstateAccountLayout = ({ accountPageTitle, children }) => {
   //console.log(roleId);
   const { data: roleRessources, isLoading: loadingRole, error: errorRole } = useRessourceByRole(roleId);
   const { data: userRessources, isLoading: loadingUser, error: errorUser } = useRessourceByUser(userId);
-
+  //const { data: user_identity, isLoading: userLoading, error: userError } = useUser(userId);
   // Use userRessources if available, otherwise fall back to roleRessources
   const ressources = (userRessources && userRessources.length > 0) ? userRessources : roleRessources;
   const isLoading = loadingRole || loadingUser;
   const error = errorRole || errorUser;
-  //console.log(session);
+
+  //console.log("User Identity", user_identity);
+  const avatarSrc = session?.user?.avatar || '/images/avatars/45.jpg';
+
 
   return (
     <Container fluid className='pt-5 pb-lg-4 mt-5 mb-sm-2'>
@@ -131,9 +135,10 @@ const RealEstateAccountLayout = ({ accountPageTitle, children }) => {
         <Col md={5} lg={3} className='pe-xl-4 mb-5'>
           <div className='card card-body border-0 shadow-sm pb-1 me-lg-1'>
             <div className='d-flex d-md-block d-lg-flex align-items-start pt-lg-2 mb-4'>
-              <Avatar img={{ src: '/images/avatars/45.jpg', alt: 'ImmoAsk' }} size={[48, 48]} />
+
+              {session && (<Avatar img={{ src: 'https://devapi.omnisoft.africa/public/storage/uploads/visuels/avatars/' + avatarSrc, alt: 'Avatar' }} size={[48, 48]} />)}
               <div className='pt-md-2 pt-lg-0 ps-3 ps-md-0 ps-lg-3'>
-                <h2 className='fs-lg mb-0'>{session ? session.user?.name : " "}</h2>
+                <h2 className='fs-lg mb-0'>{session?.user?.name || " "}</h2>
                 <MediumRealEstateAgencyCard user={session ? session.user?.id : "1"} />
                 <StarRating rating={4.8} />
                 <ul className='list-unstyled fs-sm mt-3 mb-0'>

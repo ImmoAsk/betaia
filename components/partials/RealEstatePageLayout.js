@@ -104,7 +104,7 @@ const RealEstatePageLayout = (props) => {
       router.push("/tg/add-property");
     }
   };
-
+  const avatarSrc = session?.user?.avatar || '/images/avatars/45.jpg';
   const displayCreationAccountButton = () => {
     return (
       <Link href="/auth/signin" passHref>
@@ -261,7 +261,7 @@ const RealEstatePageLayout = (props) => {
                     style={{ width: "40px" }}
                   >
                     <ImageLoader
-                      src="/images/avatars/45.jpg"
+                      src={'https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/avatars/' + avatarSrc}
                       width={80}
                       height={80}
                       placeholder={false}
@@ -276,7 +276,7 @@ const RealEstatePageLayout = (props) => {
                     style={{ width: "16rem" }}
                   >
                     <ImageLoader
-                      src="/images/avatars/45.jpg"
+                      src={'https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/avatars/' + avatarSrc}
                       width={48}
                       height={48}
                       placeholder={false}

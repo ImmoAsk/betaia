@@ -18,9 +18,10 @@ import FilePondPluginImageResize from 'filepond-plugin-image-resize'
 import FilePondPluginImageTransform from 'filepond-plugin-image-transform'
 import 'filepond/dist/filepond.min.css'
 import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css'
-import { useSession, getSession } from 'next-auth/react'
+import { getSession,useSession } from 'next-auth/react'
 import { API_URL } from '../../utils/settings'
-import { set } from 'nprogress'
+
+
 
 const AccountInfoPage = () => {
   registerPlugin(
@@ -30,18 +31,14 @@ const AccountInfoPage = () => {
     FilePondPluginImageResize,
     FilePondPluginImageTransform
   )
-
+  const { data: session } = useSession()
   const [profile, setProfile] = useState([])
   const [name, setName] = useState('Kossi ADANOU')
   const [email, setEmail] = useState('contact@immoask.com')
   const [errorNotification, setErrorNotification] = useState('')
   const [successNotification, setSuccessNotification] = useState('')
   const [phone, setPhone] = useState('(228) 7045 3625')
-  const [newPassword, setNewPassword] = useState('')
-  const [oldPassword, setOldPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
   const [address, setAddress] = useState('')
-  const [socialOpen, setSocialOpen] = useState(false)
 
   const CustomToggle = ({ eventKey }) => {
     const handleClick = useAccordionButton(eventKey, (e) => e.preventDefault())
@@ -54,43 +51,71 @@ const AccountInfoPage = () => {
     )
   }
 
-  const handleIdentitySubmit = async () => {
-    try {
-      const payload = {
-        name,
-        email,
-        phone,
-        newPassword,
-        address,
-        profile: profile.length ? profile[0].file.name : null,
-      }
-
-      console.log('Submitting payload:', payload)
-
-      // Simulate backend call
-      const response = await axios.post('/api/account/update', payload)
-
-      if (response.status === 200) {
-        alert('Vos informations ont été mises à jour avec succès.')
-      } else {
-        alert('Une erreur est survenue.')
-      }
-    } catch (error) {
-      console.error('Erreur lors de la mise à jour :', error)
-      alert('Erreur de connexion. Veuillez réessayer.')
-    }
+  const handleProfileSubmit = async () => {
+  if (!session?.user?.token) {
+    setErrorNotification("Vous n'êtes pas connecté.")
+    return
+  }
+  if (!profile.length || !profile[0].file) {
+    setErrorNotification("Veuillez sélectionner une photo.")
+    return
   }
 
+  const sendingFormData = new FormData()
+
+  sendingFormData.append(
+    'operations',
+    JSON.stringify({
+      query: `
+        mutation UpdateProfile($data: UpdateProfileInput!) {
+          updateUserProfile(input: $data) {
+            status
+            message
+          }
+        }
+      `,
+      variables: {
+        data: {
+          avatar: null // Must be null here, will be injected by map
+        }
+      }
+    })
+  )
+
+  sendingFormData.append('map', JSON.stringify({ '0': ['variables.data.avatar'] }))
+  sendingFormData.append('0', profile[0].file) // actual file
+
+  try {
+    const response = await axios.post(API_URL, sendingFormData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Authorization: `Bearer ${session.user.token}`,
+      },
+    })
+
+    const result = response.data.data?.updateUserProfile
+
+    if (result?.status === 'SUCCESS') {
+      setSuccessNotification('Vos informations ont été mises à jour avec succès.')
+    } else {
+      setErrorNotification(result?.message || 'Une erreur est survenue.')
+    }
+  } catch (error) {
+    console.error('Erreur lors de la mise à jour :', error)
+    setErrorNotification('Erreur de connexion. Veuillez réessayer.')
+  }
+}
+
+
     
 
-  const handleProfileSubmit = async () => {
+  const handleIdentitySubmit = async () => {
     
     try {
       const payload = {
         name,
         email,
         phone,
-        newPassword,
         address,
         profile: profile.length ? profile[0].file.name : null,
       }
