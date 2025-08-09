@@ -30,7 +30,7 @@ import RecommendPropertyList from '../../../../../../components/iacomponents/Rec
 import PayVisitModal from '../../../../../../components/iacomponents/PayVisitModal'
 import CheckAvailabilityModal from '../../../../../../components/iacomponents/CheckAvailabilityModal'
 import ImageComponent from "../../../../../../components/iacomponents/ImageComponent";
-import { canAccessMoreOptionsProperty, getHumanReadablePrice,createPropertyObject } from '../../../../../../utils/generalUtils'
+import { canAccessMoreOptionsProperty, getHumanReadablePrice, createPropertyObject } from '../../../../../../utils/generalUtils'
 import DetailRealEstateAgency from '../../../../../../components/iacomponents/DetailRealEstateAgency'
 import { API_URL, BASE_URL } from '../../../../../../utils/settings'
 import PreSellingModal from '../../../../../../components/iacomponents/PreSelling/PreSellingModal'
@@ -39,6 +39,7 @@ import DeletePropertyModal from '../../../../../../components/iacomponents/Delet
 import EditPropertyModal from '../../../../../../components/iacomponents/EditPropertyModal'
 import AddNewImagesModal from '../../../../../../components/iacomponents/AddNewImagesProperty/AddNewImagesModal'
 import RePostPropertyModal from "../../../../../../components/iacomponents/RePost/RePostPropertyModal";
+import { Alert } from 'react-bootstrap'
 function SinglePropertyAltPage({ property }) {
   const { data: session } = useSession();
   const router = useRouter()
@@ -409,11 +410,23 @@ function SinglePropertyAltPage({ property }) {
 
                 </p>
 
-                {session && session.user && (session.user.roleId === '1200' || session.user.roleId === '1231') ? (
+                {!session || !session.user ? (
+                  <Alert variant="info" className="d-flex justify-content-between align-items-center">
+                    <div>
+                      <h6 className="mb-1">Connectez-vous pour en savoir plus</h6>
+                      <p className="mb-0">
+                        Créez un compte et payer un abonnement adapte pour voir les détails du proprietaire direct ou l'agence immobilière.
+                      </p>
+                    </div>
+                    <Button variant="primary" onClick={() => signIn()}>
+                      Se connecter
+                    </Button>
+                  </Alert>
+                ) : (session.user.roleId === '1200' || session.user.roleId === '1231') ? (
                   <DetailRealEstateAgency user={property.user.id} />
-                ) : (
+                ) : (session.user.roleId === '1233' || session.user.roleId === '1234' || session.user.roleId === '1235' || session.user.roleId === '1236' || session.user.roleId === '152') ? (
                   <ProRealEstateAgency user={property.user.id} />
-                )}
+                ) : null}
               </Col>
 
 
@@ -547,13 +560,13 @@ function SinglePropertyAltPage({ property }) {
 
                             </Dropdown.Item>
                             <Dropdown.Item as="button">
-      
+
                               <a target="_blank" rel="noopener noreferrer" onClick={handlePropertyRepostModal}>
                                 <i className="fi-trash fs-base opacity-75 me-2"></i>
                                 Remettre en location ou vente
                               </a>
-                            
-                          </Dropdown.Item>
+
+                            </Dropdown.Item>
 
                           </Dropdown.Menu>
                         </Dropdown>

@@ -22,20 +22,7 @@ export default function ProRealEstateAgency({ user }) {
   const organisation = organisationData?.organisation;
   const proName = organisationData?.name || "Kossi ADANOU";
   const proTel = organisationData?.phone || "+228 91 84 90 90";
-  // 🔒 If user is not authenticated, show alert with CTA
-  if (!session?.user) {
-    return (
-      <Alert variant="info" className="d-flex justify-content-between align-items-center">
-        <div>
-          <h6 className="mb-1">Connectez-vous pour en savoir plus</h6>
-          <p className="mb-0">Créez un compte ou connectez-vous pour voir les détails de l'agence immobilière ou du propriétaire direct.</p>
-        </div>
-        <Button variant="primary" onClick={() => signIn()}>
-          Se connecter
-        </Button>
-      </Alert>
-    );
-  }
+
 
   // ❌ No organisation or not verified (status !== 4)
   if (!organisation || organisation.status !== 4) {

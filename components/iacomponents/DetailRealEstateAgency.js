@@ -20,20 +20,7 @@ export default function DetailRealEstateAgency({ user }) {
   const organisation = organisationData?.organisation;
   const proName = organisationData?.name || "Kossi ADANOU";
   const proTel = organisationData?.phone || "+228 91 84 90 90";
-  // 🔐 If user is not logged in
-  if (!session?.user) {
-    return (
-      <Alert variant="info" className="d-flex justify-content-between align-items-center">
-        <div>
-          <h6 className="mb-1">Accès réservé</h6>
-          <p className="mb-0">Créez un compte ou connectez-vous pour consulter les détails de cette agence immobilière.</p>
-        </div>
-        <Button variant="primary" onClick={() => signIn()}>
-          Se connecter
-        </Button>
-      </Alert>
-    );
-  }
+  
 
   // ❌ No organisation or not approved
   if (!organisation || organisation.status !== 4) return null;

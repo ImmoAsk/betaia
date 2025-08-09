@@ -132,7 +132,7 @@ const RealEstateAccountLayout = ({ accountPageTitle, children }) => {
       {/* Breadcrumb */}
       <Row>
         {/* Sidebar (Account nav) */}
-        <Col md={5} lg={3} className='pe-xl-4 mb-5'>
+        <Col md={5} lg={3} className='pe-xl-4 mb-2'>
           <div className='card card-body border-0 shadow-sm pb-1 me-lg-1'>
             <div className='d-flex d-md-block d-lg-flex align-items-start pt-lg-2 mb-4'>
 
@@ -179,7 +179,7 @@ const RealEstateAccountLayout = ({ accountPageTitle, children }) => {
 
             {(roleId === 1230) && (
               <Link href="/tg/account-contracts" passHref>
-                <Button as="a" size="lg" className="w-100 mb-3">
+                <Button as="a" size="lg" className="w-100 mb-2">
                   <i className="fi-file me-2"></i>
                   Créer un contrat immobilier
                 </Button>
@@ -188,7 +188,7 @@ const RealEstateAccountLayout = ({ accountPageTitle, children }) => {
             {/* Enroller une propriété */}
             <Button
               variant='outline-secondary'
-              className='d-block d-md-none w-100 mb-3'
+              className='d-block d-md-none w-100 mb-2'
               onClick={() => setOpen(!open)}
               aria-controls='account-menu'
               aria-expanded={open}
@@ -198,7 +198,7 @@ const RealEstateAccountLayout = ({ accountPageTitle, children }) => {
             </Button>
             <Collapse in={open} className='d-md-block'>
               <div id='account-menu'>
-                <CardNav className='pt-3'>
+                <CardNav className='pt-1'>
                   {session && session.user.roleId === "1232" && (
                     <CardNav.Item
                       href='/tg/subscriptions'
