@@ -20,14 +20,18 @@ export default function DetailRealEstateAgency({ user }) {
   const organisation = organisationData?.organisation;
   const proName = organisationData?.name || "Kossi ADANOU";
   const proTel = organisationData?.phone || "+228 91 84 90 90";
-  
 
-  // ❌ No organisation or not approved
-  if (!organisation || organisation.status !== 4) return null;
-
+  if (isError) {
+    return (
+      <Alert variant="danger">
+        Une erreur s&apos;est produite lors de la recherche de l&apos;agence
+        immobilière.
+      </Alert>
+    );
+  }
   return (
     <div className="my-4">
-      <h2 className="h5">Fourni par {organisation.name_organisation}</h2>
+      <h2 className="h5">Fourni par {organisation.name_organisation || "ACB Immobilier SARL"}</h2>
       <Card className="card-horizontal">
         <div
           className="card-img-top bg-size-cover bg-position-center-x"

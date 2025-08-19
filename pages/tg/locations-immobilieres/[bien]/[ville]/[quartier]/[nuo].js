@@ -22,7 +22,7 @@ import { useEffect } from "react";
 import getPropertyFullUrl from "../../../../../../utils/getPropertyFullURL";
 import getFirstImageArray from "../../../../../../utils/formatFirsImageArray";
 import buildPropertyBadge from "../../../../../../utils/buildPropertyBadge";
-import { useSession } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import ProRealEstateAgency from "../../../../../../components/iacomponents/ProRealEstateAgency";
 import FurnishedEquipmentList from "../../../../../../components/iacomponents/FurnishedEquipmentList";
 import NearestInfrastructureList from "../../../../../../components/iacomponents/NearestInfrastructureList";
@@ -527,7 +527,7 @@ function SinglePropertyAltPage({ property }) {
                         Vous êtes agent immobilier professionnel ? Créez votre compte dès aujourd’hui et choisissez l’abonnement qui vous correspond. Accédez en toute simplicité aux coordonnées exclusives des propriétaires et agences. Cet accès réservé aux abonnés vous permet de conserver l’intégralité de vos commissions, de multiplier vos opportunités et de conclure davantage de ventes.
                       </p>
                     </div>
-                    <Button variant="primary" onClick={() => signIn()}>
+                    <Button variant="primary" onClick={() =>signIn()}>
                       Se connecter
                     </Button>
                   </Alert>
