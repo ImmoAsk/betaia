@@ -1,9 +1,12 @@
 import React from "react";
-import LoadingSpinner from "../LoadingSpinner";
-import useOrganisation from "../../customHooks/useOrganisation";
+
+
 import { Card } from "react-bootstrap";
-import SocialButton from "../SocialButton";
-import StarRating from "../StarRating";
+
+import StarRating from "../../StarRating";
+import LoadingSpinner from "../../LoadingSpinner";
+import { useOrganisation } from "../../../customHooks/useOrganisation";
+import SocialButton from "../../SocialButton";
 
 
 export default function ProRealEstateAgency({user}) {

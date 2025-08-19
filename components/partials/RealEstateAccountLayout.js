@@ -14,6 +14,7 @@ import { useRessourceByRole, useRessourceByUser, useUser } from '../../customHoo
 import MediumRealEstateAgencyCard from '../iacomponents/RealEstateAgency/MediumRealEstateAgencyCard'
 import { Spinner, Alert } from 'react-bootstrap';
 import { IMAGE_URL } from '../../utils/settings'
+import ProRealEstateAgency from '../iacomponents/RealEstateAgency/LargeRealEstateAgencyCard'
 
 const SuperAdminActionButtons = () => {
   const [showMenu, setShowMenu] = useState(false);
@@ -136,7 +137,7 @@ const RealEstateAccountLayout = ({ accountPageTitle, children }) => {
           <div className='card card-body border-0 shadow-sm pb-1 me-lg-1'>
             <div className='d-flex d-md-block d-lg-flex align-items-start pt-lg-2 mb-4'>
 
-              {session && (<Avatar img={{ src: 'https://devapi.omnisoft.africa/public/storage/uploads/visuels/avatars/' + avatarSrc, alt: 'Avatar' }} size={[48, 48]} />)}
+              {session && (<Avatar img={{ src: 'https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/avatars/' + avatarSrc, alt: 'Avatar' }} size={[48, 48]} />)}
               <div className='pt-md-2 pt-lg-0 ps-3 ps-md-0 ps-lg-3'>
                 <h2 className='fs-lg mb-0'>{session?.user?.name || " "}</h2>
                 <MediumRealEstateAgencyCard user={session ? session.user?.id : "1"} />

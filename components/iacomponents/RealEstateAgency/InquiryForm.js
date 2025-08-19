@@ -31,7 +31,7 @@ export default function InquiryFormModal() {
   return (
     <>
       <Button variant="primary" onClick={() => setShowModal(true)}>
-        Submit an Inquiry
+        Envoyer votre demande immobilière
       </Button>
 
       <Modal

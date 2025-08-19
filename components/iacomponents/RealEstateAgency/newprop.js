@@ -1,23 +1,25 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Card, Row, Col, Form, Button } from "react-bootstrap";
-import properties from "./dummy data/propertyData.json";
+import {  Row, Col, Button } from "react-bootstrap";
+import PropertyCard from "../../PropertyCard";
+import { buildPropertiesArray } from "../../../utils/generalUtils";
 
 const ITEMS_PER_PAGE = 8;
 
-export default function RealEstateProperty({ selectedType }) {
+export default function RealEstateProperty({ selectedType, orgProperties }) {
   const [currentPage, setCurrentPage] = useState(1);
 
+  const formattedProperties = buildPropertiesArray(orgProperties);
   const filteredProperties =
     selectedType === "all"
-      ? properties
-      : properties.filter(
-          (p) =>
-            p.property_type.toLowerCase().trim() ===
-            selectedType.toLowerCase().trim()
-        );
+      ? formattedProperties
+      : formattedProperties.filter(
+        (p) =>
+          p.category.toLowerCase().trim() ===
+          selectedType.toLowerCase().trim()
+      );
 
-  const totalPages = Math.ceil(filteredProperties.length / ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(orgProperties.length / ITEMS_PER_PAGE);
 
   useEffect(() => {
     setCurrentPage(1);
@@ -31,45 +33,43 @@ export default function RealEstateProperty({ selectedType }) {
 
   return (
     <>
-      <Row className="mt-4">
+      <Row className="mt-2">
         <Col md={12}>
-          <Form.Group className="mb-3">
+         
             <Row xs={1} sm={2} md={4} className="g-4">
               {currentProperties.length === 0 ? (
                 <Col>
-                  <p>No properties found for this category.</p>
+                  <p>Aucun bien immobilier disponible.</p>
                 </Col>
               ) : (
                 currentProperties.map((property) => (
-                  <Col key={property.property_id}>
-                    <Card style={{ cursor: "pointer", height: "55vh" }}>
-                      <Card.Img
-                        variant="top"
-                        src={property.property_image}
-                        alt={property.property_description}
-                        style={{ height: "150px", objectFit: "cover" }}
-                      />
-                      <Card.Body>
-                        <Card.Text>{property.property_type}</Card.Text>
-                        <ul className="list-unstyled">
-                          <li>
-                            <strong>Rent:</strong> {property.property_rent} CFA
-                          </li>
-                          <li>
-                            <strong>Type:</strong> {property.property_type}
-                          </li>
-                          <li>
-                            <strong>Location:</strong>{" "}
-                            {property.property_location}
-                          </li>
-                        </ul>
-                      </Card.Body>
-                    </Card>
+                  <Col key={property.id}>
+                    <PropertyCard
+                      href={property.href}
+                      images={property.images}
+                      title={property.title}
+                      category={property.category}
+                      location={property.location}
+                      price={property.price}
+                      badges={property.badges}
+                      wishlistButton={{
+                        tooltip: 'Ajouter à la liste de visite',
+                        props: {
+                          onClick: () => console.log('Property added to your Wishlist!')
+                        }
+                      }}
+                      footer={[
+                        ['fi-bed', property.amenities[0]],
+                        ['fi-bath',property.amenities[1]],
+                        ['fi-car', property.amenities[2]]
+                      ]}
+                      className='h-100 mx-2'
+                    />
                   </Col>
                 ))
               )}
             </Row>
-          </Form.Group>
+          
         </Col>
       </Row>
 
@@ -82,10 +82,10 @@ export default function RealEstateProperty({ selectedType }) {
               disabled={currentPage === 1}
               className="me-2"
             >
-              Previous
+              Precedent
             </Button>
             <span className="align-self-center">
-              Page {currentPage} of {totalPages}
+              {currentPage} / {totalPages}
             </span>
             <Button
               variant="secondary"
@@ -93,7 +93,7 @@ export default function RealEstateProperty({ selectedType }) {
               disabled={currentPage === totalPages}
               className="ms-2"
             >
-              Next
+              Suivant
             </Button>
           </Col>
         </Row>

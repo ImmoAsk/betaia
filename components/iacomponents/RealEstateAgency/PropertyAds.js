@@ -21,7 +21,6 @@ export default function PropertyAds() {
     <>
       <Row>
         <Col md={12}>
-          <h5>popular properties</h5>
           <Row xs={1} sm={2} md={4} className="g-4 mb-3">
             {adProperties.map((property) => (
               <Col key={`ad-${property.property_id}`}>

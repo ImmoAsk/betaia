@@ -2,7 +2,7 @@ import React from "react";
 import { Card, Alert, Button } from "react-bootstrap";
 import { useSession, signIn } from "next-auth/react";
 import LoadingSpinner from "../LoadingSpinner";
-import useOrganisation from "../../customHooks/useOrganisation";
+import {useOrganisation} from "../../customHooks/useOrganisation";
 import StarRating from "../StarRating";
 import SocialButton from "../SocialButton";
 

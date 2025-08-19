@@ -443,7 +443,7 @@ function SinglePropertyAltPage({ property }) {
                     <div>
                       <h6 className="mb-1">Connectez-vous pour en savoir plus</h6>
                       <p className="mb-0">
-                        Créez un compte et payer un abonnement adapte pour voir les détails du proprietaire direct ou l'agence immobilière.
+                        Vous êtes agent immobilier professionnel ? Créez votre compte dès aujourd’hui et choisissez l’abonnement qui vous correspond. Accédez en toute simplicité aux coordonnées exclusives des propriétaires et agences. Cet accès réservé aux abonnés vous permet de conserver l’intégralité de vos commissions, de multiplier vos opportunités et de conclure davantage de ventes.
                       </p>
                     </div>
                     <Button variant="primary" onClick={() => signIn()}>

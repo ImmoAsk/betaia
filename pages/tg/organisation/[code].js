@@ -24,20 +24,16 @@ const Organisation = ({ orgStatistics }) => {
       organisation={orgStatistics.organisation || {}}
     >
       <PropertyAds />
-      <Container fluid className="pb-lg-4 mb-sm-2">
-        <RealEstateProperty
-          selectedType={selectedType}
-          orgProperties={orgStatistics.proprietes || []}
-        />
-      </Container>
+      
+        <RealEstateProperty selectedType={selectedType} orgProperties={orgStatistics.proprietes || []}/>
+      
     </RealEstateAgencyPublicBoard>
   );
 };
 
 export async function getServerSideProps(context) {
-  // ✅ "code" matches [code].js in your pages directory
   const { code } = context.query;
-  console.log(code);
+
   if (!code) {
     return { notFound: true };
   }
@@ -88,13 +84,26 @@ export async function getServerSideProps(context) {
           piece
           nuo
           wc_douche_interne
-          categorie_propriete { id denomination }
-          infrastructures { denomination icone }
-          meubles { libelle icone }
+          categorie_propriete {
+            id
+            denomination
+          }
+          infrastructures {
+            denomination
+            icone
+          }
+          meubles {
+            libelle
+            icone
+          }
           badge_propriete {
             id
             date_expiration
-            badge { id badge_name badge_image }
+            badge {
+              id
+              badge_name
+              badge_image
+            }
           }
           pays { id code denomination }
           ville { id denomination }
@@ -112,7 +121,7 @@ export async function getServerSideProps(context) {
   try {
     const res = await fetch(`${API_URL}?query=${encodeURIComponent(query)}`);
     const json = await res.json();
-
+    //console.log(json)
     return {
       props: {
         orgStatistics: json?.data?.orgStatistics || null,

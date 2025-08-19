@@ -2,7 +2,7 @@
 import React from "react";
 import properties from "./dummy data/propertyData.json";
 
-export default function PropertyTypeCounter() {
+export default function PropertyTypeCounter({ countSejours, countLogements, countEntreprises, countAcquisitions }) {
   const typeCounts = properties.reduce((acc, property) => {
     const type = property.property_type.toLowerCase().trim();
     acc[type] = (acc[type] || 0) + 1;
@@ -19,18 +19,49 @@ export default function PropertyTypeCounter() {
   return (
     <div>
       <ul className="list-unstyled">
-        {Object.entries(typeCounts).map(([type, count]) => (
-          <li key={type} className="d-flex align-items-center mb-2">
+        
+          <li className="d-flex align-items-center mb-2">
             <i
-              className={`${typeIcons[type] || "fi-map"} me-2 text-primary`}
+              className={`${typeIcons.sejours || "fi-map"} me-2 text-primary`}
               style={{ fontSize: "1rem" }}
             ></i>
             <span>
-              <span>{count}</span> on{" "}
-              <strong>{type.charAt(0).toUpperCase() + type.slice(1)}</strong>{" "}
+              <span>{countSejours}</span> {" "}
+              <strong>Biens immobiliers meubles</strong>{" "}
             </span>
           </li>
-        ))}
+
+          <li  className="d-flex align-items-center mb-2">
+            <i
+              className={`${typeIcons.logements || "fi-map"} me-2 text-primary`}
+              style={{ fontSize: "1rem" }}
+            ></i>
+            <span>
+              <span>{countLogements}</span> {" "}
+              <strong>Logements de long terme</strong>{" "}
+            </span>
+          </li>
+          <li className="d-flex align-items-center mb-2">
+            <i
+              className={`${typeIcons.entreprises || "fi-map"} me-2 text-primary`}
+              style={{ fontSize: "1rem" }}
+            ></i>
+            <span>
+              <span>{countEntreprises}</span> {" "}
+              <strong>Biens d'entreprise</strong>{" "}
+            </span>
+          </li>
+          <li  className="d-flex align-items-center mb-2">
+            <i
+              className={`${typeIcons.acquisitions || "fi-map"} me-2 text-primary`}
+              style={{ fontSize: "1rem" }}
+            ></i>
+            <span>
+              <span>{countAcquisitions}</span> {" "}
+              <strong>Biens en achat immobilier</strong>{" "}
+            </span>
+          </li>
+        
       </ul>
     </div>
   );
