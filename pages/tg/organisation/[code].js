@@ -1,35 +1,37 @@
 import { useState } from "react";
 import RealEstateAgencyPublicBoard from "../../../components/iacomponents/RealEstateAgency/RealEstateAgencyPublicBoard";
-import { Container } from "react-bootstrap";
 import RealEstateProperty from "../../../components/iacomponents/RealEstateAgency/newprop";
 import PropertyAds from "../../../components/iacomponents/RealEstateAgency/PropertyAds";
 import { API_URL } from "../../../utils/settings";
+import axios from "axios";
 
-const Organisation = ({ orgStatistics }) => {
+const Organisation = ({ organisation_statistics }) => {
   const [selectedType, setSelectedType] = useState("all");
 
   // Handle case when no data was fetched
-  if (!orgStatistics) {
+  if (!organisation_statistics) {
     return (
       <div className="d-flex justify-content-center align-items-center" style={{ height: "70vh" }}>
         <p className="text-danger">Impossible de charger les informations de l’organisation.</p>
       </div>
     );
   }
-
+  console.log("Organisation data: ", organisation_statistics);
+  console.log("Selected type: ",selectedType)
   return (
-    <RealEstateAgencyPublicBoard
-      onSelectType={setSelectedType}
-      orgStatistics={orgStatistics.statistics || {}}
-      organisation={orgStatistics.organisation || {}}
-    >
-      <PropertyAds />
-
-      <RealEstateProperty selectedType={selectedType} orgProperties={orgStatistics.proprietes || []} />
-
-    </RealEstateAgencyPublicBoard>
-  );
-};
+      <RealEstateAgencyPublicBoard
+        onSelectType={setSelectedType}
+        orgStatistics={organisation_statistics.statistics}
+        organisation={organisation_statistics.organisation}
+      >
+        <PropertyAds />
+        <RealEstateProperty
+          selectedType={selectedType}
+          orgProperties={organisation_statistics.proprietes?.data || []}
+        />
+      </RealEstateAgencyPublicBoard>
+  )
+}
 
 export async function getServerSideProps(context) {
   const { code } = context.query;
@@ -126,24 +128,25 @@ export async function getServerSideProps(context) {
       }
     }
   `;
-
   try {
-    const res = await fetch(`${API_URL}?query=${encodeURIComponent(query)}`);
-    console.log("Full url:", `${API_URL}?query=${query}`);
+    const res = await axios.post(API_URL, { query });
     console.log("Fetching org stats for code:", code);
-    const json = await res.json();
-    console.log(json)
+    console.log("Response:", res.data);
+
+    const json = res.data; // matches what fetch().json() would give
     return {
       props: {
-        orgStatistics: json?.data?.orgStatistics || null,
-      },
+        organisation_statistics: json?.data?.orgStatistics || {},
+      }
     };
   } catch (error) {
-    console.error("Error fetching org stats:", error);
+    console.error("Error fetching org stats:", error.response?.data || error.message);
+
     return {
-      props: { orgStatistics: null },
+      props: { organisation_statistics: null },
     };
   }
+
 }
 
 export default Organisation;

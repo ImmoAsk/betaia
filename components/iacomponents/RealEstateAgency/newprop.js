@@ -4,12 +4,13 @@ import {  Row, Col, Button } from "react-bootstrap";
 import PropertyCard from "../../PropertyCard";
 import { buildPropertiesArray } from "../../../utils/generalUtils";
 
-const ITEMS_PER_PAGE = 8;
+const ITEMS_PER_PAGE = 10;
 
 export default function RealEstateProperty({ selectedType, orgProperties }) {
   const [currentPage, setCurrentPage] = useState(1);
 
   const formattedProperties = buildPropertiesArray(orgProperties);
+  console.log("Formatted Properties:", formattedProperties);
   const filteredProperties =
     selectedType === "all"
       ? formattedProperties
