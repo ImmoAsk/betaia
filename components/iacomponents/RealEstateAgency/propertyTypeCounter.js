@@ -27,7 +27,7 @@ export default function PropertyTypeCounter({ countSejours, countLogements, coun
             ></i>
             <span>
               <span>{countSejours}</span> {" "}
-              <strong>Biens immobiliers meubles</strong>{" "}
+              <strong>biens immobiliers meublés</strong>{" "}
             </span>
           </li>
 
@@ -38,7 +38,7 @@ export default function PropertyTypeCounter({ countSejours, countLogements, coun
             ></i>
             <span>
               <span>{countLogements}</span> {" "}
-              <strong>Logements de long terme</strong>{" "}
+              <strong>logements de long terme</strong>{" "}
             </span>
           </li>
           <li className="d-flex align-items-center mb-2">
@@ -48,7 +48,7 @@ export default function PropertyTypeCounter({ countSejours, countLogements, coun
             ></i>
             <span>
               <span>{countEntreprises}</span> {" "}
-              <strong>Biens d'entreprise</strong>{" "}
+              <strong>biens d'entreprise</strong>{" "}
             </span>
           </li>
           <li  className="d-flex align-items-center mb-2">
@@ -58,7 +58,7 @@ export default function PropertyTypeCounter({ countSejours, countLogements, coun
             ></i>
             <span>
               <span>{countAcquisitions}</span> {" "}
-              <strong>Biens en achat immobilier</strong>{" "}
+              <strong>biens en achat immobilier</strong>{" "}
             </span>
           </li>
         

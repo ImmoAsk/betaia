@@ -1,10 +1,6 @@
 import { useState } from "react";
-
-import { getSession, useSession } from "next-auth/react";
 import RealEstatePageLayout from "../../partials/RealEstatePageLayout";
 import PublicBoardSideBar from "./PublicBoardSideBar";
-import { Button } from "react-bootstrap";
-import InquiryFormModal from "./InquiryForm";
 
 const RealEstateAgencyPublicBoard = ({
   orgStatistics,
@@ -12,13 +8,8 @@ const RealEstateAgencyPublicBoard = ({
   children,
   onSelectType,
 }) => {
-  // State to control Collapse
-  const [open, setOpen] = useState(false);
-  const { data: session } = useSession();
-  const accountPageTitle = "Tableau de bord de l'agence";
-  //console.log(session);
-  const roleId = Number(session && session.user?.roleId);
-  //console.log(roleId);
+
+  const accountPageTitle = "Agence immobilière " + organisation?.name_organisation+" | No. "+organisation?.code_organisation;
 
   return (
     <RealEstatePageLayout pageTitle={accountPageTitle}>
@@ -26,7 +17,6 @@ const RealEstateAgencyPublicBoard = ({
         onSelectType={onSelectType}
         orgStatistics={orgStatistics}
         organisation={organisation}
-        accountPageTitle={accountPageTitle}
       >
         {children}
       </PublicBoardSideBar>

@@ -83,7 +83,7 @@ export default function RealEstateProperty({ selectedType, orgProperties }) {
               disabled={currentPage === 1}
               className="me-2"
             >
-              Precedent
+              Précedent
             </Button>
             <span className="align-self-center">
               {currentPage} / {totalPages}

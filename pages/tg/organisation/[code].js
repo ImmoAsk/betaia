@@ -21,13 +21,13 @@ const Organisation = ({ organisation_statistics }) => {
   return (
       <RealEstateAgencyPublicBoard
         onSelectType={setSelectedType}
-        orgStatistics={organisation_statistics.statistics}
-        organisation={organisation_statistics.organisation}
+        orgStatistics={organisation_statistics?.statistics}
+        organisation={organisation_statistics?.organisation}
       >
         <PropertyAds />
         <RealEstateProperty
           selectedType={selectedType}
-          orgProperties={organisation_statistics.proprietes?.data || []}
+          orgProperties={organisation_statistics?.proprietes?.data || []}
         />
       </RealEstateAgencyPublicBoard>
   )
@@ -47,6 +47,7 @@ export async function getServerSideProps(context) {
           id
           name_organisation
           logo
+          code_organisation
           description
           facebook_url
           linkedin_url
@@ -130,10 +131,13 @@ export async function getServerSideProps(context) {
   `;
   try {
     const res = await axios.post(API_URL, { query });
+
     console.log("Fetching org stats for code:", code);
+    
     console.log("Response:", res.data);
 
     const json = res.data; // matches what fetch().json() would give
+    console.log("Properties data from agency:", json?.data?.orgStatistics?.proprietes?.data || []);
     return {
       props: {
         organisation_statistics: json?.data?.orgStatistics || {},
@@ -141,7 +145,6 @@ export async function getServerSideProps(context) {
     };
   } catch (error) {
     console.error("Error fetching org stats:", error.response?.data || error.message);
-
     return {
       props: { organisation_statistics: null },
     };

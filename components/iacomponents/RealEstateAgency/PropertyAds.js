@@ -23,7 +23,7 @@ export default function PropertyAds() {
         <Col md={12}>
           <Row xs={1} sm={2} md={4} className="g-4 mb-3">
             {adProperties.map((property) => (
-              <Col key={`ad-${property.property_id}`}>
+              
                 <Card
                   style={{
                     cursor: "pointer",
@@ -51,7 +51,7 @@ export default function PropertyAds() {
                     </Card.Text>
                   </Card.Body>
                 </Card>
-              </Col>
+              
             ))}
           </Row>
         </Col>

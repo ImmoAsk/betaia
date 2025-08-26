@@ -1081,7 +1081,7 @@ export async function getServerSideProps(context) {
 
   try {
     // Fetch data from external API
-    const final_url = `${API_URL}?query={propriete(nuo:${nuo}){tarifications{id,mode,currency,montant},id,statut,super_categorie,cout_visite,cout_assistance_client,est_disponible,nuo,garage,est_meuble,titre,descriptif,surface,usage,cuisine,salon,piece,wc_douche_interne,cout_mensuel,nuitee,cout_vente,categorie_propriete{denomination,id},infrastructures{denomination,icone},meubles{libelle,icone},badge_propriete{id,date_expiration,badge{id,badge_name,badge_image}},pays{id,code,denomination},caution_avance,ville{denomination,id},quartier{id,denomination,minus_denomination},adresse{libelle},offre{denomination,id},visuels{uri,position},user{id,organisation{name_organisation,logo,description,id,adresse_commune,tel_whatsapp}}}}`
+    const final_url = `${API_URL}?query={propriete(nuo:${nuo}){tarifications{id,mode,currency,montant},id,statut,super_categorie,cout_visite,cout_assistance_client,est_disponible,nuo,garage,est_meuble,titre,descriptif,surface,usage,cuisine,salon,piece,wc_douche_interne,cout_mensuel,nuitee,cout_vente,categorie_propriete{denomination,id,minus_denomination},infrastructures{denomination,icone},meubles{libelle,icone},badge_propriete{id,date_expiration,badge{id,badge_name,badge_image}},pays{id,code,denomination},caution_avance,ville{denomination,id},quartier{id,denomination,minus_denomination},adresse{libelle},offre{denomination,id},visuels{uri,position},user{id,name,email,organisation{name_organisation,logo,description,id,adresse_commune,tel_whatsapp}}}}`
     const dataAPIresponse = await fetch(final_url);
     console.log(final_url)
     // Check if the response is OK (status 200-299)

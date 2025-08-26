@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Modal, Button, Form, Row, Col } from "react-bootstrap";
 
-export default function InquiryFormModal() {
+export default function InquiryFormModal({organisation}) {
   const [showModal, setShowModal] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -41,17 +41,16 @@ export default function InquiryFormModal() {
         size="xl"
       >
         <Modal.Header closeButton>
-          <Modal.Title>Submit an inquiry for MAC Immobilier</Modal.Title>
+          <Modal.Title>Soumettre une demande immobilière pour {organisation?.name_organisation}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Row>
             <Col md={6}>
               <Form onSubmit={handleSubmit}>
-                Kossi ADANOU
                 <Row className="mt-3">
                   <Col>
                     <Form.Group controlId="formCategory">
-                      <Form.Label>Category</Form.Label>
+                      <Form.Label>Categorie</Form.Label>
                       <Form.Select
                         as="select"
                         name="category"
@@ -59,10 +58,10 @@ export default function InquiryFormModal() {
                         onChange={handleChange}
                         required
                       >
-                        <option value="">Select Category</option>
-                        <option value="general">General Inquiry</option>
-                        <option value="support">Support</option>
-                        <option value="sales">Sales</option>
+                        <option value="">Selectionner la categorie</option>
+                        <option value="general">Requete generale</option>
+                        <option value="location">Location immobilière</option>
+                        <option value="vente">Achat immobilier</option>
                       </Form.Select>
                     </Form.Group>
                   </Col>
@@ -92,7 +91,7 @@ export default function InquiryFormModal() {
                 </Form.Group>
                 <Form.Group controlId="formImage" className="mt-3">
                   <Form.Label>
-                    Optional image to illustrate Property Need
+                    Une image (optionnelle) pour illiuster votre demande
                   </Form.Label>
                   <Form.Control
                     type="file"
@@ -102,7 +101,7 @@ export default function InquiryFormModal() {
                 </Form.Group>
                 <div className="mt-4 text-center">
                   <Button variant="primary" type="submit">
-                    Next Step
+                    Prochaine etape
                   </Button>
                 </div>
               </Form>
