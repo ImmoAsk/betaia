@@ -27,7 +27,7 @@ const updateNegotiation = async ({ negociationOffer, statut }) => {
         );
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
         const responseData = await response.json();
-        if (!responseData.data) throw new Error("Failed to update negotiation.");
+        if (!responseData.data) throw new Error("Failed to update availability.");
         return responseData.data.updateNegotiation;
     } catch (error) {
         console.error("Error updating negotiation:", error);

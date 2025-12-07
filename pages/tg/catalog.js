@@ -4,22 +4,13 @@ import { useRouter } from 'next/router'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import axios from "axios";
-import { useQuery } from '@tanstack/react-query'
 import RealEstatePageLayout from '../../components/partials/RealEstatePageLayout'
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
-import Offcanvas from 'react-bootstrap/Offcanvas'
-import Nav from 'react-bootstrap/Nav'
 import Form from 'react-bootstrap/Form'
-import InputGroup from 'react-bootstrap/InputGroup'
 import Button from 'react-bootstrap/Button'
-import ButtonGroup from 'react-bootstrap/ButtonGroup'
-import ToggleButton from 'react-bootstrap/ToggleButton'
 import Breadcrumb from 'react-bootstrap/Breadcrumb'
-import Pagination from 'react-bootstrap/Pagination'
-import ImageLoader from '../../components/ImageLoader'
-import PropertyCard from '../../components/PropertyCard'
 import SimpleBar from 'simplebar-react'
 //import Nouislider from 'nouislider-react'
 import 'simplebar/dist/simplebar.min.css'
@@ -44,9 +35,6 @@ const Popup = dynamic(() =>
   { ssr: false }
 )
 import 'leaflet/dist/leaflet.css'
-import getPropertyFullUrl from '../../utils/getPropertyFullURL'
-import buildPropertyBadge from '../../utils/buildPropertyBadge'
-import getFirstImageArray from '../../utils/formatFirsImageArray'
 import { useSession } from 'next-auth/react'
 import IAPaginaation from '../../components/iacomponents/IAPagination'
 import { buildPropertiesArray, createCatalogTitle } from '../../utils/generalUtils'
@@ -143,67 +131,6 @@ const CatalogPage = ({ categoryParam, offerParam, usageParam,townParam, district
     { name: 'Terrain',value: '13', checked: false },
     { name: 'Villa',value: '1', checked: false }
   ]
-
-  // Price range slider
-  /* const PriceRange = () => {
-    const [minRange, setMinRange] = useState(categoryParam === 'sale' ? 90000 : 1100)
-    const [maxRange, setMaxRange] = useState(categoryParam === 'sale' ? 250000 : 3000)
-
-    const handleInputChange = e => {
-      if (e.target.name === 'minRange') {
-        setMinRange(e.target.value)
-      } else {
-        setMaxRange(e.target.value)
-      }
-    }
-
-    const handleSliderChange = sliderVal => {
-      let sliderMinVal = Math.round(sliderVal[0].replace(/\D/g, ''))
-      let sliderMaxVal = Math.round(sliderVal[1].replace(/\D/g, ''))
-      setMinRange(sliderMinVal)
-      setMaxRange(sliderMaxVal)
-    }
-
-    return (
-      <>
-        <Nouislider
-          range={{ min: categoryParam === 'sale' ? 30000 : 200, max: categoryParam === 'sale' ? 500000 : 5000 }}
-          start={[minRange, maxRange]}
-          format={{
-            to: value => 'XOF ' + parseInt(value, 10),
-            from: value => Number(value)
-          }}
-          connect
-          tooltips
-          className='range-slider-ui'
-          onChange={handleSliderChange}
-        />
-        <div className='d-flex align-items-center'>
-          <div className='w-100 pe-2'>
-            <InputGroup>
-              <InputGroup.Text className='fs-base'>XOF</InputGroup.Text>
-              <Form.Control
-                name='minRange'
-                value={minRange}
-                onChange={handleInputChange}
-              />
-            </InputGroup>
-          </div>
-          <div className='text-muted'>—</div>
-          <div className='w-100 ps-2'>
-            <InputGroup>
-              <InputGroup.Text className='fs-base'>XOF</InputGroup.Text>
-              <Form.Control
-                name='maxRange'
-                value={maxRange}
-                onChange={handleInputChange}
-              />
-            </InputGroup>
-          </div>
-        </div>
-      </>
-    )
-  } */
 
   // Bedrooms number
   const [bedroomsValue, setBedroomsValue] = useState('')
@@ -345,50 +272,6 @@ const CatalogPage = ({ categoryParam, offerParam, usageParam,townParam, district
       }
     }
   ]
-
-
-
-  /* useQuery(["markers"],
-  ()=> axios.get(`${apiUrl}?query={getAllProperties(orderBy:{column:NUO,order:DESC},first:24){data{lat_long,lat_propriete,long_propriete,badge_propriete{badge{badge_name,badge_image}},visuels{uri},surface,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination}}}}`).
-  then((res)=>{
-    setMarkers(res.data.data.getAllProperties.data.map((property) =>{
-      return {
-        position: [property.lat_propriete,property.long_propriete],
-        popup:{
-        href: getPropertyFullUrl(property.pays.code,property.offre.denomination,property.categorie_propriete.denomination,property.ville.denomination,property.quartier.denomination,property.nuo),
-        img: getFirstImageArray(property.visuels),
-        title: 'N°'+property.nuo+': '+property.categorie_propriete.denomination+' à '+property.offre.denomination+' | '+property.surface+'m²',
-        category: property.usage,
-        location: property.quartier.denomination+", "+property.ville.denomination,
-        price: property.cout_mensuel==0 ? property.cout_vente :property.cout_mensuel+" XOF",
-        badges: buildPropertyBadge(property.badge_propriete),
-        amenities: [property.piece, property.wc_douche_interne, property.garage],
-        }
-      }
-    }));
-  })); */
-  //console.log(markers);
-
-  /* useQuery(["RTProperties"],
-  ()=> axios.get(`${apiUrl}?query={getAllProperties(orderBy:{column:NUO,order:DESC},first:24){data{badge_propriete{badge{badge_name,badge_image}},visuels{uri},surface,lat_long,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination}}}}`).
-  then((res)=>{
-    setRealTimeProperties(res.data.data.getAllProperties.data.map((property) =>{
-      return {
-        href: getPropertyFullUrl(property.pays.code,property.offre.denomination,property.categorie_propriete.denomination,property.ville.denomination,property.quartier.denomination,property.nuo),
-        images: getFirstImageArray(property.visuels),
-        title: 'N°'+property.nuo+': '+property.categorie_propriete.denomination+' à '+property.offre.denomination+' | '+property.surface+'m²',
-        category: property.usage,
-        address: property.quartier.denomination+", "+property.ville.denomination,
-        price: property.cout_mensuel==0 ? property.cout_vente :property.cout_mensuel+" XOF",
-        badges: buildPropertyBadge(property.badge_propriete),
-        amenities: [property.piece, property.wc_douche_interne, property.garage],
-      }
-    }));
-  })); */
-  // Properties for rent array
-
-
-  // Properties for sale array
 
   const categoryParamTitle = categoryParam => {
     let titleFromCategory

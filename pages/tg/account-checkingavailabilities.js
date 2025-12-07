@@ -172,8 +172,8 @@ export async function getServerSideProps(context) {
   } else {
     // Property owner
     _newNegotiations = await fetchNegotiationsByStatut(0, session.user.id);
-    _acceptedNegotiations = await fetchNegotiationsByStatut(1, session.user.id);
-    _declinedNegotiations = await fetchNegotiationsByStatut(2, session.user.id);
+    _acceptedNegotiations = await fetchNegotiationsByStatut(2, session.user.id);
+    _declinedNegotiations = await fetchNegotiationsByStatut(1, session.user.id);
   }
 
   return {

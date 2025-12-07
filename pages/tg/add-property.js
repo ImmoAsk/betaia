@@ -484,6 +484,71 @@ const AddPropertyPage = () => {
   };
 
 
+  const extractPropertyInfo = async () => {
+    //const description = propertyData.description || ''; // Use current description or empty string
+    setLoading(true);
+    // Prepare GraphQL mutation for rent disponibilite
+    const extract_description_data = {
+      query: `mutation ExtractPropertyDescription($input: ExtractPropertyDescriptionInput!) {
+         extractWithImmoAskIntuition(input: $input)
+      }`,
+      variables: {
+        input: {
+          description_actuelle: propertyData.description,
+        },
+      },
+    };
+    console.log("Before Mutation: ", extract_description_data);
+    try {
+      const response = await axios.post(API_URL, extract_description_data, {
+        headers: { "Content-Type": "application/json" },
+      });
+
+      // 1. Get the raw JSON string
+      //console.log("Response: ", response)
+      const raw = response.data?.data?.extractWithImmoAskIntuition;
+      console.log("Raw response: ", raw);
+      if (raw) {
+        try {
+          // 2. Parse the string as JSON
+          const parsed = JSON.parse(raw);
+          console.log("Parsed response: ", parsed);
+          // 3. Get the content field from the first choice
+          const content = parsed?.choices?.[0]?.message?.content;
+          console.log("Content: ", content);
+          // 4. Extract the JSON block from the markdown-style string
+          const jsonMatch = content?.match(/```json\s*([\s\S]*?)\s*```/);
+
+          if (jsonMatch && jsonMatch[1]) {
+            const contentJson = JSON.parse(jsonMatch[1]);
+
+            // 5. Get the description
+            //const description = contentJson.description;
+            console.log("Extracted property information:", contentJson);
+
+            // Do what you need with it (e.g., update state)
+            /* setPropertyData(prev => ({
+              ...prev,
+              description
+            })); */
+            setLoading(false);
+          } else {
+            console.error("Could not extract JSON from content.");
+          }
+        } catch (err) {
+          console.error("Parsing error:", err);
+        }
+      } else {
+        console.error("No extractWithImmoAskIntuition data found.");
+      }
+    } catch (error) {
+      console.error("Error during disponibilite:", error);
+    }
+    console.log("After Mutation: ", propertyData.description);
+  };
+
+
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setPropertyData(prevData => ({
@@ -493,37 +558,37 @@ const AddPropertyPage = () => {
     setValue(name, value);
   };
 
-const propertyTypeOptions = [
-  { value: '', label: 'Selectionner la propriété' },
-  { value: '1', label: 'Villa' },
-  { value: '2', label: 'Appartement' },
-  { value: '3', label: 'Maison' },
-  { value: '4', label: 'Chambre (Pièce ou studio)' },
-  { value: '5', label: 'Chambre salon' },
-  { value: '6', label: 'Terrain rural' },
-  { value: '7', label: 'Terrain urbain' },
-  { value: '9', label: 'Bureau' },
-  { value: '10', label: 'Appartement meublé' },
-  { value: '12', label: 'Magasin' },
-  { value: '14', label: 'Boutique' },
-  { value: '15', label: 'Studio' },
-  { value: '17', label: 'Studio meublé' },
-  { value: '18', label: 'Immeuble' },
-  { value: '19', label: 'Immeuble commercial' },
-  { value: '20', label: 'Espace coworking' },
-  { value: '21', label: 'Villa luxueuse' },
-  { value: '22', label: 'Appartement luxueux' },
-  { value: '23', label: 'Villa meublée' },
-  { value: '24', label: 'Bureau meublé' },
-  { value: '25', label: 'Hotel' },
-  { value: '26', label: 'Ecole' },
-  { value: '27', label: "Chambre d'hotel" },
-  { value: '28', label: 'Bar-restaurant' },
-  { value: '29', label: 'Espace commercial' },
-  { value: '30', label: 'Garage' },
-  { value: '31', label: 'Salle de conférence' },
-  { value: '32', label: 'Ferme agricole' },
-];
+  const propertyTypeOptions = [
+    { value: '', label: 'Selectionner la propriété' },
+    { value: '1', label: 'Villa' },
+    { value: '2', label: 'Appartement' },
+    { value: '3', label: 'Maison' },
+    { value: '4', label: 'Chambre (Pièce ou studio)' },
+    { value: '5', label: 'Chambre salon' },
+    { value: '6', label: 'Terrain rural' },
+    { value: '7', label: 'Terrain urbain' },
+    { value: '9', label: 'Bureau' },
+    { value: '10', label: 'Appartement meublé' },
+    { value: '12', label: 'Magasin' },
+    { value: '14', label: 'Boutique' },
+    { value: '15', label: 'Studio' },
+    { value: '17', label: 'Studio meublé' },
+    { value: '18', label: 'Immeuble' },
+    { value: '19', label: 'Immeuble commercial' },
+    { value: '20', label: 'Espace coworking' },
+    { value: '21', label: 'Villa luxueuse' },
+    { value: '22', label: 'Appartement luxueux' },
+    { value: '23', label: 'Villa meublée' },
+    { value: '24', label: 'Bureau meublé' },
+    { value: '25', label: 'Hotel' },
+    { value: '26', label: 'Ecole' },
+    { value: '27', label: "Chambre d'hotel" },
+    { value: '28', label: 'Bar-restaurant' },
+    { value: '29', label: 'Espace commercial' },
+    { value: '30', label: 'Garage' },
+    { value: '31', label: 'Salle de conférence' },
+    { value: '32', label: 'Ferme agricole' },
+  ];
 
   const propertyOfferOptions = [
     { value: '', label: 'Selectionner le proprietaire' },
@@ -1220,13 +1285,18 @@ const propertyTypeOptions = [
                 <Form.Group controlId="description">
                   <div className="d-flex justify-content-between align-items-center mb-2">
                     <Form.Label className="fw-bold mb-0">Description</Form.Label>
-                    {session && session.user && (['1200', '1233', '1234', '1235'].includes(session.user.roleId)) && (
-                      <div>
-                        <Button variant="outline-secondary" size="sm" className="me-2" onClick={refineDescription} disabled={loading}>Reformuler la description</Button>
-                        <Button variant="primary" size="sm" onClick={generateDescription} disabled={loading}>Génerer la description</Button>
-                      </div>
-                    )
-                    }
+                    <div>
+                      {/* <Button variant="outline-secondary" size="sm" className="me-2" onClick={extractPropertyInfo} disabled={loading}>Extraire les infos</Button> */}
+                      {session && session.user && (['1200', '1233', '1234', '1235'].includes(session.user.roleId)) && (
+                        <>
+                          <Button variant="outline-secondary" size="sm" className="me-2" onClick={refineDescription} disabled={loading}>Reformuler la description</Button>
+                          <Button variant="primary" size="sm" onClick={generateDescription} disabled={loading}>Génerer la description</Button>
+                        </>
+
+
+                      )
+                      }
+                    </div>
                   </div>
                   <Form.Control
                     {...register('description')}
