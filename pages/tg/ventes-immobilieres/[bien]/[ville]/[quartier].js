@@ -17,7 +17,7 @@ import Breadcrumb from 'react-bootstrap/Breadcrumb'
 import Pagination from 'react-bootstrap/Pagination'
 import ImageLoader from '../../../../../components/ImageLoader'
 //import Nouislider from 'nouislider-react'
-import 'simplebar/dist/simplebar.min.css'
+import 'simplebar-react/dist/simplebar.min.css'
 //import 'nouislider/distribute/nouislider.css'
 import { capitalizeFirstLetter, toLowerCaseString } from '../../../../../utils/generalUtils'
 

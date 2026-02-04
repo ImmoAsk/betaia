@@ -20,7 +20,7 @@ import ImageLoader from '../../../components/ImageLoader'
 import PropertyCard from '../../../components/PropertyCard'
 import SimpleBar from 'simplebar-react'
 //import Nouislider from 'nouislider-react'
-import 'simplebar/dist/simplebar.min.css'
+import 'simplebar-react/dist/simplebar.min.css'
 //import 'nouislider/distribute/nouislider.css'
 
 const MapContainer = dynamic(() => 

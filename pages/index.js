@@ -20,7 +20,7 @@ import PropertyCardOverlay from '../components/PropertyCardOverlay'
 import SocialButton from '../components/SocialButton'
 import StarRating from '../components/StarRating'
 //import Nouislider from 'nouislider-react'
-import { Navigation, Pagination, EffectFade } from 'swiper'
+import { Navigation, Pagination, EffectFade } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { useSession } from 'next-auth/react'
 import axios from "axios";

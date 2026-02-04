@@ -13,7 +13,7 @@ import Badge from 'react-bootstrap/Badge'
 import CloseButton from 'react-bootstrap/CloseButton'
 import ScrollLink from '../ScrollLink'
 import SimpleBar from 'simplebar-react'
-import 'simplebar/dist/simplebar.min.css'
+import 'simplebar-react/dist/simplebar.min.css'
 
 const ComponentPageLayout = (props) => {
 

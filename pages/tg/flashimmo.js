@@ -5,7 +5,7 @@ import dynamic from 'next/dynamic'
 import axios from "axios";
 import RealEstatePageLayout from '../../components/partials/RealEstatePageLayout'
 import Container from 'react-bootstrap/Container'
-import 'simplebar/dist/simplebar.min.css'
+import 'simplebar-react/dist/simplebar.min.css'
 //import 'nouislider/distribute/nouislider.css'
 import 'dotenv/config'
 const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;

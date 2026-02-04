@@ -1,7 +1,7 @@
 import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import PropertySlideCard from "./PropertySlideCard";
-import { Navigation } from "swiper";
+import { Navigation } from "swiper/modules";
 
 export function PropertyListSwiper({ propertyList }) {
     return (<Swiper

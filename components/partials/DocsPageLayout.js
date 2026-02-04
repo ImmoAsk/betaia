@@ -12,7 +12,7 @@ import Button from 'react-bootstrap/Button'
 import Badge from 'react-bootstrap/Badge'
 import CloseButton from 'react-bootstrap/CloseButton'
 import SimpleBar from 'simplebar-react'
-import 'simplebar/dist/simplebar.min.css'
+import 'simplebar-react/dist/simplebar.min.css'
 
 const DocsPageLayout = (props) => {
 

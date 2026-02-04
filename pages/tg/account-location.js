@@ -19,9 +19,10 @@ const AccountLocationPage = () => {
   
   const { data: session } = useSession();
   const user_id = session ? session.user.id :0;
-  useQuery(["RTProperties"],
-  ()=> axios.get(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getUserProperties(user_id:${user_id},first:5){data{surface,badge_propriete{badge{badge_name,badge_image}},id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination},visuels{uri}}}}`).
-  then((res)=>{
+  useQuery({
+    queryKey: ["RTProperties"],
+    queryFn: ()=> axios.get(`https://immoaskbetaapi.omnisoft.africa/public/api/v2?query={getUserProperties(user_id:${user_id},first:5){data{surface,badge_propriete{badge{badge_name,badge_image}},id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination},visuels{uri}}}}`).
+    then((res)=>{
     setProperties(res.data.data.getUserProperties.data.map((property) =>{
       return {
         href: getPropertyFullUrl(property.pays.code,property.offre.denomination,property.categorie_propriete.denomination,property.ville.denomination,property.quartier.denomination,property.nuo),
@@ -34,7 +35,7 @@ const AccountLocationPage = () => {
         amenities: [property.piece, property.wc_douche_interne, property.garage]
       }
     }));
-  }));
+  })});
   console.log(properties);
   const deleteAll = (e) => {
     e.preventDefault()

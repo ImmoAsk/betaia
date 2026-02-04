@@ -6,7 +6,10 @@ import { API_URL } from "../utils/settings";
 function useOrganisation(user_id) {
     const final_url= `${API_URL}?query={user(id:${user_id}){name,phone,organisation{name_organisation,description,status,logo,facebook_url,linkedin_url,twitter_url,tel_whatsapp,tel_portable}}}`
     console.log(final_url)
-    return useQuery(["organisation", user_id],()=> axios.get(final_url).then(res=>res.data.data.user));
+    return useQuery({
+        queryKey: ["organisation", user_id],
+        queryFn: ()=> axios.get(final_url).then(res=>res.data.data.user)
+    });
 }
 
 function useOrganisationStatistics(code_organisation) {
@@ -108,9 +111,11 @@ function useOrganisationStatistics(code_organisation) {
   const final_url = `${API_URL}?query=${encodeURIComponent(query)}`;
   console.log(final_url);
 
-  return useQuery(
-    ["orgStatistics", code_organisation],
-    () => axios.get(final_url).then(res => res.data.data.orgStatistics)
-  );
+  return useQuery({
+    queryKey: ["orgStatistics", code_organisation],
+    queryFn: () => axios.get(final_url).then(res => res.data.data.orgStatistics)
+  });
 }
+
+export default useOrganisation;
 export { useOrganisation, useOrganisationStatistics };

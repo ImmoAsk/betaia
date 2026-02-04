@@ -16,7 +16,7 @@ import IconBox from '../../components/IconBox'
 import PropertyCard from '../../components/PropertyCard'
 import SocialButton from '../../components/SocialButton'
 import StarRating from '../../components/StarRating'
-import { Navigation, Pagination, EffectFade, Autoplay } from 'swiper'
+import { Navigation, Pagination, EffectFade, Autoplay } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { useSession } from 'next-auth/react'
 import axios from "axios";

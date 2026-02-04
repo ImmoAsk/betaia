@@ -14,7 +14,7 @@ import Badge from 'react-bootstrap/Badge'
 import Card from 'react-bootstrap/Card'
 import ImageLoader from '../../../../../../components/ImageLoader'
 import PropertyCard from '../../../../../../components/PropertyCard'
-import { Navigation, Pagination } from 'swiper'
+import { Navigation, Pagination } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import 'swiper/css'
 import 'swiper/css/navigation'
@@ -182,8 +182,8 @@ function SinglePropertyAltPage({ property }) {
             clickable: true,
             renderBullet: (index, className) => {
               //console.log("Index: " + index)
-              session ? thumbnailSize = thumbnailSize : thumbnailSize = unconnectedThumbnailSize;
-              if (index === thumbnailSize) {
+              const activeTSize = session ? thumbnailSize : unconnectedThumbnailSize;
+              if (index === activeTSize) {
                 return `<li class='swiper-thumbnail ${className}'>
                   <div class='d-flex flex-column align-items-center justify-content-center h-100'>
                     <i class='fi-play-circle fs-4 mb-1'></i>

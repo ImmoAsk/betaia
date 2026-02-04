@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Offcanvas, Form, Button, ButtonGroup, ToggleButton } from "react-bootstrap";
 import SimpleBar from 'simplebar-react'
-import 'simplebar/dist/simplebar.min.css'
+import 'simplebar-react/dist/simplebar.min.css'
 import TownList from './TownList';
 import QuarterList from './QuarterList';
 export default function FormSearchOffcanvas({ oville, oquartier, ocategory, ooffre, parentData, onChildDataChange, handleClose, bathroomsValue, bedroomsValue, PriceRange, amenities, bathrooms, options, bedrooms, propertyType, isDesktop, offcanvasContainer }) {
