@@ -3,7 +3,7 @@ import Link from 'next/link'
 // Nav item
 const CardNavItem = ({ href, icon, children, active, className, ...props }) => (
   <>
-    {href ? <Link href={href}>
+    {href ? <Link href={href} legacyBehavior>
       <a {...props} className={`card-nav-link${className ? ` ${className}` : ''}${active ? ' active': ''}`}>
         {icon ? <i className={`${icon} me-2`}></i> : ''}
         {children}

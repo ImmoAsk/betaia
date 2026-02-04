@@ -29,7 +29,7 @@ const BlogCard = ({
       wrapperClass = `card card-horizontal border-0${extraClass}`
       cardBodyClass = 'card-body px-0 pt-0 pb-lg-5 pb-sm-4 pb-2'
       if (img) {
-        cardImage = href ? <Link href={href}>
+        cardImage = href ? <Link href={href} legacyBehavior>
           <a className='card-img-top position-relative rounded-3 overflow-hidden me-sm-4 mb-sm-0 mb-3'>
             <ImageLoader
               src={img.src}
@@ -66,7 +66,7 @@ const BlogCard = ({
       wrapperClass = `card card-hover ${light ? 'card-light' : 'border-0 shadow-sm'} h-100${extraClass}`
       cardBodyClass = 'card-body pb-0'
       if (img) {
-        cardImage = href ? <Link href={href}>
+        cardImage = href ? <Link href={href} legacyBehavior>
           <a className='card-img-top d-flex position-relative overflow-hidden'>
             <ImageLoader
               src={img.src}
@@ -101,7 +101,7 @@ const BlogCard = ({
       wrapperClass = `card card-horizontal card-hover ${light ? 'card-light' : 'border-0 shadow-sm'}${extraClass}`
       cardBodyClass = 'card-body'
       if (img) {
-        cardImage = href ? <Link href={href}>
+        cardImage = href ? <Link href={href} legacyBehavior>
           <a className='card-img-top d-flex position-relative overflow-hidden'>
             <ImageLoader
               src={img.src}
@@ -138,7 +138,7 @@ const BlogCard = ({
       wrapperClass = className
       cardBodyClass = 'py-3'
       if (img) {
-        cardImage = href ? <Link href={href}>
+        cardImage = href ? <Link href={href} legacyBehavior>
           <a className='d-flex position-relative rounded-3 overflow-hidden'>
             <ImageLoader
               src={img.src}
@@ -176,19 +176,19 @@ const BlogCard = ({
       {cardImage}
       <div className={cardBodyClass}>
         {category && <>
-          {category.href ? <Link href={category.href}>
+          {category.href ? <Link href={category.href} legacyBehavior>
             <a className={`${size === 'lg' ? 'fs-sm' : 'fs-xs'} text-uppercase text-decoration-none`}>{category.title}</a>
           </Link> : <div className={`${size === 'lg' ? 'fs-sm' : 'fs-xs'} text-uppercase text-primary`}>{category.title}</div>}
         </>}
         {title && <h3 className={`${size === 'lg' ? 'h5' : 'fs-base'} pt-1 mb-2`}>
-          {href ? <Link href={href}>
+          {href ? <Link href={href} legacyBehavior>
             <a className={light ? 'nav-link-light' : 'nav-link'}>{title}</a>
           </Link> : <span className={light ? 'text-light opacity-80' : 'text-nav'}>{title}</span>}
         </h3>}
         {text && <p className={`${size === 'lg' ? 'fs-base' : 'fs-sm'} mb-2 ${light ? 'text-light opacity-50' : 'text-muted'}`}>{text}</p>}
         {type !== 'card' && <>
           {author ? <>
-            {author.href ? <Link href={author.href}>
+            {author.href ? <Link href={author.href} legacyBehavior>
               <a className='d-flex align-items-center text-decoration-none pt-2'>
                 {author.img && <div
                   className='position-relative flex-shrink-0 rounded-circle overflow-hidden me-2'

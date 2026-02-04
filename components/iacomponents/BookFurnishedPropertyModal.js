@@ -169,7 +169,7 @@ const BookFurnishedPropertyModal = ({
           <div className="col-md-6 p-4 p-sm-5">
             <h3 className="h4">Faire une réservation</h3>
             {bookingNotification && <div className="alert alert-success mt-3">{bookingNotification}</div>}
-            {!session && <i>✨ Astuce : Créez votre compte <Link href='/signup-light'>
+            {!session && <i>✨ Astuce : Créez votre compte <Link href='/signup-light' legacyBehavior>
               <a className='fs-sm'>ici</a>
             </Link> pour ne plus à remplir votre nom, prénom, email et numéro de téléphone 📱 à chaque fois. 😊</i>}
             <Form noValidate validated={validated} onSubmit={handleSubmit}>

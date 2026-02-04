@@ -12,7 +12,7 @@ const MarketButton = ({ href, market, target, className, ...props }) => {
   }
 
   return (
-    <Link href={href}>
+    <Link href={href} legacyBehavior>
       {target === '_blank' ? <a {...props} className={`btn-market${extraClass}`} target='_blank' rel='noreferrer'>
         {marketIcon}
       </a> : <a {...props} className={`btn-market${extraClass}`}>

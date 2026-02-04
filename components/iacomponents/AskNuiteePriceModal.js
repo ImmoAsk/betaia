@@ -103,7 +103,7 @@ const AskNuiteePriceModal = ({ property, onSwap, pillButtons, ...props }) => {
             <h3 className='h4'>
               Prix de la nuitée du bien immobilier N° {property.nuo}
             </h3>
-            {!session && <i>✨ Astuce : Créez votre compte <Link href='/signup-light'>
+            {!session && <i>✨ Astuce : Créez votre compte <Link href='/signup-light' legacyBehavior>
               <a className='fs-sm'>ici</a>
             </Link> pour ne plus à remplir votre nom, prénom, email et numéro de téléphone 📱 à chaque fois. 😊</i>}
             <Form noValidate validated={validated} onSubmit={handleSubmit}>

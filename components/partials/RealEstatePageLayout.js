@@ -94,7 +94,8 @@ const RealEstatePageLayout = (props) => {
     }
   };
 
-  const OpenSignInOrRedirectToPropertyForm = () => {
+  const OpenSignInOrRedirectToPropertyForm = (e) => {
+    e.preventDefault();
     if (!session) {
       handleSigninShow();
       handleSignupShow();
@@ -107,7 +108,7 @@ const RealEstatePageLayout = (props) => {
   const avatarSrc = session?.user?.avatar || '/images/avatars/45.jpg';
   const displayCreationAccountButton = () => {
     return (
-      <Link href="/auth/signin" passHref>
+      <Link href="/auth/signin" passHref legacyBehavior>
         <Button
           size="sm"
           variant="outline-primary d-none d-lg-block order-lg-3"
@@ -121,7 +122,7 @@ const RealEstatePageLayout = (props) => {
 
   const displayCreationContractButton = () => {
     return (
-      <Link href="/tg/account-contracts" passHref>
+      <Link href="/tg/account-contracts" passHref legacyBehavior>
         <Button
           size="sm"
           variant="outline-primary d-none d-lg-block order-lg-3"
@@ -135,7 +136,7 @@ const RealEstatePageLayout = (props) => {
 
   const displayCreationProjectButton = () => {
     return (
-      <Link href="/tg/add-project" passHref>
+      <Link href="/tg/add-project" passHref legacyBehavior>
         <Button
           size="sm"
           variant="outline-primary d-none d-lg-block order-lg-3"
@@ -236,7 +237,7 @@ const RealEstatePageLayout = (props) => {
             }`}
         >
           <Container fluid>
-            <Link href="/tg" passHref>
+            <Link href="/tg" passHref legacyBehavior>
               <Navbar.Brand className="me-3 me-xl-4">
                 <ImageLoader
                   priority
@@ -254,7 +255,7 @@ const RealEstatePageLayout = (props) => {
 
             {props.userLoggedIn ? (
               <Dropdown className="d-none d-lg-block order-lg-3 my-n2 me-3">
-                <Link href="/tg/account-properties" passHref>
+                <Link href="/tg/account-properties" passHref legacyBehavior>
                   <Dropdown.Toggle
                     as={Nav.Link}
                     className="dropdown-toggle-flush d-flex py-1 px-0"
@@ -300,7 +301,7 @@ const RealEstatePageLayout = (props) => {
                     </div>
                   </div>
                   {session && session.user.roleId === "1232" && (
-                    <Link href="/tg/subscriptions" passHref>
+                    <Link href="/tg/subscriptions" passHref legacyBehavior>
                       <Dropdown.Item>
                         <i className="fi-star me-2"></i>
                         Votre{" "}
@@ -315,6 +316,7 @@ const RealEstatePageLayout = (props) => {
                           <Link
                             href={ressource.ressource.ressourceLink}
                             passHref
+                            legacyBehavior
                           >
                             <Dropdown.Item key={ressource.ressource.id}>
                               <i
@@ -329,29 +331,29 @@ const RealEstatePageLayout = (props) => {
                       }
                     })}
 
-                  <Link href="/tg/settings" passHref>
+                  <Link href="/tg/settings" passHref legacyBehavior>
                     <Dropdown.Item>
                       <i className="fi-settings opacity-60 me-2"></i>
                       Paramètres
                     </Dropdown.Item>
                   </Link>
-                  <Link href="/tg/account-info" passHref>
+                  <Link href="/tg/account-info" passHref legacyBehavior>
                     <Dropdown.Item>
                       <i className="fi-user opacity-60 me-2"></i>
                       Informations personnelles
                     </Dropdown.Item>
                   </Link>
-                  <Link href="/tg/account-security" passHref>
+                  <Link href="/tg/account-security" passHref legacyBehavior>
                     <Dropdown.Item>
                       <i className="fi-lock opacity-60 me-2"></i>
                       Mot de passe &amp; Sécurité
                     </Dropdown.Item>
                   </Link>
                   <Dropdown.Divider />
-                  <Link href="/tg/help-center" passHref>
+                  <Link href="/tg/help-center" passHref legacyBehavior>
                     <Dropdown.Item>Aide</Dropdown.Item>
                   </Link>
-                  <Link href="/api/auth/signout" passHref>
+                  <Link href="/api/auth/signout" passHref legacyBehavior>
                     <Dropdown.Item>Se déconnecter</Dropdown.Item>
                   </Link>
                 </Dropdown.Menu>
@@ -369,10 +371,10 @@ const RealEstatePageLayout = (props) => {
               displayCreationAccountButton()
             )}
 
-            <Link href="/tg/add-property" passHref>
+            <Link href="/tg/add-property" passHref legacyBehavior>
               <Button
                 size="sm"
-                className="order-lg-3 ms-2"
+                className="order-lg-4 ms-2"
                 onClick={OpenSignInOrRedirectToPropertyForm}
               >
                 <i className="fi-building me-2"></i>
@@ -394,6 +396,7 @@ const RealEstatePageLayout = (props) => {
                     <Link
                       href="/tg/locations-immobilieres/appartement-meuble"
                       passHref
+                      legacyBehavior
                     >
                       <Dropdown.Item>
                         Appartements meublés à louer
@@ -402,12 +405,14 @@ const RealEstatePageLayout = (props) => {
                     <Link
                       href="/tg/locations-immobilieres/villa-meublee"
                       passHref
+                      legacyBehavior
                     >
                       <Dropdown.Item>Villas meublées à louer</Dropdown.Item>
                     </Link>
                     <Link
                       href="/tg/locations-immobilieres/studio-meuble"
                       passHref
+                      legacyBehavior
                     >
                       <Dropdown.Item>Studios meublés à louer</Dropdown.Item>
                     </Link>
@@ -421,10 +426,10 @@ const RealEstatePageLayout = (props) => {
                     Entreprendre
                   </Dropdown.Toggle>
                   <Dropdown.Menu renderOnMount>
-                    <Link href="/tg/locations-immobilieres/bureau" passHref>
+                    <Link href="/tg/locations-immobilieres/bureau" passHref legacyBehavior>
                       <Dropdown.Item>Bureaux à louer</Dropdown.Item>
                     </Link>
-                    <Link href="/tg/locations-immobilieres/magasin" passHref>
+                    <Link href="/tg/locations-immobilieres/magasin" passHref legacyBehavior>
                       <Dropdown.Item>
                         Magasins ou Entrepots à louer
                       </Dropdown.Item>
@@ -432,13 +437,14 @@ const RealEstatePageLayout = (props) => {
                     <Link
                       href="/tg/locations-immobilieres/espace-coworking"
                       passHref
+                      legacyBehavior
                     >
                       <Dropdown.Item>Espaces co-working à louer</Dropdown.Item>
                     </Link>
-                    <Link href="/tg/locations-immobilieres/boutique" passHref>
+                    <Link href="/tg/locations-immobilieres/boutique" passHref legacyBehavior>
                       <Dropdown.Item>Boutiques à louer</Dropdown.Item>
                     </Link>
-                    <Link href="/tg/baux-immobiliers/terrain" passHref>
+                    <Link href="/tg/baux-immobiliers/terrain" passHref legacyBehavior>
                       <Dropdown.Item>Terrains à bailler</Dropdown.Item>
                     </Link>
                   </Dropdown.Menu>
@@ -451,37 +457,40 @@ const RealEstatePageLayout = (props) => {
                     Acquérir
                   </Dropdown.Toggle>
                   <Dropdown.Menu renderOnMount>
-                    <Link href="/tg/ventes-immobilieres/terrain" passHref>
+                    <Link href="/tg/ventes-immobilieres/terrain" passHref legacyBehavior>
                       <Dropdown.Item>Terrains à vendre</Dropdown.Item>
                     </Link>
                     <Link
                       href="/tg/ventes-immobilieres/terrain-urbain"
                       passHref
+                      legacyBehavior
                     >
                       <Dropdown.Item>Terrains urbains à vendre</Dropdown.Item>
                     </Link>
-                    <Link href="/tg/ventes-immobilieres/villa" passHref>
+                    <Link href="/tg/ventes-immobilieres/villa" passHref legacyBehavior>
                       <Dropdown.Item>Villas à vendre</Dropdown.Item>
                     </Link>
-                    <Link href="/tg/ventes-immobilieres/maison" passHref>
+                    <Link href="/tg/ventes-immobilieres/maison" passHref legacyBehavior>
                       <Dropdown.Item>Maisons à vendre</Dropdown.Item>
                     </Link>
-                    <Link href="/tg/ventes-immobilieres/appartement" passHref>
+                    <Link href="/tg/ventes-immobilieres/appartement" passHref legacyBehavior>
                       <Dropdown.Item>Appartements à vendre</Dropdown.Item>
                     </Link>
-                    <Link href="/tg/ventes-immobilieres/immeuble" passHref>
+                    <Link href="/tg/ventes-immobilieres/immeuble" passHref legacyBehavior>
                       <Dropdown.Item>Immeubles à vendre</Dropdown.Item>
                     </Link>
                     <Dropdown.Divider />
                     <Link
                       href="/tg/ventes-immobilieres/villa-luxueuse"
                       passHref
+                      legacyBehavior
                     >
                       <Dropdown.Item>Villas luxueuses à vendre</Dropdown.Item>
                     </Link>
                     <Link
                       href="/tg/ventes-immobilieres/appartement-luxueux"
                       passHref
+                      legacyBehavior
                     >
                       <Dropdown.Item>
                         Appartements luxueux à vendre
@@ -501,25 +510,27 @@ const RealEstatePageLayout = (props) => {
                     <Link
                       href="/tg/locations-immobilieres/appartement"
                       passHref
+                      legacyBehavior
                     >
                       <Dropdown.Item>Appartements à louer</Dropdown.Item>
                     </Link>
-                    <Link href="/tg/locations-immobilieres/villa" passHref>
+                    <Link href="/tg/locations-immobilieres/villa" passHref legacyBehavior>
                       <Dropdown.Item>Villas à louer</Dropdown.Item>
                     </Link>
-                    <Link href="/tg/locations-immobilieres/maison" passHref>
+                    <Link href="/tg/locations-immobilieres/maison" passHref legacyBehavior>
                       <Dropdown.Item>Maison à louer</Dropdown.Item>
                     </Link>
                     <Link
                       href="/tg/locations-immobilieres/chambre-salon"
                       passHref
+                      legacyBehavior
                     >
                       <Dropdown.Item>Chambres salon à louer</Dropdown.Item>
                     </Link>
-                    <Link href="/tg/locations-immobilieres/studio" passHref>
+                    <Link href="/tg/locations-immobilieres/studio" passHref legacyBehavior>
                       <Dropdown.Item>Studio à louer</Dropdown.Item>
                     </Link>
-                    <Link href="/tg/locations-immobilieres/chambre" passHref>
+                    <Link href="/tg/locations-immobilieres/chambre" passHref legacyBehavior>
                       <Dropdown.Item>Chambre à louer</Dropdown.Item>
                     </Link>
                   </Dropdown.Menu>
@@ -556,7 +567,7 @@ const RealEstatePageLayout = (props) => {
                         </div>
                       </div>
                       {session && session.user.roleId === "1232" && (
-                        <Link href="/tg/subscriptions" passHref>
+                        <Link href="/tg/subscriptions" passHref legacyBehavior>
                           <Dropdown.Item>
                             <i className="fi-star"></i>
                             Votre abonnement
@@ -570,6 +581,7 @@ const RealEstatePageLayout = (props) => {
                               <Link
                                 href={ressource.ressource.ressourceLink}
                                 passHref
+                                legacyBehavior
                               >
                                 <Dropdown.Item key={ressource.ressource.id}>
                                   <i
@@ -584,23 +596,23 @@ const RealEstatePageLayout = (props) => {
                             );
                           }
                         })}
-                      <Link href="/tg/account-info" passHref>
+                      <Link href="/tg/account-info" passHref legacyBehavior>
                         <Dropdown.Item>
                           <i className="fi-user opacity-60 me-2"></i>
                           Informations personnelles
                         </Dropdown.Item>
                       </Link>
-                      <Link href="/tg/account-security" passHref>
+                      <Link href="/tg/account-security" passHref legacyBehavior>
                         <Dropdown.Item>
                           <i className="fi-lock opacity-60 me-2"></i>
                           Mot de passe &amp; Sécurité
                         </Dropdown.Item>
                       </Link>
                       <Dropdown.Divider />
-                      <Link href="/tg/help-center" passHref>
+                      <Link href="/tg/help-center" passHref legacyBehavior>
                         <Dropdown.Item>Aide</Dropdown.Item>
                       </Link>
-                      <Link href="/api/auth/signout" passHref>
+                      <Link href="/api/auth/signout" passHref legacyBehavior>
                         <Dropdown.Item>Se déconnecter</Dropdown.Item>
                       </Link>
                     </Dropdown.Menu>
@@ -716,49 +728,49 @@ const RealEstatePageLayout = (props) => {
               <h4 className="h5">Produits</h4>
               <Nav className="flex-column">
                 <Nav.Item className="mb-2">
-                  <Link href="/tg/catalog?usage=3" passHref>
+                  <Link href="/tg/catalog?usage=3" passHref legacyBehavior>
                     <Nav.Link className="p-0 fw-normal">
                       Acquérir un immeuble en securite
                     </Nav.Link>
                   </Link>
                 </Nav.Item>
                 <Nav.Item className="mb-2">
-                  <Link href="/tg/add-property" passHref>
+                  <Link href="/tg/add-property" passHref legacyBehavior>
                     <Nav.Link className="p-0 fw-normal">
                       Lister un bien immobilier
                     </Nav.Link>
                   </Link>
                 </Nav.Item>
                 <Nav.Item className="mb-2">
-                  <Link href="/tg/catalog?usage=1" passHref>
+                  <Link href="/tg/catalog?usage=1" passHref legacyBehavior>
                     <Nav.Link className="p-0 fw-normal">
                       Trouver un logement en temps
                     </Nav.Link>
                   </Link>
                 </Nav.Item>
                 <Nav.Item className="mb-2">
-                  <Link href="/tg/catalog?usage=5" passHref>
+                  <Link href="/tg/catalog?usage=5" passHref legacyBehavior>
                     <Nav.Link className="p-0 fw-normal">
                       Reserver un séjour meublé
                     </Nav.Link>
                   </Link>
                 </Nav.Item>
                 <Nav.Item className="mb-2">
-                  <Link href="/tg/catalog?usage=3" passHref>
+                  <Link href="/tg/catalog?usage=3" passHref legacyBehavior>
                     <Nav.Link active={false} className="p-0 fw-normal">
                       Trouver un emplacement entreprise
                     </Nav.Link>
                   </Link>
                 </Nav.Item>
                 <Nav.Item className="mb-2">
-                  <Link href="/tg/account-properties" passHref>
+                  <Link href="/tg/account-properties" passHref legacyBehavior>
                     <Nav.Link active={false} className="p-0 fw-normal">
                       Gerer votre bien immobilier
                     </Nav.Link>
                   </Link>
                 </Nav.Item>
                 <Nav.Item className="mb-2">
-                  <Link href="/tg/account-rentpayments" passHref>
+                  <Link href="/tg/account-rentpayments" passHref legacyBehavior>
                     <Nav.Link active={false} className="p-0 fw-normal">
                       Payer le loyer autrement
                     </Nav.Link>
@@ -775,6 +787,7 @@ const RealEstatePageLayout = (props) => {
                   <Link
                     href="https://whatsapp.com/channel/0029Va8UsGT6mYPQ1aIvdm25"
                     passHref
+                    legacyBehavior
                   >
                     <Nav.Link className="p-0 fw-normal">
                       Souscrire à la chaîne FlashImmo
@@ -782,7 +795,7 @@ const RealEstatePageLayout = (props) => {
                   </Link>
                 </Nav.Item>
                 <Nav.Item className="mb-2">
-                  <Link href="#" passHref>
+                  <Link href="#" passHref legacyBehavior>
                     <Nav.Link className="p-0 fw-normal">
                       Rejoindre l'elite des guru immobiliers
                     </Nav.Link>
@@ -794,7 +807,7 @@ const RealEstatePageLayout = (props) => {
                   </Link>
                 </Nav.Item> */}
                 <Nav.Item className="mb-2">
-                  <Link href="#" passHref>
+                  <Link href="#" passHref legacyBehavior>
                     <Nav.Link className="p-0 fw-normal">
                       Devenir membre de LesVoisins
                     </Nav.Link>
@@ -809,7 +822,7 @@ const RealEstatePageLayout = (props) => {
               {footerPosts.map((post, indx) => (
                 <div key={indx}>
                   <article className="d-flex align-items-start">
-                    <Link href={post.href}>
+                    <Link href={post.href} legacyBehavior>
                       <a
                         className="d-none d-sm-flex flex-shrink-0 mb-sm-0 mb-3"
                         style={{ width: "100px", height: "100px" }}
@@ -828,12 +841,12 @@ const RealEstatePageLayout = (props) => {
                         {post.category}
                       </h6>
                       <h5 className="mb-2 fs-base">
-                        <Link href={post.href}>
+                        <Link href={post.href} legacyBehavior>
                           <a className="nav-link">{post.title}</a>
                         </Link>
                       </h5>
                       <p className="mb-2 fs-sm">{post.text}</p>
-                      <Link href="#">
+                      <Link href="#" legacyBehavior>
                         <a className="nav-link nav-link-muted d-inline-block me-3 p-0 fs-xs fw-normal">
                           <i className="fi-calendar mt-n1 me-1 fs-sm align-middle opacity-70"></i>
                           {post.date}

@@ -95,7 +95,7 @@ const FurnishedBooking = ({ project }) => {
                     {/* Show Accept and Decline buttons when project.statut === 0 */}
                     {(role === '1230' || role === '1200') && project.statut === 0 && (
                         <div className="d-flex justify-content-center mt-3">
-                            <Link href='#' passHref onClick={(e)=>handleDecline(e)}>
+                            <Link href='#' passHref legacyBehavior onClick={(e)=>handleDecline(e)}>
                                 <Button
                                     variant="outline-secondary"
                                     className="me-2 flex-grow-1"
@@ -104,7 +104,7 @@ const FurnishedBooking = ({ project }) => {
                                     Decliner
                                 </Button>
                             </Link>
-                            <Link href='#' passHref onClick={(e)=>handleAccept(e)}>
+                            <Link href='#' passHref legacyBehavior onClick={(e)=>handleAccept(e)}>
                                 <Button
                                     variant="primary"
                                     className="flex-grow-1"

@@ -27,7 +27,7 @@ const PropertyCardOverlay = ({
       </div>
       <div className='card-footer content-overlay border-0 pt-0 pb-4'>
         <div className='d-sm-flex justify-content-between align-items-end pt-5 mt-2 mt-sm-5'>
-          {href ? <Link href={href}>
+          {href ? <Link href={href} legacyBehavior>
             <a className='text-decoration-none text-light pe-2'>
               {category && <div className='fs-sm text-uppercase pt-2 mb-1'>{category}</div>}
               {title && <h3 className='h5 text-light mb-1'>{title}</h3>}
@@ -46,7 +46,7 @@ const PropertyCardOverlay = ({
           </div>}
           {button && <div className='btn-group ms-n2 ms-sm-0 mt-3'>
             {button.href ?
-              <Link href={button.href}>
+              <Link href={button.href} legacyBehavior>
                 <a
                   {...button.props}
                   className={button.variant ? `btn btn-${button.variant} rounded-end-0 px-3` : 'btn btn-primary rounded-end-0 px-3'}

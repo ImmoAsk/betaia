@@ -1,7 +1,7 @@
 import axios from 'axios';
 import NextAuth from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
-import 'dotenv/config'
+
 const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 const login = async (username, password) => {
   const query = `

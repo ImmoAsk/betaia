@@ -11,7 +11,7 @@ export default function PropertySlideCard({property}){
     
         <Row className='gy-md-0 gy-sm-4 gy-3 gx-sm-4 gx-0'>
           <Col md={7}>
-            <Link href={property[0].href} passHref>
+            <Link href={property[0].href} legacyBehavior passHref>
               <Card
                 as='a'
                 className='text-decoration-none text-light bg-size-cover bg-position-center border-0 overflow-hidden h-100'
@@ -31,7 +31,7 @@ export default function PropertySlideCard({property}){
             </Link>
           </Col>
           <Col md={5}>
-            <Link href={property[1].href} passHref>
+            <Link href={property[1].href} legacyBehavior passHref>
               <Card
                 as='a'
                 className='border-0 overflow-hidden text-decoration-none text-light mb-sm-4 mb-3'

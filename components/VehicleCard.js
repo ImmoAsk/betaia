@@ -63,7 +63,7 @@ const VehicleCard = ({
             <Dropdown.Menu variant={light? 'dark' : ''} className='my-1'>
               {dropdown.map((item, indx) => {
                 if (item.href) {
-                  return <Link key={indx} href={item.href} passHref>
+                  return <Link key={indx} href={item.href} passHref legacyBehavior>
                     <Dropdown.Item {...item.props}>
                       <i className={`${item.icon}${light ? '' : ' opacity-60'} me-2`}></i>
                       {item.label}

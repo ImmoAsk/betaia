@@ -1,4 +1,3 @@
-import SSRProvider from 'react-bootstrap/SSRProvider'
 import Router from 'next/router'
 import Head from 'next/head'
 import NProgress from 'nprogress'
@@ -6,16 +5,28 @@ import { SessionProvider } from 'next-auth/react'
 import ScrollTopButton from '../components/ScrollTopButton'
 import '../scss/theme.scss'
 import { QueryClient, QueryClientProvider, } from '@tanstack/react-query'
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Script from 'next/script';
 const GA_MEASUREMENT_ID = 'G-2K9WB0X66W'; // Replace with your Measurement ID
-const queryClient = new QueryClient();
 const ImmoAsk = ({ Component, pageProps: { session, ...pageProps } }) => {
+  const [queryClient] = useState(() => new QueryClient());
 
-  // Bind NProgress to Next Router events (Page loading animation)
-  Router.events.on('routeChangeStart', () => NProgress.start())
-  Router.events.on('routeChangeComplete', () => NProgress.done())
-  Router.events.on('routeChangeError', () => NProgress.done())
+  useEffect(() => {
+    // Bind NProgress to Next Router events (Page loading animation)
+    const handleRouteStart = () => NProgress.start();
+    const handleRouteDone = () => NProgress.done();
+
+    Router.events.on('routeChangeStart', handleRouteStart);
+    Router.events.on('routeChangeComplete', handleRouteDone);
+    Router.events.on('routeChangeError', handleRouteDone);
+
+    return () => {
+      Router.events.off('routeChangeStart', handleRouteStart);
+      Router.events.off('routeChangeComplete', handleRouteDone);
+      Router.events.off('routeChangeError', handleRouteDone);
+    };
+  }, []);
+
   useEffect(() => {
     const handleRouteChange = (url) => {
       window.gtag('config', GA_MEASUREMENT_ID, {
@@ -29,7 +40,7 @@ const ImmoAsk = ({ Component, pageProps: { session, ...pageProps } }) => {
     };
   }, []);
   return (
-    <SSRProvider>
+    <>
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>ImmoAsk | Immobilier, Foncier, Tourisme, Décoration, BTP au Togo</title>
@@ -76,7 +87,7 @@ const ImmoAsk = ({ Component, pageProps: { session, ...pageProps } }) => {
         easing='easeInOutQuart'
         tooltip='En haut'
       />
-    </SSRProvider>
+    </>
   )
 }
 

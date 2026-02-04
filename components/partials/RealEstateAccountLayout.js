@@ -24,7 +24,7 @@ const SuperAdminActionButtons = () => {
   return (
     <>
       <div className="flex items-center space-x-2 mb-3">
-        <Link href="/tg/add-property" passHref>
+        <Link href="/tg/add-property" passHref legacyBehavior>
           <Button as="a" size="lg" className="w-100 mb-3">
             <i className="fi-plus me-2"></i>
             Lister un immeuble
@@ -48,10 +48,10 @@ const SuperAdminActionButtons = () => {
               className="position-absolute bg-white border rounded shadow p-2 mt-2"
               style={{ zIndex: 10, width: '100%' }}
             >
-              <Link href="/tg/add-project" passHref>
+              <Link href="/tg/add-project" passHref legacyBehavior>
                 <a className="dropdown-item mb-2 d-block text-decoration-none">Lancer un projet immobilier</a>
               </Link>
-              <Link href="/tg/account-contracts" passHref>
+              <Link href="/tg/account-contracts" passHref legacyBehavior>
                 <a className="dropdown-item d-block text-decoration-none">Créer un contrat immobilier</a>
               </Link>
             </div>

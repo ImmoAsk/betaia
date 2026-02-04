@@ -57,7 +57,7 @@ const VenueCard = ({
             <Dropdown.Menu variant={light? 'dark' : ''} className='my-1'>
               {dropdown.map((item, indx) => {
                 if (item.href) {
-                  return <Link key={indx} href={item.href} passHref>
+                  return <Link key={indx} href={item.href} passHref legacyBehavior>
                     <Dropdown.Item {...item.props}>
                       <i className={`${item.icon}${light ? '' : ' opacity-60'} me-2`}></i>
                       {item.label}
@@ -75,7 +75,7 @@ const VenueCard = ({
         </div>
       </div>}
       {title && <h3 className='mb-2 fs-lg'>
-        {href ? <Link href={href}>
+        {href ? <Link href={href} legacyBehavior>
           <a className={light ? 'nav-link-light stretched-link' : 'nav-link stretched-link'}>{title}</a>
         </Link> : <span className={light ? 'text-light': ''}>
           {title}

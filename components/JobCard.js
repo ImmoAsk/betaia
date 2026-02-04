@@ -58,7 +58,7 @@ const JobCard = ({
             <Dropdown.Menu variant={light? 'dark' : ''} className='my-1'>
               {dropdown.map((item, indx) => {
                 if (item.href) {
-                  return <Link key={indx} href={item.href} passHref>
+                  return <Link key={indx} href={item.href} passHref legacyBehavior>
                     <Dropdown.Item {...item.props}>
                       <i className={`${item.icon} opacity-60 me-2`}></i>
                       {item.label}
@@ -79,7 +79,7 @@ const JobCard = ({
           </div>}
         </div>
         {title && <h3 className='h6 card-title pt-1 mb-3'>
-          {href ? <Link href={href}>
+          {href ? <Link href={href} legacyBehavior>
             <a className={`${light ? 'text-light opacity-80' : 'text-nav'} stretched-link text-decoration-none`}>
               {title}
             </a>

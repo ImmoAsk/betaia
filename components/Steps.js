@@ -8,7 +8,7 @@ export const Step = ({ href, active, children, index, ...props }) => {
 
   return (
     <>
-      {href ? <Link href={href}>
+      {href ? <Link href={href} legacyBehavior>
         <a {...props} className={`step${isActive}`}>
           <div className='step-progress'>
             <span className='step-progress-start'></span>

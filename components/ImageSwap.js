@@ -21,7 +21,7 @@ const ImageSwap = ({
 
   return (
     <>
-      {href ? <Link href={href}><a {...props} className={`swap-image${extraClass}`}>
+      {href ? <Link href={href} legacyBehavior><a {...props} className={`swap-image${extraClass}`}>
         <Image priority src={imgToSrc} width={imgToWidth} height={imgToHeight} alt={imgToAlt} />
         <Image priority src={imgFromSrc} width={imgFromWidth} height={imgFromHeight} alt={imgFromAlt} />
       </a></Link> : <div {...props} className={`swap-image${extraClass}`}>

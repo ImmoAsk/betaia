@@ -1,6 +1,6 @@
 import * as jwt from "next-auth/jwt"
 import { NextApiRequestCookies } from "next/dist/server/api-utils"
-import 'dotenv/config'
+
 /**
  * Reads the JWT token from the next-auth session cookie, and returns the
  * session object by decoding the token. Returns null if the JWT token is absent

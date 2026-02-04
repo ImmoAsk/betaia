@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import 'dotenv/config';
 import { API_URL } from "../utils/settings";
 
 function useOrganisation(user_id) {

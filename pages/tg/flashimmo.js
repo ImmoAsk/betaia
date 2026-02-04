@@ -7,7 +7,7 @@ import RealEstatePageLayout from '../../components/partials/RealEstatePageLayout
 import Container from 'react-bootstrap/Container'
 import 'simplebar-react/dist/simplebar.min.css'
 //import 'nouislider/distribute/nouislider.css'
-import 'dotenv/config'
+
 const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 const MapContainer = dynamic(() =>

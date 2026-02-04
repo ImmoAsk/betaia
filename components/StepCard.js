@@ -16,7 +16,7 @@ const StepCard = ({
 
   return (
     <>
-      {href ? <Link href={href}>
+      {href ? <Link href={href} legacyBehavior>
         <a {...props} className={`card card-hover bg-transparent card-body h-100${alignment}${light ? ' card-light' : ' border-0'}${extraClass}`}>
           <div className='h2 text-primary mb-2 pb-1'>{number}</div>
           <h3 className='h5 card-title'>{title}</h3>
