@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test API Direct</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    pre { background: #f5f5f5; padding: 15px; overflow: auto; }
+    .card { border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 8px; }
+    .card img { max-width: 200px; height: auto; }
+  </style>
+</head>
+<body>
+  <h1>Test API Betaia Direct</h1>
+  <button onclick="testAPI()">Tester l'API</button>
+  <div id="result"></div>
+  
+  <script>
+    const API_BASE = 'https://devapi.omnisoft.africa/public/api/v2';
+    const IMAGE_BASE = 'https://devapi.omnisoft.africa/public/storage/uploads/visuels/proprietes/';
+    
+    async function testAPI() {
+      const result = document.getElementById('result');
+      result.innerHTML = 'Chargement...';
+      
+      const query = `{
+        getPropertiesByKeyWords(
+          orderBy:{column:NUO,order:DESC},
+          limit:3,
+          usage:1,
+          statut:1
+        ) {
+          nuo, titre, cout_mensuel, cout_vente, surface, piece,
+          visuels { uri },
+          quartier { denomination },
+          ville { denomination },
+          categorie_propriete { denomination }
+        }
+      }`;
+      
+      try {
+        const url = `${API_BASE}?query=${encodeURIComponent(query)}`;
+        console.log('URL:', url);
+        
+        const response = await fetch(url);
+        const json = await response.json();
+        console.log('Reponse:', json);
+        
+        const properties = json.data?.getPropertiesByKeyWords || [];
+        
+        let html = '<h2>' + properties.length + ' annonces recuperees</h2>';
+        
+        properties.forEach(p => {
+          const img = p.visuels?.[0]?.uri ? IMAGE_BASE + p.visuels[0].uri : '';
+          html += `
+            <div class="card">
+              ${img ? '<img src="'+img+'" alt="Image">' : ''}
+              <h3>${p.titre || 'Sans titre'} - ${p.nuo}</h3>
+              <p><strong>Prix:</strong> ${p.cout_mensuel || p.cout_vente} XOF</p>
+              <p><strong>Lieu:</strong> ${p.quartier?.denomination || ''}, ${p.ville?.denomination || ''}</p>
+              <p><strong>Surface:</strong> ${p.surface} m2 - ${p.piece} pieces</p>
+            </div>
+          `;
+        });
+        
+        result.innerHTML = html;
+      } catch (e) {
+        result.innerHTML = '<p style="color:red">Erreur: ' + e.message + '</p>';
+        console.error(e);
+      }
+    }
+  </script>
+</body>
+</html>
