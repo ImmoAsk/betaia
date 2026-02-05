@@ -3,7 +3,6 @@ import Link from 'next/link'
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
-import Breadcrumb from 'react-bootstrap/Breadcrumb'
 import Button from 'react-bootstrap/Button'
 import Collapse from 'react-bootstrap/Collapse'
 import Avatar from '../Avatar'
@@ -19,15 +18,23 @@ const CarFinderAccountLayout = ({ accountPageTitle, children }) => {
     <Container className='pt-5 pb-lg-4 mt-5 mb-sm-2'>
 
       {/* Breadcrumb */}
-      <Breadcrumb className='breadcrumb-light mb-4 pt-md-3'>
-        <Link href='/car-finder' passHref>
-          <Breadcrumb.Item>Home</Breadcrumb.Item>
-        </Link>
-        <Link href='/car-finder/account-info' passHref>
-          <Breadcrumb.Item>Account</Breadcrumb.Item>
-        </Link>
-        <Breadcrumb.Item active>{accountPageTitle}</Breadcrumb.Item>
-      </Breadcrumb>
+      <nav aria-label="breadcrumb" className='breadcrumb-light mb-4 pt-md-3'>
+        <ol className="breadcrumb">
+          <li className="breadcrumb-item">
+            <Link href='/car-finder'>
+              <a>Home</a>
+            </Link>
+          </li>
+          <li className="breadcrumb-item">
+            <Link href='/car-finder/account-info'>
+              <a>Account</a>
+            </Link>
+          </li>
+          <li className="breadcrumb-item active" aria-current="page">
+            {accountPageTitle}
+          </li>
+        </ol>
+      </nav>
 
       <Row>
 

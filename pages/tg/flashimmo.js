@@ -114,13 +114,22 @@ export async function getServerSideProps(context) {
         townParam: ville || null,
         usageParam: usage || null,
         districtParam: quartier || null,
-        _rentingProperties: _rentingProperties.data.getPropertiesByKeyWords || [],
+        _rentingProperties: _rentingProperties?.data?.getPropertiesByKeyWords || [],
       },
     };
   } catch (error) {
     console.error('Error fetching data:', error);
+    // Retourne un objet props vide en cas d'erreur
+    return {
+      props: {
+        categoryParam: categorie || null,
+        offerParam: offre || null,
+        townParam: ville || null,
+        usageParam: usage || null,
+        districtParam: quartier || null,
+        _rentingProperties: [],
+      },
+    };
   }
-
-
 }
 export default FlashImmoPage

@@ -5,7 +5,6 @@ import { useRouter } from 'next/router'
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
-import Breadcrumb from 'react-bootstrap/Breadcrumb'
 import Button from 'react-bootstrap/Button'
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
 import Tooltip from 'react-bootstrap/Tooltip'
@@ -126,12 +125,16 @@ function SinglePropertyAltPage({ property }) {
     defineUnauthenticatedThumbNails();
   }, []);
   const getRecommendProperties = () => {
-    axios.get(`${API_URL}?query={getRecommendProperties(first:5,offre_id:"1",nuo:${property.nuo},quartier_id:"${property.quartier.id}",categorie_id:"${property.categorie_propriete.id}"){data{surface,badge_propriete{badge{badge_name,badge_image}},id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination},visuels{uri}}}}`).
+    // Utilise le proxy local pour eviter les erreurs CORS
+    const query = `{getRecommendProperties(first:5,offre_id:"1",nuo:${property.nuo},quartier_id:"${property.quartier.id}",categorie_id:"${property.categorie_propriete.id}"){data{surface,badge_propriete{badge{badge_name,badge_image}},id,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination},visuels{uri}}}}`;
+    axios.get('/api/graphql', { params: { query } }).
       then((res) => {
-        setRecommendProperties(res.data.data.getRecommendProperties.data.map((propertyr) => {
+        const properties = res.data?.data?.getRecommendProperties?.data || [];
+        setRecommendProperties(properties.map((propertyr) => {
           //const { status, data:badges_property, error, isFetching,isLoading,isError }  = usePropertyBadges(property.id);
+          const paysCode = propertyr?.pays?.code || 'tg';
           return {
-            href: getPropertyFullUrl(propertyr.pays.code, propertyr.offre.denomination, propertyr.categorie_propriete.denomination, propertyr.ville.denomination, propertyr.quartier.denomination, propertyr.nuo),
+            href: getPropertyFullUrl(paysCode, propertyr.offre.denomination, propertyr.categorie_propriete.denomination, propertyr.ville.denomination, propertyr.quartier.denomination, propertyr.nuo),
             images: getFirstImageArray(propertyr.visuels),
             title: 'N°' + propertyr.nuo + ': ' + propertyr.categorie_propriete.denomination + ' à ' + propertyr.offre.denomination + ' | ' + propertyr.surface + 'm²',
             category: propertyr.usage,
@@ -293,24 +296,36 @@ function SinglePropertyAltPage({ property }) {
         <Container as='section'>
           <Container as='section' className='mt-5 mb-lg-5 mb-4 pt-5 pb-lg-5'>
             {/* Breadcrumb */}
-            <Breadcrumb className='mb-3 pt-md-3'>
-              <Link href='/tg/catalog' passHref>
-                <Breadcrumb.Item>Catalogue immobilier</Breadcrumb.Item>
-              </Link>
-              <Link href='/tg/investissements-immobiliers' passHref>
-                <Breadcrumb.Item>{"Investissements immobiliers"}</Breadcrumb.Item>
-              </Link>
-              <Link href={`/tg/investissements-immobiliers/${bien}`} passHref>
-                <Breadcrumb.Item>{property.categorie_propriete.denomination}</Breadcrumb.Item>
-              </Link>
-              <Link href={`/tg/investissements-immobiliers/${bien}/${ville}`} passHref>
-                <Breadcrumb.Item>{property.ville.denomination}</Breadcrumb.Item>
-              </Link>
-              <Link href={`/tg/investissements-immobiliers/${bien}/${ville}/${quartier}`} passHref>
-                <Breadcrumb.Item>{property.quartier.denomination}</Breadcrumb.Item>
-              </Link>
-              <Breadcrumb.Item active>{nuo}</Breadcrumb.Item>
-            </Breadcrumb>
+            <nav aria-label="breadcrumb" className="mb-3 pt-md-3">
+              <ol className="breadcrumb">
+                <li className="breadcrumb-item">
+                  <Link href="/tg/catalog">
+                    <a>Catalogue immobilier</a>
+                  </Link>
+                </li>
+                <li className="breadcrumb-item">
+                  <Link href="/tg/investissements-immobiliers">
+                    <a>Investissements immobiliers</a>
+                  </Link>
+                </li>
+                <li className="breadcrumb-item">
+                  <Link href={`/tg/investissements-immobiliers/${bien}`}>
+                    <a>{property.categorie_propriete.denomination}</a>
+                  </Link>
+                </li>
+                <li className="breadcrumb-item">
+                  <Link href={`/tg/investissements-immobiliers/${bien}/${ville}`}>
+                    <a>{property.ville.denomination}</a>
+                  </Link>
+                </li>
+                <li className="breadcrumb-item">
+                  <Link href={`/tg/investissements-immobiliers/${bien}/${ville}/${quartier}`}>
+                    <a>{property.quartier.denomination}</a>
+                  </Link>
+                </li>
+                <li className="breadcrumb-item active" aria-current="page">{nuo}</li>
+              </ol>
+            </nav>
             <Row>
               <Col lg={7} className='pt-lg-2 mb-5 mb-lg-0'>
                 <div className='d-flex flex-column'>

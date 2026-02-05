@@ -1,11 +1,16 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import getPropertyByFullUrl from "../remoteAPI/getProperty";
 
-const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+// Utilise le proxy local pour eviter les erreurs CORS
+const apiUrl = '/api/graphql';
+
 export default function useProperty(nuo) {
     return useQuery({
         queryKey: ["Property", nuo],
-        queryFn: ()=> axios.get(`${apiUrl}?query={propriete(nuo:${nuo}){nuo,garage,titre,descriptif,surface,usage,cuisine,salon,piece,wc_douche_interne,cout_mensuel,nuitee,cout_vente,categorie_propriete{denomination},ville{denomination},quartier{denomination},adresse{libelle},offre{denomination},visuels{uri}}}`).then(res=>res.data)
-    });;
+        queryFn: async () => {
+            const query = `{propriete(nuo:${nuo}){nuo,garage,titre,descriptif,surface,usage,cuisine,salon,piece,wc_douche_interne,cout_mensuel,nuitee,cout_vente,categorie_propriete{denomination},ville{denomination},quartier{denomination},adresse{libelle},offre{denomination},visuels{uri}}}`;
+            const response = await axios.get(apiUrl, { params: { query } });
+            return response.data || null;
+        }
+    });
 }

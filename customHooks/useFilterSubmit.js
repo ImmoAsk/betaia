@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import axios from 'axios';
-import { API_URL } from '../utils/settings';
+
+// Utilise le proxy local pour eviter les erreurs CORS
+const apiUrl = '/api/graphql';
 
 const useFilterSubmit = () => {
   const [loading, setLoading] = useState(false);
@@ -37,25 +39,25 @@ const useFilterSubmit = () => {
       cautionAvance,
     });
     try {
-      let query = `query={getPropertiesByKeyWords(limit:100,orderBy:{column:NUO,order:DESC}`;
+      let query = `{getPropertiesByKeyWords(limit:100,orderBy:{column:NUO,order:DESC}`;
 
       if (category) {
-        query += `,offre_id:\"${category}\"`;
+        query += `,offre_id:"${category}"`;
       }
       if (propertyType) {
-        query += `,categorie_id:\"${propertyType}\"`;
+        query += `,categorie_id:"${propertyType}"`;
       }
       if (city) {
-        query += `,ville_id:\"${city}\"`;
+        query += `,ville_id:"${city}"`;
       }
       if (district) {
-        query += `,quartier_id:\"${district}\"`;
+        query += `,quartier_id:"${district}"`;
       }
       if (bedrooms) {
         query += `,piece:${bedrooms}`;
       }
       if (bathrooms) {
-        query += `,wc_douche_interne:\"${bathrooms}\"`;
+        query += `,wc_douche_interne:"${bathrooms}"`;
       }
       if (surfaceMin) {
         query += `,surface_min:${surfaceMin}`;
@@ -78,21 +80,15 @@ const useFilterSubmit = () => {
       }
       
       if (cautionAvance) {
-        query += `,caution_avance:\"${cautionAvance}\"`;
+        query += `,caution_avance:"${cautionAvance}"`;
       }
       if (garage) {
         query += `,garage:${Number(garage)}`;
       }
-      /* if (amenities && amenities.length > 0) {
-        query += `,amenities:[${amenities.map(a => `\"${a}\"`).join(',')}]`;
-      }
-      if (options && options.length > 0) {
-        query += `,options:[${options.map(o => `\"${o}\"`).join(',')}]`;
-      } */
 
       query += `){badge_propriete{badge{badge_name,badge_image}},visuels{uri,position},surface,lat_long,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination,minus_denomination}}}`;
 
-      const response = await axios.get(`${API_URL}?${query}`);
+      const response = await axios.get(apiUrl, { params: { query } });
       return response.data?.data?.getPropertiesByKeyWords || [];
     } catch (error) {
       console.error("Error submitting filters:", error);

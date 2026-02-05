@@ -1,9 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
-const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+// Utilise le proxy local pour eviter les erreurs CORS
+const apiUrl = '/api/graphql';
+
 export default function useListQuarters(town_id) {
-    return useQuery(["Quarters", town_id],
-  ()=> axios.get(`${apiUrl}?query={getDistrictsByTownId(ville_id:${town_id}){id,denomination,code}}`).then(res=>res.data.data.getDistrictsByTownId));
+    return useQuery({
+        queryKey: ["Quarters", town_id],
+        queryFn: async () => {
+            const query = `{getDistrictsByTownId(ville_id:${town_id}){id,denomination,code}}`;
+            const response = await axios.get(apiUrl, { params: { query } });
+            return response.data?.data?.getDistrictsByTownId || [];
+        }
+    });
 }
 

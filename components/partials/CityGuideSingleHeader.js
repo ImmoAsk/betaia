@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import Nav from 'react-bootstrap/Nav'
-import Breadcrumb from 'react-bootstrap/Breadcrumb'
 import Button from 'react-bootstrap/Button'
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
 import Tooltip from 'react-bootstrap/Tooltip'
@@ -10,15 +9,23 @@ import Dropdown from 'react-bootstrap/Dropdown'
 const CityGuideSingleHeader = ({ title, activeNav }) => (
 
   <div className='container pt-5 mt-5'>
-    <Breadcrumb className='mb-3 pt-md-3'>
-      <Link href='/city-guide' passHref>
-        <Breadcrumb.Item>Home</Breadcrumb.Item>
-      </Link>
-      <Link href='/city-guide/catalog' passHref>
-        <Breadcrumb.Item>Find accommodation</Breadcrumb.Item>
-      </Link>
-      <Breadcrumb.Item active>{title}</Breadcrumb.Item>
-    </Breadcrumb>
+    <nav aria-label="breadcrumb" className='mb-3 pt-md-3'>
+      <ol className="breadcrumb">
+        <li className="breadcrumb-item">
+          <Link href='/city-guide'>
+            <a>Home</a>
+          </Link>
+        </li>
+        <li className="breadcrumb-item">
+          <Link href='/city-guide/catalog'>
+            <a>Find accommodation</a>
+          </Link>
+        </li>
+        <li className="breadcrumb-item active" aria-current="page">
+          {title}
+        </li>
+      </ol>
+    </nav>
 
     {/* Title + Wishlist + Sharing */}
     <div className='d-sm-flex align-items-center justify-content-between mb-4 pb-sm-2'>

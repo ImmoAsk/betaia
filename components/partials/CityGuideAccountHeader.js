@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import Breadcrumb from 'react-bootstrap/Breadcrumb'
 import Button from 'react-bootstrap/Button'
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
 import Tooltip from 'react-bootstrap/Tooltip'
@@ -8,15 +7,23 @@ import StarRating from '../StarRating'
 
 const CityGuideAccountHeader = ({ breadcrumb }) => (
   <>
-    <Breadcrumb className='mb-4 pt-2 pt-lg-3'>
-      <Link href='/city-guide' passHref>
-        <Breadcrumb.Item>Home</Breadcrumb.Item>
-      </Link>
-      <Link href='/city-guide/account-info' passHref>
-        <Breadcrumb.Item>Account</Breadcrumb.Item>
-      </Link>
-      <Breadcrumb.Item active>{breadcrumb}</Breadcrumb.Item>
-    </Breadcrumb>
+    <nav aria-label="breadcrumb" className='mb-4 pt-2 pt-lg-3'>
+      <ol className="breadcrumb">
+        <li className="breadcrumb-item">
+          <Link href='/city-guide'>
+            <a>Home</a>
+          </Link>
+        </li>
+        <li className="breadcrumb-item">
+          <Link href='/city-guide/account-info'>
+            <a>Account</a>
+          </Link>
+        </li>
+        <li className="breadcrumb-item active" aria-current="page">
+          {breadcrumb}
+        </li>
+      </ol>
+    </nav>
 
     <div className='d-flex align-items-center justify-content-between pb-4 mb-2'>
       <div className='d-flex align-items-center'>

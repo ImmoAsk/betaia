@@ -3,7 +3,6 @@ import Link from 'next/link'
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
-import Breadcrumb from 'react-bootstrap/Breadcrumb'
 import Button from 'react-bootstrap/Button'
 import Collapse from 'react-bootstrap/Collapse'
 import Avatar from '../Avatar'
@@ -327,15 +326,23 @@ const RealEstateAccountLayout = ({ accountPageTitle, children }) => {
 
         {/* Page content */}
         <Col md={7} lg={9} className='mb-5'>
-          <Breadcrumb className='mb-4 pt-md-3'>
-            <Link href='/tg' passHref>
-              <Breadcrumb.Item>Accueil</Breadcrumb.Item>
-            </Link>
-            <Link href='/tg/account-info' passHref>
-              <Breadcrumb.Item>Compte</Breadcrumb.Item>
-            </Link>
-            <Breadcrumb.Item active>{accountPageTitle}</Breadcrumb.Item>
-          </Breadcrumb>
+          <nav aria-label="breadcrumb" className='mb-4 pt-md-3'>
+            <ol className="breadcrumb">
+              <li className="breadcrumb-item">
+                <Link href='/tg'>
+                  <a>Accueil</a>
+                </Link>
+              </li>
+              <li className="breadcrumb-item">
+                <Link href='/tg/account-info'>
+                  <a>Compte</a>
+                </Link>
+              </li>
+              <li className="breadcrumb-item active" aria-current="page">
+                {accountPageTitle}
+              </li>
+            </ol>
+          </nav>
           {children}
         </Col>
       </Row>

@@ -219,14 +219,12 @@ function formatDateToFrenchMonthYear(dateString) {
 function createPropertyObject(property) {
     //console.log("Before Processing - Property: ", property);
 
-    if (!property.pays) {
-        console.error("🚨 Error: property.pays is undefined!");
-        return null;
-    }
+    // Utilise 'tg' comme code pays par defaut si non defini
+    const paysCode = property?.pays?.code || 'tg';
 
     let _objetProperty = {
         nuo: property?.nuo,
-        href: getPropertyFullUrl(property?.pays?.code, property?.offre?.denomination,
+        href: getPropertyFullUrl(paysCode, property?.offre?.denomination,
             property?.categorie_propriete?.denomination,
             property?.ville?.denomination,
             property?.quartier?.minus_denomination,
@@ -312,8 +310,12 @@ function formatRealEstateAgents(owners) {
 
 
 function formatTownsOptions(towns) {
+    // Retourne un tableau vide si towns est undefined ou null (pendant le chargement)
+    if (!towns) {
+        return [];
+    }
     if (!Array.isArray(towns)) {
-        console.error('Invalid input: towns must be an array.');
+        console.warn('formatTownsOptions: Input is not an array, returning empty array.');
         return [];
     }
 
@@ -326,8 +328,12 @@ function formatTownsOptions(towns) {
 }
 
 function formatDistrictsOptions(districts) {
+    // Retourne un tableau vide si districts est undefined ou null (pendant le chargement)
+    if (!districts) {
+        return [];
+    }
     if (!Array.isArray(districts)) {
-        console.error('Invalid input: districts must be an array.');
+        console.warn('formatDistrictsOptions: Input is not an array, returning empty array.');
         return [];
     }
 
@@ -369,13 +375,15 @@ function formatLandlordPropertiesOptions(properties) {
 function createCatalogTitle(category, offer, town, district, usage) {
     let titleParts = [];
 
+    // Ajoute chaque partie avec un separateur visuel
     if (offer && OFFER_MAP[offer]) titleParts.push(OFFER_MAP[offer]);
-    if (category && CATEGORY_MAP[category]) titleParts.push(CATEGORY_MAP[category]);
+    if (category && CATEGORY_MAP[category]) titleParts.push(CATEGORY_MAP[category].toLowerCase());
     if (usage && USAGE_MAP[usage]) titleParts.push(USAGE_MAP[usage]);
-    if (district && DISTRICT_MAP[district]) titleParts.push(`à ${DISTRICT_MAP[district]}`);
-    else if (town && TOWN_MAP[town]) titleParts.push(`à ${TOWN_MAP[town]}`);
+    if (district && DISTRICT_MAP[district]) titleParts.push(`a ${DISTRICT_MAP[district]}`);
+    else if (town && TOWN_MAP[town]) titleParts.push(`a ${TOWN_MAP[town]}`);
 
-    return titleParts.length ? "Catalogue immobilier de " + titleParts.join(" ") : "Catalogue des biens immobiliers";
+    // Retourne le titre avec des separateurs " - " pour meilleure lisibilite
+    return titleParts.length ? "Catalogue immobilier - " + titleParts.join(" - ") : "Catalogue des biens immobiliers";
 }
 
 function createTop6PropertiesIn(properties) {

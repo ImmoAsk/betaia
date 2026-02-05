@@ -1,12 +1,16 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
-const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
-export default function useRTListProperties() {
+// Utilise le proxy local pour eviter les erreurs CORS
+const apiUrl = '/api/graphql';
 
+export default function useRTListProperties() {
     return useQuery({
         queryKey: ["RTProperties"],
-        queryFn: ()=> axios.get(`${apiUrl}?query={getAllProperties(first:20){data{est_disponible,nuo,usage,caution_avance,descriptif}}}`).
-        then(res=>res.data.data.getAllProperties)
+        queryFn: async () => {
+            const query = `{getAllProperties(first:20){data{est_disponible,nuo,usage,caution_avance,descriptif}}}`;
+            const response = await axios.get(apiUrl, { params: { query } });
+            return response.data?.data?.getAllProperties || { data: [] };
+        }
     });
 }

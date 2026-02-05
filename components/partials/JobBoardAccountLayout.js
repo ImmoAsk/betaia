@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Container from 'react-bootstrap/Container'
-import Breadcrumb from 'react-bootstrap/Breadcrumb'
 import Avatar from '../../components/Avatar'
 import Nav from 'react-bootstrap/Nav'
 import Collapse from 'react-bootstrap/Collapse'
@@ -30,15 +29,23 @@ const JobBoardAccountLayout = ({ accountPageTitle, activeAccountNav, children })
       <Container as='section' className='content-overlay mt-5 mb-md-4 py-5'>
 
         {/* Breadcrumb */}
-        <Breadcrumb className='breadcrumb-light mb-3 mb-md-4 pt-md-3'>
-          <Link href='/job-board' passHref>
-            <Breadcrumb.Item>Home</Breadcrumb.Item>
-          </Link>
-          <Link href='/job-board/account-profile' passHref>
-            <Breadcrumb.Item>Account</Breadcrumb.Item>
-          </Link>
-          <Breadcrumb.Item active>{accountPageTitle}</Breadcrumb.Item>
-        </Breadcrumb>
+        <nav aria-label="breadcrumb" className='breadcrumb-light mb-3 mb-md-4 pt-md-3'>
+          <ol className="breadcrumb">
+            <li className="breadcrumb-item">
+              <Link href='/job-board'>
+                <a>Home</a>
+              </Link>
+            </li>
+            <li className="breadcrumb-item">
+              <Link href='/job-board/account-profile'>
+                <a>Account</a>
+              </Link>
+            </li>
+            <li className="breadcrumb-item active" aria-current="page">
+              {accountPageTitle}
+            </li>
+          </ol>
+        </nav>
 
         {/* Page card like wrapper */}
         <div className='bg-light shadow-sm rounded-3 p-4 p-md-5 mb-2'>

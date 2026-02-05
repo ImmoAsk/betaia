@@ -14,7 +14,6 @@ import InputGroup from 'react-bootstrap/InputGroup'
 import Button from 'react-bootstrap/Button'
 import ButtonGroup from 'react-bootstrap/ButtonGroup'
 import ToggleButton from 'react-bootstrap/ToggleButton'
-import Breadcrumb from 'react-bootstrap/Breadcrumb'
 import Pagination from 'react-bootstrap/Pagination'
 import ImageLoader from '../../../../../components/ImageLoader'
 import PropertyCard from '../../../../../components/PropertyCard'
@@ -434,35 +433,41 @@ const CatalogPage = ({_rentingProperties,bienId,villeId,quartierId,soffreId}) =>
             </div>
 
             {/* Breadcrumb */}
-            <Breadcrumb className='mb-3 pt-md-2'>
-              <Link href='/tg/catalog' passHref>
-                <Breadcrumb.Item>Catalogue immobilier</Breadcrumb.Item>
-              </Link>
-              {
-                categoryParam &&
-                <Link href={`/tg/baux-immobiliers`} passHref>
-                  <Breadcrumb.Item>{humanOfferTitle}</Breadcrumb.Item>
-                </Link>
-              }
-              {
-                bien &&
-                <Link href={`/tg/baux-immobiliers/${bien}`} passHref>
-                  <Breadcrumb.Item>{bien}</Breadcrumb.Item>
-                </Link>
-              }
-              {
-                ville &&
-                <Link href={`/tg/baux-immobiliers/${bien}/${ville}`} passHref>
-                  <Breadcrumb.Item>{ville}</Breadcrumb.Item>
-                </Link>
-              }
-              {
-                quartier &&
-                <Link href={`/tg/baux-immobiliers/${bien}/${ville}/${quartier}`} passHref>
-                  <Breadcrumb.Item active>{quartier}</Breadcrumb.Item>
-                </Link>
-              }
-            </Breadcrumb>
+            <nav aria-label="breadcrumb" className='mb-3 pt-md-2'>
+              <ol className="breadcrumb">
+                <li className="breadcrumb-item">
+                  <Link href='/tg/catalog'>
+                    <a>Catalogue immobilier</a>
+                  </Link>
+                </li>
+                {categoryParam && (
+                  <li className="breadcrumb-item">
+                    <Link href='/tg/investissements-immobiliers'>
+                      <a>{humanOfferTitle}</a>
+                    </Link>
+                  </li>
+                )}
+                {bien && (
+                  <li className="breadcrumb-item">
+                    <Link href={`/tg/investissements-immobiliers/${bien}`}>
+                      <a>{bien}</a>
+                    </Link>
+                  </li>
+                )}
+                {ville && (
+                  <li className="breadcrumb-item">
+                    <Link href={`/tg/investissements-immobiliers/${bien}/${ville}`}>
+                      <a>{ville}</a>
+                    </Link>
+                  </li>
+                )}
+                {quartier && (
+                  <li className="breadcrumb-item active" aria-current="page">
+                    {quartier}
+                  </li>
+                )}
+              </ol>
+            </nav>
 
             {/* Title + Map toggle */}
             <div className='d-sm-flex align-items-center justify-content-between pb-3 pb-sm-4'>

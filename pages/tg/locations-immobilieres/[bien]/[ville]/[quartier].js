@@ -11,7 +11,6 @@ import { useSession } from 'next-auth/react'
 import Form from 'react-bootstrap/Form'
 import InputGroup from 'react-bootstrap/InputGroup'
 import Button from 'react-bootstrap/Button'
-import Breadcrumb from 'react-bootstrap/Breadcrumb'
 import ImageLoader from '../../../../../components/ImageLoader'
 //import Nouislider from 'nouislider-react'
 import 'simplebar-react/dist/simplebar.min.css'
@@ -433,35 +432,41 @@ const CatalogPage = ({_rentingProperties,bienId,villeId,quartierId,soffreId}) =>
             </div>
 
             {/* Breadcrumb */}
-            <Breadcrumb className='mb-3 pt-md-2'>
-              <Link href='/tg/catalog' passHref>
-                <Breadcrumb.Item>Catalogue immobilier</Breadcrumb.Item>
-              </Link>
-              {
-                categoryParam &&
-                <Link href={`/tg/locations-immobilieres`} passHref>
-                  <Breadcrumb.Item>{humanOfferTitle}</Breadcrumb.Item>
-                </Link>
-              }
-              {
-                bien &&
-                <Link href={`/tg/locations-immobilieres/${bien}`} passHref>
-                  <Breadcrumb.Item>{bien}</Breadcrumb.Item>
-                </Link>
-              }
-              {
-                ville &&
-                <Link href={`/tg/locations-immobilieres/${bien}/${ville}`} passHref>
-                  <Breadcrumb.Item>{ville}</Breadcrumb.Item>
-                </Link>
-              }
-              {
-                quartier &&
-                <Link href={`/tg/locations-immobilieres/${bien}/${ville}/${quartier}`} passHref>
-                  <Breadcrumb.Item active>{quartier}</Breadcrumb.Item>
-                </Link>
-              }
-            </Breadcrumb>
+            <nav aria-label="breadcrumb" className='mb-3 pt-md-2'>
+              <ol className="breadcrumb">
+                <li className="breadcrumb-item">
+                  <Link href='/tg/catalog'>
+                    <a>Catalogue immobilier</a>
+                  </Link>
+                </li>
+                {categoryParam && (
+                  <li className="breadcrumb-item">
+                    <Link href='/tg/locations-immobilieres'>
+                      <a>{humanOfferTitle}</a>
+                    </Link>
+                  </li>
+                )}
+                {bien && (
+                  <li className="breadcrumb-item">
+                    <Link href={`/tg/locations-immobilieres/${bien}`}>
+                      <a>{bien}</a>
+                    </Link>
+                  </li>
+                )}
+                {ville && (
+                  <li className="breadcrumb-item">
+                    <Link href={`/tg/locations-immobilieres/${bien}/${ville}`}>
+                      <a>{ville}</a>
+                    </Link>
+                  </li>
+                )}
+                {quartier && (
+                  <li className="breadcrumb-item active" aria-current="page">
+                    {quartier}
+                  </li>
+                )}
+              </ol>
+            </nav>
 
             {/* Title + Map toggle */}
             <div className='d-sm-flex align-items-center justify-content-between pb-3 pb-sm-4'>

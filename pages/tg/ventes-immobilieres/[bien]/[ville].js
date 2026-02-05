@@ -13,7 +13,6 @@ import InputGroup from 'react-bootstrap/InputGroup'
 import Button from 'react-bootstrap/Button'
 import ButtonGroup from 'react-bootstrap/ButtonGroup'
 import ToggleButton from 'react-bootstrap/ToggleButton'
-import Breadcrumb from 'react-bootstrap/Breadcrumb'
 import Pagination from 'react-bootstrap/Pagination'
 import SimpleBar from 'simplebar-react'
 //import Nouislider from 'nouislider-react'
@@ -435,29 +434,34 @@ const CatalogPage = ({_rentingProperties,bienId,soffreId,villeId}) => {
             </div>
 
             {/* Breadcrumb */}
-            <Breadcrumb className='mb-3 pt-md-2'>
-              <Link href='/tg/catalog' passHref>
-                <Breadcrumb.Item>Catalogue immobilier</Breadcrumb.Item>
-              </Link>
-              {
-                categoryParam &&
-                <Link href={`/tg/ventes-immobilieres`} passHref>
-                  <Breadcrumb.Item>{humanOfferTitle}</Breadcrumb.Item>
-                </Link>
-              }
-              {
-                bien &&
-                <Link href={`/tg/ventes-immobilieres/${bien}`} passHref>
-                  <Breadcrumb.Item>{bien}</Breadcrumb.Item>
-                </Link>
-              }
-              {
-                ville &&
-                <Link href={`/tg/ventes-immobilieres/${bien}/${ville}`} passHref>
-                  <Breadcrumb.Item>{ville}</Breadcrumb.Item>
-                </Link>
-              }
-            </Breadcrumb>
+            <nav aria-label="breadcrumb" className='mb-3 pt-md-2'>
+              <ol className="breadcrumb">
+                <li className="breadcrumb-item">
+                  <Link href='/tg/catalog'>
+                    <a>Catalogue immobilier</a>
+                  </Link>
+                </li>
+                {categoryParam && (
+                  <li className="breadcrumb-item">
+                    <Link href='/tg/ventes-immobilieres'>
+                      <a>{humanOfferTitle}</a>
+                    </Link>
+                  </li>
+                )}
+                {bien && (
+                  <li className="breadcrumb-item">
+                    <Link href={`/tg/ventes-immobilieres/${bien}`}>
+                      <a>{bien}</a>
+                    </Link>
+                  </li>
+                )}
+                {ville && (
+                  <li className="breadcrumb-item active" aria-current="page">
+                    {ville}
+                  </li>
+                )}
+              </ol>
+            </nav>
 
             {/* Title + Map toggle */}
             <div className='d-sm-flex align-items-center justify-content-between pb-3 pb-sm-4'>

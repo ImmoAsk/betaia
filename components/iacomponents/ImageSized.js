@@ -1,25 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 const ImageSized = ({ imageUri, width, height, alt }) => {
   const [imageSrc, setImageSrc] = useState(imageUri);
+  const fallbackImage = '/images/logo/immoask-logo-cropped.png';
 
-  useEffect(() => {
-    const checkImageStatus = async () => {
-      try {
-        const response = await fetch(imageUri, { method: 'HEAD' });
-
-        if (!response.ok) {
-          // Image is not available, set fallback
-          setImageSrc('/images/logo/immoask-logo-cropped.png');
-        }
-      } catch (error) {
-        console.error('Error checking image status:', error);
-        setImageSrc('/images/logo/immoask-logo-cropped.png');
-      }
-    };
-
-    checkImageStatus();
-  }, [imageUri]);
+  // Gestion de l'erreur de chargement directement via onError
+  const handleImageError = () => {
+    setImageSrc(fallbackImage);
+  };
 
   return (
     <img
@@ -27,8 +15,9 @@ const ImageSized = ({ imageUri, width, height, alt }) => {
       src={imageSrc}
       width={width}
       height={height}
-      alt={alt}
+      alt={alt || 'Image'}
       style={{ opacity: 0.9 }}
+      onError={handleImageError}
     />
   );
 };

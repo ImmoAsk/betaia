@@ -10,7 +10,6 @@ import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
-import Breadcrumb from 'react-bootstrap/Breadcrumb'
 import SimpleBar from 'simplebar-react'
 //import Nouislider from 'nouislider-react'
 import 'simplebar-react/dist/simplebar.min.css'
@@ -401,14 +400,18 @@ const CatalogPage = ({ categoryParam, offerParam, usageParam,townParam, district
             </div>
 
             {/* Breadcrumb */}
-            <Breadcrumb className='mb-3 pt-md-2'>
-              <Link href='/tg' passHref>
-                <Breadcrumb.Item>Accueil</Breadcrumb.Item>
-              </Link>
-              <Breadcrumb.Item active>
-              {catalog_title}
-              </Breadcrumb.Item>
-            </Breadcrumb>
+            <nav aria-label="breadcrumb" className='mb-3 pt-md-2'>
+              <ol className="breadcrumb">
+                <li className="breadcrumb-item">
+                  <Link href='/tg'>
+                    <a>Accueil</a>
+                  </Link>
+                </li>
+                <li className="breadcrumb-item active" aria-current="page">
+                  {catalog_title}
+                </li>
+              </ol>
+            </nav>
 
             {/* Title + Map toggle */}
             <div className='d-sm-flex align-items-center justify-content-between pb-3 pb-sm-4'>
@@ -471,26 +474,34 @@ export async function getServerSideProps(context) {
   // Extract query parameters from the context object
   const { query } = context;
   const { categorie, offre, ville, quartier, usage} = query;
-  //console.log(quartier);
   try {
     const url = constructApiUrl(offre, ville, quartier, categorie,usage);
     const response = await axios.get(url);
     const _rentingProperties = await response.data;
     // Pass them as props to the component
-  return {
-    props: {
-      categoryParam: categorie || null,
-      offerParam: offre || null,
-      townParam: ville || null,
-      usageParam: usage || null,
-      districtParam: quartier || null,
-      _rentingProperties: _rentingProperties.data.getPropertiesByKeyWords || [],
-    },
-  };
+    return {
+      props: {
+        categoryParam: categorie || null,
+        offerParam: offre || null,
+        townParam: ville || null,
+        usageParam: usage || null,
+        districtParam: quartier || null,
+        _rentingProperties: _rentingProperties?.data?.getPropertiesByKeyWords || [],
+      },
+    };
   } catch (error) {
     console.error('Error fetching data:', error);
+    // Retourne un objet props vide en cas d'erreur
+    return {
+      props: {
+        categoryParam: categorie || null,
+        offerParam: offre || null,
+        townParam: ville || null,
+        usageParam: usage || null,
+        districtParam: quartier || null,
+        _rentingProperties: [],
+      },
+    };
   }
-  
-  
 }
 export default CatalogPage

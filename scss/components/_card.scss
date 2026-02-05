@@ -50,6 +50,7 @@
   position: relative;
   overflow: hidden;
   -webkit-mask-image: -webkit-radial-gradient(white, black);
+  mask-image: radial-gradient(white, black);
   
   .img-overlay { opacity: 0 !important; }
 

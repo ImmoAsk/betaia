@@ -8,7 +8,6 @@ import FormControl from 'react-bootstrap/FormControl';
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
-import Breadcrumb from 'react-bootstrap/Breadcrumb'
 import ProgressBar from 'react-bootstrap/ProgressBar'
 import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
@@ -117,12 +116,18 @@ const AddProjectPage = (props) => {
           <Col lg={6}>
 
             {/* Breadcrumb */}
-            <Breadcrumb className='mb-3 pt-2 pt-lg-3'>
-              <Link href='/tg' passHref>
-                <Breadcrumb.Item>Accueil</Breadcrumb.Item>
-              </Link>
-              <Breadcrumb.Item active>Lancer un projet immobilier</Breadcrumb.Item>
-            </Breadcrumb>
+            <nav aria-label="breadcrumb" className='mb-3 pt-2 pt-lg-3'>
+              <ol className="breadcrumb">
+                <li className="breadcrumb-item">
+                  <Link href='/tg'>
+                    <a>Accueil</a>
+                  </Link>
+                </li>
+                <li className="breadcrumb-item active" aria-current="page">
+                  Lancer un projet immobilier
+                </li>
+              </ol>
+            </nav>
 
             {/* Title */}
             <div className='mb-4'>

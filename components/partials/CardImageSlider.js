@@ -9,6 +9,11 @@ import 'swiper/css'
 import 'swiper/css/navigation'
 
 const CardImageSlider = ({ horizontal, images, href, badges, wishlistButton, light }) => {
+  // Style pour contraindre la hauteur du slider et eviter la deformation
+  const sliderStyle = {
+    height: horizontal ? '100%' : '200px',
+    overflow: 'hidden'
+  };
 
   return (
     <Swiper
@@ -16,9 +21,10 @@ const CardImageSlider = ({ horizontal, images, href, badges, wishlistButton, lig
       navigation
       loop
       className='card-img-top card-img-hover'
+      style={sliderStyle}
     >
       {images.map((image, indx) => {
-        return <SwiperSlide key={indx} className='d-flex'>
+        return <SwiperSlide key={indx} className='d-flex' style={{ height: '100%' }}>
           {horizontal ? <ImageLoader
             src={image[0]}
             alt={image[1]}
@@ -31,6 +37,7 @@ const CardImageSlider = ({ horizontal, images, href, badges, wishlistButton, lig
             width={image[1]}
             height={image[2]}
             alt={image[3]}
+            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             light={light ? 1 : 0}
           />}
         </SwiperSlide>

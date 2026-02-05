@@ -5,9 +5,16 @@ import Tooltip from 'react-bootstrap/Tooltip'
 import ImageSized from '../iacomponents/ImageSized'
 
 const CardImage = ({ horizontal, images, href, badges, wishlistButton, light }) => {
+  // Style pour contraindre la hauteur de l'image et eviter la deformation
+  const imageContainerStyle = {
+    position: 'relative',
+    width: '100%',
+    height: horizontal ? '100%' : '200px',
+    overflow: 'hidden'
+  };
 
   return (
-    <div className='card-img-top card-img-hover d-flex'>
+    <div className='card-img-top card-img-hover' style={imageContainerStyle}>
       {horizontal ? <ImageLoader
         src={images[0][0]}
         alt={images[0][1]}
@@ -20,7 +27,8 @@ const CardImage = ({ horizontal, images, href, badges, wishlistButton, light }) 
         width={images[0][1]}
         height={images[0][2]}
         alt={images[0][3]}
-         light={light ? 1 : 0}
+        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+        light={light ? 1 : 0}
       />}
       {href ? <Link href={href}>
         <a className='img-overlay'></a>

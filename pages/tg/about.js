@@ -3,7 +3,6 @@ import Link from 'next/link'
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
-import Breadcrumb from 'react-bootstrap/Breadcrumb'
 import Button from 'react-bootstrap/Button'
 import Card from 'react-bootstrap/Card'
 import ImageLoader from '../../components/ImageLoader'
@@ -133,12 +132,18 @@ const AboutPage = () => {
       <Container className='mt-5 mb-md-4 pt-5'>
 
         {/* Breadcrumbs */}
-        <Breadcrumb className='mb-3 pt-md-3'>
-          <Link href='/tg' passHref>
-            <Breadcrumb.Item>Home</Breadcrumb.Item>
-          </Link>
-          <Breadcrumb.Item active>About</Breadcrumb.Item>
-        </Breadcrumb>
+        <nav aria-label="breadcrumb" className='mb-3 pt-md-3'>
+          <ol className="breadcrumb">
+            <li className="breadcrumb-item">
+              <Link href='/tg'>
+                <a>Home</a>
+              </Link>
+            </li>
+            <li className="breadcrumb-item active" aria-current="page">
+              About
+            </li>
+          </ol>
+        </nav>
       </Container>
 
 

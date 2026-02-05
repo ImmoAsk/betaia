@@ -9,7 +9,6 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
-import Breadcrumb from 'react-bootstrap/Breadcrumb'
 import ProgressBar from 'react-bootstrap/ProgressBar'
 import Button from 'react-bootstrap/Button'
 import ButtonGroup from 'react-bootstrap/ButtonGroup'
@@ -662,12 +661,18 @@ const AddPropertyPage = () => {
           <Col lg={8}>
 
             {/* Breadcrumb */}
-            <Breadcrumb className='pt-2 mb-3 pt-lg-3'>
-              <Link href='/tg' passHref>
-                <Breadcrumb.Item>Accueil</Breadcrumb.Item>
-              </Link>
-              <Breadcrumb.Item active>Lister un bien immobilier</Breadcrumb.Item>
-            </Breadcrumb>
+            <nav aria-label="breadcrumb" className='pt-2 mb-3 pt-lg-3'>
+              <ol className="breadcrumb">
+                <li className="breadcrumb-item">
+                  <Link href='/tg'>
+                    <a>Accueil</a>
+                  </Link>
+                </li>
+                <li className="breadcrumb-item active" aria-current="page">
+                  Lister un bien immobilier
+                </li>
+              </ol>
+            </nav>
 
             {/* Title */}
             <div className='mb-4'>

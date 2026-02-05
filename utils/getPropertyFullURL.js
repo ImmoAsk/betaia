@@ -1,9 +1,12 @@
-import { useState } from "react";
 import toNormalForm from "./toNormalForm";
 import { replaceSpacesWithAny } from "./generalUtils";
 
 const getPropertyFullUrl = (country, categoryParam, propertytype, town, quarter, nuo) => {
-  console.log(country, categoryParam, propertytype, town, quarter, nuo);
+  // Validation des parametres obligatoires
+  if (!country || !propertytype || !town || !nuo) {
+    console.error("getPropertyFullUrl: parametres manquants", { country, categoryParam, propertytype, town, quarter, nuo });
+    return '#';
+  }
   
   let categoryArray = {
     'bailler': 'baux-immobiliers',
@@ -13,11 +16,14 @@ const getPropertyFullUrl = (country, categoryParam, propertytype, town, quarter,
   };
 
   const category = categoryArray[categoryParam] || 'locations-immobilieres';
-  quarter = quarter ? quarter.toLowerCase() : '';
-  nuo = nuo || '';
-  let uri= '/' + country.toLowerCase() + '/' + category + '/' + replaceSpacesWithAny(toNormalForm(propertytype.toLowerCase()), '-') + '/' + toNormalForm(town.toLowerCase()) + '/' + quarter + '/' + nuo;
-  console.log(uri);
-  return uri
+  // Eviter le double slash en utilisant 'centre' comme valeur par defaut
+  const safeQuarter = quarter ? quarter.toLowerCase() : 'centre';
+  const safePropertyType = replaceSpacesWithAny(toNormalForm(propertytype.toLowerCase()), '-');
+  const safeTown = toNormalForm(town.toLowerCase());
+  const safeCountry = country.toLowerCase();
+  
+  let uri = '/' + safeCountry + '/' + category + '/' + safePropertyType + '/' + safeTown + '/' + safeQuarter + '/' + nuo;
+  return uri;
 };
 
 export default getPropertyFullUrl;

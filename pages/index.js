@@ -72,17 +72,20 @@ const IndexPage = () => {
   const { data: session } = useSession()
 
   const getRTProperties = () =>{
-
-    axios.get(`${API_URL}?query={get5Properties(orderBy:{column:NUO,order:DESC},limit:5){surface,badge_propriete{badge{badge_name,badge_image}},id,nuitee,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination},visuels{uri,position}}}`).
+    // Utilise le proxy local pour eviter les erreurs CORS
+    const query = `{get5Properties(orderBy:{column:NUO,order:DESC},limit:5){surface,badge_propriete{badge{badge_name,badge_image}},id,nuitee,nuo,usage,offre{denomination},categorie_propriete{denomination},pays{code},piece,titre,garage,cout_mensuel,ville{denomination},wc_douche_interne,cout_vente,quartier{denomination},visuels{uri,position}}}`;
+    axios.get('/api/graphql', { params: { query } }).
     then((res)=>{
-      setRealTimeProperties(res.data.data.get5Properties.map((property) =>{
-        //const { status, data:badges_property, error, isFetching,isLoading,isError }  = usePropertyBadges(property.id);
+      const properties = res.data?.data?.get5Properties || [];
+      setRealTimeProperties(properties.map((property) =>{
+        const paysCode = property?.pays?.code || 'tg';
+        const quarterDenom = property?.quartier?.denomination || 'Centre';
         return {
-          href: getPropertyFullUrl(property.pays.code,property.offre.denomination,property.categorie_propriete.denomination,property.ville.denomination,property.quartier.denomination,property.nuo),
+          href: getPropertyFullUrl(paysCode, property.offre.denomination, property.categorie_propriete.denomination, property.ville.denomination, quarterDenom, property.nuo),
           images: [[getFirstImageArray(property.visuels), 467, 305, 'Image']],
-          title: 'N°'+property.nuo+': '+property.categorie_propriete.denomination+' à '+property.offre.denomination+' | '+property.surface+'m²',
+          title: 'N°' + property.nuo + ': ' + property.categorie_propriete.denomination + ' à ' + property.offre.denomination + ' | ' + property.surface + 'm²',
           category: property.usage,
-          location: property.quartier.denomination+", "+property.ville.denomination,
+          location: quarterDenom + ", " + property.ville.denomination,
           price: getHumanReadablePrice(property),
           badges: buildPropertyBadge(property.badge_propriete),
           footer: [property.piece, property.wc_douche_interne, property.garage],

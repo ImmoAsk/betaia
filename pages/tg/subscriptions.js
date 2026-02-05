@@ -3,7 +3,6 @@ import Link from 'next/link'
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
-import Breadcrumb from 'react-bootstrap/Breadcrumb'
 import Button from 'react-bootstrap/Button'
 import FormCheck from 'react-bootstrap/FormCheck'
 import Card from 'react-bootstrap/Card'
@@ -22,15 +21,23 @@ const MarketplaceSubscriptionPage = () => {
       <Container className='mt-5 mb-md-4 py-5'>
 
         {/* Breadcrumb */}
-        <Breadcrumb className='mb-3 pt-2 pt-lg-3'>
-          <Link href='/tg' passHref>
-            <Breadcrumb.Item>Accueil</Breadcrumb.Item>
-          </Link>
-          <Link href='/tg/add-property' passHref>
-            <Breadcrumb.Item>Lister votre immeuble</Breadcrumb.Item>
-          </Link>
-          <Breadcrumb.Item active>Abonnements</Breadcrumb.Item>
-        </Breadcrumb>
+        <nav aria-label="breadcrumb" className='mb-3 pt-2 pt-lg-3'>
+          <ol className="breadcrumb">
+            <li className="breadcrumb-item">
+              <Link href='/tg'>
+                <a>Accueil</a>
+              </Link>
+            </li>
+            <li className="breadcrumb-item">
+              <Link href='/tg/add-property'>
+                <a>Lister votre immeuble</a>
+              </Link>
+            </li>
+            <li className="breadcrumb-item active" aria-current="page">
+              Abonnements
+            </li>
+          </ol>
+        </nav>
 
         {/* Page title */}
         <h1 className='h2 mb-4'>Tarification des abonnements agents immobiliers</h1>

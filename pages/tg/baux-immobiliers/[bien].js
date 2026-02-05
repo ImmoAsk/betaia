@@ -15,7 +15,6 @@ import InputGroup from 'react-bootstrap/InputGroup'
 import Button from 'react-bootstrap/Button'
 import ButtonGroup from 'react-bootstrap/ButtonGroup'
 import ToggleButton from 'react-bootstrap/ToggleButton'
-import Breadcrumb from 'react-bootstrap/Breadcrumb'
 import Pagination from 'react-bootstrap/Pagination'
 import ImageLoader from '../../../components/ImageLoader'
 import PropertyCard from '../../../components/PropertyCard'
@@ -420,24 +419,27 @@ const CatalogPage = ({_rentingProperties}) => {
             </div>
 
             {/* Breadcrumb */}
-            <Breadcrumb className='mb-3 pt-md-2'>
-                <Link href='/tg/catalog' passHref>
-                  <Breadcrumb.Item>Catalogue immobilier</Breadcrumb.Item>
-                </Link>
-                {
-                  categoryParam && 
-                  <Link href={`/tg/baux-immobiliers`} passHref>
-                    <Breadcrumb.Item>{categoryParamTitle(categoryParam)}</Breadcrumb.Item>
+            <nav aria-label="breadcrumb" className='mb-3 pt-md-2'>
+              <ol className="breadcrumb">
+                <li className="breadcrumb-item">
+                  <Link href='/tg/catalog'>
+                    <a>Catalogue immobilier</a>
                   </Link>
-                }
-                {
-                  bien && 
-                  <Link href={`/tg/baux-immobiliers/${bien}`} passHref>
-                    <Breadcrumb.Item active>{bien}</Breadcrumb.Item>
-                  </Link>
-                }
-                
-            </Breadcrumb>
+                </li>
+                {categoryParam && (
+                  <li className="breadcrumb-item">
+                    <Link href='/tg/baux-immobiliers'>
+                      <a>{categoryParamTitle(categoryParam)}</a>
+                    </Link>
+                  </li>
+                )}
+                {bien && (
+                  <li className="breadcrumb-item active" aria-current="page">
+                    {bien}
+                  </li>
+                )}
+              </ol>
+            </nav>
 
             {/* Title + Map toggle */}
             <div className='d-sm-flex align-items-center justify-content-between pb-3 pb-sm-4'>

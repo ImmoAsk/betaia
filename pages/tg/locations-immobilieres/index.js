@@ -11,7 +11,6 @@ import Col from 'react-bootstrap/Col'
 import Form from 'react-bootstrap/Form'
 
 import Button from 'react-bootstrap/Button'
-import Breadcrumb from 'react-bootstrap/Breadcrumb'
 import ImageLoader from '../../../components/ImageLoader'
 import PropertyCard from '../../../components/PropertyCard'
 import SimpleBar from 'simplebar-react'
@@ -413,14 +412,18 @@ const CatalogPage = ({_rentingProperties}) => {
             </div>
 
             {/* Breadcrumb */}
-            <Breadcrumb className='mb-3 pt-md-2'>
-              <Link href='/tg/catalog' passHref>
-                <Breadcrumb.Item>Catalogue immobilier</Breadcrumb.Item>
-              </Link>
-              <Breadcrumb.Item active>
-                {categoryParamTitle(categoryParam)}
-              </Breadcrumb.Item>
-            </Breadcrumb>
+            <nav aria-label="breadcrumb" className='mb-3 pt-md-2'>
+              <ol className="breadcrumb">
+                <li className="breadcrumb-item">
+                  <Link href='/tg/catalog'>
+                    <a>Catalogue immobilier</a>
+                  </Link>
+                </li>
+                <li className="breadcrumb-item active" aria-current="page">
+                  {categoryParamTitle(categoryParam)}
+                </li>
+              </ol>
+            </nav>
 
             {/* Title + Map toggle */}
             <div className='d-sm-flex align-items-center justify-content-between pb-3 pb-sm-4'>
