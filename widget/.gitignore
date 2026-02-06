@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+
+# Environment variables (contient des secrets)
+.env
+.env.local
+.env.*.local
+
+# Build outputs
+dist/*.min.js
+dist/*.map
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*

@@ -7,6 +7,8 @@
     "build": "node build/bundle.js",
     "build:dev": "node build/bundle.js --dev",
     "watch": "node build/watch.js",
+    "proxy": "node server/proxy.js",
+    "dev": "concurrently \"npm run proxy\" \"npx serve -p 3334\"",
     "lint": "eslint src/",
     "test": "node build/test.js"
   },
@@ -31,5 +33,12 @@
     "Firefox >= 88",
     "Safari >= 14",
     "Edge >= 90"
-  ]
+  ],
+  "directories": {
+    "doc": "docs"
+  },
+  "type": "commonjs",
+  "dependencies": {
+    "dotenv": "^17.2.4"
+  }
 }

@@ -3,13 +3,20 @@
  * Contourne les restrictions CORS
  */
 
+require('dotenv').config();
+
 const http = require('http');
 const https = require('https');
 const url = require('url');
 
 const PORT = process.env.PORT || 3500;
-const API_BASE = 'https://devapi.omnisoft.africa/public/api/v2';
-const IMAGE_BASE = 'https://devapi.omnisoft.africa/public/storage/uploads/visuels/proprietes/';
+const API_BASE = process.env.API_BASE_URL;
+const IMAGE_BASE = process.env.IMAGE_BASE_URL;
+
+if (!API_BASE || !IMAGE_BASE) {
+  console.error('[Proxy] ERREUR: Variables API_BASE_URL et IMAGE_BASE_URL requises dans .env');
+  process.exit(1);
+}
 
 /**
  * Fetch avec promesse

@@ -1,6 +1,6 @@
 /**
  * Annonces Widget v1.0.0
- * Bundle genere le 2026-02-05T18:23:13.958Z
+ * Bundle genere le 2026-02-06T11:13:31.932Z
  * 
  * INTEGRATION :
  * <div id="annonces-widget"></div>
@@ -4483,11 +4483,26 @@ function createRotationService(onRotate, onTrackEvent) {
  * @module api/endpoints
  */
 
-// Configuration API betaia
+// Configuration API betaia - URLs passees via proxy ou meta tags
 const BETAIA_CONFIG = {
-  API_BASE: 'https://devapi.omnisoft.africa/public/api/v2',
-  IMAGE_BASE: 'https://devapi.omnisoft.africa/public/storage/uploads/visuels/proprietes/'
+  API_BASE: '',
+  IMAGE_BASE: ''
 };
+
+/**
+ * Recupere la config depuis les meta tags ou attributs
+ * @returns {Object} Configuration API
+ */
+function getApiConfig() {
+  // Cherche d'abord dans les meta tags
+  const apiMeta = document.querySelector('meta[name="betaia-api-url"]');
+  const imgMeta = document.querySelector('meta[name="betaia-image-url"]');
+  
+  return {
+    API_BASE: apiMeta?.content || BETAIA_CONFIG.API_BASE,
+    IMAGE_BASE: imgMeta?.content || BETAIA_CONFIG.IMAGE_BASE
+  };
+}
 
 /**
  * Configuration des endpoints
