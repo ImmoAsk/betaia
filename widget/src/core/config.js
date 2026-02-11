@@ -17,7 +17,10 @@ const defaultConfig = {
   adaptColors: true,
   containerId: DEFAULT_CONTAINER_ID,
   apiUrl: null,
-  debug: false
+  debug: false,
+  width: null,
+  height: null,
+  orientation: 'auto'
 };
 
 /**
@@ -41,6 +44,9 @@ export function extractConfigFromScript() {
   const noTracking = script.hasAttribute('data-no-tracking');
   const noAdaptColors = script.hasAttribute('data-no-adapt-colors');
   const debug = script.hasAttribute('data-debug');
+  const width = script.getAttribute('data-width');
+  const height = script.getAttribute('data-height');
+  const orientation = script.getAttribute('data-orientation');
 
   return {
     clientId: clientId || null,
@@ -51,7 +57,10 @@ export function extractConfigFromScript() {
     noTracking,
     adaptColors: !noAdaptColors,
     containerId: DEFAULT_CONTAINER_ID,
-    debug
+    debug,
+    width: width ? parseDimension(width) : null,
+    height: height ? parseDimension(height) : null,
+    orientation: validateOrientation(orientation)
   };
 }
 
@@ -92,4 +101,28 @@ function validateLayout(value) {
  */
 export function createConfig(overrides = {}) {
   return Object.freeze({ ...defaultConfig, ...overrides });
+}
+
+/**
+ * Parse une dimension (px, %, ou nombre)
+ * @param {string} value - Valeur a parser
+ * @returns {string} Dimension CSS valide
+ */
+function parseDimension(value) {
+  if (!value) return null;
+  const num = parseInt(value, 10);
+  if (isNaN(num)) return value;
+  // Si c'est un nombre seul, ajouter px
+  if (/^\d+$/.test(value.trim())) return `${num}px`;
+  return value;
+}
+
+/**
+ * Valide l'orientation
+ * @param {string} value - Valeur a valider
+ * @returns {string} Orientation valide
+ */
+function validateOrientation(value) {
+  const valid = ['horizontal', 'vertical', 'auto'];
+  return valid.includes(value) ? value : 'auto';
 }

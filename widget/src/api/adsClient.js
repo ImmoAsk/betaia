@@ -11,13 +11,22 @@ import { withTimeout } from '../utils/timing.js';
  * @returns {Object} Client avec methodes
  */
 export function createAdsClient(baseUrl) {
-  const defaultTimeout = 10000;
+  const defaultTimeout = 15000;
+  const maxRetries = 3;
+  const retryDelay = 1000;
   
   // Utilise le proxy sur le meme domaine que le widget
   const proxyUrl = `${baseUrl}/api/ads`;
 
   /**
-   * Recupere les annonces via le proxy API
+   * Pause pour retry
+   */
+  function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  /**
+   * Recupere les annonces via le proxy API avec retry
    * @param {string} clientId - ID du client
    * @param {number} limit - Nombre max d'annonces
    * @returns {Promise<Object[]>} Liste des annonces
@@ -27,37 +36,55 @@ export function createAdsClient(baseUrl) {
     
     console.log('[AnnoncesWidget] URL Proxy:', url);
 
-    try {
-      const response = await withTimeout(
-        () => fetch(url, {
-          method: 'GET',
-          headers: { 'Accept': 'application/json' },
-          credentials: 'omit'
-        }),
-        defaultTimeout
-      );
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        const response = await withTimeout(
+          () => fetch(url, {
+            method: 'GET',
+            headers: { 'Accept': 'application/json' },
+            credentials: 'omit'
+          }),
+          defaultTimeout
+        );
 
-      console.log('[AnnoncesWidget] Response status:', response.status);
+        console.log('[AnnoncesWidget] Response status:', response.status);
 
-      if (!response.ok) {
-        throw new Error(`API error: ${response.status}`);
+        if (!response.ok) {
+          throw new Error(`API error: ${response.status}`);
+        }
+
+        const json = await response.json();
+        console.log('[AnnoncesWidget] Annonces recues:', json.ads?.length || 0);
+        
+        // Valide les donnees
+        const ads = Array.isArray(json.ads) ? json.ads : [];
+        return ads.filter(ad => ad && ad.id);
+        
+      } catch (error) {
+        console.warn(`[AnnoncesWidget] Tentative ${attempt}/${maxRetries} echouee:`, error.message);
+        
+        if (attempt < maxRetries) {
+          await sleep(retryDelay * attempt);
+        } else {
+          console.error('[AnnoncesWidget] Toutes les tentatives echouees');
+          throw error;
+        }
       }
-
-      const json = await response.json();
-      console.log('[AnnoncesWidget] Annonces recues:', json.ads?.length || 0);
-      
-      return json.ads || [];
-    } catch (error) {
-      console.error('[AnnoncesWidget] Erreur API:', error);
-      throw error;
     }
+    
+    return [];
   }
 
   /**
    * Prefetch les annonces suivantes
    */
   async function prefetchAds(clientId, excludeIds = [], limit = 6) {
-    return fetchAds(clientId, limit);
+    try {
+      return await fetchAds(clientId, limit);
+    } catch (error) {
+      console.warn('[AnnoncesWidget] Prefetch echoue:', error.message);
+      return [];
+    }
   }
 
   return Object.freeze({

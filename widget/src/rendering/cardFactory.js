@@ -5,6 +5,10 @@
 
 import { createElement, escapeHtml } from '../utils/dom.js';
 
+// Placeholder SVG optimise
+const PLACEHOLDER_SVG = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"%3E%3Crect fill="%23e8e8e8" width="400" height="300"/%3E%3Cpath fill="%23bbb" d="M150 100h100v100H150z"/%3E%3Ccircle cx="180" cy="130" r="15" fill="%23999"/%3E%3Cpath fill="%23999" d="M160 180l30-40 40 50H160z"/%3E%3Cpath fill="%23aaa" d="M200 165l35 35h-70l35-35z"/%3E%3C/svg%3E';
+const PLACEHOLDER_SMALL = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 150"%3E%3Crect fill="%23e8e8e8" width="150" height="150"/%3E%3Cpath fill="%23bbb" d="M50 50h50v50H50z"/%3E%3C/svg%3E';
+
 /**
  * Formate un prix pour affichage
  * @param {number} price - Prix
@@ -12,17 +16,50 @@ import { createElement, escapeHtml } from '../utils/dom.js';
  * @returns {string} Prix formate
  */
 function formatPrice(price, currency = 'EUR') {
-  if (price === null || price === undefined) return '';
+  if (price === null || price === undefined || price === 0) return '';
   
   try {
     return new Intl.NumberFormat('fr-FR', {
       style: 'currency',
       currency: currency,
-      minimumFractionDigits: 0
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
     }).format(price);
   } catch (e) {
-    return `${price} ${currency}`;
+    return `${price.toLocaleString('fr-FR')} ${currency}`;
   }
+}
+
+/**
+ * Cree une image avec gestion du chargement
+ * @param {string} src - URL de l'image
+ * @param {string} alt - Texte alternatif
+ * @param {string} placeholder - URL du placeholder
+ * @returns {HTMLImageElement} Element image
+ */
+function createManagedImage(src, alt, placeholder = PLACEHOLDER_SVG) {
+  const img = createElement('img', {
+    alt: alt || '',
+    loading: 'lazy',
+    decoding: 'async'
+  });
+  
+  img.className = 'loading';
+  
+  // Gestion du chargement
+  img.onload = () => {
+    img.className = 'loaded';
+  };
+  
+  img.onerror = () => {
+    img.className = 'error';
+    img.src = placeholder;
+  };
+  
+  // Definit la source (ou placeholder si vide)
+  img.src = src && src.trim() ? src : placeholder;
+  
+  return img;
 }
 
 /**
@@ -44,24 +81,15 @@ export function createCard(ad, onClick) {
     'aria-label': `Voir l'annonce: ${ad.title}`
   });
 
-  // Image avec placeholder et gestion erreur
+  // Image avec gestion du chargement
   const imageContainer = createElement('div', { className: 'aw-card-image' });
-  const img = createElement('img', {
-    alt: ad.title,
-    loading: 'lazy'
-  });
-  
-  // Placeholder SVG en base64 si pas d'image ou erreur
-  const placeholderSvg = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"%3E%3Crect fill="%23e0e0e0" width="400" height="300"/%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="24" fill="%23999"%3EImage non disponible%3C/text%3E%3C/svg%3E';
-  
-  img.onerror = () => { img.src = placeholderSvg; };
-  img.src = ad.imageUrl || placeholderSvg;
+  const img = createManagedImage(ad.imageUrl, ad.title);
   imageContainer.appendChild(img);
 
   // Corps
   const body = createElement('div', { className: 'aw-card-body' });
   
-  const title = createElement('h3', { className: 'aw-card-title' }, ad.title);
+  const title = createElement('h3', { className: 'aw-card-title' }, ad.title || 'Propriete');
   body.appendChild(title);
 
   if (ad.description) {
@@ -72,9 +100,9 @@ export function createCard(ad, onClick) {
   // Footer
   const footer = createElement('div', { className: 'aw-card-footer' });
   
-  if (ad.price !== null) {
-    const price = createElement('span', { className: 'aw-card-price' }, 
-      formatPrice(ad.price, ad.currency));
+  const priceText = formatPrice(ad.price, ad.currency);
+  if (priceText) {
+    const price = createElement('span', { className: 'aw-card-price' }, priceText);
     footer.appendChild(price);
   }
 
@@ -117,22 +145,19 @@ export function createListCard(ad, onClick) {
     'aria-label': `Voir l'annonce: ${ad.title}`
   });
 
-  // Image avec placeholder
+  // Image avec gestion du chargement
   const imageContainer = createElement('div', { className: 'aw-list-card-image' });
-  const img = createElement('img', { alt: ad.title, loading: 'lazy' });
-  const placeholderSvg = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 150"%3E%3Crect fill="%23e0e0e0" width="150" height="150"/%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="12" fill="%23999"%3ENo img%3C/text%3E%3C/svg%3E';
-  img.onerror = () => { img.src = placeholderSvg; };
-  img.src = ad.imageUrl || placeholderSvg;
+  const img = createManagedImage(ad.imageUrl, ad.title, PLACEHOLDER_SMALL);
   imageContainer.appendChild(img);
 
   // Contenu
   const content = createElement('div', { className: 'aw-list-card-content' });
-  const title = createElement('h3', { className: 'aw-list-card-title' }, ad.title);
+  const title = createElement('h3', { className: 'aw-list-card-title' }, ad.title || 'Propriete');
   content.appendChild(title);
 
-  if (ad.price !== null) {
-    const price = createElement('span', { className: 'aw-list-card-price' },
-      formatPrice(ad.price, ad.currency));
+  const priceText = formatPrice(ad.price, ad.currency);
+  if (priceText) {
+    const price = createElement('span', { className: 'aw-list-card-price' }, priceText);
     content.appendChild(price);
   }
 

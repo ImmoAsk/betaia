@@ -18,6 +18,22 @@ import { createAdsCache } from '../api/adsCache.js';
 import { createEndpoints, detectBaseUrl } from '../api/endpoints.js';
 
 /**
+ * Applique les dimensions configurees au conteneur
+ * @param {HTMLElement} container - Conteneur du widget
+ * @param {Object} config - Configuration
+ */
+function applyDimensions(container, config) {
+  if (config.width) {
+    container.style.width = config.width;
+    container.style.maxWidth = '100%';
+  }
+  if (config.height) {
+    container.style.height = config.height;
+    container.style.overflow = 'auto';
+  }
+}
+
+/**
  * Initialise tous les services du widget
  * @returns {Promise<Object>} Services initialises
  */
@@ -36,6 +52,9 @@ export async function initializeWidget() {
     throw new Error(`Conteneur #${DEFAULT_CONTAINER_ID} non trouve`);
   }
 
+  // Applique dimensions configurees
+  applyDimensions(container, config);
+
   // Store
   const store = getStore();
   
@@ -43,8 +62,8 @@ export async function initializeWidget() {
   const theme = resolveTheme(config.theme);
   const siteColors = config.adaptColors ? extractSiteColors() : null;
   const { width, height } = measureContainer(container);
-  const layout = calculateOptimalLayout(width, height, config.layout);
-  const adCount = calculateOptimalAdCount(width, config.maxAds);
+  const layout = calculateOptimalLayout(width, height, config.layout, config.orientation);
+  const adCount = calculateOptimalAdCount(width, config.maxAds, height, config.orientation);
 
   store.setState({
     currentTheme: theme,
@@ -77,7 +96,7 @@ export async function initializeWidget() {
     trackingService.init();
   }
 
-  // Charge les annonces
+  // Charge les annonces (dynamique selon espace)
   const ads = await loadAds(adsClient, config.clientId, adCount, securityService);
   
   if (ads.length === 0) {
@@ -92,7 +111,7 @@ export async function initializeWidget() {
   rotationService.init(ads, ads);
   rotationService.setupBehaviorDetection(container);
 
-  // Observer resize
+  // Observer resize pour recalcul dynamique
   const cleanupResize = createResizeObserver(container, handleResize);
 
   // Tracking des annonces
@@ -127,8 +146,8 @@ export async function initializeWidget() {
 
   function handleResize(newWidth, newHeight) {
     const state = store.getState();
-    const newLayout = calculateOptimalLayout(newWidth, newHeight, config.layout);
-    const newAdCount = calculateOptimalAdCount(newWidth, config.maxAds);
+    const newLayout = calculateOptimalLayout(newWidth, newHeight, config.layout, config.orientation);
+    const newAdCount = calculateOptimalAdCount(newWidth, config.maxAds, newHeight, config.orientation);
     
     store.setState({ 
       containerWidth: newWidth, 
@@ -136,10 +155,10 @@ export async function initializeWidget() {
       currentLayout: newLayout
     });
     
-    // Si le layout change ou le nombre d'annonces optimal change, re-rendre
-    if (newLayout !== state.currentLayout) {
-      console.log('[AnnoncesWidget] Layout change:', state.currentLayout, '->', newLayout);
-      renderer.render(state.ads, newLayout, newWidth, handleAdClick);
+    // Recalcule le nombre d'annonces et re-rend
+    if (newLayout !== state.currentLayout || newAdCount !== state.ads?.length) {
+      const displayAds = (state.ads || []).slice(0, newAdCount);
+      renderer.render(displayAds, newLayout, newWidth, handleAdClick);
     } else {
       renderer.updateResponsive(newWidth);
     }

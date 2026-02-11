@@ -1,6 +1,6 @@
 /**
  * Annonces Widget v1.0.0
- * Bundle genere le 2026-02-06T11:13:31.932Z
+ * Bundle genere le 2026-02-11T10:30:06.763Z
  * 
  * INTEGRATION :
  * <div id="annonces-widget"></div>
@@ -40,18 +40,27 @@ const DEFAULT_CONTAINER_ID = 'annonces-widget';
 
 // Configuration des seuils d'adaptation
 const BREAKPOINTS = {
-  XS: 300,
-  SM: 600,
-  MD: 900,
-  LG: 1200
+  XS: 200,
+  SM: 400,
+  MD: 600,
+  LG: 900
 };
 
-// Nombre d'annonces par breakpoint
+// Nombre d'annonces par breakpoint (dynamique selon espace)
 const ADS_PER_BREAKPOINT = {
   XS: 1,
   SM: 2,
   MD: 3,
-  LG: 5
+  LG: 4
+};
+
+// Taille compacte des cartes
+const CARD_SIZES = {
+  MINI_WIDTH: 140,
+  MINI_HEIGHT: 160,
+  COMPACT_WIDTH: 180,
+  COMPACT_HEIGHT: 200,
+  IMAGE_RATIO: 0.5
 };
 
 // Layouts disponibles
@@ -867,31 +876,39 @@ function measureContainer(container) {
   
   const rect = container.getBoundingClientRect();
   return {
-    width: Math.floor(rect.width),
-    height: Math.floor(rect.height)
+    width: Math.floor(rect.width) || container.offsetWidth || 300,
+    height: Math.floor(rect.height) || container.offsetHeight || 0
   };
 }
 
 /**
- * Determine le nombre optimal d'annonces selon la largeur
+ * Calcule dynamiquement le nombre d'annonces selon l'espace
  * @param {number} width - Largeur en pixels
+ * @param {number} height - Hauteur en pixels
+ * @param {string} orientation - horizontal/vertical/auto
  * @param {number|null} maxAds - Limite configuree
  * @returns {number} Nombre d'annonces
  */
-function calculateOptimalAdCount(width, maxAds = null) {
+function calculateOptimalAdCount(width, maxAds = null, height = 0, orientation = 'auto') {
+  const gap = 8;
   let count;
   
-  if (width < BREAKPOINTS.XS) {
-    count = ADS_PER_BREAKPOINT.XS;
-  } else if (width < BREAKPOINTS.SM) {
-    count = ADS_PER_BREAKPOINT.SM;
-  } else if (width < BREAKPOINTS.MD) {
-    count = ADS_PER_BREAKPOINT.MD;
+  const isVertical = orientation === 'vertical' || 
+    (orientation === 'auto' && height > 0 && height > width * 1.5);
+  
+  if (isVertical && height > 0) {
+    // En vertical : combien de mini cartes tiennent en hauteur
+    const cardH = CARD_SIZES.MINI_HEIGHT + gap;
+    count = Math.max(1, Math.floor(height / cardH));
   } else {
-    count = ADS_PER_BREAKPOINT.LG;
+    // En horizontal : combien de mini cartes tiennent en largeur
+    const cardW = CARD_SIZES.MINI_WIDTH + gap;
+    count = Math.max(1, Math.floor(width / cardW));
   }
   
-  // Applique la limite configuree si presente
+  // Plafonner a un maximum raisonnable
+  count = Math.min(count, 6);
+  
   if (maxAds !== null && maxAds > 0) {
     count = Math.min(count, maxAds);
   }
@@ -904,28 +921,29 @@ function calculateOptimalAdCount(width, maxAds = null) {
  * @param {number} width - Largeur en pixels
  * @param {number} height - Hauteur en pixels
  * @param {string} configLayout - Layout configure
+ * @param {string} orientation - Orientation configuree
  * @returns {string} Layout optimal
  */
-function calculateOptimalLayout(width, height, configLayout) {
-  // Si un layout specifique est configure, l'utiliser
+function calculateOptimalLayout(width, height, configLayout, orientation = 'auto') {
   if (configLayout && configLayout !== LAYOUTS.AUTO) {
     return configLayout;
   }
   
-  // Layout automatique selon les dimensions
+  const isVertical = orientation === 'vertical' || 
+    (orientation === 'auto' && height > 0 && height > width * 1.5);
+  
+  if (isVertical) {
+    return LAYOUTS.LIST;
+  }
+  
   if (width < BREAKPOINTS.XS) {
     return LAYOUTS.LIST;
   }
   
   if (width < BREAKPOINTS.SM) {
-    return LAYOUTS.CARD;
+    return LAYOUTS.CAROUSEL;
   }
   
-  if (width < BREAKPOINTS.MD) {
-    return height > 400 ? LAYOUTS.GRID : LAYOUTS.CAROUSEL;
-  }
-  
-  // Grande largeur
   return LAYOUTS.GRID;
 }
 
@@ -2637,6 +2655,7 @@ function createRGPDService(noTrackingAttr) {
 // === rendering/styles.js ===
 /**
  * Styles CSS encapsules pour le widget
+ * Design compact et minimal type publicite
  * @module rendering/styles
  */
 
@@ -2654,33 +2673,65 @@ function generateBaseStyles(theme) {
     :host {
       ${vars}
       display: block;
+      width: 100%;
+      max-width: 100%;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      font-size: 14px;
-      line-height: 1.5;
+      font-size: 12px;
+      line-height: 1.4;
       box-sizing: border-box;
+      container-type: inline-size;
     }
     
     *, *::before, *::after {
       box-sizing: inherit;
+      margin: 0;
+      padding: 0;
     }
     
     .aw-container {
       width: 100%;
+      max-width: 100%;
       background: var(--aw-background);
       color: var(--aw-text);
-      border-radius: 8px;
+      border-radius: 6px;
       overflow: hidden;
+      container-type: inline-size;
+      border: 1px solid var(--aw-border);
+    }
+    
+    .aw-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 8px;
+      font-size: 9px;
+      color: var(--aw-text-muted);
+      border-bottom: 1px solid var(--aw-border);
+      opacity: 0.7;
+    }
+    
+    .aw-header-label {
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 500;
+    }
+    
+    .aw-header-brand {
+      font-weight: 600;
+      opacity: 0.6;
     }
     
     .aw-loading {
-      padding: 20px;
+      padding: 10px;
       text-align: center;
+      font-size: 11px;
     }
     
     .aw-error {
-      padding: 20px;
+      padding: 10px;
       text-align: center;
       color: var(--aw-error);
+      font-size: 11px;
     }
     
     .aw-skeleton {
@@ -2690,7 +2741,7 @@ function generateBaseStyles(theme) {
         var(--aw-background-alt) 75%);
       background-size: 200% 100%;
       animation: aw-shimmer 1.5s infinite;
-      border-radius: 4px;
+      border-radius: 3px;
     }
     
     @keyframes aw-shimmer {
@@ -2706,37 +2757,65 @@ function generateBaseStyles(theme) {
     
     .aw-ad-link:focus {
       outline: 2px solid var(--aw-accent);
-      outline-offset: 2px;
+      outline-offset: 1px;
     }
   `;
 }
 
 /**
- * Genere les styles pour le layout grid
- * @param {number} columns - Nombre de colonnes
+ * Genere les styles pour le layout grid compact
+ * @param {number} columns - Nombre de colonnes (base)
  * @returns {string} CSS du grid
  */
 function generateGridStyles(columns) {
   return `
     .aw-grid {
       display: grid;
-      grid-template-columns: repeat(${columns}, 1fr);
-      gap: 16px;
-      padding: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 6px;
+      padding: 6px;
+      width: 100%;
     }
     
-    @media (max-width: 600px) {
+    @container (max-width: 250px) {
       .aw-grid {
         grid-template-columns: 1fr;
-        gap: 12px;
-        padding: 12px;
+        gap: 4px;
+        padding: 4px;
+      }
+    }
+    
+    @container (min-width: 251px) and (max-width: 450px) {
+      .aw-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px;
+      }
+    }
+    
+    @container (min-width: 451px) and (max-width: 700px) {
+      .aw-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+    
+    @container (min-width: 701px) {
+      .aw-grid {
+        grid-template-columns: repeat(${Math.min(columns, 4)}, 1fr);
+      }
+    }
+    
+    @supports not (container-type: inline-size) {
+      @media (max-width: 350px) {
+        .aw-grid {
+          grid-template-columns: 1fr;
+        }
       }
     }
   `;
 }
 
 /**
- * Genere les styles pour le layout list
+ * Genere les styles pour le layout list compact
  * @returns {string} CSS de la liste
  */
 function generateListStyles() {
@@ -2744,8 +2823,8 @@ function generateListStyles() {
     .aw-list {
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      padding: 12px;
+      gap: 4px;
+      padding: 4px;
     }
   `;
 }
@@ -2788,12 +2867,12 @@ function generateAdaptiveStyles(siteColors) {
 
 // === rendering/cardStyles.js ===
 /**
- * Styles des cartes d'annonces
+ * Styles des cartes d'annonces - Design compact pub
  * @module rendering/cardStyles
  */
 
 /**
- * Genere les styles pour les cartes d'annonces
+ * Genere les styles pour les mini-cartes
  * @returns {string} CSS des cartes
  */
 function generateCardStyles() {
@@ -2801,23 +2880,26 @@ function generateCardStyles() {
     .aw-card {
       background: var(--aw-background);
       border: 1px solid var(--aw-border);
-      border-radius: 8px;
+      border-radius: 4px;
       overflow: hidden;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      transition: box-shadow 0.15s ease;
       cursor: pointer;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
     }
     
     .aw-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px var(--aw-shadow);
+      box-shadow: 0 2px 6px var(--aw-shadow);
     }
     
     .aw-card-image {
       position: relative;
       width: 100%;
-      padding-bottom: 56.25%;
+      padding-bottom: 50%;
       background: var(--aw-background-alt);
       overflow: hidden;
+      flex-shrink: 0;
     }
     
     .aw-card-image img {
@@ -2827,30 +2909,39 @@ function generateCardStyles() {
       width: 100%;
       height: 100%;
       object-fit: cover;
+      transition: opacity 0.2s ease;
     }
     
+    .aw-card-image img.loading { opacity: 0; }
+    .aw-card-image img.loaded { opacity: 1; }
+    .aw-card-image img.error { opacity: 0.5; }
+    
     .aw-card-body {
-      padding: 12px;
+      padding: 6px 8px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
     }
     
     .aw-card-title {
-      margin: 0 0 8px;
-      font-size: 16px;
+      margin: 0 0 2px;
+      font-size: 11px;
       font-weight: 600;
       color: var(--aw-text);
-      line-height: 1.3;
+      line-height: 1.2;
       display: -webkit-box;
-      -webkit-line-clamp: 2;
+      -webkit-line-clamp: 1;
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
     
     .aw-card-description {
-      margin: 0 0 8px;
-      font-size: 13px;
+      margin: 0;
+      font-size: 10px;
       color: var(--aw-text-secondary);
       display: -webkit-box;
-      -webkit-line-clamp: 2;
+      -webkit-line-clamp: 1;
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
@@ -2859,23 +2950,39 @@ function generateCardStyles() {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      margin-top: auto;
+      padding-top: 2px;
     }
     
     .aw-card-price {
-      font-size: 18px;
+      font-size: 11px;
       font-weight: 700;
       color: var(--aw-accent);
+      white-space: nowrap;
     }
     
     .aw-card-location {
-      font-size: 12px;
+      font-size: 9px;
       color: var(--aw-text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 80px;
+    }
+    
+    /* Ultra compact pour petits espaces */
+    @container (max-width: 200px) {
+      .aw-card-body { padding: 4px 6px; }
+      .aw-card-title { font-size: 10px; }
+      .aw-card-price { font-size: 10px; }
+      .aw-card-description { display: none; }
+      .aw-card-location { display: none; }
     }
   `;
 }
 
 /**
- * Genere les styles pour les cartes en mode liste
+ * Genere les styles pour les cartes en mode liste compact
  * @returns {string} CSS des cartes liste
  */
 function generateListCardStyles() {
@@ -2884,39 +2991,48 @@ function generateListCardStyles() {
       display: flex;
       background: var(--aw-background);
       border: 1px solid var(--aw-border);
-      border-radius: 8px;
+      border-radius: 4px;
       overflow: hidden;
-      transition: box-shadow 0.2s ease;
+      transition: box-shadow 0.15s ease;
+      width: 100%;
+      height: 56px;
     }
     
     .aw-list-card:hover {
-      box-shadow: 0 2px 8px var(--aw-shadow);
+      box-shadow: 0 1px 4px var(--aw-shadow);
     }
     
     .aw-list-card-image {
       flex-shrink: 0;
-      width: 120px;
-      height: 90px;
+      width: 56px;
+      height: 56px;
       background: var(--aw-background-alt);
+      overflow: hidden;
     }
     
     .aw-list-card-image img {
       width: 100%;
       height: 100%;
       object-fit: cover;
+      transition: opacity 0.2s ease;
     }
+    
+    .aw-list-card-image img.loading { opacity: 0; }
+    .aw-list-card-image img.loaded { opacity: 1; }
     
     .aw-list-card-content {
       flex: 1;
-      padding: 10px 12px;
+      padding: 4px 8px;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
+      justify-content: center;
+      min-width: 0;
+      gap: 2px;
     }
     
     .aw-list-card-title {
       margin: 0;
-      font-size: 14px;
+      font-size: 11px;
       font-weight: 600;
       color: var(--aw-text);
       white-space: nowrap;
@@ -2925,21 +3041,28 @@ function generateListCardStyles() {
     }
     
     .aw-list-card-price {
-      font-size: 16px;
+      font-size: 11px;
       font-weight: 700;
       color: var(--aw-accent);
+    }
+    
+    @container (max-width: 200px) {
+      .aw-list-card { height: 44px; }
+      .aw-list-card-image { width: 44px; height: 44px; }
+      .aw-list-card-title { font-size: 10px; }
+      .aw-list-card-price { font-size: 10px; }
     }
   `;
 }
 
 // === rendering/carouselStyles.js ===
 /**
- * Styles du carousel
+ * Styles du carousel compact
  * @module rendering/carouselStyles
  */
 
 /**
- * Genere les styles pour le carousel
+ * Genere les styles pour le carousel compact
  * @returns {string} CSS du carousel
  */
 function generateCarouselStyles() {
@@ -2947,29 +3070,41 @@ function generateCarouselStyles() {
     .aw-carousel {
       position: relative;
       overflow: hidden;
-      padding: 16px;
+      padding: 6px;
+      width: 100%;
     }
     
     .aw-carousel-track {
       display: flex;
       transition: transform 0.3s ease;
-      gap: 16px;
+      gap: 6px;
     }
     
     .aw-carousel-slide {
       flex-shrink: 0;
-      width: calc(33.333% - 11px);
+      width: calc(33.333% - 4px);
     }
     
-    @media (max-width: 900px) {
-      .aw-carousel-slide {
-        width: calc(50% - 8px);
+    @container (max-width: 300px) {
+      .aw-carousel-slide { width: 100%; }
+      .aw-carousel-btn { width: 24px; height: 24px; }
+      .aw-carousel-btn svg { width: 12px; height: 12px; }
+    }
+    
+    @container (min-width: 301px) and (max-width: 500px) {
+      .aw-carousel-slide { width: calc(50% - 3px); }
+    }
+    
+    @container (min-width: 501px) {
+      .aw-carousel-slide { width: calc(33.333% - 4px); }
+    }
+    
+    @supports not (container-type: inline-size) {
+      @media (max-width: 400px) {
+        .aw-carousel-slide { width: 100%; }
       }
-    }
-    
-    @media (max-width: 600px) {
-      .aw-carousel-slide {
-        width: 100%;
+      @media (min-width: 401px) and (max-width: 600px) {
+        .aw-carousel-slide { width: calc(50% - 3px); }
       }
     }
     
@@ -2977,8 +3112,8 @@ function generateCarouselStyles() {
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
-      width: 40px;
-      height: 40px;
+      width: 28px;
+      height: 28px;
       border: none;
       border-radius: 50%;
       background: var(--aw-background);
@@ -2987,49 +3122,38 @@ function generateCarouselStyles() {
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 2px 8px var(--aw-shadow);
+      box-shadow: 0 1px 4px var(--aw-shadow);
       z-index: 10;
-      transition: background 0.2s ease;
+      transition: opacity 0.2s ease;
+      padding: 0;
     }
     
-    .aw-carousel-btn:hover {
-      background: var(--aw-background-alt);
-    }
+    .aw-carousel-btn:hover { opacity: 0.8; }
     
-    .aw-carousel-btn:focus {
-      outline: 2px solid var(--aw-accent);
-      outline-offset: 2px;
-    }
-    
-    .aw-carousel-btn--prev {
-      left: 8px;
-    }
-    
-    .aw-carousel-btn--next {
-      right: 8px;
-    }
+    .aw-carousel-btn--prev { left: 2px; }
+    .aw-carousel-btn--next { right: 2px; }
     
     .aw-carousel-btn:disabled {
-      opacity: 0.5;
+      opacity: 0.2;
       cursor: not-allowed;
     }
     
     .aw-carousel-btn svg {
-      width: 20px;
-      height: 20px;
+      width: 14px;
+      height: 14px;
       fill: currentColor;
     }
     
     .aw-carousel-dots {
       display: flex;
       justify-content: center;
-      gap: 8px;
-      margin-top: 12px;
+      gap: 4px;
+      margin-top: 6px;
     }
     
     .aw-carousel-dot {
-      width: 8px;
-      height: 8px;
+      width: 5px;
+      height: 5px;
       border: none;
       border-radius: 50%;
       background: var(--aw-border);
@@ -3040,11 +3164,6 @@ function generateCarouselStyles() {
     
     .aw-carousel-dot--active {
       background: var(--aw-accent);
-    }
-    
-    .aw-carousel-dot:focus {
-      outline: 2px solid var(--aw-accent);
-      outline-offset: 2px;
     }
   `;
 }
@@ -3064,13 +3183,13 @@ function generateSkeletonStyles() {
     .aw-skeleton-card {
       background: var(--aw-background);
       border: 1px solid var(--aw-border);
-      border-radius: 8px;
+      border-radius: 6px;
       overflow: hidden;
     }
     
     .aw-skeleton-image {
       width: 100%;
-      padding-bottom: 56.25%;
+      padding-bottom: 50%;
       background: linear-gradient(90deg, 
         var(--aw-background-alt) 25%, 
         var(--aw-border) 50%, 
@@ -3080,13 +3199,13 @@ function generateSkeletonStyles() {
     }
     
     .aw-skeleton-body {
-      padding: 12px;
+      padding: 6px;
     }
     
     .aw-skeleton-line {
-      height: 14px;
-      margin-bottom: 8px;
-      border-radius: 4px;
+      height: 10px;
+      margin-bottom: 4px;
+      border-radius: 3px;
       background: linear-gradient(90deg, 
         var(--aw-background-alt) 25%, 
         var(--aw-border) 50%, 
@@ -3095,23 +3214,15 @@ function generateSkeletonStyles() {
       animation: aw-shimmer 1.5s infinite;
     }
     
-    .aw-skeleton-line--short {
-      width: 60%;
-    }
-    
-    .aw-skeleton-line--medium {
-      width: 80%;
-    }
-    
-    .aw-skeleton-line--long {
-      width: 100%;
-    }
+    .aw-skeleton-line--short { width: 60%; }
+    .aw-skeleton-line--medium { width: 80%; }
+    .aw-skeleton-line--long { width: 100%; }
     
     .aw-skeleton-price {
       width: 40%;
-      height: 20px;
-      margin-top: 12px;
-      border-radius: 4px;
+      height: 12px;
+      margin-top: 4px;
+      border-radius: 3px;
       background: linear-gradient(90deg, 
         var(--aw-background-alt) 25%, 
         var(--aw-border) 50%, 
@@ -3137,7 +3248,6 @@ function createSkeletonCardHTML() {
       <div class="aw-skeleton-image"></div>
       <div class="aw-skeleton-body">
         <div class="aw-skeleton-line aw-skeleton-line--long"></div>
-        <div class="aw-skeleton-line aw-skeleton-line--medium"></div>
         <div class="aw-skeleton-price"></div>
       </div>
     </div>
@@ -3150,9 +3260,9 @@ function createSkeletonCardHTML() {
  */
 function createSkeletonListHTML() {
   return `
-    <div class="aw-skeleton-card" style="display:flex;height:90px;">
-      <div style="width:120px;height:100%;background:var(--aw-background-alt);"></div>
-      <div style="flex:1;padding:10px 12px;">
+    <div class="aw-skeleton-card" style="display:flex;height:56px;">
+      <div style="width:56px;height:100%;background:var(--aw-background-alt);"></div>
+      <div style="flex:1;padding:6px 8px;">
         <div class="aw-skeleton-line aw-skeleton-line--long"></div>
         <div class="aw-skeleton-line aw-skeleton-line--short"></div>
       </div>
@@ -3167,6 +3277,10 @@ function createSkeletonListHTML() {
  */
 
 
+// Placeholder SVG optimise
+const PLACEHOLDER_SVG = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"%3E%3Crect fill="%23e8e8e8" width="400" height="300"/%3E%3Cpath fill="%23bbb" d="M150 100h100v100H150z"/%3E%3Ccircle cx="180" cy="130" r="15" fill="%23999"/%3E%3Cpath fill="%23999" d="M160 180l30-40 40 50H160z"/%3E%3Cpath fill="%23aaa" d="M200 165l35 35h-70l35-35z"/%3E%3C/svg%3E';
+const PLACEHOLDER_SMALL = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 150"%3E%3Crect fill="%23e8e8e8" width="150" height="150"/%3E%3Cpath fill="%23bbb" d="M50 50h50v50H50z"/%3E%3C/svg%3E';
+
 /**
  * Formate un prix pour affichage
  * @param {number} price - Prix
@@ -3174,17 +3288,50 @@ function createSkeletonListHTML() {
  * @returns {string} Prix formate
  */
 function formatPrice(price, currency = 'EUR') {
-  if (price === null || price === undefined) return '';
+  if (price === null || price === undefined || price === 0) return '';
   
   try {
     return new Intl.NumberFormat('fr-FR', {
       style: 'currency',
       currency: currency,
-      minimumFractionDigits: 0
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
     }).format(price);
   } catch (e) {
-    return `${price} ${currency}`;
+    return `${price.toLocaleString('fr-FR')} ${currency}`;
   }
+}
+
+/**
+ * Cree une image avec gestion du chargement
+ * @param {string} src - URL de l'image
+ * @param {string} alt - Texte alternatif
+ * @param {string} placeholder - URL du placeholder
+ * @returns {HTMLImageElement} Element image
+ */
+function createManagedImage(src, alt, placeholder = PLACEHOLDER_SVG) {
+  const img = createElement('img', {
+    alt: alt || '',
+    loading: 'lazy',
+    decoding: 'async'
+  });
+  
+  img.className = 'loading';
+  
+  // Gestion du chargement
+  img.onload = () => {
+    img.className = 'loaded';
+  };
+  
+  img.onerror = () => {
+    img.className = 'error';
+    img.src = placeholder;
+  };
+  
+  // Definit la source (ou placeholder si vide)
+  img.src = src && src.trim() ? src : placeholder;
+  
+  return img;
 }
 
 /**
@@ -3206,24 +3353,15 @@ function createCard(ad, onClick) {
     'aria-label': `Voir l'annonce: ${ad.title}`
   });
 
-  // Image avec placeholder et gestion erreur
+  // Image avec gestion du chargement
   const imageContainer = createElement('div', { className: 'aw-card-image' });
-  const img = createElement('img', {
-    alt: ad.title,
-    loading: 'lazy'
-  });
-  
-  // Placeholder SVG en base64 si pas d'image ou erreur
-  const placeholderSvg = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"%3E%3Crect fill="%23e0e0e0" width="400" height="300"/%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="24" fill="%23999"%3EImage non disponible%3C/text%3E%3C/svg%3E';
-  
-  img.onerror = () => { img.src = placeholderSvg; };
-  img.src = ad.imageUrl || placeholderSvg;
+  const img = createManagedImage(ad.imageUrl, ad.title);
   imageContainer.appendChild(img);
 
   // Corps
   const body = createElement('div', { className: 'aw-card-body' });
   
-  const title = createElement('h3', { className: 'aw-card-title' }, ad.title);
+  const title = createElement('h3', { className: 'aw-card-title' }, ad.title || 'Propriete');
   body.appendChild(title);
 
   if (ad.description) {
@@ -3234,9 +3372,9 @@ function createCard(ad, onClick) {
   // Footer
   const footer = createElement('div', { className: 'aw-card-footer' });
   
-  if (ad.price !== null) {
-    const price = createElement('span', { className: 'aw-card-price' }, 
-      formatPrice(ad.price, ad.currency));
+  const priceText = formatPrice(ad.price, ad.currency);
+  if (priceText) {
+    const price = createElement('span', { className: 'aw-card-price' }, priceText);
     footer.appendChild(price);
   }
 
@@ -3279,22 +3417,19 @@ function createListCard(ad, onClick) {
     'aria-label': `Voir l'annonce: ${ad.title}`
   });
 
-  // Image avec placeholder
+  // Image avec gestion du chargement
   const imageContainer = createElement('div', { className: 'aw-list-card-image' });
-  const img = createElement('img', { alt: ad.title, loading: 'lazy' });
-  const placeholderSvg = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 150"%3E%3Crect fill="%23e0e0e0" width="150" height="150"/%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="12" fill="%23999"%3ENo img%3C/text%3E%3C/svg%3E';
-  img.onerror = () => { img.src = placeholderSvg; };
-  img.src = ad.imageUrl || placeholderSvg;
+  const img = createManagedImage(ad.imageUrl, ad.title, PLACEHOLDER_SMALL);
   imageContainer.appendChild(img);
 
   // Contenu
   const content = createElement('div', { className: 'aw-list-card-content' });
-  const title = createElement('h3', { className: 'aw-list-card-title' }, ad.title);
+  const title = createElement('h3', { className: 'aw-list-card-title' }, ad.title || 'Propriete');
   content.appendChild(title);
 
-  if (ad.price !== null) {
-    const price = createElement('span', { className: 'aw-list-card-price' },
-      formatPrice(ad.price, ad.currency));
+  const priceText = formatPrice(ad.price, ad.currency);
+  if (priceText) {
+    const price = createElement('span', { className: 'aw-list-card-price' }, priceText);
     content.appendChild(price);
   }
 
@@ -3542,6 +3677,97 @@ function createCarouselSlide(ad, onAdClick) {
   slide.appendChild(card);
   
   return slide;
+}
+
+/**
+ * Rend les annonces en mode carousel
+ * @param {Object[]} ads - Annonces a afficher
+ * @param {Function} onAdClick - Handler de clic
+ * @returns {HTMLElement} Element carousel complet
+ */
+function renderCarouselLayout(ads, onAdClick) {
+  const { carousel, track, prevBtn, nextBtn, dots } = createCarouselContainer();
+  
+  // Cree les slides
+  ads.forEach(ad => {
+    const slide = createCarouselSlide(ad, onAdClick);
+    track.appendChild(slide);
+  });
+  
+  // Variables d'etat
+  let currentIndex = 0;
+  let isAnimating = false;
+  
+  /**
+   * Met a jour la position du carousel
+   */
+  function updatePosition(animate = true) {
+    if (isAnimating && animate) return;
+    
+    isAnimating = true;
+    const translateX = -currentIndex * 100;
+    
+    track.style.transition = animate ? 'transform 0.3s ease' : 'none';
+    track.style.transform = `translateX(${translateX}%)`;
+    
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        isAnimating = false;
+      }, animate ? 300 : 0);
+    });
+    
+    updateButtons();
+    updateDots();
+  }
+  
+  /**
+   * Met a jour l'etat des boutons
+   */
+  function updateButtons() {
+    prevBtn.disabled = currentIndex === 0;
+    nextBtn.disabled = currentIndex >= ads.length - 1;
+    prevBtn.style.opacity = currentIndex === 0 ? '0.3' : '1';
+    nextBtn.style.opacity = currentIndex >= ads.length - 1 ? '0.3' : '1';
+  }
+  
+  /**
+   * Met a jour l'etat des dots
+   */
+  function updateDots() {
+    const dotElements = dots.querySelectorAll('.aw-carousel-dot');
+    dotElements.forEach((dot, i) => {
+      dot.classList.toggle('aw-carousel-dot--active', i === currentIndex);
+    });
+  }
+  
+  // Cree les dots
+  const dotElements = createDots(ads.length, 0, (index) => {
+    if (index !== currentIndex) {
+      currentIndex = index;
+      updatePosition();
+    }
+  });
+  dotElements.forEach(dot => dots.appendChild(dot));
+  
+  // Event listeners
+  prevBtn.addEventListener('click', () => {
+    if (currentIndex > 0) {
+      currentIndex--;
+      updatePosition();
+    }
+  });
+  
+  nextBtn.addEventListener('click', () => {
+    if (currentIndex < ads.length - 1) {
+      currentIndex++;
+      updatePosition();
+    }
+  });
+  
+  // Initialise
+  updatePosition(false);
+  
+  return carousel;
 }
 
 // === rendering/carouselController.js ===
@@ -3799,8 +4025,10 @@ function setupTouchHandlers(carousel, controller) {
 // === rendering/renderer.js ===
 /**
  * Gestionnaire de rendu principal
+ * Design compact type publicite
  * @module rendering/renderer
  */
+
 
 
 
@@ -3830,13 +4058,12 @@ function createRenderer(shadowRoot, theme, siteColors = null) {
       generateBaseStyles(theme),
       generateCardStyles(),
       generateListCardStyles(),
-      generateGridStyles(3),
+      generateGridStyles(4),
       generateListStyles(),
       generateCarouselStyles(),
       generateSkeletonStyles()
     ];
     
-    // Ajoute styles adaptatifs si couleurs disponibles
     if (siteColors) {
       styles.push(generateAdaptiveStyles(siteColors));
     }
@@ -3846,12 +4073,23 @@ function createRenderer(shadowRoot, theme, siteColors = null) {
     
     contentContainer = createElement('div', { className: 'aw-container' });
     
-    // Ajoute classe adaptative si couleurs utilisees
     if (siteColors) {
       shadowRoot.host.classList.add('aw-adaptive');
     }
     
     shadowRoot.appendChild(contentContainer);
+  }
+
+  /**
+   * Cree l'en-tete discret du widget
+   */
+  function createHeader() {
+    const header = createElement('div', { className: 'aw-header' });
+    const label = createElement('span', { className: 'aw-header-label' }, 'Annonces');
+    const brand = createElement('span', { className: 'aw-header-brand' }, 'betaia');
+    header.appendChild(label);
+    header.appendChild(brand);
+    return header;
   }
 
   /**
@@ -3861,11 +4099,14 @@ function createRenderer(shadowRoot, theme, siteColors = null) {
    */
   function showLoading(count, layout) {
     contentContainer.innerHTML = '';
+    contentContainer.appendChild(createHeader());
+    
     const wrapper = createElement('div', { 
       className: layout === LAYOUTS.LIST ? 'aw-list' : 'aw-grid' 
     });
     
-    for (let i = 0; i < count; i++) {
+    const safeCount = Math.min(count, 4);
+    for (let i = 0; i < safeCount; i++) {
       const skeleton = createElement('div');
       skeleton.innerHTML = createSkeletonCardHTML();
       wrapper.appendChild(skeleton.firstChild);
@@ -3903,12 +4144,19 @@ function createRenderer(shadowRoot, theme, siteColors = null) {
       return;
     }
 
+    // En-tete discret
+    contentContainer.appendChild(createHeader());
+
     let content;
     switch (layout) {
       case LAYOUTS.LIST:
         content = renderListLayout(ads, onAdClick);
         break;
+      case LAYOUTS.CAROUSEL:
+        content = renderCarouselLayout(ads, onAdClick);
+        break;
       case LAYOUTS.GRID:
+      case LAYOUTS.CARD:
       default:
         content = renderGridLayout(ads, containerWidth, onAdClick);
         break;
@@ -4739,13 +4987,22 @@ function createAdsCache(maxSize = LIMITS.MAX_CACHE_ITEMS) {
  * @returns {Object} Client avec methodes
  */
 function createAdsClient(baseUrl) {
-  const defaultTimeout = 10000;
+  const defaultTimeout = 15000;
+  const maxRetries = 3;
+  const retryDelay = 1000;
   
   // Utilise le proxy sur le meme domaine que le widget
   const proxyUrl = `${baseUrl}/api/ads`;
 
   /**
-   * Recupere les annonces via le proxy API
+   * Pause pour retry
+   */
+  function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  /**
+   * Recupere les annonces via le proxy API avec retry
    * @param {string} clientId - ID du client
    * @param {number} limit - Nombre max d'annonces
    * @returns {Promise<Object[]>} Liste des annonces
@@ -4755,37 +5012,55 @@ function createAdsClient(baseUrl) {
     
     console.log('[AnnoncesWidget] URL Proxy:', url);
 
-    try {
-      const response = await withTimeout(
-        () => fetch(url, {
-          method: 'GET',
-          headers: { 'Accept': 'application/json' },
-          credentials: 'omit'
-        }),
-        defaultTimeout
-      );
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        const response = await withTimeout(
+          () => fetch(url, {
+            method: 'GET',
+            headers: { 'Accept': 'application/json' },
+            credentials: 'omit'
+          }),
+          defaultTimeout
+        );
 
-      console.log('[AnnoncesWidget] Response status:', response.status);
+        console.log('[AnnoncesWidget] Response status:', response.status);
 
-      if (!response.ok) {
-        throw new Error(`API error: ${response.status}`);
+        if (!response.ok) {
+          throw new Error(`API error: ${response.status}`);
+        }
+
+        const json = await response.json();
+        console.log('[AnnoncesWidget] Annonces recues:', json.ads?.length || 0);
+        
+        // Valide les donnees
+        const ads = Array.isArray(json.ads) ? json.ads : [];
+        return ads.filter(ad => ad && ad.id);
+        
+      } catch (error) {
+        console.warn(`[AnnoncesWidget] Tentative ${attempt}/${maxRetries} echouee:`, error.message);
+        
+        if (attempt < maxRetries) {
+          await sleep(retryDelay * attempt);
+        } else {
+          console.error('[AnnoncesWidget] Toutes les tentatives echouees');
+          throw error;
+        }
       }
-
-      const json = await response.json();
-      console.log('[AnnoncesWidget] Annonces recues:', json.ads?.length || 0);
-      
-      return json.ads || [];
-    } catch (error) {
-      console.error('[AnnoncesWidget] Erreur API:', error);
-      throw error;
     }
+    
+    return [];
   }
 
   /**
    * Prefetch les annonces suivantes
    */
   async function prefetchAds(clientId, excludeIds = [], limit = 6) {
-    return fetchAds(clientId, limit);
+    try {
+      return await fetchAds(clientId, limit);
+    } catch (error) {
+      console.warn('[AnnoncesWidget] Prefetch echoue:', error.message);
+      return [];
+    }
   }
 
   return Object.freeze({
@@ -4925,7 +5200,10 @@ const defaultConfig = {
   adaptColors: true,
   containerId: DEFAULT_CONTAINER_ID,
   apiUrl: null,
-  debug: false
+  debug: false,
+  width: null,
+  height: null,
+  orientation: 'auto'
 };
 
 /**
@@ -4949,6 +5227,9 @@ function extractConfigFromScript() {
   const noTracking = script.hasAttribute('data-no-tracking');
   const noAdaptColors = script.hasAttribute('data-no-adapt-colors');
   const debug = script.hasAttribute('data-debug');
+  const width = script.getAttribute('data-width');
+  const height = script.getAttribute('data-height');
+  const orientation = script.getAttribute('data-orientation');
 
   return {
     clientId: clientId || null,
@@ -4959,7 +5240,10 @@ function extractConfigFromScript() {
     noTracking,
     adaptColors: !noAdaptColors,
     containerId: DEFAULT_CONTAINER_ID,
-    debug
+    debug,
+    width: width ? parseDimension(width) : null,
+    height: height ? parseDimension(height) : null,
+    orientation: validateOrientation(orientation)
   };
 }
 
@@ -5000,6 +5284,30 @@ function validateLayout(value) {
  */
 function createConfig(overrides = {}) {
   return Object.freeze({ ...defaultConfig, ...overrides });
+}
+
+/**
+ * Parse une dimension (px, %, ou nombre)
+ * @param {string} value - Valeur a parser
+ * @returns {string} Dimension CSS valide
+ */
+function parseDimension(value) {
+  if (!value) return null;
+  const num = parseInt(value, 10);
+  if (isNaN(num)) return value;
+  // Si c'est un nombre seul, ajouter px
+  if (/^\d+$/.test(value.trim())) return `${num}px`;
+  return value;
+}
+
+/**
+ * Valide l'orientation
+ * @param {string} value - Valeur a valider
+ * @returns {string} Orientation valide
+ */
+function validateOrientation(value) {
+  const valid = ['horizontal', 'vertical', 'auto'];
+  return valid.includes(value) ? value : 'auto';
 }
 
 // === core/state.js ===
@@ -5127,6 +5435,22 @@ function getStore() {
 
 
 /**
+ * Applique les dimensions configurees au conteneur
+ * @param {HTMLElement} container - Conteneur du widget
+ * @param {Object} config - Configuration
+ */
+function applyDimensions(container, config) {
+  if (config.width) {
+    container.style.width = config.width;
+    container.style.maxWidth = '100%';
+  }
+  if (config.height) {
+    container.style.height = config.height;
+    container.style.overflow = 'auto';
+  }
+}
+
+/**
  * Initialise tous les services du widget
  * @returns {Promise<Object>} Services initialises
  */
@@ -5145,6 +5469,9 @@ async function initializeWidget() {
     throw new Error(`Conteneur #${DEFAULT_CONTAINER_ID} non trouve`);
   }
 
+  // Applique dimensions configurees
+  applyDimensions(container, config);
+
   // Store
   const store = getStore();
   
@@ -5152,8 +5479,8 @@ async function initializeWidget() {
   const theme = resolveTheme(config.theme);
   const siteColors = config.adaptColors ? extractSiteColors() : null;
   const { width, height } = measureContainer(container);
-  const layout = calculateOptimalLayout(width, height, config.layout);
-  const adCount = calculateOptimalAdCount(width, config.maxAds);
+  const layout = calculateOptimalLayout(width, height, config.layout, config.orientation);
+  const adCount = calculateOptimalAdCount(width, config.maxAds, height, config.orientation);
 
   store.setState({
     currentTheme: theme,
@@ -5186,7 +5513,7 @@ async function initializeWidget() {
     trackingService.init();
   }
 
-  // Charge les annonces
+  // Charge les annonces (dynamique selon espace)
   const ads = await loadAds(adsClient, config.clientId, adCount, securityService);
   
   if (ads.length === 0) {
@@ -5201,7 +5528,7 @@ async function initializeWidget() {
   rotationService.init(ads, ads);
   rotationService.setupBehaviorDetection(container);
 
-  // Observer resize
+  // Observer resize pour recalcul dynamique
   const cleanupResize = createResizeObserver(container, handleResize);
 
   // Tracking des annonces
@@ -5236,8 +5563,8 @@ async function initializeWidget() {
 
   function handleResize(newWidth, newHeight) {
     const state = store.getState();
-    const newLayout = calculateOptimalLayout(newWidth, newHeight, config.layout);
-    const newAdCount = calculateOptimalAdCount(newWidth, config.maxAds);
+    const newLayout = calculateOptimalLayout(newWidth, newHeight, config.layout, config.orientation);
+    const newAdCount = calculateOptimalAdCount(newWidth, config.maxAds, newHeight, config.orientation);
     
     store.setState({ 
       containerWidth: newWidth, 
@@ -5245,10 +5572,10 @@ async function initializeWidget() {
       currentLayout: newLayout
     });
     
-    // Si le layout change ou le nombre d'annonces optimal change, re-rendre
-    if (newLayout !== state.currentLayout) {
-      console.log('[AnnoncesWidget] Layout change:', state.currentLayout, '->', newLayout);
-      renderer.render(state.ads, newLayout, newWidth, handleAdClick);
+    // Recalcule le nombre d'annonces et re-rend
+    if (newLayout !== state.currentLayout || newAdCount !== state.ads?.length) {
+      const displayAds = (state.ads || []).slice(0, newAdCount);
+      renderer.render(displayAds, newLayout, newWidth, handleAdClick);
     } else {
       renderer.updateResponsive(newWidth);
     }

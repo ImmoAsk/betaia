@@ -1,5 +1,6 @@
 /**
  * Gestionnaire de rendu principal
+ * Design compact type publicite
  * @module rendering/renderer
  */
 
@@ -10,6 +11,7 @@ import { generateCarouselStyles } from './carouselStyles.js';
 import { generateSkeletonStyles, createSkeletonCardHTML } from './skeletonStyles.js';
 import { renderGridLayout, updateGridLayout, calculateColumns } from './layoutGrid.js';
 import { renderListLayout } from './layoutList.js';
+import { renderCarouselLayout } from './layoutCarousel.js';
 import { createElement } from '../utils/dom.js';
 
 /**
@@ -32,13 +34,12 @@ export function createRenderer(shadowRoot, theme, siteColors = null) {
       generateBaseStyles(theme),
       generateCardStyles(),
       generateListCardStyles(),
-      generateGridStyles(3),
+      generateGridStyles(4),
       generateListStyles(),
       generateCarouselStyles(),
       generateSkeletonStyles()
     ];
     
-    // Ajoute styles adaptatifs si couleurs disponibles
     if (siteColors) {
       styles.push(generateAdaptiveStyles(siteColors));
     }
@@ -48,12 +49,23 @@ export function createRenderer(shadowRoot, theme, siteColors = null) {
     
     contentContainer = createElement('div', { className: 'aw-container' });
     
-    // Ajoute classe adaptative si couleurs utilisees
     if (siteColors) {
       shadowRoot.host.classList.add('aw-adaptive');
     }
     
     shadowRoot.appendChild(contentContainer);
+  }
+
+  /**
+   * Cree l'en-tete discret du widget
+   */
+  function createHeader() {
+    const header = createElement('div', { className: 'aw-header' });
+    const label = createElement('span', { className: 'aw-header-label' }, 'Annonces');
+    const brand = createElement('span', { className: 'aw-header-brand' }, 'betaia');
+    header.appendChild(label);
+    header.appendChild(brand);
+    return header;
   }
 
   /**
@@ -63,11 +75,14 @@ export function createRenderer(shadowRoot, theme, siteColors = null) {
    */
   function showLoading(count, layout) {
     contentContainer.innerHTML = '';
+    contentContainer.appendChild(createHeader());
+    
     const wrapper = createElement('div', { 
       className: layout === LAYOUTS.LIST ? 'aw-list' : 'aw-grid' 
     });
     
-    for (let i = 0; i < count; i++) {
+    const safeCount = Math.min(count, 4);
+    for (let i = 0; i < safeCount; i++) {
       const skeleton = createElement('div');
       skeleton.innerHTML = createSkeletonCardHTML();
       wrapper.appendChild(skeleton.firstChild);
@@ -105,12 +120,19 @@ export function createRenderer(shadowRoot, theme, siteColors = null) {
       return;
     }
 
+    // En-tete discret
+    contentContainer.appendChild(createHeader());
+
     let content;
     switch (layout) {
       case LAYOUTS.LIST:
         content = renderListLayout(ads, onAdClick);
         break;
+      case LAYOUTS.CAROUSEL:
+        content = renderCarouselLayout(ads, onAdClick);
+        break;
       case LAYOUTS.GRID:
+      case LAYOUTS.CARD:
       default:
         content = renderGridLayout(ads, containerWidth, onAdClick);
         break;

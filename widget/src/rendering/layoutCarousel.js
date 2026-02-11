@@ -97,3 +97,94 @@ export function createCarouselSlide(ad, onAdClick) {
   
   return slide;
 }
+
+/**
+ * Rend les annonces en mode carousel
+ * @param {Object[]} ads - Annonces a afficher
+ * @param {Function} onAdClick - Handler de clic
+ * @returns {HTMLElement} Element carousel complet
+ */
+export function renderCarouselLayout(ads, onAdClick) {
+  const { carousel, track, prevBtn, nextBtn, dots } = createCarouselContainer();
+  
+  // Cree les slides
+  ads.forEach(ad => {
+    const slide = createCarouselSlide(ad, onAdClick);
+    track.appendChild(slide);
+  });
+  
+  // Variables d'etat
+  let currentIndex = 0;
+  let isAnimating = false;
+  
+  /**
+   * Met a jour la position du carousel
+   */
+  function updatePosition(animate = true) {
+    if (isAnimating && animate) return;
+    
+    isAnimating = true;
+    const translateX = -currentIndex * 100;
+    
+    track.style.transition = animate ? 'transform 0.3s ease' : 'none';
+    track.style.transform = `translateX(${translateX}%)`;
+    
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        isAnimating = false;
+      }, animate ? 300 : 0);
+    });
+    
+    updateButtons();
+    updateDots();
+  }
+  
+  /**
+   * Met a jour l'etat des boutons
+   */
+  function updateButtons() {
+    prevBtn.disabled = currentIndex === 0;
+    nextBtn.disabled = currentIndex >= ads.length - 1;
+    prevBtn.style.opacity = currentIndex === 0 ? '0.3' : '1';
+    nextBtn.style.opacity = currentIndex >= ads.length - 1 ? '0.3' : '1';
+  }
+  
+  /**
+   * Met a jour l'etat des dots
+   */
+  function updateDots() {
+    const dotElements = dots.querySelectorAll('.aw-carousel-dot');
+    dotElements.forEach((dot, i) => {
+      dot.classList.toggle('aw-carousel-dot--active', i === currentIndex);
+    });
+  }
+  
+  // Cree les dots
+  const dotElements = createDots(ads.length, 0, (index) => {
+    if (index !== currentIndex) {
+      currentIndex = index;
+      updatePosition();
+    }
+  });
+  dotElements.forEach(dot => dots.appendChild(dot));
+  
+  // Event listeners
+  prevBtn.addEventListener('click', () => {
+    if (currentIndex > 0) {
+      currentIndex--;
+      updatePosition();
+    }
+  });
+  
+  nextBtn.addEventListener('click', () => {
+    if (currentIndex < ads.length - 1) {
+      currentIndex++;
+      updatePosition();
+    }
+  });
+  
+  // Initialise
+  updatePosition(false);
+  
+  return carousel;
+}

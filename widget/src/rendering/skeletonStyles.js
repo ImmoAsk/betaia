@@ -12,13 +12,13 @@ export function generateSkeletonStyles() {
     .aw-skeleton-card {
       background: var(--aw-background);
       border: 1px solid var(--aw-border);
-      border-radius: 8px;
+      border-radius: 6px;
       overflow: hidden;
     }
     
     .aw-skeleton-image {
       width: 100%;
-      padding-bottom: 56.25%;
+      padding-bottom: 50%;
       background: linear-gradient(90deg, 
         var(--aw-background-alt) 25%, 
         var(--aw-border) 50%, 
@@ -28,13 +28,13 @@ export function generateSkeletonStyles() {
     }
     
     .aw-skeleton-body {
-      padding: 12px;
+      padding: 6px;
     }
     
     .aw-skeleton-line {
-      height: 14px;
-      margin-bottom: 8px;
-      border-radius: 4px;
+      height: 10px;
+      margin-bottom: 4px;
+      border-radius: 3px;
       background: linear-gradient(90deg, 
         var(--aw-background-alt) 25%, 
         var(--aw-border) 50%, 
@@ -43,23 +43,15 @@ export function generateSkeletonStyles() {
       animation: aw-shimmer 1.5s infinite;
     }
     
-    .aw-skeleton-line--short {
-      width: 60%;
-    }
-    
-    .aw-skeleton-line--medium {
-      width: 80%;
-    }
-    
-    .aw-skeleton-line--long {
-      width: 100%;
-    }
+    .aw-skeleton-line--short { width: 60%; }
+    .aw-skeleton-line--medium { width: 80%; }
+    .aw-skeleton-line--long { width: 100%; }
     
     .aw-skeleton-price {
       width: 40%;
-      height: 20px;
-      margin-top: 12px;
-      border-radius: 4px;
+      height: 12px;
+      margin-top: 4px;
+      border-radius: 3px;
       background: linear-gradient(90deg, 
         var(--aw-background-alt) 25%, 
         var(--aw-border) 50%, 
@@ -85,7 +77,6 @@ export function createSkeletonCardHTML() {
       <div class="aw-skeleton-image"></div>
       <div class="aw-skeleton-body">
         <div class="aw-skeleton-line aw-skeleton-line--long"></div>
-        <div class="aw-skeleton-line aw-skeleton-line--medium"></div>
         <div class="aw-skeleton-price"></div>
       </div>
     </div>
@@ -98,9 +89,9 @@ export function createSkeletonCardHTML() {
  */
 export function createSkeletonListHTML() {
   return `
-    <div class="aw-skeleton-card" style="display:flex;height:90px;">
-      <div style="width:120px;height:100%;background:var(--aw-background-alt);"></div>
-      <div style="flex:1;padding:10px 12px;">
+    <div class="aw-skeleton-card" style="display:flex;height:56px;">
+      <div style="width:56px;height:100%;background:var(--aw-background-alt);"></div>
+      <div style="flex:1;padding:6px 8px;">
         <div class="aw-skeleton-line aw-skeleton-line--long"></div>
         <div class="aw-skeleton-line aw-skeleton-line--short"></div>
       </div>

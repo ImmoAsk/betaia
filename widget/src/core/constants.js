@@ -14,18 +14,27 @@ export const DEFAULT_CONTAINER_ID = 'annonces-widget';
 
 // Configuration des seuils d'adaptation
 export const BREAKPOINTS = {
-  XS: 300,
-  SM: 600,
-  MD: 900,
-  LG: 1200
+  XS: 200,
+  SM: 400,
+  MD: 600,
+  LG: 900
 };
 
-// Nombre d'annonces par breakpoint
+// Nombre d'annonces par breakpoint (dynamique selon espace)
 export const ADS_PER_BREAKPOINT = {
   XS: 1,
   SM: 2,
   MD: 3,
-  LG: 5
+  LG: 4
+};
+
+// Taille compacte des cartes
+export const CARD_SIZES = {
+  MINI_WIDTH: 140,
+  MINI_HEIGHT: 160,
+  COMPACT_WIDTH: 180,
+  COMPACT_HEIGHT: 200,
+  IMAGE_RATIO: 0.5
 };
 
 // Layouts disponibles

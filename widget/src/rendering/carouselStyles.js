@@ -1,10 +1,10 @@
 /**
- * Styles du carousel
+ * Styles du carousel compact
  * @module rendering/carouselStyles
  */
 
 /**
- * Genere les styles pour le carousel
+ * Genere les styles pour le carousel compact
  * @returns {string} CSS du carousel
  */
 export function generateCarouselStyles() {
@@ -12,29 +12,41 @@ export function generateCarouselStyles() {
     .aw-carousel {
       position: relative;
       overflow: hidden;
-      padding: 16px;
+      padding: 6px;
+      width: 100%;
     }
     
     .aw-carousel-track {
       display: flex;
       transition: transform 0.3s ease;
-      gap: 16px;
+      gap: 6px;
     }
     
     .aw-carousel-slide {
       flex-shrink: 0;
-      width: calc(33.333% - 11px);
+      width: calc(33.333% - 4px);
     }
     
-    @media (max-width: 900px) {
-      .aw-carousel-slide {
-        width: calc(50% - 8px);
+    @container (max-width: 300px) {
+      .aw-carousel-slide { width: 100%; }
+      .aw-carousel-btn { width: 24px; height: 24px; }
+      .aw-carousel-btn svg { width: 12px; height: 12px; }
+    }
+    
+    @container (min-width: 301px) and (max-width: 500px) {
+      .aw-carousel-slide { width: calc(50% - 3px); }
+    }
+    
+    @container (min-width: 501px) {
+      .aw-carousel-slide { width: calc(33.333% - 4px); }
+    }
+    
+    @supports not (container-type: inline-size) {
+      @media (max-width: 400px) {
+        .aw-carousel-slide { width: 100%; }
       }
-    }
-    
-    @media (max-width: 600px) {
-      .aw-carousel-slide {
-        width: 100%;
+      @media (min-width: 401px) and (max-width: 600px) {
+        .aw-carousel-slide { width: calc(50% - 3px); }
       }
     }
     
@@ -42,8 +54,8 @@ export function generateCarouselStyles() {
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
-      width: 40px;
-      height: 40px;
+      width: 28px;
+      height: 28px;
       border: none;
       border-radius: 50%;
       background: var(--aw-background);
@@ -52,49 +64,38 @@ export function generateCarouselStyles() {
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 2px 8px var(--aw-shadow);
+      box-shadow: 0 1px 4px var(--aw-shadow);
       z-index: 10;
-      transition: background 0.2s ease;
+      transition: opacity 0.2s ease;
+      padding: 0;
     }
     
-    .aw-carousel-btn:hover {
-      background: var(--aw-background-alt);
-    }
+    .aw-carousel-btn:hover { opacity: 0.8; }
     
-    .aw-carousel-btn:focus {
-      outline: 2px solid var(--aw-accent);
-      outline-offset: 2px;
-    }
-    
-    .aw-carousel-btn--prev {
-      left: 8px;
-    }
-    
-    .aw-carousel-btn--next {
-      right: 8px;
-    }
+    .aw-carousel-btn--prev { left: 2px; }
+    .aw-carousel-btn--next { right: 2px; }
     
     .aw-carousel-btn:disabled {
-      opacity: 0.5;
+      opacity: 0.2;
       cursor: not-allowed;
     }
     
     .aw-carousel-btn svg {
-      width: 20px;
-      height: 20px;
+      width: 14px;
+      height: 14px;
       fill: currentColor;
     }
     
     .aw-carousel-dots {
       display: flex;
       justify-content: center;
-      gap: 8px;
-      margin-top: 12px;
+      gap: 4px;
+      margin-top: 6px;
     }
     
     .aw-carousel-dot {
-      width: 8px;
-      height: 8px;
+      width: 5px;
+      height: 5px;
       border: none;
       border-radius: 50%;
       background: var(--aw-border);
@@ -105,11 +106,6 @@ export function generateCarouselStyles() {
     
     .aw-carousel-dot--active {
       background: var(--aw-accent);
-    }
-    
-    .aw-carousel-dot:focus {
-      outline: 2px solid var(--aw-accent);
-      outline-offset: 2px;
     }
   `;
 }

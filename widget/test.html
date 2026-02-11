@@ -3,214 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Test Widget Annonces - Responsive</title>
+  <title>Test Widget Betaia</title>
   <style>
-    :root {
-      --primary-color: #0066cc;
-      --secondary-color: #ff6600;
-      --text-color: #333;
-      --background-color: #f5f5f5;
-    }
-    * { box-sizing: border-box; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body { 
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; 
-      padding: 20px; 
-      background: var(--background-color);
-      color: var(--text-color);
-      margin: 0;
-    }
-    h1 { margin: 0 0 20px; }
-    h2 { margin: 20px 0 10px; font-size: 1rem; color: #666; }
-    
-    .controls { 
-      display: flex; 
-      gap: 10px; 
-      margin-bottom: 20px; 
-      flex-wrap: wrap;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f0f0f0;
+      min-height: 100vh;
+      display: flex;
       align-items: center;
-    }
-    button { 
-      padding: 8px 16px; 
-      border: none; 
-      border-radius: 4px; 
-      background: var(--primary-color); 
-      color: white; 
-      cursor: pointer;
-      font-size: 14px;
-    }
-    button:hover { filter: brightness(0.9); }
-    
-    select, input[type="range"] {
-      padding: 8px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-    }
-    
-    /* Conteneur principal redimensionnable */
-    .widget-wrapper {
-      background: white;
-      border-radius: 8px;
+      justify-content: center;
       padding: 20px;
-      margin-bottom: 20px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      resize: both;
-      overflow: auto;
-      min-width: 200px;
-      min-height: 200px;
-      transition: width 0.3s ease;
-    }
-    
-    /* Tailles predefinies */
-    .widget-wrapper.size-xs { width: 280px; }
-    .widget-wrapper.size-sm { width: 500px; }
-    .widget-wrapper.size-md { width: 800px; }
-    .widget-wrapper.size-lg { width: 100%; max-width: 1200px; }
-    
-    /* Zone de log */
-    .log { 
-      background: #1e1e1e; 
-      color: #00ff00; 
-      padding: 15px; 
-      font-family: 'Consolas', monospace; 
-      font-size: 12px; 
-      max-height: 250px; 
-      overflow-y: auto; 
-      white-space: pre-wrap;
-      border-radius: 4px;
-      line-height: 1.4;
-    }
-    .log .error { color: #ff6b6b; }
-    .log .warn { color: #ffd93d; }
-    .log .info { color: #6bcbff; }
-    
-    /* Indicateur de taille */
-    .size-indicator {
-      background: #333;
-      color: white;
-      padding: 4px 10px;
-      border-radius: 4px;
-      font-size: 12px;
-      font-family: monospace;
-    }
-    
-    /* Test Theme Sombre */
-    body.dark-mode {
-      --background-color: #1a1a2e;
-      --text-color: #eee;
-    }
-    body.dark-mode .widget-wrapper {
-      background: #16213e;
-    }
-    body.dark-mode .log {
-      background: #0f0f23;
     }
   </style>
 </head>
 <body>
-  <h1>Test Widget Annonces Betaia</h1>
-  
-  <div class="controls">
-    <button onclick="refreshWidget()">Rafraichir</button>
-    <button onclick="showStats()">Stats</button>
-    <button onclick="giveConsent()">Consentement</button>
-    <button onclick="toggleTheme()">Basculer Theme</button>
-    <button onclick="clearLog()">Vider Log</button>
-    
-    <select id="sizeSelect" onchange="changeSize(this.value)">
-      <option value="xs">XS (280px)</option>
-      <option value="sm">SM (500px)</option>
-      <option value="md" selected>MD (800px)</option>
-      <option value="lg">LG (100%)</option>
-    </select>
-    
-    <span class="size-indicator" id="sizeIndicator">800 x 300</span>
-  </div>
-  
-  <h2>Conteneur Widget (redimensionnable)</h2>
-  <div class="widget-wrapper size-md" id="widgetWrapper">
-    <div id="annonces-widget"></div>
-  </div>
-  
-  <h2>Console</h2>
-  <div class="log" id="log">Initialisation...</div>
-  
-  <script>
-    // Logger visible
-    const logEl = document.getElementById('log');
-    function log(msg, type = 'info') {
-      const time = new Date().toLocaleTimeString();
-      const span = document.createElement('span');
-      span.className = type;
-      span.textContent = '[' + time + '] ' + msg + '\n';
-      logEl.appendChild(span);
-      logEl.scrollTop = logEl.scrollHeight;
-    }
-    function clearLog() { logEl.innerHTML = ''; }
-    
-    // Capture erreurs
-    window.onerror = (msg, url, line) => { log('ERREUR: ' + msg + ' (L' + line + ')', 'error'); };
-    window.addEventListener('unhandledrejection', e => log('REJECT: ' + e.reason, 'error'));
-    
-    // Observer de taille
-    const wrapper = document.getElementById('widgetWrapper');
-    const sizeIndicator = document.getElementById('sizeIndicator');
-    
-    const resizeObserver = new ResizeObserver(entries => {
-      const { width, height } = entries[0].contentRect;
-      sizeIndicator.textContent = Math.round(width) + ' x ' + Math.round(height);
-    });
-    resizeObserver.observe(wrapper);
-    
-    // Controles
-    function changeSize(size) {
-      wrapper.className = 'widget-wrapper size-' + size;
-      log('Taille changee: ' + size.toUpperCase(), 'info');
-    }
-    
-    function toggleTheme() {
-      document.body.classList.toggle('dark-mode');
-      const isDark = document.body.classList.contains('dark-mode');
-      log('Theme: ' + (isDark ? 'SOMBRE' : 'CLAIR'), 'info');
-    }
-    
-    function refreshWidget() {
-      if (window.__AnnoncesWidget__) {
-        window.__AnnoncesWidget__.refresh();
-        log('Widget rafraichi');
-      } else { log('Widget non disponible', 'warn'); }
-    }
-    
-    function showStats() {
-      if (window.__AnnoncesWidget__) {
-        const stats = window.__AnnoncesWidget__.getStats();
-        log('Stats: ' + JSON.stringify(stats, null, 2));
-      } else { log('Widget non disponible', 'warn'); }
-    }
-    
-    function giveConsent() {
-      if (window.__AnnoncesWidget__) {
-        window.__AnnoncesWidget__.giveConsent();
-        log('Consentement donne');
-      }
-    }
-    
-    log('Page chargee, attente du widget...');
-    
-    // Verification chargement widget
-    let checks = 0;
-    const interval = setInterval(() => {
-      checks++;
-      if (window.__AnnoncesWidget__) {
-        log('Widget charge avec succes!', 'info');
-        clearInterval(interval);
-      } else if (checks >= 15) {
-        log('Widget non charge apres 7.5s', 'error');
-        clearInterval(interval);
-      }
-    }, 500);
-  </script>
-  
-  <!-- Widget avec proxy local -->
+  <div id="annonces-widget" style="width:400px;"></div>
+
   <script src="./dist/widget.js" 
           data-id="TEST_123" 
           data-api-url="http://localhost:3500"

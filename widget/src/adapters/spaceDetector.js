@@ -3,7 +3,7 @@
  * @module adapters/spaceDetector
  */
 
-import { BREAKPOINTS, ADS_PER_BREAKPOINT, LAYOUTS } from '../core/constants.js';
+import { BREAKPOINTS, ADS_PER_BREAKPOINT, LAYOUTS, CARD_SIZES } from '../core/constants.js';
 import { debounce } from '../utils/timing.js';
 
 /**
@@ -18,31 +18,39 @@ export function measureContainer(container) {
   
   const rect = container.getBoundingClientRect();
   return {
-    width: Math.floor(rect.width),
-    height: Math.floor(rect.height)
+    width: Math.floor(rect.width) || container.offsetWidth || 300,
+    height: Math.floor(rect.height) || container.offsetHeight || 0
   };
 }
 
 /**
- * Determine le nombre optimal d'annonces selon la largeur
+ * Calcule dynamiquement le nombre d'annonces selon l'espace
  * @param {number} width - Largeur en pixels
+ * @param {number} height - Hauteur en pixels
+ * @param {string} orientation - horizontal/vertical/auto
  * @param {number|null} maxAds - Limite configuree
  * @returns {number} Nombre d'annonces
  */
-export function calculateOptimalAdCount(width, maxAds = null) {
+export function calculateOptimalAdCount(width, maxAds = null, height = 0, orientation = 'auto') {
+  const gap = 8;
   let count;
   
-  if (width < BREAKPOINTS.XS) {
-    count = ADS_PER_BREAKPOINT.XS;
-  } else if (width < BREAKPOINTS.SM) {
-    count = ADS_PER_BREAKPOINT.SM;
-  } else if (width < BREAKPOINTS.MD) {
-    count = ADS_PER_BREAKPOINT.MD;
+  const isVertical = orientation === 'vertical' || 
+    (orientation === 'auto' && height > 0 && height > width * 1.5);
+  
+  if (isVertical && height > 0) {
+    // En vertical : combien de mini cartes tiennent en hauteur
+    const cardH = CARD_SIZES.MINI_HEIGHT + gap;
+    count = Math.max(1, Math.floor(height / cardH));
   } else {
-    count = ADS_PER_BREAKPOINT.LG;
+    // En horizontal : combien de mini cartes tiennent en largeur
+    const cardW = CARD_SIZES.MINI_WIDTH + gap;
+    count = Math.max(1, Math.floor(width / cardW));
   }
   
-  // Applique la limite configuree si presente
+  // Plafonner a un maximum raisonnable
+  count = Math.min(count, 6);
+  
   if (maxAds !== null && maxAds > 0) {
     count = Math.min(count, maxAds);
   }
@@ -55,28 +63,29 @@ export function calculateOptimalAdCount(width, maxAds = null) {
  * @param {number} width - Largeur en pixels
  * @param {number} height - Hauteur en pixels
  * @param {string} configLayout - Layout configure
+ * @param {string} orientation - Orientation configuree
  * @returns {string} Layout optimal
  */
-export function calculateOptimalLayout(width, height, configLayout) {
-  // Si un layout specifique est configure, l'utiliser
+export function calculateOptimalLayout(width, height, configLayout, orientation = 'auto') {
   if (configLayout && configLayout !== LAYOUTS.AUTO) {
     return configLayout;
   }
   
-  // Layout automatique selon les dimensions
+  const isVertical = orientation === 'vertical' || 
+    (orientation === 'auto' && height > 0 && height > width * 1.5);
+  
+  if (isVertical) {
+    return LAYOUTS.LIST;
+  }
+  
   if (width < BREAKPOINTS.XS) {
     return LAYOUTS.LIST;
   }
   
   if (width < BREAKPOINTS.SM) {
-    return LAYOUTS.CARD;
+    return LAYOUTS.CAROUSEL;
   }
   
-  if (width < BREAKPOINTS.MD) {
-    return height > 400 ? LAYOUTS.GRID : LAYOUTS.CAROUSEL;
-  }
-  
-  // Grande largeur
   return LAYOUTS.GRID;
 }
 

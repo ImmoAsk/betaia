@@ -1,9 +1,10 @@
 /**
  * Serveur proxy pour le widget d'annonces
- * Contourne les restrictions CORS
+ * Contourne les restrictions CORS avec retry logic
  */
 
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '..', '.env') });
 
 const http = require('http');
 const https = require('https');
@@ -12,6 +13,8 @@ const url = require('url');
 const PORT = process.env.PORT || 3500;
 const API_BASE = process.env.API_BASE_URL;
 const IMAGE_BASE = process.env.IMAGE_BASE_URL;
+const MAX_RETRIES = 3;
+const RETRY_DELAY = 1000;
 
 if (!API_BASE || !IMAGE_BASE) {
   console.error('[Proxy] ERREUR: Variables API_BASE_URL et IMAGE_BASE_URL requises dans .env');
@@ -19,19 +22,62 @@ if (!API_BASE || !IMAGE_BASE) {
 }
 
 /**
- * Fetch avec promesse
+ * Pause pour retry
  */
-function fetchUrl(targetUrl) {
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+/**
+ * Fetch avec promesse et timeout
+ */
+function fetchUrl(targetUrl, timeout = 15000) {
   return new Promise((resolve, reject) => {
     const parsed = url.parse(targetUrl);
     const client = parsed.protocol === 'https:' ? https : http;
     
-    client.get(targetUrl, (res) => {
+    const req = client.get(targetUrl, { timeout }, (res) => {
       let data = '';
       res.on('data', chunk => data += chunk);
       res.on('end', () => resolve({ status: res.statusCode, data }));
-    }).on('error', reject);
+    });
+    
+    req.on('error', reject);
+    req.on('timeout', () => {
+      req.destroy();
+      reject(new Error('Request timeout'));
+    });
   });
+}
+
+/**
+ * Fetch avec retry automatique
+ */
+async function fetchWithRetry(targetUrl, retries = MAX_RETRIES) {
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      return await fetchUrl(targetUrl);
+    } catch (error) {
+      console.warn(`[Proxy] Tentative ${attempt}/${retries} echouee:`, error.message);
+      if (attempt < retries) {
+        await sleep(RETRY_DELAY * attempt);
+      } else {
+        throw error;
+      }
+    }
+  }
+}
+
+/**
+ * Verifie si une URL d'image est valide
+ */
+function isValidImageUri(uri) {
+  if (!uri || typeof uri !== 'string') return false;
+  if (uri.length < 5) return false;
+  // Verifie extension
+  const validExtensions = ['.jpg', '.jpeg', '.png', '.webp', '.gif', '.avif'];
+  const lowerUri = uri.toLowerCase();
+  return validExtensions.some(ext => lowerUri.includes(ext));
 }
 
 /**
@@ -92,9 +138,8 @@ async function handleAds(query, res) {
     const apiUrl = `${API_BASE}?query=${encodeURIComponent(graphQuery)}`;
     console.log('[Proxy] Fetching:', apiUrl.substring(0, 100) + '...');
     
-    const response = await fetchUrl(apiUrl);
+    const response = await fetchWithRetry(apiUrl);
     console.log('[Proxy] API Status:', response.status);
-    console.log('[Proxy] API Data (100 chars):', response.data.substring(0, 100));
     
     if (response.status !== 200) {
       throw new Error(`API error: ${response.status}`);
@@ -103,18 +148,31 @@ async function handleAds(query, res) {
     const json = JSON.parse(response.data);
     const properties = json.data?.getPropertiesByKeyWords || [];
 
-    // Normalise pour le widget
-    const ads = properties.map(p => ({
-      id: p.nuo,
-      title: p.titre || 'Propriete',
-      description: buildDesc(p),
-      price: p.cout_mensuel || p.cout_vente || 0,
-      currency: 'XOF',
-      imageUrl: p.visuels?.[0]?.uri ? IMAGE_BASE + p.visuels[0].uri : '',
-      linkUrl: `https://betaia.com/tg/catalog/${p.nuo}`,
-      location: [p.quartier?.denomination, p.ville?.denomination].filter(Boolean).join(', '),
-      category: p.categorie_propriete?.denomination || ''
-    }));
+    // Normalise pour le widget avec validation images
+    const ads = properties.map(p => {
+      // Cherche la premiere image valide
+      let imageUrl = '';
+      if (p.visuels && Array.isArray(p.visuels)) {
+        const validVisuel = p.visuels.find(v => isValidImageUri(v?.uri));
+        if (validVisuel) {
+          imageUrl = IMAGE_BASE + validVisuel.uri;
+        }
+      }
+
+      return {
+        id: p.nuo,
+        title: p.titre || 'Propriete',
+        description: buildDesc(p),
+        price: p.cout_mensuel || p.cout_vente || 0,
+        currency: 'XOF',
+        imageUrl,
+        linkUrl: `https://betaia.com/tg/catalog/${p.nuo}`,
+        location: [p.quartier?.denomination, p.ville?.denomination].filter(Boolean).join(', '),
+        category: p.categorie_propriete?.denomination || ''
+      };
+    });
+
+    console.log('[Proxy] Annonces traitees:', ads.length, 'avec images:', ads.filter(a => a.imageUrl).length);
 
     res.writeHead(200);
     res.end(JSON.stringify({ ads, count: ads.length }));
@@ -129,7 +187,7 @@ async function handleAds(query, res) {
 function buildDesc(p) {
   const parts = [];
   if (p.piece) parts.push(`${p.piece} piece(s)`);
-  if (p.surface) parts.push(`${p.surface} m2`);
+  if (p.surface) parts.push(`${p.surface} m²`);
   return parts.join(' - ');
 }
 

@@ -1,5 +1,6 @@
 /**
  * Styles CSS encapsules pour le widget
+ * Design compact et minimal type publicite
  * @module rendering/styles
  */
 
@@ -18,33 +19,65 @@ export function generateBaseStyles(theme) {
     :host {
       ${vars}
       display: block;
+      width: 100%;
+      max-width: 100%;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      font-size: 14px;
-      line-height: 1.5;
+      font-size: 12px;
+      line-height: 1.4;
       box-sizing: border-box;
+      container-type: inline-size;
     }
     
     *, *::before, *::after {
       box-sizing: inherit;
+      margin: 0;
+      padding: 0;
     }
     
     .aw-container {
       width: 100%;
+      max-width: 100%;
       background: var(--aw-background);
       color: var(--aw-text);
-      border-radius: 8px;
+      border-radius: 6px;
       overflow: hidden;
+      container-type: inline-size;
+      border: 1px solid var(--aw-border);
+    }
+    
+    .aw-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 8px;
+      font-size: 9px;
+      color: var(--aw-text-muted);
+      border-bottom: 1px solid var(--aw-border);
+      opacity: 0.7;
+    }
+    
+    .aw-header-label {
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 500;
+    }
+    
+    .aw-header-brand {
+      font-weight: 600;
+      opacity: 0.6;
     }
     
     .aw-loading {
-      padding: 20px;
+      padding: 10px;
       text-align: center;
+      font-size: 11px;
     }
     
     .aw-error {
-      padding: 20px;
+      padding: 10px;
       text-align: center;
       color: var(--aw-error);
+      font-size: 11px;
     }
     
     .aw-skeleton {
@@ -54,7 +87,7 @@ export function generateBaseStyles(theme) {
         var(--aw-background-alt) 75%);
       background-size: 200% 100%;
       animation: aw-shimmer 1.5s infinite;
-      border-radius: 4px;
+      border-radius: 3px;
     }
     
     @keyframes aw-shimmer {
@@ -70,37 +103,65 @@ export function generateBaseStyles(theme) {
     
     .aw-ad-link:focus {
       outline: 2px solid var(--aw-accent);
-      outline-offset: 2px;
+      outline-offset: 1px;
     }
   `;
 }
 
 /**
- * Genere les styles pour le layout grid
- * @param {number} columns - Nombre de colonnes
+ * Genere les styles pour le layout grid compact
+ * @param {number} columns - Nombre de colonnes (base)
  * @returns {string} CSS du grid
  */
 export function generateGridStyles(columns) {
   return `
     .aw-grid {
       display: grid;
-      grid-template-columns: repeat(${columns}, 1fr);
-      gap: 16px;
-      padding: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 6px;
+      padding: 6px;
+      width: 100%;
     }
     
-    @media (max-width: 600px) {
+    @container (max-width: 250px) {
       .aw-grid {
         grid-template-columns: 1fr;
-        gap: 12px;
-        padding: 12px;
+        gap: 4px;
+        padding: 4px;
+      }
+    }
+    
+    @container (min-width: 251px) and (max-width: 450px) {
+      .aw-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px;
+      }
+    }
+    
+    @container (min-width: 451px) and (max-width: 700px) {
+      .aw-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+    
+    @container (min-width: 701px) {
+      .aw-grid {
+        grid-template-columns: repeat(${Math.min(columns, 4)}, 1fr);
+      }
+    }
+    
+    @supports not (container-type: inline-size) {
+      @media (max-width: 350px) {
+        .aw-grid {
+          grid-template-columns: 1fr;
+        }
       }
     }
   `;
 }
 
 /**
- * Genere les styles pour le layout list
+ * Genere les styles pour le layout list compact
  * @returns {string} CSS de la liste
  */
 export function generateListStyles() {
@@ -108,8 +169,8 @@ export function generateListStyles() {
     .aw-list {
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      padding: 12px;
+      gap: 4px;
+      padding: 4px;
     }
   `;
 }
