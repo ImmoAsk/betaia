@@ -83,7 +83,7 @@ export function calculateOptimalLayout(width, height, configLayout, orientation 
   }
   
   if (width < BREAKPOINTS.SM) {
-    return LAYOUTS.CAROUSEL;
+    return LAYOUTS.LIST;
   }
   
   return LAYOUTS.GRID;

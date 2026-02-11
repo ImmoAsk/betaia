@@ -13,4 +13,5 @@ export { createListContainer, renderListLayout, appendToList, removeFromList } f
 export { createCarouselContainer, createDots, createCarouselSlide } from './layoutCarousel.js';
 export { createCarouselController } from './carouselController.js';
 export { createCarouselManager } from './carouselManager.js';
+export { createGridSlider, generateGridSliderStyles } from './gridSlider.js';
 export { createRenderer } from './renderer.js';

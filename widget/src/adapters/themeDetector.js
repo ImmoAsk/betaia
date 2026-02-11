@@ -151,11 +151,17 @@ export function extractSiteColors() {
       colors.primary = rgbToHex(linkRgb);
     }
     
-    // Bordure depuis un element quelconque
+    // Bordure : on ignore les couleurs trop sombres (noir) ou trop claires
     const bordered = document.querySelector('[style*="border"], .card, .panel, article');
     if (bordered) {
       const borderRgb = parseColor(getComputedStyle(bordered).borderColor);
-      colors.border = rgbToHex(borderRgb);
+      if (borderRgb) {
+        const lum = getLuminance(borderRgb.r, borderRgb.g, borderRgb.b);
+        // Ne garder que les gris intermediaires (pas noir, pas blanc)
+        if (lum > 0.05 && lum < 0.85) {
+          colors.border = rgbToHex(borderRgb);
+        }
+      }
     }
     
     // Variables CSS en priorite

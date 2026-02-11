@@ -5,6 +5,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { minify } = require('terser');
 
 const isDev = process.argv.includes('--dev');
 const srcDir = path.join(__dirname, '..', 'src');
@@ -38,14 +39,11 @@ const moduleOrder = [
   'rgpd/rgpdService.js',
   'rendering/styles.js',
   'rendering/cardStyles.js',
-  'rendering/carouselStyles.js',
   'rendering/skeletonStyles.js',
   'rendering/cardFactory.js',
   'rendering/layoutGrid.js',
   'rendering/layoutList.js',
-  'rendering/layoutCarousel.js',
-  'rendering/carouselController.js',
-  'rendering/carouselManager.js',
+  'rendering/gridSlider.js',
   'rendering/renderer.js',
   'rotation/scoringEngine.js',
   'rotation/viewedHistory.js',
@@ -81,7 +79,7 @@ function processModule(modulePath) {
 /**
  * Build principal
  */
-function build() {
+async function build() {
   console.log('[Build] Demarrage...');
   
   // Cree le dossier dist
@@ -91,26 +89,16 @@ function build() {
 
   // Header du bundle
   const header = `/**
- * Annonces Widget v1.0.0
+ * ImmoAsk Widget v1.0.0
  * Bundle genere le ${new Date().toISOString()}
  * 
- * INTEGRATION :
- * <div id="annonces-widget"></div>
- * <script async src="https://tonsite.com/widget.js" data-id="CLIENT_ID"></script>
+ * INTEGRATION MULTI-INSTANCE :
+ * <div data-immoask></div>
+ * <div data-immoask data-orientation="vertical"></div>
+ * <script src="widget.js" data-id="CLIENT_ID" data-api-url="URL"></script>
  * 
- * OPTIONS :
- * - data-max-ads : [1-10] Nombre max d'annonces
- * - data-theme : "light" | "dark" | "auto"
- * - data-layout : "card" | "list" | "grid" | "carousel" | "auto"
- * - data-no-tracking : Desactive le tracking
- * 
- * API PUBLIQUE :
- * - window.__AnnoncesWidget__.refresh()
- * - window.__AnnoncesWidget__.getStats()
- * - window.__AnnoncesWidget__.giveConsent()
- * - window.__AnnoncesWidget__.revokeConsent()
- * 
- * BROWSER SUPPORT : Chrome 90+, Firefox 88+, Safari 14+
+ * OPTIONS (data-* sur le div) :
+ * - data-max-ads, data-layout, data-orientation, data-theme
  */
 `;
 
@@ -126,6 +114,38 @@ function build() {
   }
   
   bundle += '\n})();\n';
+
+  // Obfuscation avec Terser
+  console.log('[Build] Obfuscation du code...');
+  try {
+    const minified = await minify(bundle, {
+      compress: {
+        dead_code: true,
+        drop_console: false,
+        drop_debugger: true,
+        keep_classnames: false,
+        keep_fnames: false,
+        passes: 3
+      },
+      mangle: {
+        toplevel: true,
+        properties: {
+          regex: /^_/
+        }
+      },
+      format: {
+        comments: /^!/,
+        preamble: header
+      }
+    });
+    
+    if (minified.code) {
+      bundle = minified.code;
+      console.log('[Build] Obfuscation reussie');
+    }
+  } catch (e) {
+    console.error('[Build] Erreur obfuscation:', e.message);
+  }
 
   // Ecrit le bundle
   const outputPath = path.join(distDir, 'widget.js');

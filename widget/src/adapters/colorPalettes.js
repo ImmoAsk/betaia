@@ -26,7 +26,7 @@ export const lightPalette = {
 export const darkPalette = {
   background: '#1A1A1A',
   backgroundAlt: '#2A2A2A',
-  border: '#404040',
+  border: '#444444',
   text: '#E0E0E0',
   textSecondary: '#B0B0B0',
   textMuted: '#808080',

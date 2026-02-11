@@ -7,11 +7,10 @@
 import { LAYOUTS } from '../core/constants.js';
 import { generateBaseStyles, generateGridStyles, generateListStyles, generateAdaptiveStyles } from './styles.js';
 import { generateCardStyles, generateListCardStyles } from './cardStyles.js';
-import { generateCarouselStyles } from './carouselStyles.js';
 import { generateSkeletonStyles, createSkeletonCardHTML } from './skeletonStyles.js';
 import { renderGridLayout, updateGridLayout, calculateColumns } from './layoutGrid.js';
 import { renderListLayout } from './layoutList.js';
-import { renderCarouselLayout } from './layoutCarousel.js';
+import { createGridSlider, generateGridSliderStyles } from './gridSlider.js';
 import { createElement } from '../utils/dom.js';
 
 /**
@@ -24,6 +23,7 @@ import { createElement } from '../utils/dom.js';
 export function createRenderer(shadowRoot, theme, siteColors = null) {
   let currentLayout = null;
   let contentContainer = null;
+  let activeSlider = null;
 
   /**
    * Initialise les styles dans le shadow DOM
@@ -36,8 +36,8 @@ export function createRenderer(shadowRoot, theme, siteColors = null) {
       generateListCardStyles(),
       generateGridStyles(4),
       generateListStyles(),
-      generateCarouselStyles(),
-      generateSkeletonStyles()
+      generateSkeletonStyles(),
+      generateGridSliderStyles()
     ];
     
     if (siteColors) {
@@ -62,7 +62,7 @@ export function createRenderer(shadowRoot, theme, siteColors = null) {
   function createHeader() {
     const header = createElement('div', { className: 'aw-header' });
     const label = createElement('span', { className: 'aw-header-label' }, 'Annonces');
-    const brand = createElement('span', { className: 'aw-header-brand' }, 'betaia');
+    const brand = createElement('span', { className: 'aw-header-brand' }, 'ImmoAsk');
     header.appendChild(label);
     header.appendChild(brand);
     return header;
@@ -74,6 +74,7 @@ export function createRenderer(shadowRoot, theme, siteColors = null) {
    * @param {string} layout - Layout a utiliser
    */
   function showLoading(count, layout) {
+    destroySlider();
     contentContainer.innerHTML = '';
     contentContainer.appendChild(createHeader());
     
@@ -96,6 +97,7 @@ export function createRenderer(shadowRoot, theme, siteColors = null) {
    * @param {string} message - Message d'erreur
    */
   function showError(message) {
+    destroySlider();
     contentContainer.innerHTML = '';
     const error = createElement('div', { 
       className: 'aw-error',
@@ -105,13 +107,48 @@ export function createRenderer(shadowRoot, theme, siteColors = null) {
   }
 
   /**
-   * Rend les annonces
+   * Rend les annonces avec grille-slider
+   * @param {Object[]} ads - Toutes les annonces (pool complet)
+   * @param {Object} gridConfig - Configuration de grille {rows, cols}
+   * @param {Function} onAdClick - Handler de clic
+   * @param {Object} sliderOptions - Options du slider
+   */
+  function renderWithGrid(ads, gridConfig, onAdClick, sliderOptions = {}) {
+    destroySlider();
+    contentContainer.innerHTML = '';
+    contentContainer.appendChild(createHeader());
+
+    if (ads.length === 0) {
+      showError('Aucune annonce disponible');
+      return;
+    }
+
+    const slider = createGridSlider({
+      allAds: ads,
+      rows: gridConfig.rows,
+      cols: gridConfig.cols,
+      onAdClick,
+      interval: sliderOptions.interval || 5000,
+      autoSlide: sliderOptions.autoSlide !== false
+    });
+
+    contentContainer.appendChild(slider.element);
+    activeSlider = slider;
+
+    if (sliderOptions.autoSlide !== false) {
+      slider.startAutoPlay();
+    }
+  }
+
+  /**
+   * Rend les annonces (mode classique)
    * @param {Object[]} ads - Annonces a afficher
    * @param {string} layout - Layout a utiliser
    * @param {number} containerWidth - Largeur du conteneur
    * @param {Function} onAdClick - Handler de clic
    */
   function render(ads, layout, containerWidth, onAdClick) {
+    destroySlider();
     contentContainer.innerHTML = '';
     currentLayout = layout;
 
@@ -120,16 +157,12 @@ export function createRenderer(shadowRoot, theme, siteColors = null) {
       return;
     }
 
-    // En-tete discret
     contentContainer.appendChild(createHeader());
 
     let content;
     switch (layout) {
       case LAYOUTS.LIST:
         content = renderListLayout(ads, onAdClick);
-        break;
-      case LAYOUTS.CAROUSEL:
-        content = renderCarouselLayout(ads, onAdClick);
         break;
       case LAYOUTS.GRID:
       case LAYOUTS.CARD:
@@ -153,6 +186,16 @@ export function createRenderer(shadowRoot, theme, siteColors = null) {
   }
 
   /**
+   * Detruit le slider actif
+   */
+  function destroySlider() {
+    if (activeSlider) {
+      activeSlider.destroy();
+      activeSlider = null;
+    }
+  }
+
+  /**
    * Met a jour le theme
    * @param {string} newTheme - Nouveau theme
    */
@@ -171,8 +214,11 @@ export function createRenderer(shadowRoot, theme, siteColors = null) {
     showLoading,
     showError,
     render,
+    renderWithGrid,
     updateResponsive,
     updateTheme,
-    get container() { return contentContainer; }
+    destroySlider,
+    get container() { return contentContainer; },
+    get slider() { return activeSlider; }
   });
 }

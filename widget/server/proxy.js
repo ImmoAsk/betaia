@@ -13,6 +13,7 @@ const url = require('url');
 const PORT = process.env.PORT || 3500;
 const API_BASE = process.env.API_BASE_URL;
 const IMAGE_BASE = process.env.IMAGE_BASE_URL;
+const IMMOASK_URL = process.env.IMMOASK_URL || 'https://immoask.com';
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 1000;
 
@@ -116,14 +117,29 @@ async function handleRequest(req, res) {
 /**
  * Handler des annonces
  */
+/**
+ * Melange aleatoire d'un tableau (Fisher-Yates)
+ */
+function shuffleArray(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
 async function handleAds(query, res) {
   try {
     const { limit = 6, usage = 1, status = 1 } = query;
+    const requestedLimit = parseInt(limit);
+    // Fetcher plus pour avoir de la marge apres filtrage
+    const fetchLimit = Math.min(requestedLimit * 3, 90);
 
     const graphQuery = `{
       getPropertiesByKeyWords(
         orderBy:{column:NUO,order:DESC},
-        limit:${parseInt(limit)},
+        limit:${fetchLimit},
         usage:${parseInt(usage)},
         statut:${parseInt(status)}
       ) {
@@ -149,7 +165,10 @@ async function handleAds(query, res) {
     const properties = json.data?.getPropertiesByKeyWords || [];
 
     // Normalise pour le widget avec validation images
-    const ads = properties.map(p => {
+    const seenImages = new Set();
+    const ads = [];
+
+    for (const p of properties) {
       // Cherche la premiere image valide
       let imageUrl = '';
       if (p.visuels && Array.isArray(p.visuels)) {
@@ -159,23 +178,33 @@ async function handleAds(query, res) {
         }
       }
 
-      return {
+      // Exclure les annonces sans image
+      if (!imageUrl) continue;
+
+      // Exclure les doublons d'images
+      if (seenImages.has(imageUrl)) continue;
+      seenImages.add(imageUrl);
+
+      ads.push({
         id: p.nuo,
         title: p.titre || 'Propriete',
         description: buildDesc(p),
         price: p.cout_mensuel || p.cout_vente || 0,
         currency: 'XOF',
         imageUrl,
-        linkUrl: `https://betaia.com/tg/catalog/${p.nuo}`,
+        linkUrl: `${IMMOASK_URL}/tg/catalog/${p.nuo}`,
         location: [p.quartier?.denomination, p.ville?.denomination].filter(Boolean).join(', '),
         category: p.categorie_propriete?.denomination || ''
-      };
-    });
+      });
+    }
 
-    console.log('[Proxy] Annonces traitees:', ads.length, 'avec images:', ads.filter(a => a.imageUrl).length);
+    // Melange aleatoire pour varier a chaque chargement
+    const shuffled = shuffleArray(ads).slice(0, requestedLimit);
+
+    console.log('[Proxy] Annonces traitees:', shuffled.length, '/', properties.length, 'brutes');
 
     res.writeHead(200);
-    res.end(JSON.stringify({ ads, count: ads.length }));
+    res.end(JSON.stringify({ ads: shuffled, count: shuffled.length, redirectBase: IMMOASK_URL }));
 
   } catch (error) {
     console.error('[Proxy] Error:', error.message);

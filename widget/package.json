@@ -23,7 +23,7 @@
   "license": "MIT",
   "devDependencies": {
     "esbuild": "^0.20.0",
-    "terser": "^5.27.0"
+    "terser": "^5.46.0"
   },
   "engines": {
     "node": ">=18.0.0"

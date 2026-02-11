@@ -3,7 +3,7 @@
  * @module core/config
  */
 
-import { THEMES, LAYOUTS, LIMITS, DEFAULT_CONTAINER_ID } from './constants.js';
+import { THEMES, LAYOUTS, LIMITS, DEFAULT_CONTAINER_ID, GRID_DEFAULTS } from './constants.js';
 
 /**
  * Configuration par defaut du widget
@@ -20,7 +20,10 @@ const defaultConfig = {
   debug: false,
   width: null,
   height: null,
-  orientation: 'auto'
+  orientation: 'auto',
+  grid: null,
+  autoSlide: true,
+  slideInterval: GRID_DEFAULTS.ROTATION_INTERVAL
 };
 
 /**
@@ -47,6 +50,9 @@ export function extractConfigFromScript() {
   const width = script.getAttribute('data-width');
   const height = script.getAttribute('data-height');
   const orientation = script.getAttribute('data-orientation');
+  const grid = script.getAttribute('data-grid');
+  const autoSlide = !script.hasAttribute('data-no-auto-slide');
+  const slideInterval = parseInt(script.getAttribute('data-slide-interval'), 10);
 
   return {
     clientId: clientId || null,
@@ -60,7 +66,10 @@ export function extractConfigFromScript() {
     debug,
     width: width ? parseDimension(width) : null,
     height: height ? parseDimension(height) : null,
-    orientation: validateOrientation(orientation)
+    orientation: validateOrientation(orientation),
+    grid: parseGrid(grid),
+    autoSlide,
+    slideInterval: isNaN(slideInterval) ? GRID_DEFAULTS.ROTATION_INTERVAL : slideInterval
   };
 }
 
@@ -125,4 +134,18 @@ function parseDimension(value) {
 function validateOrientation(value) {
   const valid = ['horizontal', 'vertical', 'auto'];
   return valid.includes(value) ? value : 'auto';
+}
+
+/**
+ * Parse la configuration de grille (format: "rows,cols")
+ * @param {string} value - ex: "1,3" ou "3,1" ou "1,1"
+ * @returns {Object|null} {rows, cols} ou null
+ */
+function parseGrid(value) {
+  if (!value) return null;
+  const parts = value.split(',').map(v => parseInt(v.trim(), 10));
+  if (parts.length !== 2 || parts.some(isNaN)) return null;
+  const rows = Math.max(GRID_DEFAULTS.MIN_ROWS, Math.min(parts[0], GRID_DEFAULTS.MAX_ROWS));
+  const cols = Math.max(GRID_DEFAULTS.MIN_COLS, Math.min(parts[1], GRID_DEFAULTS.MAX_COLS));
+  return { rows, cols };
 }

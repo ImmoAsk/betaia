@@ -39,21 +39,22 @@ export function generateBaseStyles(theme) {
       max-width: 100%;
       background: var(--aw-background);
       color: var(--aw-text);
-      border-radius: 6px;
+      border-radius: 4px;
       overflow: hidden;
       container-type: inline-size;
       border: 1px solid var(--aw-border);
+      box-sizing: border-box;
     }
     
     .aw-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 4px 8px;
-      font-size: 9px;
+      padding: 2px 6px;
+      font-size: 8px;
       color: var(--aw-text-muted);
       border-bottom: 1px solid var(--aw-border);
-      opacity: 0.7;
+      opacity: 0.6;
     }
     
     .aw-header-label {
@@ -117,10 +118,12 @@ export function generateGridStyles(columns) {
   return `
     .aw-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-      gap: 6px;
-      padding: 6px;
+      grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+      gap: 4px;
+      padding: 4px;
       width: 100%;
+      box-sizing: border-box;
+      overflow: hidden;
     }
     
     @container (max-width: 250px) {
@@ -169,8 +172,8 @@ export function generateListStyles() {
     .aw-list {
       display: flex;
       flex-direction: column;
-      gap: 4px;
-      padding: 4px;
+      gap: 3px;
+      padding: 3px;
     }
   `;
 }

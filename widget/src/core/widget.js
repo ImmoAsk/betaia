@@ -3,33 +3,19 @@
  * @module core/widget
  */
 
-import { extractConfigFromScript, createConfig } from './config.js';
-import { getStore } from './state.js';
-import { NAMESPACE, DEFAULT_CONTAINER_ID } from './constants.js';
-import { resolveTheme } from '../adapters/themeDetector.js';
-import { measureContainer, calculateOptimalAdCount, calculateOptimalLayout } from '../adapters/spaceDetector.js';
-import { createSecurityService } from '../security/securityService.js';
-import { createRGPDService } from '../rgpd/rgpdService.js';
-import { createRenderer } from '../rendering/renderer.js';
-import { createTrackingService } from '../tracking/trackingService.js';
-import { createRotationService } from '../rotation/rotationService.js';
-import { createAdsClient } from '../api/adsClient.js';
-import { createAdsCache } from '../api/adsCache.js';
-import { createEndpoints, detectBaseUrl } from '../api/endpoints.js';
+import { NAMESPACE, WIDGET_SELECTOR, DEFAULT_CONTAINER_ID } from './constants.js';
 import { createPublicApi, exposePublicApi, isWidgetLoaded } from '../api/publicApi.js';
-import { initializeWidget } from './initializer.js';
+import { initializeWidgetInstance } from './initializer.js';
 
 /**
- * Bootstrap du widget
+ * Bootstrap du widget multi-instance
  */
 function bootstrap() {
-  // Evite double chargement
   if (isWidgetLoaded()) {
-    console.warn('[AnnoncesWidget] Widget deja charge');
+    console.warn('[ImmoAsk] Widget deja charge');
     return;
   }
 
-  // Attend que le DOM soit pret
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
@@ -38,17 +24,55 @@ function bootstrap() {
 }
 
 /**
- * Initialise le widget
+ * Initialise toutes les instances du widget
  */
 async function init() {
   try {
-    const services = await initializeWidget();
-    const api = createPublicApi(services);
-    exposePublicApi(api);
+    // Cherche tous les conteneurs data-immoask
+    const containers = document.querySelectorAll(WIDGET_SELECTOR);
+    
+    // Fallback sur l'ancien id si aucun data-immoask
+    if (containers.length === 0) {
+      const legacy = document.getElementById(DEFAULT_CONTAINER_ID);
+      if (legacy) {
+        legacy.setAttribute('data-immoask', '');
+        return initSingle(legacy);
+      }
+      console.warn('[ImmoAsk] Aucun conteneur [data-immoask] trouve');
+      return;
+    }
+
+    console.log(`[ImmoAsk] ${containers.length} instance(s) detectee(s)`);
+    
+    // Initialise chaque instance
+    const instances = [];
+    for (const container of containers) {
+      try {
+        const services = await initializeWidgetInstance(container);
+        instances.push(services);
+      } catch (err) {
+        console.error('[ImmoAsk] Erreur instance:', err.message);
+      }
+    }
+
+    // Expose l'API avec la premiere instance
+    if (instances.length > 0) {
+      const api = createPublicApi(instances[0]);
+      api.instances = instances;
+      exposePublicApi(api);
+    }
   } catch (error) {
-    console.error('[AnnoncesWidget] Erreur initialisation:', error.message);
+    console.error('[ImmoAsk] Erreur initialisation:', error.message);
   }
 }
 
-// Lance le bootstrap
+/**
+ * Initialise une seule instance (fallback)
+ */
+async function initSingle(container) {
+  const services = await initializeWidgetInstance(container);
+  const api = createPublicApi(services);
+  exposePublicApi(api);
+}
+
 bootstrap();

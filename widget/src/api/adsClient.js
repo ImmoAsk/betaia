@@ -56,9 +56,16 @@ export function createAdsClient(baseUrl) {
         const json = await response.json();
         console.log('[AnnoncesWidget] Annonces recues:', json.ads?.length || 0);
         
-        // Valide les donnees
-        const ads = Array.isArray(json.ads) ? json.ads : [];
-        return ads.filter(ad => ad && ad.id);
+        // Valide les donnees : filtre sans image et doublons d'images
+        const raw = Array.isArray(json.ads) ? json.ads : [];
+        const seenImages = new Set();
+        return raw.filter(ad => {
+          if (!ad || !ad.id) return false;
+          if (!ad.imageUrl || !ad.imageUrl.trim()) return false;
+          if (seenImages.has(ad.imageUrl)) return false;
+          seenImages.add(ad.imageUrl);
+          return true;
+        });
         
       } catch (error) {
         console.warn(`[AnnoncesWidget] Tentative ${attempt}/${maxRetries} echouee:`, error.message);
