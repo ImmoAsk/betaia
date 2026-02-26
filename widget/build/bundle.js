@@ -6,10 +6,28 @@
 const fs = require('fs');
 const path = require('path');
 const { minify } = require('terser');
+const dotenv = require('dotenv');
 
 const isDev = process.argv.includes('--dev');
 const srcDir = path.join(__dirname, '..', 'src');
 const distDir = path.join(__dirname, '..', 'dist');
+const envPath = path.join(__dirname, '..', '.env');
+
+function getBuildDefaults() {
+  let widgetDefaultMaxAds = null;
+
+  try {
+    if (fs.existsSync(envPath)) {
+      const parsed = dotenv.parse(fs.readFileSync(envPath, 'utf8'));
+      const n = parseInt(parsed.WIDGET_DEFAULT_MAX_ADS, 10);
+      if (!isNaN(n)) widgetDefaultMaxAds = n;
+    }
+  } catch (e) {
+    console.warn('[Build] Impossible de lire .env pour les defaults widget:', e.message);
+  }
+
+  return { widgetDefaultMaxAds };
+}
 
 // Ordre de concatenation des modules
 const moduleOrder = [
@@ -22,21 +40,10 @@ const moduleOrder = [
   'adapters/themeDetector.js',
   'adapters/deviceDetector.js',
   'adapters/spaceDetector.js',
-  'tracking/eventTypes.js',
-  'tracking/eventFactory.js',
-  'tracking/eventQueue.js',
-  'tracking/eventSender.js',
-  'tracking/contextCollector.js',
-  'tracking/visibilityObserver.js',
-  'tracking/interactionObserver.js',
-  'tracking/trackingService.js',
   'security/sanitizer.js',
   'security/fraudDetector.js',
   'security/honeypot.js',
   'security/securityService.js',
-  'rgpd/consentManager.js',
-  'rgpd/dataAnonymizer.js',
-  'rgpd/rgpdService.js',
   'rendering/styles.js',
   'rendering/cardStyles.js',
   'rendering/skeletonStyles.js',
@@ -81,6 +88,8 @@ function processModule(modulePath) {
  */
 async function build() {
   console.log('[Build] Demarrage...');
+  const buildDefaults = getBuildDefaults();
+  console.log('[Build] Default max ads (env):', buildDefaults.widgetDefaultMaxAds ?? 'none');
   
   // Cree le dossier dist
   if (!fs.existsSync(distDir)) {
@@ -95,15 +104,18 @@ async function build() {
  * INTEGRATION MULTI-INSTANCE :
  * <div data-immoask></div>
  * <div data-immoask data-orientation="vertical"></div>
- * <script src="widget.js" data-id="CLIENT_ID" data-api-url="URL"></script>
+ * <script src="widget.js" data-api-url="URL"></script>
  * 
  * OPTIONS (data-* sur le div) :
- * - data-max-ads, data-layout, data-orientation, data-theme
+ * - data-max-ads, data-layout, data-orientation, data-theme, data-api-url
  */
 `;
 
   // Concatene les modules
   let bundle = header + '(function() {\n"use strict";\n\n';
+  bundle += `const __AW_DEFAULT_MAX_ADS__ = ${
+    Number.isInteger(buildDefaults.widgetDefaultMaxAds) ? buildDefaults.widgetDefaultMaxAds : 'null'
+  };\n\n`;
   
   for (const modulePath of moduleOrder) {
     try {

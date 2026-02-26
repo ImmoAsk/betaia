@@ -24,9 +24,15 @@ function getApiConfig() {
   };
 }
 
+function getWidgetScript() {
+  return document.currentScript
+    || document.querySelector('script[data-api-url]')
+    || document.querySelector('script[src*="widget.js"]');
+}
+
 /**
  * Configuration des endpoints
- * @param {string} baseUrl - URL de base du serveur de tracking
+ * @param {string} baseUrl - URL de base du serveur widget (legacy)
  * @returns {Object} Endpoints configures
  */
 export function createEndpoints(baseUrl) {
@@ -35,16 +41,7 @@ export function createEndpoints(baseUrl) {
     ads: BETAIA_CONFIG.API_BASE,
     
     // URL de base des images
-    images: BETAIA_CONFIG.IMAGE_BASE,
-    
-    // Endpoint pour le tracking (serveur widget)
-    tracking: `${baseUrl}/api/tracking`,
-    
-    // Endpoint pour les statistiques
-    stats: `${baseUrl}/api/stats`,
-    
-    // Endpoint pour le reporting de fraude
-    fraud: `${baseUrl}/api/fraud`
+    images: BETAIA_CONFIG.IMAGE_BASE
   });
 }
 
@@ -91,8 +88,7 @@ export function getImageUrl(uri) {
  */
 export function detectBaseUrl() {
   try {
-    const script = document.currentScript || 
-      document.querySelector('script[data-id]');
+    const script = getWidgetScript();
     
     if (script && script.src) {
       const url = new URL(script.src);

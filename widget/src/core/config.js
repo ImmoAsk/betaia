@@ -5,15 +5,17 @@
 
 import { THEMES, LAYOUTS, LIMITS, DEFAULT_CONTAINER_ID, GRID_DEFAULTS } from './constants.js';
 
+// Valeur injectee au build depuis widget/.env (fallback null si absente)
+const DEFAULT_MAX_ADS_FROM_BUILD =
+  (typeof __AW_DEFAULT_MAX_ADS__ !== 'undefined') ? __AW_DEFAULT_MAX_ADS__ : null;
+
 /**
  * Configuration par defaut du widget
  */
 const defaultConfig = {
-  clientId: null,
-  maxAds: null,
+  maxAds: validateMaxAds(DEFAULT_MAX_ADS_FROM_BUILD),
   theme: THEMES.AUTO,
   layout: LAYOUTS.AUTO,
-  noTracking: false,
   adaptColors: true,
   containerId: DEFAULT_CONTAINER_ID,
   apiUrl: null,
@@ -32,19 +34,19 @@ const defaultConfig = {
  */
 export function extractConfigFromScript() {
   const script = document.currentScript || 
-    document.querySelector('script[data-id]');
+    document.querySelector('script[data-api-url]') ||
+    document.querySelector('script[src*="widget.js"]');
   
   if (!script) {
     console.warn('[AnnoncesWidget] Script tag non trouve');
     return { ...defaultConfig };
   }
 
-  const clientId = script.getAttribute('data-id');
-  const maxAds = parseInt(script.getAttribute('data-max-ads'), 10);
+  const maxAdsAttr = script.getAttribute('data-max-ads');
+  const maxAds = maxAdsAttr === null ? null : parseInt(maxAdsAttr, 10);
   const theme = script.getAttribute('data-theme');
   const layout = script.getAttribute('data-layout');
   const apiUrl = script.getAttribute('data-api-url');
-  const noTracking = script.hasAttribute('data-no-tracking');
   const noAdaptColors = script.hasAttribute('data-no-adapt-colors');
   const debug = script.hasAttribute('data-debug');
   const width = script.getAttribute('data-width');
@@ -55,12 +57,10 @@ export function extractConfigFromScript() {
   const slideInterval = parseInt(script.getAttribute('data-slide-interval'), 10);
 
   return {
-    clientId: clientId || null,
-    maxAds: validateMaxAds(maxAds),
+    maxAds: maxAdsAttr === null ? defaultConfig.maxAds : validateMaxAds(maxAds),
     theme: validateTheme(theme),
     layout: validateLayout(layout),
     apiUrl: apiUrl || null,
-    noTracking,
     adaptColors: !noAdaptColors,
     containerId: DEFAULT_CONTAINER_ID,
     debug,

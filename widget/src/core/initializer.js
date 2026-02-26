@@ -9,13 +9,11 @@ import { DEFAULT_CONTAINER_ID, LAYOUTS, GRID_DEFAULTS } from './constants.js';
 import { resolveTheme, extractSiteColors } from '../adapters/themeDetector.js';
 import { measureContainer, calculateOptimalAdCount, calculateOptimalLayout, createResizeObserver } from '../adapters/spaceDetector.js';
 import { createSecurityService } from '../security/securityService.js';
-import { createRGPDService } from '../rgpd/rgpdService.js';
 import { createRenderer } from '../rendering/renderer.js';
-import { createTrackingService } from '../tracking/trackingService.js';
 import { createRotationService } from '../rotation/rotationService.js';
 import { createAdsClient } from '../api/adsClient.js';
 import { createAdsCache } from '../api/adsCache.js';
-import { createEndpoints, detectBaseUrl } from '../api/endpoints.js';
+import { detectBaseUrl } from '../api/endpoints.js';
 
 /**
  * Applique les dimensions configurees au conteneur
@@ -46,10 +44,6 @@ export async function initializeWidgetInstance(container) {
   const containerOverrides = extractContainerConfig(container);
   const config = createConfig({ ...extractedConfig, ...containerOverrides });
   
-  if (!config.clientId) {
-    throw new Error('CLIENT_ID manquant (data-id)');
-  }
-
   // Applique dimensions configurees
   applyDimensions(container, config);
 
@@ -63,7 +57,9 @@ export async function initializeWidgetInstance(container) {
   const orientation = container.dataset.orientation || config.orientation;
   
   // Determine la grille depuis data-grid du conteneur ou de la config
-  const gridConfig = parseContainerGrid(container) || config.grid;
+  const gridConfig = parseContainerGrid(container)
+    || config.grid
+    || buildLinearGridFromOrientation(config.maxAds, orientation);
   
   // Calcul du layout et du nombre d'annonces visibles
   const layout = gridConfig 
@@ -93,11 +89,8 @@ export async function initializeWidgetInstance(container) {
   
   // Services
   const baseUrl = config.apiUrl || detectBaseUrl();
-  const endpoints = createEndpoints(baseUrl);
-  const rgpdService = createRGPDService(config.noTracking);
   const securityService = createSecurityService(handleFraudDetected);
-  const trackingService = createTrackingService(config, endpoints.tracking);
-  const rotationService = createRotationService(handleRotation, trackEvent);
+  const rotationService = createRotationService(handleRotation);
   const adsClient = createAdsClient(baseUrl);
   const adsCache = createAdsCache();
   const renderer = createRenderer(shadowRoot, theme, store.getState().siteColors);
@@ -106,13 +99,8 @@ export async function initializeWidgetInstance(container) {
   renderer.initStyles();
   renderer.showLoading(visibleCount, layout);
 
-  // Tracking init
-  if (rgpdService.isTrackingAllowed()) {
-    trackingService.init();
-  }
-
   // Charge les annonces (pool plus large pour la rotation)
-  const ads = await loadAds(adsClient, config.clientId, fetchCount, securityService);
+  const ads = await loadAds(adsClient, fetchCount, securityService);
   
   if (ads.length === 0) {
     renderer.showError('Aucune annonce disponible');
@@ -121,10 +109,11 @@ export async function initializeWidgetInstance(container) {
 
   // Rendu selon le mode
   if (gridConfig) {
-    // Mode grille avec slider
+    // Mode grille fixe avec rotation des cartes en place
     renderer.renderWithGrid(ads, gridConfig, handleAdClick, {
       autoSlide: config.autoSlide,
-      interval: config.slideInterval
+      interval: config.slideInterval,
+      onRender: null
     });
   } else {
     // Mode classique
@@ -141,12 +130,6 @@ export async function initializeWidgetInstance(container) {
   // Observer resize pour recalcul dynamique
   const cleanupResize = createResizeObserver(container, handleResize);
 
-  // Tracking des annonces
-  const adElements = shadowRoot.querySelectorAll('[data-ad-id]');
-  adElements.forEach(el => {
-    trackingService.trackAd(el, el.dataset.adId);
-  });
-
   // Honeypot securite
   shadowRoot.appendChild(securityService.getHoneypotElement());
 
@@ -162,7 +145,8 @@ export async function initializeWidgetInstance(container) {
 
     if (validation.valid) {
       rotationService.recordClick(ad.id);
-      window.open(ad.linkUrl, '_blank', 'noopener');
+      const destinationUrl = buildClickUrlWithUtm(ad.linkUrl, ad);
+      window.open(destinationUrl, '_blank', 'noopener');
     }
   }
 
@@ -200,19 +184,16 @@ export async function initializeWidgetInstance(container) {
   }
 
   function handleFraudDetected(data) {
-    trackingService.track({ type: 'fraud_detected', ...data });
-  }
-
-  function trackEvent(event) {
-    trackingService.track(event);
+    if (config.debug) {
+      console.warn('[AnnoncesWidget] Fraude detectee', data);
+    }
   }
 
   function createServices() {
     return {
       refresh: () => refreshInstance(adsClient, config, renderer, securityService, gridConfig, handleAdClick),
       getStats: () => ({ ads: store.getState().ads?.length || 0 }),
-      rgpdService, trackingService,
-      destroy: () => cleanup(cleanupResize, trackingService, rotationService, renderer)
+      destroy: () => cleanup(cleanupResize, rotationService, renderer)
     };
   }
 
@@ -259,10 +240,24 @@ function parseContainerGrid(container) {
   return { rows, cols };
 }
 
-async function loadAds(client, clientId, count, security) {
+/**
+ * Construit une "grille lineaire" a partir de maxAds + orientation
+ * pour supporter le mode (n,1) / (1,n) sans data-grid explicite.
+ */
+function buildLinearGridFromOrientation(maxAds, orientation) {
+  if (!Number.isFinite(maxAds) || maxAds < 1) return null;
+  if (!['horizontal', 'vertical'].includes(orientation)) return null;
+
+  const n = Math.max(1, Math.min(Math.trunc(maxAds), GRID_DEFAULTS.MAX_ROWS));
+  return orientation === 'vertical'
+    ? { rows: n, cols: 1 }
+    : { rows: 1, cols: n };
+}
+
+async function loadAds(client, count, security) {
   try {
     console.log('[AnnoncesWidget] Chargement des annonces...');
-    const ads = await client.fetchAds(clientId, count);
+    const ads = await client.fetchAds(count);
     console.log('[AnnoncesWidget] Annonces recues:', ads.length);
     return security.secureAds(ads);
   } catch (e) {
@@ -276,20 +271,38 @@ async function refreshInstance(client, config, renderer, security, gridConfig, o
     ? gridConfig.rows * gridConfig.cols * GRID_DEFAULTS.FETCH_MULTIPLIER
     : 5;
   renderer.showLoading(gridConfig ? gridConfig.rows * gridConfig.cols : 3, LAYOUTS.GRID);
-  const ads = await loadAds(client, config.clientId, count, security);
+  const ads = await loadAds(client, count, security);
   if (gridConfig) {
     renderer.renderWithGrid(ads, gridConfig, onAdClick, {
       autoSlide: config.autoSlide,
-      interval: config.slideInterval
+      interval: config.slideInterval,
+      onRender: null
     });
   } else {
     renderer.render(ads, LAYOUTS.GRID, 800, () => {});
   }
 }
 
-function cleanup(resizeCleanup, tracking, rotation, renderer) {
+function cleanup(resizeCleanup, rotation, renderer) {
   resizeCleanup?.();
-  tracking?.destroy();
   rotation?.destroy();
   renderer?.destroySlider();
+}
+
+function buildClickUrlWithUtm(rawUrl, ad = {}) {
+  try {
+    const dest = new URL(rawUrl, window.location.href);
+    const host = String(window.location.hostname || 'unknown').toLowerCase();
+
+    dest.searchParams.set('utm_source', host);
+    dest.searchParams.set('utm_medium', 'widget');
+    dest.searchParams.set('utm_campaign', 'immoask_widget');
+    if (ad?.id != null) {
+      dest.searchParams.set('utm_content', `ad_${String(ad.id)}`);
+    }
+
+    return dest.toString();
+  } catch (e) {
+    return rawUrl;
+  }
 }

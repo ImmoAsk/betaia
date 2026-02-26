@@ -76,7 +76,7 @@
       max-width: 1200px;
       margin: 0 auto;
       display: grid;
-      grid-template-columns: 1fr 200px;
+      grid-template-columns: 1fr 240px;
       gap: 24px;
       padding: 30px 20px;
     }
@@ -116,8 +116,8 @@
       position: sticky;
       top: 60px;
       align-self: start;
-      min-width: 200px;
-      width: 200px;
+      min-width: 240px;
+      width: 240px;
     }
     .sidebar-label {
       font-size: 9px;
@@ -127,7 +127,6 @@
       margin-bottom: 4px;
       font-family: -apple-system, sans-serif;
     }
-
     /* -- Section pleine largeur -- */
     .full-width-section {
       background: #f0ede5;
@@ -229,9 +228,9 @@
         <p>Le commerce transatlantique a profondement marque la region. La "Cote des Esclaves" devint un point nevralgique de la traite negriere entre le XVe et le XIXe siecle, laissant des cicatrices durables dans le tissu social.</p>
       </article>
 
-      <!-- WIDGET : AU MILIEU DU CONTENU (grille 1x3, defilement auto) -->
+      <!-- WIDGET : AU MILIEU DU CONTENU (horizontal, nombre via .env) -->
       <div class="inline-widget">
-        <div data-immoask data-grid="1,3"></div>
+        <div data-immoask data-orientation="horizontal"></div>
       </div>
 
       <article class="article" id="colonial">
@@ -249,10 +248,11 @@
         <p>Le 13 janvier 1963, un coup d'Etat militaire mit fin au premier gouvernement. En 1967, Gnassingbe Eyadema instaura un regime a parti unique pendant pres de quatre decennies. L'exploitation des phosphates devint le pilier de l'economie nationale.</p>
       </article>
 
-      <!-- WIDGET : PETIT, 1 annonce qui defile -->
+      <!-- WIDGET : MODE AUTO (sans data-grid / sans orientation) -->
       <div class="inline-widget">
-        <div data-immoask data-grid="1,1"></div>
+        <div data-immoask></div>
       </div>
+
 
       <article class="article" id="moderne">
         <h3>Le Togo contemporain</h3>
@@ -266,7 +266,7 @@
     <!-- SIDEBAR : WIDGET VERTICAL A DROITE -->
     <aside class="sidebar">
       <div class="sidebar-label">Annonces</div>
-      <div data-immoask data-grid="4,1" data-orientation="vertical"></div>
+      <div data-immoask data-orientation="vertical"></div>
     </aside>
   </div>
 
@@ -274,7 +274,7 @@
   <section class="full-width-section">
     <div class="inner">
       <h3>Immobilier au Togo</h3>
-      <div data-immoask data-grid="1,4"></div>
+      <div data-immoask data-orientation="horizontal"></div>
     </div>
   </section>
 
@@ -294,7 +294,7 @@
       <div class="footer-col">
         <h4>Immobilier</h4>
         <div class="footer-widget">
-          <div data-immoask data-grid="2,1" data-theme="dark"></div>
+          <div data-immoask data-orientation="vertical" data-theme="dark"></div>
         </div>
       </div>
     </div>
@@ -303,7 +303,6 @@
 
   <!-- SCRIPT WIDGET : UNE SEULE INCLUSION -->
   <script src="./dist/widget.js"
-          data-id="TEST_123"
           data-api-url="http://localhost:3500"
           data-debug></script>
 </body>

@@ -13,7 +13,7 @@ const url = require('url');
 const PORT = process.env.PORT || 3500;
 const API_BASE = process.env.API_BASE_URL;
 const IMAGE_BASE = process.env.IMAGE_BASE_URL;
-const IMMOASK_URL = process.env.IMMOASK_URL || 'https://immoask.com';
+const IMMOASK_URL = process.env.IMMOASK_URL || 'https://www.immoask.com';
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 1000;
 
@@ -82,6 +82,104 @@ function isValidImageUri(uri) {
 }
 
 /**
+ * Supprime les accents (equivalent utils/toNormalForm.js)
+ */
+function toNormalForm(str) {
+  return String(str || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
+
+/**
+ * Remplace les espaces par un caractere
+ */
+function replaceSpacesWithAny(inputString, anyThing) {
+  return String(inputString || '').replace(/ /g, anyThing);
+}
+
+/**
+ * Normalise une base URL (sans slash final)
+ */
+function normalizeBaseUrl(baseUrl) {
+  return String(baseUrl || '').replace(/\/+$/, '');
+}
+
+/**
+ * Reproduit la logique de utils/getPropertyFullURL.js pour construire
+ * l'URL detail d'un bien sur ImmoAsk.
+ */
+function getPropertyFullPath(property) {
+  const categoryMap = {
+    bailler: 'baux-immobiliers',
+    vendre: 'ventes-immobilieres',
+    louer: 'locations-immobilieres',
+    investir: 'investissements-immobiliers'
+  };
+
+  const country = String(property?.pays?.code || 'tg').toLowerCase();
+  const offerRaw = toNormalForm((property?.offre?.denomination || 'louer').toLowerCase());
+  const category = categoryMap[offerRaw] || 'locations-immobilieres';
+
+  const propertyTypeRaw = (property?.categorie_propriete?.denomination || 'propriete').toLowerCase();
+  const propertyTypeSlug = replaceSpacesWithAny(toNormalForm(propertyTypeRaw), '-');
+
+  const townRaw = (property?.ville?.denomination || 'lome').toLowerCase();
+  const townSlug = toNormalForm(townRaw);
+
+  // Priorite a minus_denomination si disponible (comme l'app principale)
+  const quarterRaw = property?.quartier?.minus_denomination || property?.quartier?.denomination || '';
+  const quarterSlug = String(quarterRaw || '').toLowerCase();
+
+  const nuo = property?.nuo ? String(property.nuo) : '';
+
+  // Fallback robuste si des champs critiques manquent (quartier requis pour URL detail)
+  if (!propertyTypeSlug || !townSlug || !quarterSlug || !nuo) {
+    return `/${country}/catalog/${nuo}`.replace(/\/+$/, '');
+  }
+
+  return `/${country}/${category}/${propertyTypeSlug}/${townSlug}/${quarterSlug}/${nuo}`;
+}
+
+/**
+ * URL detail complete d'un bien
+ */
+function getPropertyFullUrl(property) {
+  return `${normalizeBaseUrl(IMMOASK_URL)}${getPropertyFullPath(property)}`;
+}
+
+function toSafeInt(value, fallback = 0) {
+  const n = Number(value);
+  return Number.isFinite(n) ? n : fallback;
+}
+
+function buildUsageLabel(usage) {
+  if (typeof usage === 'string' && usage.trim()) {
+    return usage.trim().toUpperCase();
+  }
+
+  const map = {
+    1: 'LOGEMENT',
+    3: 'IMMOBILIER PRO',
+    5: 'SEJOUR',
+    7: 'INVESTISSEMENT'
+  };
+  const n = toSafeInt(usage, 0);
+  return map[n] || 'IMMOBILIER';
+}
+
+function buildPropertyDisplayTitle(p) {
+  const nuo = p?.nuo ? `N°${p.nuo}: ` : '';
+  const category = p?.categorie_propriete?.denomination || 'Propriete';
+  const offer = p?.offre?.denomination ? ` à ${String(p.offre.denomination).toLowerCase()}` : '';
+  const surface = p?.surface ? ` | ${p.surface}m²` : '';
+  return `${nuo}${category}${offer}${surface}`.trim();
+}
+
+function extractBadgeLabel(p) {
+  const badgeName = p?.badge_propriete?.[0]?.badge?.badge_name;
+  if (typeof badgeName === 'string' && badgeName.trim()) return badgeName.trim();
+  return '';
+}
+
+/**
  * Handler principal
  */
 async function handleRequest(req, res) {
@@ -129,6 +227,39 @@ function shuffleArray(arr) {
   return a;
 }
 
+/**
+ * Construit la query GraphQL des proprietes
+ * On peut inclure/exclure `pays` pour contourner un bug backend
+ * (certains enregistrements ont pays=null alors que le schema le declare non-null).
+ */
+function buildPropertiesQuery(fetchLimit, usage, status, includeCountry = true) {
+  const countryFields = includeCountry ? '\n        pays { code },' : '';
+
+  return `{
+      getPropertiesByKeyWords(
+        orderBy:{column:NUO,order:DESC},
+        limit:${fetchLimit},
+        usage:${parseInt(usage)},
+        statut:${parseInt(status)}
+      ) {
+        nuo, titre, usage, cout_mensuel, cout_vente, surface, piece, wc_douche_interne, garage,
+        visuels { uri },
+        badge_propriete { badge { badge_name } },
+        quartier { denomination, minus_denomination },
+        ville { denomination },
+        offre { denomination },${countryFields}
+        categorie_propriete { denomination }
+      }
+    }`;
+}
+
+function hasPaysNonNullableError(graphqlJson) {
+  if (!Array.isArray(graphqlJson?.errors)) return false;
+  return graphqlJson.errors.some(err =>
+    String(err?.debugMessage || err?.message || '').includes('Propriete.pays')
+  );
+}
+
 async function handleAds(query, res) {
   try {
     const { limit = 6, usage = 1, status = 1 } = query;
@@ -136,32 +267,33 @@ async function handleAds(query, res) {
     // Fetcher plus pour avoir de la marge apres filtrage
     const fetchLimit = Math.min(requestedLimit * 3, 90);
 
-    const graphQuery = `{
-      getPropertiesByKeyWords(
-        orderBy:{column:NUO,order:DESC},
-        limit:${fetchLimit},
-        usage:${parseInt(usage)},
-        statut:${parseInt(status)}
-      ) {
-        nuo, titre, cout_mensuel, cout_vente, surface, piece,
-        visuels { uri },
-        quartier { denomination },
-        ville { denomination },
-        categorie_propriete { denomination }
-      }
-    }`;
-
-    const apiUrl = `${API_BASE}?query=${encodeURIComponent(graphQuery)}`;
+    let graphQuery = buildPropertiesQuery(fetchLimit, usage, status, true);
+    let apiUrl = `${API_BASE}?query=${encodeURIComponent(graphQuery)}`;
     console.log('[Proxy] Fetching:', apiUrl.substring(0, 100) + '...');
-    
-    const response = await fetchWithRetry(apiUrl);
+
+    let response = await fetchWithRetry(apiUrl);
     console.log('[Proxy] API Status:', response.status);
-    
+
     if (response.status !== 200) {
       throw new Error(`API error: ${response.status}`);
     }
 
-    const json = JSON.parse(response.data);
+    let json = JSON.parse(response.data);
+
+    // Fallback: certains environnements cassent si `pays` est null sur un enregistrement
+    if (hasPaysNonNullableError(json)) {
+      console.warn('[Proxy] Fallback query sans `pays` (champ backend non-nullable casse sur valeurs nulles)');
+      graphQuery = buildPropertiesQuery(fetchLimit, usage, status, false);
+      apiUrl = `${API_BASE}?query=${encodeURIComponent(graphQuery)}`;
+      response = await fetchWithRetry(apiUrl);
+
+      if (response.status !== 200) {
+        throw new Error(`API error (fallback): ${response.status}`);
+      }
+
+      json = JSON.parse(response.data);
+    }
+
     const properties = json.data?.getPropertiesByKeyWords || [];
 
     // Normalise pour le widget avec validation images
@@ -187,14 +319,21 @@ async function handleAds(query, res) {
 
       ads.push({
         id: p.nuo,
-        title: p.titre || 'Propriete',
+        title: buildPropertyDisplayTitle(p),
         description: buildDesc(p),
         price: p.cout_mensuel || p.cout_vente || 0,
         currency: 'XOF',
         imageUrl,
-        linkUrl: `${IMMOASK_URL}/tg/catalog/${p.nuo}`,
+        linkUrl: getPropertyFullUrl(p),
         location: [p.quartier?.denomination, p.ville?.denomination].filter(Boolean).join(', '),
-        category: p.categorie_propriete?.denomination || ''
+        category: buildUsageLabel(p.usage),
+        propertyType: p.categorie_propriete?.denomination || '',
+        offer: p.offre?.denomination || '',
+        surface: toSafeInt(p.surface, 0),
+        rooms: toSafeInt(p.piece, 0),
+        bathrooms: toSafeInt(p.wc_douche_interne, 0),
+        garage: toSafeInt(p.garage, 0),
+        badgeLabel: extractBadgeLabel(p)
       });
     }
 

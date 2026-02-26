@@ -6,16 +6,14 @@
 import { createBehaviorDetector } from './behaviorDetector.js';
 import { createViewedHistory } from './viewedHistory.js';
 import { sortAdsByPriority, calculateEngagementScore } from './scoringEngine.js';
-import { createRotationEvent } from '../tracking/eventFactory.js';
 import { TIMING } from '../core/constants.js';
 
 /**
  * Cree le service de rotation
  * @param {Function} onRotate - Callback de rotation
- * @param {Function} onTrackEvent - Callback de tracking
  * @returns {Object} Service de rotation
  */
-export function createRotationService(onRotate, onTrackEvent) {
+export function createRotationService(onRotate) {
   const history = createViewedHistory();
   let behaviorDetector = null;
   let cleanupBehavior = null;
@@ -114,11 +112,6 @@ export function createRotationService(onRotate, onTrackEvent) {
       .slice(0, currentAds.length);
     
     if (newAds.length === 0) return;
-
-    // Tracking de rotation
-    const oldIds = currentAds.map(a => a.id);
-    const newIds = newAds.map(a => a.id);
-    onTrackEvent?.(createRotationEvent(oldIds.join(','), newIds.join(','), reason));
 
     // Marque comme vues
     newAds.forEach(ad => history.addViewed(ad.id, { impressions: 1 }));

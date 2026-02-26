@@ -50,22 +50,35 @@ export function generateBaseStyles(theme) {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 2px 6px;
+      padding: 3px 6px;
       font-size: 8px;
       color: var(--aw-text-muted);
       border-bottom: 1px solid var(--aw-border);
-      opacity: 0.6;
     }
     
     .aw-header-label {
       text-transform: uppercase;
       letter-spacing: 0.5px;
       font-weight: 500;
+      opacity: 0.72;
     }
     
     .aw-header-brand {
       font-weight: 600;
-      opacity: 0.6;
+      opacity: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: flex-end;
+      min-height: 14px;
+      min-width: 0;
+    }
+
+    .aw-header-brand-logo {
+      display: block;
+      height: 14px;
+      width: auto;
+      max-width: 96px;
+      object-fit: contain;
     }
     
     .aw-loading {
@@ -99,7 +112,10 @@ export function generateBaseStyles(theme) {
     .aw-ad-link {
       text-decoration: none;
       color: inherit;
-      display: block;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      height: 100%;
     }
     
     .aw-ad-link:focus {

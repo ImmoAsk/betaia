@@ -13,6 +13,11 @@ import { renderListLayout } from './layoutList.js';
 import { createGridSlider, generateGridSliderStyles } from './gridSlider.js';
 import { createElement } from '../utils/dom.js';
 
+const IMMOASK_LOGO_URLS = [
+  'https://www.immoask.com/images/logo/immoask-logo-cropped.png',
+  'https://immoask.com/images/logo/immoask-logo-cropped.png'
+];
+
 /**
  * Cree le renderer principal
  * @param {ShadowRoot} shadowRoot - Shadow root du widget
@@ -62,7 +67,26 @@ export function createRenderer(shadowRoot, theme, siteColors = null) {
   function createHeader() {
     const header = createElement('div', { className: 'aw-header' });
     const label = createElement('span', { className: 'aw-header-label' }, 'Annonces');
-    const brand = createElement('span', { className: 'aw-header-brand' }, 'ImmoAsk');
+    const brand = createElement('span', { className: 'aw-header-brand', 'aria-label': 'ImmoAsk' });
+    let logoIndex = 0;
+    const logo = createElement('img', {
+      className: 'aw-header-brand-logo',
+      src: IMMOASK_LOGO_URLS[logoIndex],
+      alt: 'ImmoAsk',
+      loading: 'lazy',
+      decoding: 'async',
+      referrerpolicy: 'no-referrer'
+    });
+    logo.addEventListener('error', () => {
+      logoIndex += 1;
+      if (logoIndex < IMMOASK_LOGO_URLS.length) {
+        logo.src = IMMOASK_LOGO_URLS[logoIndex];
+        return;
+      }
+      brand.textContent = 'ImmoAsk';
+    });
+
+    brand.appendChild(logo);
     header.appendChild(label);
     header.appendChild(brand);
     return header;
@@ -107,11 +131,11 @@ export function createRenderer(shadowRoot, theme, siteColors = null) {
   }
 
   /**
-   * Rend les annonces avec grille-slider
+   * Rend les annonces en grille fixe avec rotation en place
    * @param {Object[]} ads - Toutes les annonces (pool complet)
    * @param {Object} gridConfig - Configuration de grille {rows, cols}
    * @param {Function} onAdClick - Handler de clic
-   * @param {Object} sliderOptions - Options du slider
+   * @param {Object} sliderOptions - Options de rotation
    */
   function renderWithGrid(ads, gridConfig, onAdClick, sliderOptions = {}) {
     destroySlider();
@@ -129,7 +153,8 @@ export function createRenderer(shadowRoot, theme, siteColors = null) {
       cols: gridConfig.cols,
       onAdClick,
       interval: sliderOptions.interval || 5000,
-      autoSlide: sliderOptions.autoSlide !== false
+      autoSlide: sliderOptions.autoSlide !== false,
+      onRender: sliderOptions.onRender
     });
 
     contentContainer.appendChild(slider.element);

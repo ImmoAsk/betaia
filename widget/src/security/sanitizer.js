@@ -84,7 +84,14 @@ export function sanitizeAd(ad) {
     imageUrl: sanitizeUrl(ad.imageUrl),
     linkUrl: sanitizeUrl(ad.linkUrl),
     location: sanitizeText(String(ad.location || '')),
-    category: sanitizeText(String(ad.category || ''))
+    category: sanitizeText(String(ad.category || '')),
+    propertyType: sanitizeText(String(ad.propertyType || '')),
+    offer: sanitizeText(String(ad.offer || '')),
+    surface: sanitizeNumber(ad.surface),
+    rooms: sanitizeNumber(ad.rooms),
+    bathrooms: sanitizeNumber(ad.bathrooms),
+    garage: sanitizeNumber(ad.garage),
+    badgeLabel: sanitizeText(String(ad.badgeLabel || ''))
   };
 }
 

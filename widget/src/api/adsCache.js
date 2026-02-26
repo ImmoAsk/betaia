@@ -53,13 +53,13 @@ export function createAdsCache(maxSize = LIMITS.MAX_CACHE_ITEMS) {
 
   /**
    * Genere une cle de cache
-   * @param {string} clientId - ID client
+   * @param {string} scopeKey - Cle de scope (optionnel)
    * @param {number} limit - Limite
    * @param {string[]} excludeIds - IDs exclus
    * @returns {string} Cle generee
    */
-  function generateKey(clientId, limit, excludeIds = []) {
-    return `${clientId}:${limit}:${excludeIds.sort().join(',')}`;
+  function generateKey(scopeKey, limit, excludeIds = []) {
+    return `${scopeKey || 'default'}:${limit}:${excludeIds.sort().join(',')}`;
   }
 
   /**

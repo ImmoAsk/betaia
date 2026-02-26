@@ -14,8 +14,6 @@ export function createPublicApi(services) {
   const { 
     refresh, 
     getStats, 
-    rgpdService, 
-    trackingService,
     destroy 
   } = services;
 
@@ -47,30 +45,6 @@ export function createPublicApi(services) {
       } catch (error) {
         return { error: error.message };
       }
-    },
-
-    /**
-     * Donne le consentement RGPD
-     */
-    giveConsent: () => {
-      rgpdService?.giveConsent();
-      trackingService?.setEnabled(true);
-    },
-
-    /**
-     * Revoque le consentement RGPD
-     */
-    revokeConsent: () => {
-      rgpdService?.revokeConsent();
-      trackingService?.setEnabled(false);
-    },
-
-    /**
-     * Recupere le statut de consentement
-     * @returns {Object} Statut de consentement
-     */
-    getConsentStatus: () => {
-      return rgpdService?.getConsentStatus() || { error: 'Service non disponible' };
     },
 
     /**

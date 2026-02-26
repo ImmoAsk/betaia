@@ -1,23 +1,24 @@
 /**
- * Grille avec defilement automatique
- * Gere l'affichage en grille rows x cols avec rotation des annonces
+ * Grille fixe avec rotation des annonces "en place"
+ * Les cases restent fixes, seul le contenu des cartes change.
  * @module rendering/gridSlider
  */
 
 import { createElement } from '../utils/dom.js';
-import { createCard, createListCard } from './cardFactory.js';
-import { GRID_DEFAULTS, TIMING } from '../core/constants.js';
+import { createCard } from './cardFactory.js';
+import { TIMING } from '../core/constants.js';
 
 /**
- * Cree un slider de grille
- * @param {Object} options - Options du slider
- * @param {Object[]} options.allAds - Toutes les annonces disponibles
- * @param {number} options.rows - Nombre de lignes
- * @param {number} options.cols - Nombre de colonnes
- * @param {Function} options.onAdClick - Handler de clic
- * @param {number} options.interval - Intervalle de rotation en ms
- * @param {boolean} options.autoSlide - Activer le defilement auto
- * @returns {Object} Slider avec element et methodes de controle
+ * Cree une grille fixe avec rotation des annonces
+ * @param {Object} options - Options
+ * @param {Object[]} options.allAds - Pool complet d'annonces
+ * @param {number} options.rows - Lignes
+ * @param {number} options.cols - Colonnes
+ * @param {Function} options.onAdClick - Handler clic
+ * @param {number} options.interval - Intervalle de rotation (ms)
+ * @param {boolean} options.autoSlide - Rotation auto active
+ * @param {Function} options.onRender - Callback apres rendu/remplacement
+ * @returns {Object} Controleur compatible avec l'ancienne API slider
  */
 export function createGridSlider(options) {
   const {
@@ -26,156 +27,152 @@ export function createGridSlider(options) {
     cols = 1,
     onAdClick,
     interval = TIMING.AUTO_SLIDE_INTERVAL,
-    autoSlide = true
+    autoSlide = true,
+    onRender = null
   } = options;
 
-  const pageSize = rows * cols;
-  const totalPages = Math.max(1, Math.ceil(allAds.length / pageSize));
-  let currentPage = 0;
-  let autoPlayTimer = null;
-  let isPaused = false;
-
-  // Determine l'orientation : horizontal si 1 ligne, vertical si 1 colonne
+  const pageSize = Math.max(1, rows * cols);
   const isVertical = rows > 1 && cols === 1;
-  const isHorizontal = rows === 1 && cols >= 1;
-
-  // Conteneur principal
-  const wrapper = createElement('div', { className: 'aw-slider' });
-
-  // Viewport (zone visible)
-  const viewport = createElement('div', { className: 'aw-slider-viewport' });
-
-  // Track (toutes les pages)
-  const track = createElement('div', { className: 'aw-slider-track' });
-
-  // Indicateurs (dots)
-  const dotsContainer = createElement('div', {
-    className: 'aw-slider-dots',
-    role: 'tablist',
-    'aria-label': 'Navigation des annonces'
+  const wrapper = createElement('div', { className: 'aw-slider aw-slider--fixed' });
+  const gridClasses = ['aw-slider-grid'];
+  if (pageSize === 1) gridClasses.push('aw-slider-grid--single');
+  if (isVertical) gridClasses.push('aw-slider-grid--vertical');
+  if (isVertical && rows >= 3) gridClasses.push('aw-slider-grid--vertical-compact');
+  if (isVertical && rows >= 4) gridClasses.push('aw-slider-grid--vertical-compact-2');
+  if (isVertical && rows >= 5) gridClasses.push('aw-slider-grid--vertical-compact-3');
+  const grid = createElement('div', {
+    className: gridClasses.join(' '),
+    role: 'list',
+    'aria-label': 'Liste des annonces'
   });
 
-  /**
-   * Retourne les annonces de la page donnee
-   * @param {number} page - Index de la page
-   * @returns {Object[]} Annonces de la page
-   */
-  function getPageAds(page) {
-    const start = page * pageSize;
-    return allAds.slice(start, start + pageSize);
+  grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+  grid.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
+  wrapper.appendChild(grid);
+
+  let adsPool = Array.isArray(allAds) ? [...allAds] : [];
+  let visibleAds = [];
+  let slotWrappers = [];
+  let autoPlayTimer = null;
+  let isPaused = false;
+  let rotationCursor = 0;
+  let slotCursor = 0;
+
+  const onMouseEnter = () => { isPaused = true; };
+  const onMouseLeave = () => { isPaused = false; };
+  wrapper.addEventListener('mouseenter', onMouseEnter);
+  wrapper.addEventListener('mouseleave', onMouseLeave);
+
+  function createCardForAd(ad) {
+    return createCard(ad, onAdClick, { horizontal: isVertical });
   }
 
-  /**
-   * Cree un element de page avec sa grille
-   * @param {Object[]} ads - Annonces de la page
-   * @param {number} pageIndex - Index de la page
-   * @returns {HTMLElement} Element page
-   */
-  function createPage(ads, pageIndex) {
-    const page = createElement('div', {
-      className: 'aw-slider-page',
-      'data-page': String(pageIndex)
-    });
-
-    const gridClass = pageSize === 1 ? 'aw-slider-grid aw-slider-grid--single' : 'aw-slider-grid';
-    const grid = createElement('div', { className: gridClass });
-
-    // Definit la grille CSS
-    grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
-    grid.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
-
-    ads.forEach(ad => {
-      // Utilise la carte en liste si vertical 1 colonne, sinon carte standard
-      const card = (isVertical && rows > 2) ? createListCard(ad, onAdClick) : createCard(ad, onAdClick);
-      grid.appendChild(card);
-    });
-
-    page.appendChild(grid);
-    return page;
+  function getVisibleCount() {
+    return visibleAds.length;
   }
 
-  /**
-   * Cree les dots de navigation
-   */
-  function buildDots() {
-    dotsContainer.innerHTML = '';
-    if (totalPages <= 1) return;
+  function notifyRender() {
+    onRender?.({
+      wrapper,
+      grid,
+      ads: [...visibleAds],
+      cards: slotWrappers
+        .map(slot => slot.firstElementChild)
+        .filter(Boolean)
+    });
+  }
 
-    for (let i = 0; i < totalPages; i++) {
-      const dot = createElement('button', {
-        className: `aw-slider-dot ${i === currentPage ? 'aw-slider-dot--active' : ''}`,
-        'aria-label': `Page ${i + 1}`,
-        'aria-selected': i === currentPage ? 'true' : 'false',
-        role: 'tab',
-        type: 'button'
+  function setInitialVisibleAds() {
+    visibleAds = adsPool.slice(0, pageSize);
+    slotCursor = 0;
+    rotationCursor = visibleAds.length % (adsPool.length || 1);
+  }
+
+  function buildSlots() {
+    grid.innerHTML = '';
+    slotWrappers = [];
+
+    visibleAds.forEach((ad, index) => {
+      const slot = createElement('div', {
+        className: 'aw-slider-slot',
+        'data-slot-index': String(index)
       });
-      dot.addEventListener('click', () => goTo(i));
-      dotsContainer.appendChild(dot);
-    }
-  }
 
-  /**
-   * Met a jour les dots actifs
-   */
-  function updateDots() {
-    const dots = dotsContainer.querySelectorAll('.aw-slider-dot');
-    dots.forEach((dot, i) => {
-      dot.classList.toggle('aw-slider-dot--active', i === currentPage);
-      dot.setAttribute('aria-selected', i === currentPage ? 'true' : 'false');
+      const card = createCardForAd(ad);
+      slot.appendChild(card);
+      grid.appendChild(slot);
+      slotWrappers.push(slot);
     });
+
+    notifyRender();
+  }
+
+  function build() {
+    stopAutoPlay();
+    setInitialVisibleAds();
+    buildSlots();
+  }
+
+  function findNextCandidate(excludedIds = new Set()) {
+    if (adsPool.length === 0) return null;
+
+    for (let i = 0; i < adsPool.length; i++) {
+      const idx = (rotationCursor + i) % adsPool.length;
+      const ad = adsPool[idx];
+      if (!ad || excludedIds.has(ad.id)) continue;
+
+      rotationCursor = (idx + 1) % adsPool.length;
+      return ad;
+    }
+
+    return null;
+  }
+
+  function replaceSlot(slotIndex, nextAd) {
+    const slot = slotWrappers[slotIndex];
+    if (!slot || !nextAd) return;
+
+    const card = createCardForAd(nextAd);
+    visibleAds[slotIndex] = nextAd;
+
+    slot.classList.add('aw-slider-slot--updating');
+    slot.replaceChildren(card);
+
+    setTimeout(() => {
+      slot.classList.remove('aw-slider-slot--updating');
+    }, 180);
+
+    notifyRender();
   }
 
   /**
-   * Effectue la transition de page
-   * @param {boolean} animate - Animer la transition
+   * Rotation d'une case a la fois (cartes fixes, contenu remplace)
    */
-  function slideToPage(animate = true) {
-    const duration = animate ? TIMING.SLIDE_TRANSITION : 0;
-    track.style.transition = animate ? `transform ${duration}ms ease` : 'none';
-    track.style.transform = `translateX(-${currentPage * 100}%)`;
-    updateDots();
+  function rotateOneSlot() {
+    const visibleCount = getVisibleCount();
+    if (visibleCount === 0) return;
+    if (adsPool.length <= visibleCount) return;
+
+    const slotIndex = slotCursor % visibleCount;
+    const excludedIds = new Set(visibleAds.map(ad => ad?.id).filter(Boolean));
+    const nextAd = findNextCandidate(excludedIds);
+
+    if (!nextAd) return;
+
+    replaceSlot(slotIndex, nextAd);
+    slotCursor = (slotCursor + 1) % visibleCount;
   }
 
-  /**
-   * Va a une page specifique
-   * @param {number} page - Index de la page
-   */
-  function goTo(page) {
-    if (page < 0 || page >= totalPages || page === currentPage) return;
-    currentPage = page;
-    slideToPage();
-  }
-
-  /**
-   * Page suivante (boucle)
-   */
-  function next() {
-    currentPage = (currentPage + 1) % totalPages;
-    slideToPage();
-  }
-
-  /**
-   * Page precedente (boucle)
-   */
-  function prev() {
-    currentPage = (currentPage - 1 + totalPages) % totalPages;
-    slideToPage();
-  }
-
-  /**
-   * Demarre le defilement automatique
-   */
   function startAutoPlay() {
-    if (totalPages <= 1 || !autoSlide) return;
+    if (!autoSlide) return;
+    if (adsPool.length <= visibleAds.length) return;
+
     stopAutoPlay();
     autoPlayTimer = setInterval(() => {
-      if (!isPaused) next();
+      if (!isPaused) rotateOneSlot();
     }, interval);
   }
 
-  /**
-   * Arrete le defilement automatique
-   */
   function stopAutoPlay() {
     if (autoPlayTimer) {
       clearInterval(autoPlayTimer);
@@ -183,105 +180,33 @@ export function createGridSlider(options) {
     }
   }
 
-  /**
-   * Construit le slider complet
-   */
-  function build() {
-    track.innerHTML = '';
-
-    for (let p = 0; p < totalPages; p++) {
-      const ads = getPageAds(p);
-      if (ads.length === 0) break;
-      const page = createPage(ads, p);
-      track.appendChild(page);
-    }
-
-    viewport.appendChild(track);
-    wrapper.appendChild(viewport);
-
-    buildDots();
-    if (totalPages > 1) {
-      wrapper.appendChild(dotsContainer);
-    }
-
-    // Boutons de navigation si plusieurs pages
-    if (totalPages > 1) {
-      const navPrev = createElement('button', {
-        className: 'aw-slider-nav aw-slider-nav--prev',
-        'aria-label': 'Page precedente',
-        type: 'button'
-      });
-      navPrev.innerHTML = '<svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>';
-      navPrev.addEventListener('click', prev);
-
-      const navNext = createElement('button', {
-        className: 'aw-slider-nav aw-slider-nav--next',
-        'aria-label': 'Page suivante',
-        type: 'button'
-      });
-      navNext.innerHTML = '<svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>';
-      navNext.addEventListener('click', next);
-
-      wrapper.appendChild(navPrev);
-      wrapper.appendChild(navNext);
-    }
-
-    // Pause au survol
-    wrapper.addEventListener('mouseenter', () => { isPaused = true; });
-    wrapper.addEventListener('mouseleave', () => { isPaused = false; });
-
-    // Support tactile
-    setupTouch(wrapper);
-
-    slideToPage(false);
+  function next() {
+    rotateOneSlot();
   }
 
-  /**
-   * Configure les handlers tactiles
-   * @param {HTMLElement} el - Element a observer
-   */
-  function setupTouch(el) {
-    let startX = 0;
-    let isDragging = false;
-
-    el.addEventListener('touchstart', (e) => {
-      startX = e.touches[0].clientX;
-      isDragging = true;
-    }, { passive: true });
-
-    el.addEventListener('touchend', (e) => {
-      if (!isDragging) return;
-      const endX = e.changedTouches[0].clientX;
-      const delta = endX - startX;
-      if (Math.abs(delta) > 40) {
-        if (delta > 0) prev();
-        else next();
-      }
-      isDragging = false;
-    }, { passive: true });
+  function prev() {
+    rotateOneSlot();
   }
 
-  /**
-   * Met a jour les annonces
-   * @param {Object[]} newAds - Nouvelles annonces
-   */
+  function goTo() {
+    // Compatibilite API: plus de pages en mode grille fixe
+  }
+
   function updateAds(newAds) {
-    allAds.length = 0;
-    allAds.push(...newAds);
-    currentPage = 0;
+    adsPool = Array.isArray(newAds) ? [...newAds] : [];
     build();
     if (autoSlide) startAutoPlay();
   }
 
-  /**
-   * Detruit le slider
-   */
   function destroy() {
     stopAutoPlay();
+    wrapper.removeEventListener('mouseenter', onMouseEnter);
+    wrapper.removeEventListener('mouseleave', onMouseLeave);
     wrapper.innerHTML = '';
+    slotWrappers = [];
+    visibleAds = [];
   }
 
-  // Construction initiale
   build();
 
   return Object.freeze({
@@ -293,152 +218,149 @@ export function createGridSlider(options) {
     stopAutoPlay,
     updateAds,
     destroy,
-    get currentPage() { return currentPage; },
-    get totalPages() { return totalPages; },
+    get currentPage() { return 0; },
+    get totalPages() { return Math.max(1, Math.ceil((adsPool.length || 0) / pageSize)); },
     get pageSize() { return pageSize; }
   });
 }
 
 /**
- * Genere les styles CSS du slider de grille
- * @returns {string} CSS du slider
+ * Styles de la grille fixe rotative
+ * @returns {string}
  */
 export function generateGridSliderStyles() {
   return `
     .aw-slider {
       position: relative;
       width: 100%;
-      overflow: hidden;
     }
 
-    .aw-slider-viewport {
-      width: 100%;
-      overflow: hidden;
-    }
-
-    .aw-slider-track {
-      display: flex;
-      width: 100%;
-      will-change: transform;
-    }
-
-    .aw-slider-page {
-      flex: 0 0 100%;
-      width: 100%;
-      min-width: 100%;
+    .aw-slider--fixed {
+      overflow: visible;
     }
 
     .aw-slider-grid {
       display: grid;
-      gap: 4px;
-      padding: 4px;
+      gap: 10px;
+      padding: 8px;
       width: 100%;
       box-sizing: border-box;
+      align-items: stretch;
     }
 
-    /* Mode compact quand 1 seule carte par page */
     .aw-slider-grid--single {
-      max-width: 200px;
+      max-width: 360px;
     }
 
-    /* Cartes stables dans la grille */
-    .aw-slider-grid .aw-card {
-      width: 100%;
+    .aw-slider-grid--vertical {
+      gap: 10px;
+    }
+
+    .aw-slider-slot {
       min-width: 0;
-      max-width: 100%;
-      overflow: hidden;
-    }
-
-    .aw-slider-grid .aw-card-image {
-      position: relative;
       width: 100%;
-      padding-bottom: 45%;
-      overflow: hidden;
+      transition: opacity 0.18s ease;
     }
 
-    .aw-slider-grid .aw-card-image img {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
+    .aw-slider-slot--updating {
+      opacity: 0.92;
     }
 
-    .aw-slider-grid .aw-card-body {
-      padding: 4px 6px;
-      overflow: hidden;
-    }
-
+    .aw-slider-grid .aw-card,
     .aw-slider-grid .aw-list-card {
       width: 100%;
       min-width: 0;
       max-width: 100%;
     }
 
-    /* Navigation */
-    .aw-slider-nav {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 24px;
-      height: 24px;
-      border: none;
-      border-radius: 50%;
-      background: var(--aw-background);
-      color: var(--aw-text);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 1px 4px var(--aw-shadow);
-      z-index: 10;
-      padding: 0;
-      opacity: 0;
-      transition: opacity 0.2s ease;
+    .aw-slider-grid .aw-card {
+      overflow: hidden;
     }
 
-    .aw-slider:hover .aw-slider-nav {
-      opacity: 1;
+    /* Compact a partir de 3 lignes verticales */
+    .aw-slider-grid--vertical-compact .aw-card--horizontal .aw-ad-link {
+      grid-template-columns: minmax(100px, 36%) 1fr;
     }
 
-    .aw-slider-nav--prev { left: 2px; }
-    .aw-slider-nav--next { right: 2px; }
-
-    .aw-slider-nav:hover { background: var(--aw-background-alt); }
-
-    .aw-slider-nav svg {
-      width: 14px;
-      height: 14px;
-      fill: currentColor;
+    .aw-slider-grid--vertical-compact .aw-card--horizontal .aw-card-image {
+      min-height: 120px;
     }
 
-    /* Dots */
-    .aw-slider-dots {
-      display: flex;
-      justify-content: center;
+    .aw-slider-grid--vertical-compact .aw-card-title {
+      font-size: 13px;
+    }
+
+    .aw-slider-grid--vertical-compact .aw-card-price {
+      font-size: 13px;
+    }
+
+    .aw-slider-grid--vertical-compact .aw-card-location {
+      font-size: 11px;
+    }
+
+    .aw-slider-grid--vertical-compact .aw-card-body {
+      padding: 10px 12px 8px;
       gap: 3px;
-      padding: 3px 0;
     }
 
-    .aw-slider-dot {
-      width: 5px;
-      height: 5px;
-      border: none;
-      border-radius: 50%;
-      background: var(--aw-border);
-      cursor: pointer;
-      padding: 0;
-      transition: background 0.2s ease, transform 0.2s ease;
+    .aw-slider-grid--vertical-compact .aw-card-amenity-value {
+      font-size: 11px;
     }
 
-    .aw-slider-dot--active {
-      background: var(--aw-accent);
-      transform: scale(1.3);
+    /* 4+ lignes */
+    .aw-slider-grid--vertical-compact-2 {
+      gap: 6px;
+      padding: 4px;
     }
 
-    .aw-slider-dot:hover {
-      background: var(--aw-accent);
+    .aw-slider-grid--vertical-compact-2 .aw-card--horizontal .aw-ad-link {
+      grid-template-columns: minmax(80px, 33%) 1fr;
+    }
+
+    .aw-slider-grid--vertical-compact-2 .aw-card--horizontal .aw-card-image {
+      min-height: 100px;
+    }
+
+    .aw-slider-grid--vertical-compact-2 .aw-card {
+      border-radius: 10px;
+    }
+
+    .aw-slider-grid--vertical-compact-2 .aw-card-title {
+      font-size: 12px;
+    }
+
+    .aw-slider-grid--vertical-compact-2 .aw-card-price {
+      font-size: 12px;
+    }
+
+    .aw-slider-grid--vertical-compact-2 .aw-card-location {
+      font-size: 10px;
+    }
+
+    .aw-slider-grid--vertical-compact-2 .aw-card-body {
+      padding: 8px 10px 6px;
+      gap: 2px;
+    }
+
+    .aw-slider-grid--vertical-compact-2 .aw-card-amenity-value {
+      font-size: 10px;
+    }
+
+    /* 5+ lignes */
+    .aw-slider-grid--vertical-compact-3 .aw-card--horizontal .aw-ad-link {
+      grid-template-columns: minmax(70px, 30%) 1fr;
+    }
+
+    .aw-slider-grid--vertical-compact-3 .aw-card--horizontal .aw-card-image {
+      min-height: 85px;
+    }
+
+    .aw-slider-grid--vertical-compact-3 .aw-card-category {
+      display: none;
+    }
+
+    .aw-slider-grid--vertical-compact-3 .aw-card-footer {
+      padding-top: 5px;
     }
   `;
 }

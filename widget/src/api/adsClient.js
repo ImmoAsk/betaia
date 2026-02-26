@@ -27,11 +27,10 @@ export function createAdsClient(baseUrl) {
 
   /**
    * Recupere les annonces via le proxy API avec retry
-   * @param {string} clientId - ID du client
    * @param {number} limit - Nombre max d'annonces
    * @returns {Promise<Object[]>} Liste des annonces
    */
-  async function fetchAds(clientId, limit = 6) {
+  async function fetchAds(limit = 6) {
     const url = `${proxyUrl}?limit=${limit}&usage=1&status=1`;
     
     console.log('[AnnoncesWidget] URL Proxy:', url);
@@ -85,9 +84,9 @@ export function createAdsClient(baseUrl) {
   /**
    * Prefetch les annonces suivantes
    */
-  async function prefetchAds(clientId, excludeIds = [], limit = 6) {
+  async function prefetchAds(limit = 6) {
     try {
-      return await fetchAds(clientId, limit);
+      return await fetchAds(limit);
     } catch (error) {
       console.warn('[AnnoncesWidget] Prefetch echoue:', error.message);
       return [];
