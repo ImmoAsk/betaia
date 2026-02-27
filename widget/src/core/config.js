@@ -8,6 +8,8 @@ import { THEMES, LAYOUTS, LIMITS, DEFAULT_CONTAINER_ID, GRID_DEFAULTS } from './
 // Valeur injectee au build depuis widget/.env (fallback null si absente)
 const DEFAULT_MAX_ADS_FROM_BUILD =
   (typeof __AW_DEFAULT_MAX_ADS__ !== 'undefined') ? __AW_DEFAULT_MAX_ADS__ : null;
+const DEFAULT_SLIDE_INTERVAL_FROM_BUILD =
+  (typeof __AW_DEFAULT_SLIDE_INTERVAL_MS__ !== 'undefined') ? __AW_DEFAULT_SLIDE_INTERVAL_MS__ : null;
 
 /**
  * Configuration par defaut du widget
@@ -25,7 +27,7 @@ const defaultConfig = {
   orientation: 'auto',
   grid: null,
   autoSlide: true,
-  slideInterval: GRID_DEFAULTS.ROTATION_INTERVAL
+  slideInterval: validateSlideInterval(DEFAULT_SLIDE_INTERVAL_FROM_BUILD)
 };
 
 /**
@@ -69,7 +71,7 @@ export function extractConfigFromScript() {
     orientation: validateOrientation(orientation),
     grid: parseGrid(grid),
     autoSlide,
-    slideInterval: isNaN(slideInterval) ? GRID_DEFAULTS.ROTATION_INTERVAL : slideInterval
+    slideInterval: isNaN(slideInterval) ? defaultConfig.slideInterval : validateSlideInterval(slideInterval)
   };
 }
 
@@ -81,6 +83,11 @@ export function extractConfigFromScript() {
 function validateMaxAds(value) {
   if (isNaN(value)) return null;
   return Math.min(Math.max(value, LIMITS.MIN_ADS), LIMITS.MAX_ADS);
+}
+
+function validateSlideInterval(value) {
+  if (isNaN(value)) return GRID_DEFAULTS.ROTATION_INTERVAL;
+  return Math.min(Math.max(parseInt(value, 10), 1000), 120000);
 }
 
 /**

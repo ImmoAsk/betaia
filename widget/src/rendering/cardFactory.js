@@ -155,15 +155,13 @@ export function createCard(ad, onClick, options = {}) {
     body.appendChild(priceRow);
   }
 
-  const hasAmenities = [ad.rooms, ad.bathrooms, ad.garage].some(v => Number(v) > 0);
-  if (hasAmenities) {
-    const amenities = createElement('div', { className: 'aw-card-amenities' });
-    amenities.appendChild(createAmenity(ICONS.bed, ad.rooms || 0));
-    amenities.appendChild(createAmenity(ICONS.bath, ad.bathrooms || 0));
-    amenities.appendChild(createAmenity(ICONS.car, ad.garage || 0));
-    footer.appendChild(amenities);
-    body.appendChild(footer);
-  }
+  // Toujours afficher la ligne "amenities" pour un rendu uniforme entre cartes.
+  const amenities = createElement('div', { className: 'aw-card-amenities' });
+  amenities.appendChild(createAmenity(ICONS.bed, ad.rooms || 0));
+  amenities.appendChild(createAmenity(ICONS.bath, ad.bathrooms || 0));
+  amenities.appendChild(createAmenity(ICONS.car, ad.garage || 0));
+  footer.appendChild(amenities);
+  body.appendChild(footer);
   link.appendChild(imageContainer);
   link.appendChild(body);
   card.appendChild(link);

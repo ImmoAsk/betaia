@@ -23,9 +23,10 @@ const IMMOASK_LOGO_URLS = [
  * @param {ShadowRoot} shadowRoot - Shadow root du widget
  * @param {string} theme - Theme actif
  * @param {Object} siteColors - Couleurs du site hote (optionnel)
+ * @param {Object} ctaConfig - Configuration des boutons CTA (optionnel)
  * @returns {Object} Renderer avec methodes
  */
-export function createRenderer(shadowRoot, theme, siteColors = null) {
+export function createRenderer(shadowRoot, theme, siteColors = null, ctaConfig = null) {
   let currentLayout = null;
   let contentContainer = null;
   let activeSlider = null;
@@ -92,6 +93,51 @@ export function createRenderer(shadowRoot, theme, siteColors = null) {
     return header;
   }
 
+  function createCtaButton(label, url, variantClass = '') {
+    if (!url) return null;
+    const text = (label && String(label).trim()) ? String(label).trim() : 'Action';
+    return createElement('a', {
+      className: `aw-cta-btn ${variantClass}`.trim(),
+      href: url,
+      target: '_blank',
+      rel: 'noopener noreferrer',
+      'aria-label': text
+    }, text);
+  }
+
+  function createFooterCtas() {
+    const magazineUrl = ctaConfig?.magazineUrl || '';
+    const appUrl = ctaConfig?.appUrl || '';
+    if (!magazineUrl && !appUrl) return null;
+
+    const footer = createElement('div', {
+      className: 'aw-cta-row',
+      role: 'navigation',
+      'aria-label': 'Actions widget'
+    });
+
+    const magazineBtn = createCtaButton(
+      ctaConfig?.magazineLabel || 'Telecharger notre magazine',
+      magazineUrl,
+      'aw-cta-btn--magazine'
+    );
+    const appBtn = createCtaButton(
+      ctaConfig?.appLabel || 'Notre appli mobile',
+      appUrl,
+      'aw-cta-btn--app'
+    );
+
+    if (magazineBtn) footer.appendChild(magazineBtn);
+    if (appBtn) footer.appendChild(appBtn);
+
+    return footer.childElementCount > 0 ? footer : null;
+  }
+
+  function appendFooterCtas() {
+    const footer = createFooterCtas();
+    if (footer) contentContainer.appendChild(footer);
+  }
+
   /**
    * Affiche l'etat de chargement
    * @param {number} count - Nombre de skeletons
@@ -114,6 +160,7 @@ export function createRenderer(shadowRoot, theme, siteColors = null) {
     }
     
     contentContainer.appendChild(wrapper);
+    appendFooterCtas();
   }
 
   /**
@@ -128,6 +175,7 @@ export function createRenderer(shadowRoot, theme, siteColors = null) {
       role: 'alert'
     }, message);
     contentContainer.appendChild(error);
+    appendFooterCtas();
   }
 
   /**
@@ -158,6 +206,7 @@ export function createRenderer(shadowRoot, theme, siteColors = null) {
     });
 
     contentContainer.appendChild(slider.element);
+    appendFooterCtas();
     activeSlider = slider;
 
     if (sliderOptions.autoSlide !== false) {
@@ -197,6 +246,7 @@ export function createRenderer(shadowRoot, theme, siteColors = null) {
     }
 
     contentContainer.appendChild(content);
+    appendFooterCtas();
   }
 
   /**

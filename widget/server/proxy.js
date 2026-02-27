@@ -16,6 +16,10 @@ const IMAGE_BASE = process.env.IMAGE_BASE_URL;
 const IMMOASK_URL = process.env.IMMOASK_URL || 'https://www.immoask.com';
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 1000;
+const IMAGE_CHECK_TIMEOUT = 5000;
+const IMAGE_STATUS_CACHE_TTL_MS = 15 * 60 * 1000;
+const MAX_VISUALS_TO_CHECK_PER_PROPERTY = 5;
+const imageStatusCache = new Map();
 
 if (!API_BASE || !IMAGE_BASE) {
   console.error('[Proxy] ERREUR: Variables API_BASE_URL et IMAGE_BASE_URL requises dans .env');
@@ -79,6 +83,79 @@ function isValidImageUri(uri) {
   const validExtensions = ['.jpg', '.jpeg', '.png', '.webp', '.gif', '.avif'];
   const lowerUri = uri.toLowerCase();
   return validExtensions.some(ext => lowerUri.includes(ext));
+}
+
+function buildImageUrl(uri) {
+  const safeUri = String(uri || '').trim();
+  if (!safeUri) return '';
+  if (/^https?:\/\//i.test(safeUri)) return safeUri;
+  const base = String(IMAGE_BASE || '').replace(/\/+$/, '');
+  const normalizedUri = safeUri.replace(/^\/+/, '');
+  return `${base}/${normalizedUri}`;
+}
+
+function getCachedImageStatus(imageUrl) {
+  const cached = imageStatusCache.get(imageUrl);
+  if (!cached) return null;
+  if (Date.now() - cached.ts > IMAGE_STATUS_CACHE_TTL_MS) {
+    imageStatusCache.delete(imageUrl);
+    return null;
+  }
+  return cached.ok;
+}
+
+function setCachedImageStatus(imageUrl, ok) {
+  imageStatusCache.set(imageUrl, { ok, ts: Date.now() });
+}
+
+function checkImageReachable(imageUrl, timeout = IMAGE_CHECK_TIMEOUT) {
+  return new Promise((resolve) => {
+    const parsed = url.parse(imageUrl);
+    const client = parsed.protocol === 'https:' ? https : http;
+
+    const req = client.request(imageUrl, {
+      method: 'HEAD',
+      timeout,
+      headers: {
+        'User-Agent': 'immoask-widget-proxy/1.0',
+        'Accept': 'image/avif,image/webp,image/apng,image/*,*/*;q=0.8'
+      }
+    }, (resp) => {
+      const status = Number(resp.statusCode || 0);
+      resp.resume();
+      resolve(status >= 200 && status < 400);
+    });
+
+    req.on('error', () => resolve(false));
+    req.on('timeout', () => {
+      req.destroy();
+      resolve(false);
+    });
+    req.end();
+  });
+}
+
+async function resolveBestImageUrl(visuels) {
+  if (!Array.isArray(visuels) || visuels.length === 0) return '';
+
+  const candidates = visuels
+    .map(v => v?.uri)
+    .filter(isValidImageUri)
+    .slice(0, MAX_VISUALS_TO_CHECK_PER_PROPERTY)
+    .map(buildImageUrl)
+    .filter(Boolean);
+
+  for (const imageUrl of candidates) {
+    const cached = getCachedImageStatus(imageUrl);
+    if (cached === true) return imageUrl;
+    if (cached === false) continue;
+
+    const ok = await checkImageReachable(imageUrl);
+    setCachedImageStatus(imageUrl, ok);
+    if (ok) return imageUrl;
+  }
+
+  return '';
 }
 
 /**
@@ -301,14 +378,8 @@ async function handleAds(query, res) {
     const ads = [];
 
     for (const p of properties) {
-      // Cherche la premiere image valide
-      let imageUrl = '';
-      if (p.visuels && Array.isArray(p.visuels)) {
-        const validVisuel = p.visuels.find(v => isValidImageUri(v?.uri));
-        if (validVisuel) {
-          imageUrl = IMAGE_BASE + validVisuel.uri;
-        }
-      }
+      // Cherche une image a la fois valide ET accessible
+      const imageUrl = await resolveBestImageUrl(p.visuels);
 
       // Exclure les annonces sans image
       if (!imageUrl) continue;

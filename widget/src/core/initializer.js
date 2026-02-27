@@ -15,6 +15,39 @@ import { createAdsClient } from '../api/adsClient.js';
 import { createAdsCache } from '../api/adsCache.js';
 import { detectBaseUrl } from '../api/endpoints.js';
 
+const DEFAULT_UTM_MEDIUM =
+  (typeof __AW_UTM_MEDIUM__ !== 'undefined' && __AW_UTM_MEDIUM__)
+    ? String(__AW_UTM_MEDIUM__)
+    : 'widget';
+const DEFAULT_UTM_CAMPAIGN =
+  (typeof __AW_UTM_CAMPAIGN__ !== 'undefined' && __AW_UTM_CAMPAIGN__)
+    ? String(__AW_UTM_CAMPAIGN__)
+    : 'immoask_widget';
+const DEFAULT_MAGAZINE_URL =
+  (typeof __AW_MAGAZINE_URL__ !== 'undefined' && __AW_MAGAZINE_URL__)
+    ? String(__AW_MAGAZINE_URL__)
+    : '';
+const DEFAULT_APP_URL =
+  (typeof __AW_APP_URL__ !== 'undefined' && __AW_APP_URL__)
+    ? String(__AW_APP_URL__)
+    : '';
+const DEFAULT_APP_ANDROID_URL =
+  (typeof __AW_APP_ANDROID_URL__ !== 'undefined' && __AW_APP_ANDROID_URL__)
+    ? String(__AW_APP_ANDROID_URL__)
+    : '';
+const DEFAULT_APP_IOS_URL =
+  (typeof __AW_APP_IOS_URL__ !== 'undefined' && __AW_APP_IOS_URL__)
+    ? String(__AW_APP_IOS_URL__)
+    : '';
+const DEFAULT_MAGAZINE_LABEL =
+  (typeof __AW_MAGAZINE_LABEL__ !== 'undefined' && __AW_MAGAZINE_LABEL__)
+    ? String(__AW_MAGAZINE_LABEL__)
+    : 'Telecharger notre magazine';
+const DEFAULT_APP_LABEL =
+  (typeof __AW_APP_LABEL__ !== 'undefined' && __AW_APP_LABEL__)
+    ? String(__AW_APP_LABEL__)
+    : 'Notre appli mobile';
+
 /**
  * Applique les dimensions configurees au conteneur
  * @param {HTMLElement} container - Conteneur du widget
@@ -93,7 +126,10 @@ export async function initializeWidgetInstance(container) {
   const rotationService = createRotationService(handleRotation);
   const adsClient = createAdsClient(baseUrl);
   const adsCache = createAdsCache();
-  const renderer = createRenderer(shadowRoot, theme, store.getState().siteColors);
+  const ctaConfig = buildCtaConfig();
+  const renderer = createRenderer(shadowRoot, theme, store.getState().siteColors, ctaConfig);
+  let poolRefreshTimer = null;
+  let poolRefreshInFlight = false;
 
   // Initialise le rendu
   renderer.initStyles();
@@ -126,6 +162,10 @@ export async function initializeWidgetInstance(container) {
     rotationService.init(ads, ads.slice(0, visibleCount));
     rotationService.setupBehaviorDetection(container);
   }
+
+  // Renouvelle regulierement le pool pour eviter de boucler toujours sur le meme set.
+  // Le slider continue de tourner "en place", mais les annonces source sont rechargees.
+  startPoolRefresh();
 
   // Observer resize pour recalcul dynamique
   const cleanupResize = createResizeObserver(container, handleResize);
@@ -193,8 +233,58 @@ export async function initializeWidgetInstance(container) {
     return {
       refresh: () => refreshInstance(adsClient, config, renderer, securityService, gridConfig, handleAdClick),
       getStats: () => ({ ads: store.getState().ads?.length || 0 }),
-      destroy: () => cleanup(cleanupResize, rotationService, renderer)
+      destroy: () => cleanup(cleanupResize, rotationService, renderer, poolRefreshTimer)
     };
+  }
+
+  function getPoolRefreshIntervalMs() {
+    const minMs = 20000;
+    const maxMs = 120000;
+    const base = Math.max(config.slideInterval || GRID_DEFAULTS.ROTATION_INTERVAL, 3000);
+    const factor = Math.max(visibleCount, 1);
+    return Math.min(maxMs, Math.max(minMs, base * factor));
+  }
+
+  function startPoolRefresh() {
+    if (!config.autoSlide) return;
+
+    const intervalMs = getPoolRefreshIntervalMs();
+    poolRefreshTimer = setInterval(async () => {
+      if (poolRefreshInFlight) return;
+      poolRefreshInFlight = true;
+
+      try {
+        const freshAds = await loadAds(adsClient, fetchCount, securityService);
+        if (!Array.isArray(freshAds) || freshAds.length === 0) return;
+
+        store.setState({ ads: freshAds });
+
+        if (gridConfig) {
+          const slider = renderer.slider;
+          if (slider?.updateAds) {
+            slider.updateAds(freshAds);
+          } else {
+            renderer.renderWithGrid(freshAds, gridConfig, handleAdClick, {
+              autoSlide: config.autoSlide,
+              interval: config.slideInterval,
+              onRender: null
+            });
+          }
+          return;
+        }
+
+        // Mode classique: remplace la base et re-render les annonces visibles.
+        const displayAds = freshAds.slice(0, visibleCount);
+        rotationService.init(freshAds, displayAds);
+        renderer.render(displayAds, store.getState().currentLayout, store.getState().containerWidth, handleAdClick);
+      } catch (err) {
+        if (config.debug) {
+          console.warn('[AnnoncesWidget] Echec refresh pool:', err?.message || err);
+        }
+      } finally {
+        poolRefreshInFlight = false;
+      }
+    }, intervalMs);
   }
 
   store.setState({ loadTime: Date.now(), ads });
@@ -283,8 +373,9 @@ async function refreshInstance(client, config, renderer, security, gridConfig, o
   }
 }
 
-function cleanup(resizeCleanup, rotation, renderer) {
+function cleanup(resizeCleanup, rotation, renderer, poolRefreshTimer) {
   resizeCleanup?.();
+  if (poolRefreshTimer) clearInterval(poolRefreshTimer);
   rotation?.destroy();
   renderer?.destroySlider();
 }
@@ -295,8 +386,8 @@ function buildClickUrlWithUtm(rawUrl, ad = {}) {
     const host = String(window.location.hostname || 'unknown').toLowerCase();
 
     dest.searchParams.set('utm_source', host);
-    dest.searchParams.set('utm_medium', 'widget');
-    dest.searchParams.set('utm_campaign', 'immoask_widget');
+    dest.searchParams.set('utm_medium', DEFAULT_UTM_MEDIUM);
+    dest.searchParams.set('utm_campaign', DEFAULT_UTM_CAMPAIGN);
     if (ad?.id != null) {
       dest.searchParams.set('utm_content', `ad_${String(ad.id)}`);
     }
@@ -305,4 +396,42 @@ function buildClickUrlWithUtm(rawUrl, ad = {}) {
   } catch (e) {
     return rawUrl;
   }
+}
+
+function toSafeExternalUrl(rawUrl) {
+  if (!rawUrl || typeof rawUrl !== 'string') return '';
+  try {
+    const parsed = new URL(rawUrl, window.location.origin);
+    if (!['http:', 'https:'].includes(parsed.protocol)) return '';
+    return parsed.toString();
+  } catch (e) {
+    return '';
+  }
+}
+
+function detectMobilePlatform() {
+  const ua = String(navigator.userAgent || '');
+  if (/android/i.test(ua)) return 'android';
+  if (/iphone|ipad|ipod/i.test(ua)) return 'ios';
+  return 'other';
+}
+
+function resolveAppCtaUrl() {
+  const generic = toSafeExternalUrl(DEFAULT_APP_URL);
+  const android = toSafeExternalUrl(DEFAULT_APP_ANDROID_URL);
+  const ios = toSafeExternalUrl(DEFAULT_APP_IOS_URL);
+  const platform = detectMobilePlatform();
+
+  if (platform === 'android' && android) return android;
+  if (platform === 'ios' && ios) return ios;
+  return generic || android || ios || '';
+}
+
+function buildCtaConfig() {
+  return Object.freeze({
+    magazineUrl: toSafeExternalUrl(DEFAULT_MAGAZINE_URL),
+    appUrl: resolveAppCtaUrl(),
+    magazineLabel: String(DEFAULT_MAGAZINE_LABEL || 'Telecharger notre magazine'),
+    appLabel: String(DEFAULT_APP_LABEL || 'Notre appli mobile')
+  });
 }

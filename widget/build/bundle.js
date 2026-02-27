@@ -13,20 +13,59 @@ const srcDir = path.join(__dirname, '..', 'src');
 const distDir = path.join(__dirname, '..', 'dist');
 const envPath = path.join(__dirname, '..', '.env');
 
+function parsePositiveInt(value) {
+  const n = parseInt(value, 10);
+  return Number.isFinite(n) && n > 0 ? n : null;
+}
+
+function parseNonEmptyString(value) {
+  if (typeof value !== 'string') return null;
+  const s = value.trim();
+  return s ? s : null;
+}
+
 function getBuildDefaults() {
   let widgetDefaultMaxAds = null;
+  let widgetDefaultSlideIntervalMs = null;
+  let widgetUtmMedium = null;
+  let widgetUtmCampaign = null;
+  let widgetMagazineUrl = null;
+  let widgetAppUrl = null;
+  let widgetAppAndroidUrl = null;
+  let widgetAppIosUrl = null;
+  let widgetMagazineLabel = null;
+  let widgetAppLabel = null;
 
   try {
     if (fs.existsSync(envPath)) {
       const parsed = dotenv.parse(fs.readFileSync(envPath, 'utf8'));
-      const n = parseInt(parsed.WIDGET_DEFAULT_MAX_ADS, 10);
-      if (!isNaN(n)) widgetDefaultMaxAds = n;
+      widgetDefaultMaxAds = parsePositiveInt(parsed.WIDGET_DEFAULT_MAX_ADS);
+      widgetDefaultSlideIntervalMs = parsePositiveInt(parsed.WIDGET_DEFAULT_SLIDE_INTERVAL_MS);
+      widgetUtmMedium = parseNonEmptyString(parsed.WIDGET_UTM_MEDIUM);
+      widgetUtmCampaign = parseNonEmptyString(parsed.WIDGET_UTM_CAMPAIGN);
+      widgetMagazineUrl = parseNonEmptyString(parsed.WIDGET_MAGAZINE_URL);
+      widgetAppUrl = parseNonEmptyString(parsed.WIDGET_APP_URL);
+      widgetAppAndroidUrl = parseNonEmptyString(parsed.WIDGET_APP_ANDROID_URL);
+      widgetAppIosUrl = parseNonEmptyString(parsed.WIDGET_APP_IOS_URL);
+      widgetMagazineLabel = parseNonEmptyString(parsed.WIDGET_MAGAZINE_LABEL);
+      widgetAppLabel = parseNonEmptyString(parsed.WIDGET_APP_LABEL);
     }
   } catch (e) {
     console.warn('[Build] Impossible de lire .env pour les defaults widget:', e.message);
   }
 
-  return { widgetDefaultMaxAds };
+  return {
+    widgetDefaultMaxAds,
+    widgetDefaultSlideIntervalMs,
+    widgetUtmMedium,
+    widgetUtmCampaign,
+    widgetMagazineUrl,
+    widgetAppUrl,
+    widgetAppAndroidUrl,
+    widgetAppIosUrl,
+    widgetMagazineLabel,
+    widgetAppLabel
+  };
 }
 
 // Ordre de concatenation des modules
@@ -90,6 +129,7 @@ async function build() {
   console.log('[Build] Demarrage...');
   const buildDefaults = getBuildDefaults();
   console.log('[Build] Default max ads (env):', buildDefaults.widgetDefaultMaxAds ?? 'none');
+  console.log('[Build] Default slide interval (env):', buildDefaults.widgetDefaultSlideIntervalMs ?? 'none');
   
   // Cree le dossier dist
   if (!fs.existsSync(distDir)) {
@@ -113,9 +153,21 @@ async function build() {
 
   // Concatene les modules
   let bundle = header + '(function() {\n"use strict";\n\n';
+  const toJsString = (value) => (typeof value === 'string' ? JSON.stringify(value) : 'null');
   bundle += `const __AW_DEFAULT_MAX_ADS__ = ${
     Number.isInteger(buildDefaults.widgetDefaultMaxAds) ? buildDefaults.widgetDefaultMaxAds : 'null'
   };\n\n`;
+  bundle += `const __AW_DEFAULT_SLIDE_INTERVAL_MS__ = ${
+    Number.isInteger(buildDefaults.widgetDefaultSlideIntervalMs) ? buildDefaults.widgetDefaultSlideIntervalMs : 'null'
+  };\n`;
+  bundle += `const __AW_UTM_MEDIUM__ = ${toJsString(buildDefaults.widgetUtmMedium)};\n`;
+  bundle += `const __AW_UTM_CAMPAIGN__ = ${toJsString(buildDefaults.widgetUtmCampaign)};\n`;
+  bundle += `const __AW_MAGAZINE_URL__ = ${toJsString(buildDefaults.widgetMagazineUrl)};\n`;
+  bundle += `const __AW_APP_URL__ = ${toJsString(buildDefaults.widgetAppUrl)};\n`;
+  bundle += `const __AW_APP_ANDROID_URL__ = ${toJsString(buildDefaults.widgetAppAndroidUrl)};\n`;
+  bundle += `const __AW_APP_IOS_URL__ = ${toJsString(buildDefaults.widgetAppIosUrl)};\n`;
+  bundle += `const __AW_MAGAZINE_LABEL__ = ${toJsString(buildDefaults.widgetMagazineLabel)};\n`;
+  bundle += `const __AW_APP_LABEL__ = ${toJsString(buildDefaults.widgetAppLabel)};\n\n`;
   
   for (const modulePath of moduleOrder) {
     try {
