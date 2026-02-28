@@ -5,7 +5,7 @@
 
 import { extractConfigFromScript, createConfig } from './config.js';
 import { getStore } from './state.js';
-import { DEFAULT_CONTAINER_ID, LAYOUTS, GRID_DEFAULTS } from './constants.js';
+import { LAYOUTS, GRID_DEFAULTS } from './constants.js';
 import { resolveTheme, extractSiteColors } from '../adapters/themeDetector.js';
 import { measureContainer, calculateOptimalAdCount, calculateOptimalLayout, createResizeObserver } from '../adapters/spaceDetector.js';
 import { createSecurityService } from '../security/securityService.js';
@@ -47,6 +47,13 @@ const DEFAULT_APP_LABEL =
   (typeof __AW_APP_LABEL__ !== 'undefined' && __AW_APP_LABEL__)
     ? String(__AW_APP_LABEL__)
     : 'Notre appli mobile';
+const USAGE_FILTERS = Object.freeze([
+  { key: 'sejourner', label: 'Sejourner', usage: 5 },
+  { key: 'entreprendre', label: 'Entreprendre', usage: 3 },
+  { key: 'acquerir', label: 'Acquerir', usage: 7 },
+  { key: 'se_loger', label: 'Se loger', usage: 1 }
+]);
+const INITIALIZER_DEFAULT_USAGE = 1;
 
 /**
  * Applique les dimensions configurees au conteneur
@@ -124,10 +131,23 @@ export async function initializeWidgetInstance(container) {
   const baseUrl = config.apiUrl || detectBaseUrl();
   const securityService = createSecurityService(handleFraudDetected);
   const rotationService = createRotationService(handleRotation);
-  const adsClient = createAdsClient(baseUrl);
+  const adsClient = createAdsClient(baseUrl, { debug: config.debug });
   const adsCache = createAdsCache();
   const ctaConfig = buildCtaConfig();
-  const renderer = createRenderer(shadowRoot, theme, store.getState().siteColors, ctaConfig);
+  let currentUsage = INITIALIZER_DEFAULT_USAGE;
+  let activeFetchToken = 0;
+  const renderer = createRenderer(
+    shadowRoot,
+    theme,
+    store.getState().siteColors,
+    ctaConfig,
+    {
+      filters: USAGE_FILTERS,
+      selectedUsage: currentUsage,
+      onChange: handleUsageFilterChange
+    }
+  );
+  const gridRenderOptions = buildGridRenderOptions(config);
   let poolRefreshTimer = null;
   let poolRefreshInFlight = false;
 
@@ -136,7 +156,7 @@ export async function initializeWidgetInstance(container) {
   renderer.showLoading(visibleCount, layout);
 
   // Charge les annonces (pool plus large pour la rotation)
-  const ads = await loadAds(adsClient, fetchCount, securityService);
+  const ads = await loadAds(adsClient, fetchCount, securityService, config.debug, currentUsage);
   
   if (ads.length === 0) {
     renderer.showError('Aucune annonce disponible');
@@ -147,9 +167,7 @@ export async function initializeWidgetInstance(container) {
   if (gridConfig) {
     // Mode grille fixe avec rotation des cartes en place
     renderer.renderWithGrid(ads, gridConfig, handleAdClick, {
-      autoSlide: config.autoSlide,
-      interval: config.slideInterval,
-      onRender: null
+      ...gridRenderOptions
     });
   } else {
     // Mode classique
@@ -186,7 +204,8 @@ export async function initializeWidgetInstance(container) {
     if (validation.valid) {
       rotationService.recordClick(ad.id);
       const destinationUrl = buildClickUrlWithUtm(ad.linkUrl, ad);
-      window.open(destinationUrl, '_blank', 'noopener');
+      const fallbackUrl = toSafeExternalUrl(DEFAULT_MAGAZINE_URL) || 'https://www.immoask.com/tg';
+      window.open(destinationUrl || fallbackUrl, '_blank', 'noopener');
     }
   }
 
@@ -231,8 +250,9 @@ export async function initializeWidgetInstance(container) {
 
   function createServices() {
     return {
-      refresh: () => refreshInstance(adsClient, config, renderer, securityService, gridConfig, handleAdClick),
+      refresh: () => refreshInstance(adsClient, config, renderer, securityService, gridConfig, handleAdClick, currentUsage),
       getStats: () => ({ ads: store.getState().ads?.length || 0 }),
+      setUsageFilter: (usage) => handleUsageFilterChange(usage),
       destroy: () => cleanup(cleanupResize, rotationService, renderer, poolRefreshTimer)
     };
   }
@@ -254,7 +274,10 @@ export async function initializeWidgetInstance(container) {
       poolRefreshInFlight = true;
 
       try {
-        const freshAds = await loadAds(adsClient, fetchCount, securityService);
+        const refreshToken = activeFetchToken;
+        const freshAds = await loadAds(adsClient, fetchCount, securityService, config.debug, currentUsage);
+        if (refreshToken !== activeFetchToken) return;
+        logDebug(config.debug, '[AnnoncesWidget] Pool rafraichi:', freshAds.length);
         if (!Array.isArray(freshAds) || freshAds.length === 0) return;
 
         store.setState({ ads: freshAds });
@@ -265,9 +288,7 @@ export async function initializeWidgetInstance(container) {
             slider.updateAds(freshAds);
           } else {
             renderer.renderWithGrid(freshAds, gridConfig, handleAdClick, {
-              autoSlide: config.autoSlide,
-              interval: config.slideInterval,
-              onRender: null
+              ...gridRenderOptions
             });
           }
           return;
@@ -285,6 +306,45 @@ export async function initializeWidgetInstance(container) {
         poolRefreshInFlight = false;
       }
     }, intervalMs);
+  }
+
+  async function handleUsageFilterChange(nextUsage) {
+    const normalizedUsage = sanitizeUsage(nextUsage);
+    if (normalizedUsage === currentUsage) return;
+
+    currentUsage = normalizedUsage;
+    renderer.setActiveFilter(currentUsage);
+
+    const requestToken = ++activeFetchToken;
+    renderer.showLoading(visibleCount, layout);
+
+    const adsByFilter = await loadAds(adsClient, fetchCount, securityService, config.debug, currentUsage);
+    if (requestToken !== activeFetchToken) return;
+
+    if (!Array.isArray(adsByFilter) || adsByFilter.length === 0) {
+      store.setState({ ads: [], loadTime: Date.now() });
+      renderer.showError('Aucune annonce disponible pour ce filtre');
+      return;
+    }
+
+    store.setState({ ads: adsByFilter, loadTime: Date.now() });
+
+    if (gridConfig) {
+      renderer.renderWithGrid(adsByFilter, gridConfig, handleAdClick, {
+        ...gridRenderOptions
+      });
+      return;
+    }
+
+    const state = store.getState();
+    const displayAds = adsByFilter.slice(0, visibleCount);
+    rotationService.init(adsByFilter, displayAds);
+    renderer.render(
+      displayAds,
+      state.currentLayout || layout,
+      state.containerWidth || width,
+      handleAdClick
+    );
   }
 
   store.setState({ loadTime: Date.now(), ads });
@@ -344,11 +404,11 @@ function buildLinearGridFromOrientation(maxAds, orientation) {
     : { rows: 1, cols: n };
 }
 
-async function loadAds(client, count, security) {
+async function loadAds(client, count, security, debug = false, usage = INITIALIZER_DEFAULT_USAGE) {
   try {
-    console.log('[AnnoncesWidget] Chargement des annonces...');
-    const ads = await client.fetchAds(count);
-    console.log('[AnnoncesWidget] Annonces recues:', ads.length);
+    logDebug(debug, '[AnnoncesWidget] Chargement des annonces...');
+    const ads = await client.fetchAds(count, usage);
+    logDebug(debug, '[AnnoncesWidget] Annonces recues:', ads.length);
     return security.secureAds(ads);
   } catch (e) {
     console.error('[AnnoncesWidget] Erreur chargement:', e);
@@ -356,17 +416,15 @@ async function loadAds(client, count, security) {
   }
 }
 
-async function refreshInstance(client, config, renderer, security, gridConfig, onAdClick) {
+async function refreshInstance(client, config, renderer, security, gridConfig, onAdClick, usage = INITIALIZER_DEFAULT_USAGE) {
   const count = gridConfig 
     ? gridConfig.rows * gridConfig.cols * GRID_DEFAULTS.FETCH_MULTIPLIER
     : 5;
   renderer.showLoading(gridConfig ? gridConfig.rows * gridConfig.cols : 3, LAYOUTS.GRID);
-  const ads = await loadAds(client, count, security);
+  const ads = await loadAds(client, count, security, config.debug, usage);
   if (gridConfig) {
     renderer.renderWithGrid(ads, gridConfig, onAdClick, {
-      autoSlide: config.autoSlide,
-      interval: config.slideInterval,
-      onRender: null
+      ...buildGridRenderOptions(config)
     });
   } else {
     renderer.render(ads, LAYOUTS.GRID, 800, () => {});
@@ -377,12 +435,17 @@ function cleanup(resizeCleanup, rotation, renderer, poolRefreshTimer) {
   resizeCleanup?.();
   if (poolRefreshTimer) clearInterval(poolRefreshTimer);
   rotation?.destroy();
-  renderer?.destroySlider();
+  if (typeof renderer?.destroy === 'function') {
+    renderer.destroy();
+  } else {
+    renderer?.destroySlider?.();
+  }
 }
 
 function buildClickUrlWithUtm(rawUrl, ad = {}) {
   try {
     const dest = new URL(rawUrl, window.location.href);
+    if (!isSafeHttpUrl(dest)) return '';
     const host = String(window.location.hostname || 'unknown').toLowerCase();
 
     dest.searchParams.set('utm_source', host);
@@ -402,11 +465,20 @@ function toSafeExternalUrl(rawUrl) {
   if (!rawUrl || typeof rawUrl !== 'string') return '';
   try {
     const parsed = new URL(rawUrl, window.location.origin);
-    if (!['http:', 'https:'].includes(parsed.protocol)) return '';
+    if (!isSafeHttpUrl(parsed)) return '';
     return parsed.toString();
   } catch (e) {
     return '';
   }
+}
+
+function isSafeHttpUrl(parsedUrl) {
+  if (!parsedUrl || !['http:', 'https:'].includes(parsedUrl.protocol)) return false;
+  const host = String(parsedUrl.hostname || '').trim().toLowerCase();
+  if (!host || host === '&' || host === '...') return false;
+  if (host.includes('&')) return false;
+  if (!/[a-z0-9]/i.test(host)) return false;
+  return /^[a-z0-9.-]+$/i.test(host);
 }
 
 function detectMobilePlatform() {
@@ -434,4 +506,23 @@ function buildCtaConfig() {
     magazineLabel: String(DEFAULT_MAGAZINE_LABEL || 'Telecharger notre magazine'),
     appLabel: String(DEFAULT_APP_LABEL || 'Notre appli mobile')
   });
+}
+
+function buildGridRenderOptions(config) {
+  return {
+    autoSlide: config.autoSlide,
+    interval: config.slideInterval,
+    onRender: null
+  };
+}
+
+function logDebug(isDebug, ...args) {
+  if (isDebug) {
+    console.log(...args);
+  }
+}
+
+function sanitizeUsage(value) {
+  const n = parseInt(value, 10);
+  return [1, 3, 5, 7].includes(n) ? n : INITIALIZER_DEFAULT_USAGE;
 }

@@ -24,6 +24,7 @@ function isStorageAvailable(type) {
 
 // Cache memoire en fallback
 const memoryCache = new Map();
+const hasSessionStorage = isStorageAvailable('sessionStorage');
 
 /**
  * Recupere une valeur du storage
@@ -32,7 +33,7 @@ const memoryCache = new Map();
  */
 export function getItem(key) {
   try {
-    if (isStorageAvailable('sessionStorage')) {
+    if (hasSessionStorage) {
       const item = sessionStorage.getItem(key);
       return item ? JSON.parse(item) : null;
     }
@@ -50,7 +51,7 @@ export function getItem(key) {
 export function setItem(key, value) {
   try {
     const serialized = JSON.stringify(value);
-    if (isStorageAvailable('sessionStorage')) {
+    if (hasSessionStorage) {
       sessionStorage.setItem(key, serialized);
     }
     memoryCache.set(key, value);
@@ -65,7 +66,7 @@ export function setItem(key, value) {
  */
 export function removeItem(key) {
   try {
-    if (isStorageAvailable('sessionStorage')) {
+    if (hasSessionStorage) {
       sessionStorage.removeItem(key);
     }
     memoryCache.delete(key);

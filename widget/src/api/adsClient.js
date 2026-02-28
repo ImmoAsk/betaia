@@ -1,100 +1,89 @@
-/**
- * Client API pour recuperer les annonces betaia
- * @module api/adsClient
- */
-
+import { LIMITS } from '../core/constants.js';
 import { withTimeout } from '../utils/timing.js';
 
-/**
- * Cree un client API pour les annonces
- * @param {string} baseUrl - URL de base detectee du script
- * @returns {Object} Client avec methodes
- */
-export function createAdsClient(baseUrl) {
-  const defaultTimeout = 15000;
-  const maxRetries = 3;
-  const retryDelay = 1000;
-  
-  // Utilise le proxy sur le meme domaine que le widget
+const DEFAULT_FETCH_LIMIT_FROM_BUILD =
+  (typeof __AW_DEFAULT_MAX_ADS__ !== 'undefined' && !isNaN(parseInt(__AW_DEFAULT_MAX_ADS__, 10)))
+    ? parseInt(__AW_DEFAULT_MAX_ADS__, 10)
+    : 6;
+const REQUEST_CONFIG = Object.freeze({ timeoutMs: 15000, maxRetries: 3, retryDelayMs: 1000 });
+const ADS_CLIENT_DEFAULT_USAGE = 1;
+const ALLOWED_USAGE_VALUES = new Set([1, 3, 5, 7]);
+
+function sanitizeLimit(value) {
+  const parsed = parseInt(value, 10);
+  if (isNaN(parsed)) return DEFAULT_FETCH_LIMIT_FROM_BUILD;
+  return Math.min(Math.max(parsed, LIMITS.MIN_ADS), LIMITS.MAX_ADS);
+}
+
+function sanitizeUsage(value) {
+  const parsed = parseInt(value, 10);
+  return ALLOWED_USAGE_VALUES.has(parsed) ? parsed : ADS_CLIENT_DEFAULT_USAGE;
+}
+
+function filterAds(rawAds) {
+  const seenImages = new Set();
+  return rawAds.filter((ad) => {
+    const imageKey = String(ad?.imageUrl || '').trim();
+    if (!ad?.id || !imageKey || seenImages.has(imageKey)) return false;
+    seenImages.add(imageKey);
+    return true;
+  });
+}
+
+function createDebugLogger(debug) {
+  return (...args) => { if (debug) console.log(...args); };
+}
+
+function buildRequestUrl(proxyUrl, limit, usage) {
+  const params = new URLSearchParams({
+    limit: String(sanitizeLimit(limit)),
+    usage: String(sanitizeUsage(usage)),
+    status: '1'
+  });
+  return `${proxyUrl}?${params.toString()}`;
+}
+
+export function createAdsClient(baseUrl, options = {}) {
+  const debugLog = createDebugLogger(options.debug === true);
   const proxyUrl = `${baseUrl}/api/ads`;
 
-  /**
-   * Pause pour retry
-   */
-  function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
+  async function fetchAds(limit = DEFAULT_FETCH_LIMIT_FROM_BUILD, usage = ADS_CLIENT_DEFAULT_USAGE) {
+    const requestUrl = buildRequestUrl(proxyUrl, limit, usage);
+    debugLog('[AnnoncesWidget] URL Proxy:', requestUrl);
 
-  /**
-   * Recupere les annonces via le proxy API avec retry
-   * @param {number} limit - Nombre max d'annonces
-   * @returns {Promise<Object[]>} Liste des annonces
-   */
-  async function fetchAds(limit = 6) {
-    const url = `${proxyUrl}?limit=${limit}&usage=1&status=1`;
-    
-    console.log('[AnnoncesWidget] URL Proxy:', url);
-
-    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    for (let attempt = 1; attempt <= REQUEST_CONFIG.maxRetries; attempt++) {
       try {
         const response = await withTimeout(
-          () => fetch(url, {
-            method: 'GET',
-            headers: { 'Accept': 'application/json' },
-            credentials: 'omit'
-          }),
-          defaultTimeout
+          () => fetch(requestUrl, { method: 'GET', headers: { Accept: 'application/json' }, credentials: 'omit' }),
+          REQUEST_CONFIG.timeoutMs
         );
-
-        console.log('[AnnoncesWidget] Response status:', response.status);
-
-        if (!response.ok) {
-          throw new Error(`API error: ${response.status}`);
-        }
-
+        debugLog('[AnnoncesWidget] Response status:', response.status);
+        if (!response.ok) throw new Error(`API error: ${response.status}`);
         const json = await response.json();
-        console.log('[AnnoncesWidget] Annonces recues:', json.ads?.length || 0);
-        
-        // Valide les donnees : filtre sans image et doublons d'images
-        const raw = Array.isArray(json.ads) ? json.ads : [];
-        const seenImages = new Set();
-        return raw.filter(ad => {
-          if (!ad || !ad.id) return false;
-          if (!ad.imageUrl || !ad.imageUrl.trim()) return false;
-          if (seenImages.has(ad.imageUrl)) return false;
-          seenImages.add(ad.imageUrl);
-          return true;
-        });
-        
+        debugLog('[AnnoncesWidget] Annonces recues:', json.ads?.length || 0);
+        return filterAds(Array.isArray(json.ads) ? json.ads : []);
       } catch (error) {
-        console.warn(`[AnnoncesWidget] Tentative ${attempt}/${maxRetries} echouee:`, error.message);
-        
-        if (attempt < maxRetries) {
-          await sleep(retryDelay * attempt);
-        } else {
-          console.error('[AnnoncesWidget] Toutes les tentatives echouees');
-          throw error;
+        console.warn(`[AnnoncesWidget] Tentative ${attempt}/${REQUEST_CONFIG.maxRetries} echouee:`, error.message);
+        if (attempt < REQUEST_CONFIG.maxRetries) {
+          await new Promise((resolve) => setTimeout(resolve, REQUEST_CONFIG.retryDelayMs * attempt));
+          continue;
         }
+        console.error('[AnnoncesWidget] Toutes les tentatives echouees');
+        throw error;
       }
     }
-    
+
     return [];
   }
 
-  /**
-   * Prefetch les annonces suivantes
-   */
-  async function prefetchAds(limit = 6) {
+  async function prefetchAds(limit = DEFAULT_FETCH_LIMIT_FROM_BUILD, usage = ADS_CLIENT_DEFAULT_USAGE) {
     try {
-      return await fetchAds(limit);
+      return await fetchAds(limit, usage);
     } catch (error) {
       console.warn('[AnnoncesWidget] Prefetch echoue:', error.message);
       return [];
     }
   }
 
-  return Object.freeze({
-    fetchAds,
-    prefetchAds
-  });
+  return Object.freeze({ fetchAds, prefetchAds });
 }

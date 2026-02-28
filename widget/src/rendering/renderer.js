@@ -1,299 +1,91 @@
-/**
- * Gestionnaire de rendu principal
- * Design compact type publicite
- * @module rendering/renderer
- */
-
 import { LAYOUTS } from '../core/constants.js';
 import { generateBaseStyles, generateGridStyles, generateListStyles, generateAdaptiveStyles } from './styles.js';
 import { generateCardStyles, generateListCardStyles } from './cardStyles.js';
 import { generateSkeletonStyles, createSkeletonCardHTML } from './skeletonStyles.js';
-import { renderGridLayout, updateGridLayout, calculateColumns } from './layoutGrid.js';
+import { renderGridLayout, updateGridLayout } from './layoutGrid.js';
 import { renderListLayout } from './layoutList.js';
 import { createGridSlider, generateGridSliderStyles } from './gridSlider.js';
 import { createElement } from '../utils/dom.js';
+import { createHeader } from './brandHeader.js';
+import { createFooterCtas } from './footerCtas.js';
+import { createFilterControl } from './filterControl.js';
 
-const IMMOASK_LOGO_URLS = [
-  'https://www.immoask.com/images/logo/immoask-logo-cropped.png',
-  'https://immoask.com/images/logo/immoask-logo-cropped.png'
-];
-
-/**
- * Cree le renderer principal
- * @param {ShadowRoot} shadowRoot - Shadow root du widget
- * @param {string} theme - Theme actif
- * @param {Object} siteColors - Couleurs du site hote (optionnel)
- * @param {Object} ctaConfig - Configuration des boutons CTA (optionnel)
- * @returns {Object} Renderer avec methodes
- */
-export function createRenderer(shadowRoot, theme, siteColors = null, ctaConfig = null) {
+export function createRenderer(shadowRoot, theme, siteColors = null, ctaConfig = null, filterConfig = null) {
   let currentLayout = null;
   let contentContainer = null;
   let activeSlider = null;
+  let filterControl = null;
+  let activeFilterUsage = Number.isFinite(Number(filterConfig?.selectedUsage)) ? Number(filterConfig.selectedUsage) : null;
 
-  /**
-   * Initialise les styles dans le shadow DOM
-   */
+  const getActiveUsage = () => activeFilterUsage;
+  const setActiveUsage = (usage) => { activeFilterUsage = Number(usage); };
+  const appendFooter = () => { const f = createFooterCtas(ctaConfig); if (f) contentContainer.appendChild(f); };
+  const destroySlider = () => { if (activeSlider) { activeSlider.destroy(); activeSlider = null; } };
+  const destroyFilter = () => { filterControl?.cleanup?.(); filterControl = null; };
+  const resetContent = () => { destroySlider(); destroyFilter(); contentContainer.innerHTML = ''; };
+
   function initStyles() {
     const style = createElement('style');
-    const styles = [
-      generateBaseStyles(theme),
-      generateCardStyles(),
-      generateListCardStyles(),
-      generateGridStyles(4),
-      generateListStyles(),
-      generateSkeletonStyles(),
-      generateGridSliderStyles()
-    ];
-    
-    if (siteColors) {
-      styles.push(generateAdaptiveStyles(siteColors));
-    }
-    
+    const styles = [generateBaseStyles(theme), generateCardStyles(), generateListCardStyles(), generateGridStyles(4), generateListStyles(), generateSkeletonStyles(), generateGridSliderStyles()];
+    if (siteColors) styles.push(generateAdaptiveStyles(siteColors));
     style.textContent = styles.join('\n');
     shadowRoot.appendChild(style);
-    
     contentContainer = createElement('div', { className: 'aw-container' });
-    
-    if (siteColors) {
-      shadowRoot.host.classList.add('aw-adaptive');
-    }
-    
+    if (siteColors) shadowRoot.host.classList.add('aw-adaptive');
     shadowRoot.appendChild(contentContainer);
   }
 
-  /**
-   * Cree l'en-tete discret du widget
-   */
-  function createHeader() {
-    const header = createElement('div', { className: 'aw-header' });
-    const label = createElement('span', { className: 'aw-header-label' }, 'Annonces');
-    const brand = createElement('span', { className: 'aw-header-brand', 'aria-label': 'ImmoAsk' });
-    let logoIndex = 0;
-    const logo = createElement('img', {
-      className: 'aw-header-brand-logo',
-      src: IMMOASK_LOGO_URLS[logoIndex],
-      alt: 'ImmoAsk',
-      loading: 'lazy',
-      decoding: 'async',
-      referrerpolicy: 'no-referrer'
+  function appendHeader() {
+    filterControl = createFilterControl({
+      shadowRoot,
+      filterConfig,
+      getActiveUsage,
+      setActiveUsage,
+      onFilterChange: (usage) => filterConfig?.onChange?.(usage)
     });
-    logo.addEventListener('error', () => {
-      logoIndex += 1;
-      if (logoIndex < IMMOASK_LOGO_URLS.length) {
-        logo.src = IMMOASK_LOGO_URLS[logoIndex];
-        return;
-      }
-      brand.textContent = 'ImmoAsk';
-    });
-
-    brand.appendChild(logo);
-    header.appendChild(label);
-    header.appendChild(brand);
-    return header;
+    contentContainer.appendChild(createHeader(filterControl?.element || null));
   }
 
-  function createCtaButton(label, url, variantClass = '') {
-    if (!url) return null;
-    const text = (label && String(label).trim()) ? String(label).trim() : 'Action';
-    return createElement('a', {
-      className: `aw-cta-btn ${variantClass}`.trim(),
-      href: url,
-      target: '_blank',
-      rel: 'noopener noreferrer',
-      'aria-label': text
-    }, text);
-  }
-
-  function createFooterCtas() {
-    const magazineUrl = ctaConfig?.magazineUrl || '';
-    const appUrl = ctaConfig?.appUrl || '';
-    if (!magazineUrl && !appUrl) return null;
-
-    const footer = createElement('div', {
-      className: 'aw-cta-row',
-      role: 'navigation',
-      'aria-label': 'Actions widget'
-    });
-
-    const magazineBtn = createCtaButton(
-      ctaConfig?.magazineLabel || 'Telecharger notre magazine',
-      magazineUrl,
-      'aw-cta-btn--magazine'
-    );
-    const appBtn = createCtaButton(
-      ctaConfig?.appLabel || 'Notre appli mobile',
-      appUrl,
-      'aw-cta-btn--app'
-    );
-
-    if (magazineBtn) footer.appendChild(magazineBtn);
-    if (appBtn) footer.appendChild(appBtn);
-
-    return footer.childElementCount > 0 ? footer : null;
-  }
-
-  function appendFooterCtas() {
-    const footer = createFooterCtas();
-    if (footer) contentContainer.appendChild(footer);
-  }
-
-  /**
-   * Affiche l'etat de chargement
-   * @param {number} count - Nombre de skeletons
-   * @param {string} layout - Layout a utiliser
-   */
   function showLoading(count, layout) {
-    destroySlider();
-    contentContainer.innerHTML = '';
-    contentContainer.appendChild(createHeader());
-    
-    const wrapper = createElement('div', { 
-      className: layout === LAYOUTS.LIST ? 'aw-list' : 'aw-grid' 
-    });
-    
-    const safeCount = Math.min(count, 4);
-    for (let i = 0; i < safeCount; i++) {
-      const skeleton = createElement('div');
-      skeleton.innerHTML = createSkeletonCardHTML();
-      wrapper.appendChild(skeleton.firstChild);
-    }
-    
+    resetContent();
+    appendHeader();
+    const wrapper = createElement('div', { className: layout === LAYOUTS.LIST ? 'aw-list' : 'aw-grid' });
+    for (let i = 0; i < Math.min(count, 4); i++) { const item = createElement('div'); item.innerHTML = createSkeletonCardHTML(); wrapper.appendChild(item.firstChild); }
     contentContainer.appendChild(wrapper);
-    appendFooterCtas();
+    appendFooter();
   }
 
-  /**
-   * Affiche un message d'erreur
-   * @param {string} message - Message d'erreur
-   */
   function showError(message) {
-    destroySlider();
-    contentContainer.innerHTML = '';
-    const error = createElement('div', { 
-      className: 'aw-error',
-      role: 'alert'
-    }, message);
-    contentContainer.appendChild(error);
-    appendFooterCtas();
+    resetContent();
+    appendHeader();
+    contentContainer.appendChild(createElement('div', { className: 'aw-error', role: 'alert' }, message));
+    appendFooter();
   }
 
-  /**
-   * Rend les annonces en grille fixe avec rotation en place
-   * @param {Object[]} ads - Toutes les annonces (pool complet)
-   * @param {Object} gridConfig - Configuration de grille {rows, cols}
-   * @param {Function} onAdClick - Handler de clic
-   * @param {Object} sliderOptions - Options de rotation
-   */
   function renderWithGrid(ads, gridConfig, onAdClick, sliderOptions = {}) {
-    destroySlider();
-    contentContainer.innerHTML = '';
-    contentContainer.appendChild(createHeader());
-
-    if (ads.length === 0) {
-      showError('Aucune annonce disponible');
-      return;
-    }
-
-    const slider = createGridSlider({
-      allAds: ads,
-      rows: gridConfig.rows,
-      cols: gridConfig.cols,
-      onAdClick,
-      interval: sliderOptions.interval || 5000,
-      autoSlide: sliderOptions.autoSlide !== false,
-      onRender: sliderOptions.onRender
-    });
-
-    contentContainer.appendChild(slider.element);
-    appendFooterCtas();
-    activeSlider = slider;
-
-    if (sliderOptions.autoSlide !== false) {
-      slider.startAutoPlay();
-    }
+    resetContent();
+    appendHeader();
+    if (!ads.length) return showError('Aucune annonce disponible');
+    activeSlider = createGridSlider({ allAds: ads, rows: gridConfig.rows, cols: gridConfig.cols, onAdClick, interval: sliderOptions.interval || 5000, autoSlide: sliderOptions.autoSlide !== false, onRender: sliderOptions.onRender });
+    contentContainer.appendChild(activeSlider.element);
+    appendFooter();
+    if (sliderOptions.autoSlide !== false) activeSlider.startAutoPlay();
   }
 
-  /**
-   * Rend les annonces (mode classique)
-   * @param {Object[]} ads - Annonces a afficher
-   * @param {string} layout - Layout a utiliser
-   * @param {number} containerWidth - Largeur du conteneur
-   * @param {Function} onAdClick - Handler de clic
-   */
   function render(ads, layout, containerWidth, onAdClick) {
-    destroySlider();
-    contentContainer.innerHTML = '';
+    resetContent();
     currentLayout = layout;
-
-    if (ads.length === 0) {
-      showError('Aucune annonce disponible');
-      return;
-    }
-
-    contentContainer.appendChild(createHeader());
-
-    let content;
-    switch (layout) {
-      case LAYOUTS.LIST:
-        content = renderListLayout(ads, onAdClick);
-        break;
-      case LAYOUTS.GRID:
-      case LAYOUTS.CARD:
-      default:
-        content = renderGridLayout(ads, containerWidth, onAdClick);
-        break;
-    }
-
+    if (!ads.length) return showError('Aucune annonce disponible');
+    appendHeader();
+    const content = layout === LAYOUTS.LIST ? renderListLayout(ads, onAdClick) : renderGridLayout(ads, containerWidth, onAdClick);
     contentContainer.appendChild(content);
-    appendFooterCtas();
+    appendFooter();
   }
 
-  /**
-   * Met a jour le layout responsive
-   * @param {number} containerWidth - Nouvelle largeur
-   */
-  function updateResponsive(containerWidth) {
-    if (currentLayout === LAYOUTS.GRID) {
-      const grid = contentContainer.querySelector('.aw-grid');
-      if (grid) updateGridLayout(grid, containerWidth);
-    }
-  }
+  function updateResponsive(containerWidth) { if (currentLayout === LAYOUTS.GRID) { const grid = contentContainer.querySelector('.aw-grid'); if (grid) updateGridLayout(grid, containerWidth); } }
+  function updateTheme(newTheme) { const style = shadowRoot.querySelector('style'); if (style) style.textContent = style.textContent.replace(/(:host\s*\{[^}]*)/, generateBaseStyles(newTheme).match(/(:host\s*\{[^}]*)/)[1]); }
+  function setActiveFilter(usage) { setActiveUsage(usage); filterControl?.sync?.(); }
+  function destroy() { resetContent(); }
 
-  /**
-   * Detruit le slider actif
-   */
-  function destroySlider() {
-    if (activeSlider) {
-      activeSlider.destroy();
-      activeSlider = null;
-    }
-  }
-
-  /**
-   * Met a jour le theme
-   * @param {string} newTheme - Nouveau theme
-   */
-  function updateTheme(newTheme) {
-    const style = shadowRoot.querySelector('style');
-    if (style) {
-      style.textContent = style.textContent.replace(
-        /(:host\s*\{[^}]*)/,
-        generateBaseStyles(newTheme).match(/(:host\s*\{[^}]*)/)[1]
-      );
-    }
-  }
-
-  return Object.freeze({
-    initStyles,
-    showLoading,
-    showError,
-    render,
-    renderWithGrid,
-    updateResponsive,
-    updateTheme,
-    destroySlider,
-    get container() { return contentContainer; },
-    get slider() { return activeSlider; }
-  });
+  return Object.freeze({ initStyles, showLoading, showError, render, renderWithGrid, updateResponsive, updateTheme, setActiveFilter, destroy, destroySlider, get container() { return contentContainer; }, get slider() { return activeSlider; } });
 }

@@ -5,15 +5,14 @@
 
 import { escapeHtml } from '../utils/dom.js';
 
-/**
- * Liste des balises autorisees
- */
-const ALLOWED_TAGS = ['b', 'i', 'em', 'strong', 'span', 'br'];
-
-/**
- * Liste des attributs autorises
- */
-const ALLOWED_ATTRS = ['class', 'id'];
+function isSafeHttpHost(hostname) {
+  const host = String(hostname || '').trim().toLowerCase();
+  if (!host) return false;
+  if (host === '&' || host === '...') return false;
+  if (host.includes('&')) return false;
+  if (!/[a-z0-9]/i.test(host)) return false;
+  return /^[a-z0-9.-]+$/i.test(host);
+}
 
 /**
  * Sanitize une chaine pour affichage HTML
@@ -36,6 +35,7 @@ export function sanitizeUrl(url) {
   if (typeof url !== 'string') return null;
   
   const trimmed = url.trim();
+  if (!trimmed) return null;
   
   // Bloque les protocoles dangereux
   const dangerousProtocols = [
@@ -57,6 +57,9 @@ export function sanitizeUrl(url) {
     const parsed = new URL(trimmed, window.location.origin);
     // Accepte uniquement http et https
     if (!['http:', 'https:'].includes(parsed.protocol)) {
+      return null;
+    }
+    if (!isSafeHttpHost(parsed.hostname)) {
       return null;
     }
     return parsed.href;
