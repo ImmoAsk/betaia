@@ -1,6 +1,6 @@
 /**
  * ImmoAsk Widget v1.0.0
- * Bundle genere le 2026-03-13T11:31:53.598Z
+ * Bundle genere le 2026-03-13T11:37:48.420Z
  * 
  * INTEGRATION MULTI-INSTANCE :
  * <div data-immoask></div>
