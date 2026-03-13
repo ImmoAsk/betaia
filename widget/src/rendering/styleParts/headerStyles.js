@@ -5,7 +5,7 @@ export function headerStyles() {
       justify-content: space-between;
       align-items: center;
       gap: 6px;
-      padding: 3px 6px;
+      padding: 4px 6px;
       font-size: 8px;
       color: var(--aw-text-muted);
       border-bottom: 1px solid var(--aw-border);
@@ -16,6 +16,7 @@ export function headerStyles() {
       flex: 1 1 auto;
       display: flex;
       align-items: center;
+      overflow: hidden;
     }
 
     .aw-header-label {
@@ -40,7 +41,7 @@ export function headerStyles() {
       display: block;
       height: 14px;
       width: auto;
-      max-width: 96px;
+      max-width: 84px;
       object-fit: contain;
     }
   `;

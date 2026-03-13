@@ -32,16 +32,15 @@ export function createElement(tag, attrs = {}, children = null) {
   const el = document.createElement(tag);
   
   Object.entries(attrs).forEach(([key, value]) => {
+    if (value == null || key.startsWith('on')) return;
     if (key === 'className') {
       el.className = value;
     } else if (key === 'style' && typeof value === 'object') {
       Object.assign(el.style, value);
-    } else if (key.startsWith('data-')) {
-      el.setAttribute(key, escapeHtml(String(value)));
     } else if (key === 'textContent') {
       el.textContent = value;
     } else {
-      el.setAttribute(key, escapeHtml(String(value)));
+      el.setAttribute(key, String(value));
     }
   });
 

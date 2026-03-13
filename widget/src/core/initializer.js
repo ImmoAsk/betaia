@@ -42,15 +42,19 @@ const DEFAULT_APP_IOS_URL =
 const DEFAULT_MAGAZINE_LABEL =
   (typeof __AW_MAGAZINE_LABEL__ !== 'undefined' && __AW_MAGAZINE_LABEL__)
     ? String(__AW_MAGAZINE_LABEL__)
-    : 'Telecharger notre magazine';
+    : 'Télécharger notre magazine';
+const DEFAULT_MAGAZINE_DOWNLOAD_NAME =
+  (typeof __AW_MAGAZINE_DOWNLOAD_NAME__ !== 'undefined' && __AW_MAGAZINE_DOWNLOAD_NAME__)
+    ? String(__AW_MAGAZINE_DOWNLOAD_NAME__)
+    : 'magazine.pdf';
 const DEFAULT_APP_LABEL =
   (typeof __AW_APP_LABEL__ !== 'undefined' && __AW_APP_LABEL__)
     ? String(__AW_APP_LABEL__)
     : 'Notre appli mobile';
 const USAGE_FILTERS = Object.freeze([
-  { key: 'sejourner', label: 'Sejourner', usage: 5 },
+  { key: 'sejourner', label: 'Séjourner', usage: 5 },
   { key: 'entreprendre', label: 'Entreprendre', usage: 3 },
-  { key: 'acquerir', label: 'Acquerir', usage: 7 },
+  { key: 'acquerir', label: 'Acquérir', usage: 7 },
   { key: 'se_loger', label: 'Se loger', usage: 1 }
 ]);
 const INITIALIZER_DEFAULT_USAGE = 1;
@@ -141,6 +145,9 @@ export async function initializeWidgetInstance(container) {
     theme,
     store.getState().siteColors,
     ctaConfig,
+    {
+      isVertical: Boolean(gridConfig && gridConfig.cols === 1 && gridConfig.rows > 1)
+    },
     {
       filters: USAGE_FILTERS,
       selectedUsage: currentUsage,
@@ -482,9 +489,18 @@ function isSafeHttpUrl(parsedUrl) {
 }
 
 function detectMobilePlatform() {
-  const ua = String(navigator.userAgent || '');
-  if (/android/i.test(ua)) return 'android';
-  if (/iphone|ipad|ipod/i.test(ua)) return 'ios';
+  const uaData = navigator.userAgentData;
+  const uaDataPlatform = String(uaData?.platform || '').toLowerCase();
+  const ua = String(navigator.userAgent || '').toLowerCase();
+  const maxTouchPoints = Number(navigator.maxTouchPoints || 0);
+
+  if (/android/.test(uaDataPlatform) || /android/.test(ua)) return 'android';
+
+  const isIosUaData = /ios|iphone|ipad|ipod/.test(uaDataPlatform);
+  const isIosUa = /iphone|ipad|ipod/.test(ua);
+  const isIpadDesktopMode = /macintosh/.test(ua) && maxTouchPoints > 1;
+  if (isIosUaData || isIosUa || isIpadDesktopMode) return 'ios';
+
   return 'other';
 }
 
@@ -494,16 +510,17 @@ function resolveAppCtaUrl() {
   const ios = toSafeExternalUrl(DEFAULT_APP_IOS_URL);
   const platform = detectMobilePlatform();
 
-  if (platform === 'android' && android) return android;
-  if (platform === 'ios' && ios) return ios;
+  if (platform === 'android') return android || generic || ios || '';
+  if (platform === 'ios') return ios || generic || android || '';
   return generic || android || ios || '';
 }
 
 function buildCtaConfig() {
   return Object.freeze({
     magazineUrl: toSafeExternalUrl(DEFAULT_MAGAZINE_URL),
+    magazineDownloadName: String(DEFAULT_MAGAZINE_DOWNLOAD_NAME || 'magazine.pdf'),
     appUrl: resolveAppCtaUrl(),
-    magazineLabel: String(DEFAULT_MAGAZINE_LABEL || 'Telecharger notre magazine'),
+    magazineLabel: String(DEFAULT_MAGAZINE_LABEL || 'Télécharger notre magazine'),
     appLabel: String(DEFAULT_APP_LABEL || 'Notre appli mobile')
   });
 }

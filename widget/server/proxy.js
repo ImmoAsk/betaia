@@ -16,15 +16,33 @@ const IMAGE_BASE = process.env.IMAGE_BASE_URL;
 const IMMOASK_URL = process.env.IMMOASK_URL || 'https://www.immoask.com';
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 1000;
-const IMAGE_CHECK_TIMEOUT = 5000;
-const IMAGE_STATUS_CACHE_TTL_MS = 15 * 60 * 1000;
-const MAX_VISUALS_TO_CHECK_PER_PROPERTY = 5;
-const imageStatusCache = new Map();
+const ADS_RESPONSE_CACHE_TTL_MS = 30 * 1000;
+const MIN_FETCH_POOL_SIZE = 24;
+const MAX_FETCH_POOL_SIZE = 90;
+const DEFAULT_PREWARM_LIMIT = 20;
+const DEFAULT_PREWARM_INTERVAL_MS = 20 * 1000;
+const PREWARM_USAGE_VALUES = Object.freeze([1, 3, 5, 7]);
+const PREWARM_INTERVAL_MS = sanitizePositiveInt(
+  process.env.PROXY_PREWARM_INTERVAL_MS,
+  DEFAULT_PREWARM_INTERVAL_MS
+);
+const adsResponseCache = new Map();
+const inFlightAdsRequests = new Map();
+let prewarmIntervalHandle = null;
+let prewarmInFlight = false;
 
 if (!API_BASE || !IMAGE_BASE) {
   console.error('[Proxy] ERREUR: Variables API_BASE_URL et IMAGE_BASE_URL requises dans .env');
   process.exit(1);
 }
+
+process.stdout.on('error', (error) => {
+  if (error?.code !== 'EPIPE') throw error;
+});
+
+process.stderr.on('error', (error) => {
+  if (error?.code !== 'EPIPE') throw error;
+});
 
 /**
  * Pause pour retry
@@ -94,68 +112,78 @@ function buildImageUrl(uri) {
   return `${base}/${normalizedUri}`;
 }
 
-function getCachedImageStatus(imageUrl) {
-  const cached = imageStatusCache.get(imageUrl);
+function pickBestImageUrl(visuels) {
+  if (!Array.isArray(visuels) || visuels.length === 0) return '';
+  const candidate = visuels.map((visual) => visual?.uri).find(isValidImageUri);
+  return candidate ? buildImageUrl(candidate) : '';
+}
+
+function sanitizeRequestLimit(value) {
+  const parsed = parseInt(value, 10);
+  if (!Number.isFinite(parsed)) return 6;
+  return Math.min(Math.max(parsed, 1), 30);
+}
+
+function sanitizePositiveInt(value, fallback) {
+  const parsed = parseInt(value, 10);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+}
+
+function sanitizeNumericParam(value, fallback) {
+  const parsed = parseInt(value, 10);
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
+
+function buildAdsCacheKey(usage, status) {
+  return `${sanitizeNumericParam(usage, 1)}:${sanitizeNumericParam(status, 1)}`;
+}
+
+function computeFetchPoolSize(requestedLimit) {
+  return Math.min(Math.max(requestedLimit * 3, MIN_FETCH_POOL_SIZE), MAX_FETCH_POOL_SIZE);
+}
+
+function getCachedAdsPool(key, requestedLimit) {
+  const cached = adsResponseCache.get(key);
   if (!cached) return null;
-  if (Date.now() - cached.ts > IMAGE_STATUS_CACHE_TTL_MS) {
-    imageStatusCache.delete(imageUrl);
+  if (Date.now() - cached.ts > ADS_RESPONSE_CACHE_TTL_MS) {
+    adsResponseCache.delete(key);
     return null;
   }
-  return cached.ok;
+  if (cached.ads.length < requestedLimit) return null;
+  return cached.ads;
 }
 
-function setCachedImageStatus(imageUrl, ok) {
-  imageStatusCache.set(imageUrl, { ok, ts: Date.now() });
+function setCachedAdsPool(key, ads, fetchLimit) {
+  adsResponseCache.set(key, { ads, fetchLimit, ts: Date.now() });
 }
 
-function checkImageReachable(imageUrl, timeout = IMAGE_CHECK_TIMEOUT) {
-  return new Promise((resolve) => {
-    const parsed = url.parse(imageUrl);
-    const client = parsed.protocol === 'https:' ? https : http;
-
-    const req = client.request(imageUrl, {
-      method: 'HEAD',
-      timeout,
-      headers: {
-        'User-Agent': 'immoask-widget-proxy/1.0',
-        'Accept': 'image/avif,image/webp,image/apng,image/*,*/*;q=0.8'
-      }
-    }, (resp) => {
-      const status = Number(resp.statusCode || 0);
-      resp.resume();
-      resolve(status >= 200 && status < 400);
-    });
-
-    req.on('error', () => resolve(false));
-    req.on('timeout', () => {
-      req.destroy();
-      resolve(false);
-    });
-    req.end();
-  });
+async function getAdsPoolWithCache(requestedLimit, usage, status, loader) {
+  const cacheKey = buildAdsCacheKey(usage, status);
+  const fetchPoolSize = computeFetchPoolSize(requestedLimit);
+  const cachedAds = getCachedAdsPool(cacheKey, requestedLimit);
+  if (cachedAds) return cachedAds;
+  return loadAndCacheAdsPool(cacheKey, fetchPoolSize, loader);
 }
 
-async function resolveBestImageUrl(visuels) {
-  if (!Array.isArray(visuels) || visuels.length === 0) return '';
-
-  const candidates = visuels
-    .map(v => v?.uri)
-    .filter(isValidImageUri)
-    .slice(0, MAX_VISUALS_TO_CHECK_PER_PROPERTY)
-    .map(buildImageUrl)
-    .filter(Boolean);
-
-  for (const imageUrl of candidates) {
-    const cached = getCachedImageStatus(imageUrl);
-    if (cached === true) return imageUrl;
-    if (cached === false) continue;
-
-    const ok = await checkImageReachable(imageUrl);
-    setCachedImageStatus(imageUrl, ok);
-    if (ok) return imageUrl;
+function loadAndCacheAdsPool(cacheKey, fetchPoolSize, loader) {
+  const activeRequest = inFlightAdsRequests.get(cacheKey);
+  if (activeRequest && activeRequest.fetchLimit >= fetchPoolSize) {
+    return activeRequest.promise;
   }
 
-  return '';
+  const loadPromise = loader(fetchPoolSize)
+    .then((ads) => {
+      setCachedAdsPool(cacheKey, ads, fetchPoolSize);
+      return ads;
+    })
+    .finally(() => {
+      if (inFlightAdsRequests.get(cacheKey)?.promise === loadPromise) {
+        inFlightAdsRequests.delete(cacheKey);
+      }
+    });
+
+  inFlightAdsRequests.set(cacheKey, { fetchLimit: fetchPoolSize, promise: loadPromise });
+  return loadPromise;
 }
 
 /**
@@ -256,6 +284,89 @@ function extractBadgeLabel(p) {
   return '';
 }
 
+function buildAdFromProperty(property) {
+  return {
+    id: property.nuo,
+    title: buildPropertyDisplayTitle(property),
+    description: buildDesc(property),
+    price: property.cout_mensuel || property.cout_vente || 0,
+    currency: 'XOF',
+    imageUrl: pickBestImageUrl(property.visuels),
+    linkUrl: getPropertyFullUrl(property),
+    location: [property.quartier?.denomination, property.ville?.denomination].filter(Boolean).join(', '),
+    category: buildUsageLabel(property.usage),
+    propertyType: property.categorie_propriete?.denomination || '',
+    offer: property.offre?.denomination || '',
+    surface: toSafeInt(property.surface, 0),
+    rooms: toSafeInt(property.piece, 0),
+    bathrooms: toSafeInt(property.wc_douche_interne, 0),
+    garage: toSafeInt(property.garage, 0),
+    badgeLabel: extractBadgeLabel(property)
+  };
+}
+
+async function loadAdsPoolFromApi(fetchLimit, usage, status) {
+  const graphQuery = buildPropertiesQuery(fetchLimit, usage, status);
+  const apiUrl = `${API_BASE}?query=${encodeURIComponent(graphQuery)}`;
+  console.log('[Proxy] Fetching:', apiUrl.substring(0, 100) + '...');
+
+  const response = await fetchWithRetry(apiUrl);
+  console.log('[Proxy] API Status:', response.status);
+  if (response.status !== 200) {
+    throw new Error(`API error: ${response.status}`);
+  }
+
+  const json = JSON.parse(response.data);
+  const properties = Array.isArray(json.data?.getPropertiesByKeyWords)
+    ? json.data.getPropertiesByKeyWords
+    : [];
+  const seenIds = new Set();
+  const normalizedAds = properties
+    .map(buildAdFromProperty)
+    .filter((ad) => {
+      if (!ad?.id || seenIds.has(ad.id)) return false;
+      seenIds.add(ad.id);
+      return true;
+    });
+
+  console.log('[Proxy] Pool annonces:', normalizedAds.length, '/', properties.length, 'brutes');
+  return normalizedAds;
+}
+
+async function prewarmAdsPools() {
+  if (prewarmInFlight) return;
+  prewarmInFlight = true;
+  const tasks = PREWARM_USAGE_VALUES.map(async (usage) => {
+    try {
+      const cacheKey = buildAdsCacheKey(usage, 1);
+      const fetchPoolSize = computeFetchPoolSize(DEFAULT_PREWARM_LIMIT);
+      await loadAndCacheAdsPool(
+        cacheKey,
+        fetchPoolSize,
+        (nextFetchLimit) => loadAdsPoolFromApi(nextFetchLimit, usage, 1)
+      );
+      console.log(`[Proxy] Cache prechauffe pour usage=${usage}`);
+    } catch (error) {
+      console.warn(`[Proxy] Echec prechauffage usage=${usage}:`, error.message);
+    }
+  });
+  await Promise.allSettled(tasks);
+  prewarmInFlight = false;
+}
+
+function schedulePrewarm() {
+  if (PREWARM_INTERVAL_MS <= 0) return;
+  prewarmIntervalHandle = setInterval(() => {
+    prewarmAdsPools().catch((error) => {
+      console.warn('[Proxy] Echec cycle prechauffage:', error.message);
+    });
+  }, PREWARM_INTERVAL_MS);
+  if (typeof prewarmIntervalHandle?.unref === 'function') {
+    prewarmIntervalHandle.unref();
+  }
+  console.log(`[Proxy] Prechauffage periodique actif: ${PREWARM_INTERVAL_MS} ms`);
+}
+
 /**
  * Handler principal
  */
@@ -305,13 +416,12 @@ function shuffleArray(arr) {
 }
 
 /**
- * Construit la query GraphQL des proprietes
- * On peut inclure/exclure `pays` pour contourner un bug backend
- * (certains enregistrements ont pays=null alors que le schema le declare non-null).
+ * Construit la query GraphQL des proprietes.
+ * Le champ `pays` est volontairement omis car l'API upstream renvoie
+ * regulierement une erreur GraphQL quand il est null, ce qui doublait
+ * le temps de chargement a froid.
  */
-function buildPropertiesQuery(fetchLimit, usage, status, includeCountry = true) {
-  const countryFields = includeCountry ? '\n        pays { code },' : '';
-
+function buildPropertiesQuery(fetchLimit, usage, status) {
   return `{
       getPropertiesByKeyWords(
         orderBy:{column:NUO,order:DESC},
@@ -324,95 +434,27 @@ function buildPropertiesQuery(fetchLimit, usage, status, includeCountry = true) 
         badge_propriete { badge { badge_name } },
         quartier { denomination, minus_denomination },
         ville { denomination },
-        offre { denomination },${countryFields}
+        offre { denomination },
         categorie_propriete { denomination }
       }
     }`;
 }
 
-function hasPaysNonNullableError(graphqlJson) {
-  if (!Array.isArray(graphqlJson?.errors)) return false;
-  return graphqlJson.errors.some(err =>
-    String(err?.debugMessage || err?.message || '').includes('Propriete.pays')
-  );
-}
-
 async function handleAds(query, res) {
   try {
-    const { limit = 6, usage = 1, status = 1 } = query;
-    const requestedLimit = parseInt(limit);
-    // Fetcher plus pour avoir de la marge apres filtrage
-    const fetchLimit = Math.min(requestedLimit * 3, 90);
+    const requestedLimit = sanitizeRequestLimit(query.limit);
+    const usage = sanitizeNumericParam(query.usage, 1);
+    const status = sanitizeNumericParam(query.status, 1);
+    const adsPool = await getAdsPoolWithCache(
+      requestedLimit,
+      usage,
+      status,
+      (fetchLimit) => loadAdsPoolFromApi(fetchLimit, usage, status)
+    );
+    const shuffled = shuffleArray(adsPool).slice(0, requestedLimit);
+    console.log('[Proxy] Annonces servies:', shuffled.length, '/', adsPool.length, 'en cache/pool');
 
-    let graphQuery = buildPropertiesQuery(fetchLimit, usage, status, true);
-    let apiUrl = `${API_BASE}?query=${encodeURIComponent(graphQuery)}`;
-    console.log('[Proxy] Fetching:', apiUrl.substring(0, 100) + '...');
-
-    let response = await fetchWithRetry(apiUrl);
-    console.log('[Proxy] API Status:', response.status);
-
-    if (response.status !== 200) {
-      throw new Error(`API error: ${response.status}`);
-    }
-
-    let json = JSON.parse(response.data);
-
-    // Fallback: certains environnements cassent si `pays` est null sur un enregistrement
-    if (hasPaysNonNullableError(json)) {
-      console.warn('[Proxy] Fallback query sans `pays` (champ backend non-nullable casse sur valeurs nulles)');
-      graphQuery = buildPropertiesQuery(fetchLimit, usage, status, false);
-      apiUrl = `${API_BASE}?query=${encodeURIComponent(graphQuery)}`;
-      response = await fetchWithRetry(apiUrl);
-
-      if (response.status !== 200) {
-        throw new Error(`API error (fallback): ${response.status}`);
-      }
-
-      json = JSON.parse(response.data);
-    }
-
-    const properties = json.data?.getPropertiesByKeyWords || [];
-
-    // Normalise pour le widget avec validation images
-    const seenImages = new Set();
-    const ads = [];
-
-    for (const p of properties) {
-      // Cherche une image a la fois valide ET accessible
-      const imageUrl = await resolveBestImageUrl(p.visuels);
-
-      // Exclure les annonces sans image
-      if (!imageUrl) continue;
-
-      // Exclure les doublons d'images
-      if (seenImages.has(imageUrl)) continue;
-      seenImages.add(imageUrl);
-
-      ads.push({
-        id: p.nuo,
-        title: buildPropertyDisplayTitle(p),
-        description: buildDesc(p),
-        price: p.cout_mensuel || p.cout_vente || 0,
-        currency: 'XOF',
-        imageUrl,
-        linkUrl: getPropertyFullUrl(p),
-        location: [p.quartier?.denomination, p.ville?.denomination].filter(Boolean).join(', '),
-        category: buildUsageLabel(p.usage),
-        propertyType: p.categorie_propriete?.denomination || '',
-        offer: p.offre?.denomination || '',
-        surface: toSafeInt(p.surface, 0),
-        rooms: toSafeInt(p.piece, 0),
-        bathrooms: toSafeInt(p.wc_douche_interne, 0),
-        garage: toSafeInt(p.garage, 0),
-        badgeLabel: extractBadgeLabel(p)
-      });
-    }
-
-    // Melange aleatoire pour varier a chaque chargement
-    const shuffled = shuffleArray(ads).slice(0, requestedLimit);
-
-    console.log('[Proxy] Annonces traitees:', shuffled.length, '/', properties.length, 'brutes');
-
+    res.setHeader('Cache-Control', 'public, max-age=15, stale-while-revalidate=30');
     res.writeHead(200);
     res.end(JSON.stringify({ ads: shuffled, count: shuffled.length, redirectBase: IMMOASK_URL }));
 
@@ -435,4 +477,8 @@ const server = http.createServer(handleRequest);
 server.listen(PORT, () => {
   console.log(`[Widget Proxy] Running on http://localhost:${PORT}`);
   console.log(`[Widget Proxy] Ads endpoint: http://localhost:${PORT}/api/ads`);
+  prewarmAdsPools().catch((error) => {
+    console.warn('[Proxy] Echec prechauffage initial:', error.message);
+  });
+  schedulePrewarm();
 });

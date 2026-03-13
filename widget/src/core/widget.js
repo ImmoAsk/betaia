@@ -28,10 +28,8 @@ function bootstrap() {
  */
 async function init() {
   try {
-    // Cherche tous les conteneurs data-immoask
     const containers = document.querySelectorAll(WIDGET_SELECTOR);
-    
-    // Fallback sur l'ancien id si aucun data-immoask
+
     if (containers.length === 0) {
       const legacy = document.getElementById(DEFAULT_CONTAINER_ID);
       if (legacy) {
@@ -43,19 +41,20 @@ async function init() {
     }
 
     console.log(`[ImmoAsk] ${containers.length} instance(s) detectee(s)`);
-    
-    // Initialise chaque instance
-    const instances = [];
-    for (const container of containers) {
-      try {
-        const services = await initializeWidgetInstance(container);
-        instances.push(services);
-      } catch (err) {
-        console.error('[ImmoAsk] Erreur instance:', err.message);
-      }
-    }
 
-    // Expose l'API avec la premiere instance
+    const results = await Promise.allSettled(
+      Array.from(containers, (container) => initializeWidgetInstance(container))
+    );
+    const instances = results
+      .filter((result) => result.status === 'fulfilled')
+      .map((result) => result.value);
+
+    results
+      .filter((result) => result.status === 'rejected')
+      .forEach((result) => {
+        console.error('[ImmoAsk] Erreur instance:', result.reason?.message || result.reason);
+      });
+
     if (instances.length > 0) {
       const api = createPublicApi(instances[0]);
       api.instances = instances;

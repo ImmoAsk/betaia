@@ -12,6 +12,7 @@ const isDev = process.argv.includes('--dev');
 const srcDir = path.join(__dirname, '..', 'src');
 const distDir = path.join(__dirname, '..', 'dist');
 const envPath = path.join(__dirname, '..', '.env');
+const assetsDir = path.join(__dirname, '..', 'assets');
 
 function parsePositiveInt(value) {
   const n = parseInt(value, 10);
@@ -34,6 +35,7 @@ function getBuildDefaults() {
   let widgetAppAndroidUrl = null;
   let widgetAppIosUrl = null;
   let widgetMagazineLabel = null;
+  let widgetMagazineDownloadName = null;
   let widgetAppLabel = null;
 
   try {
@@ -48,6 +50,7 @@ function getBuildDefaults() {
       widgetAppAndroidUrl = parseNonEmptyString(parsed.WIDGET_APP_ANDROID_URL);
       widgetAppIosUrl = parseNonEmptyString(parsed.WIDGET_APP_IOS_URL);
       widgetMagazineLabel = parseNonEmptyString(parsed.WIDGET_MAGAZINE_LABEL);
+      widgetMagazineDownloadName = parseNonEmptyString(parsed.WIDGET_MAGAZINE_DOWNLOAD_NAME);
       widgetAppLabel = parseNonEmptyString(parsed.WIDGET_APP_LABEL);
     }
   } catch (e) {
@@ -64,6 +67,7 @@ function getBuildDefaults() {
     widgetAppAndroidUrl,
     widgetAppIosUrl,
     widgetMagazineLabel,
+    widgetMagazineDownloadName,
     widgetAppLabel
   };
 }
@@ -133,6 +137,19 @@ function processModule(modulePath) {
   return `// === ${modulePath} ===\n${content}\n`;
 }
 
+function copyStaticAssets() {
+  if (!fs.existsSync(assetsDir)) return;
+  const entries = fs.readdirSync(assetsDir, { withFileTypes: true });
+  entries
+    .filter((entry) => entry.isFile())
+    .forEach((entry) => {
+      const sourcePath = path.join(assetsDir, entry.name);
+      const targetPath = path.join(distDir, entry.name);
+      fs.copyFileSync(sourcePath, targetPath);
+      console.log(`[Build] Asset copie: ${entry.name}`);
+    });
+}
+
 /**
  * Build principal
  */
@@ -178,6 +195,7 @@ async function build() {
   bundle += `const __AW_APP_ANDROID_URL__ = ${toJsString(buildDefaults.widgetAppAndroidUrl)};\n`;
   bundle += `const __AW_APP_IOS_URL__ = ${toJsString(buildDefaults.widgetAppIosUrl)};\n`;
   bundle += `const __AW_MAGAZINE_LABEL__ = ${toJsString(buildDefaults.widgetMagazineLabel)};\n`;
+  bundle += `const __AW_MAGAZINE_DOWNLOAD_NAME__ = ${toJsString(buildDefaults.widgetMagazineDownloadName)};\n`;
   bundle += `const __AW_APP_LABEL__ = ${toJsString(buildDefaults.widgetAppLabel)};\n\n`;
   
   for (const modulePath of moduleOrder) {
@@ -225,6 +243,7 @@ async function build() {
   // Ecrit le bundle
   const outputPath = path.join(distDir, 'widget.js');
   fs.writeFileSync(outputPath, bundle);
+  copyStaticAssets();
   
   const stats = fs.statSync(outputPath);
   console.log(`[Build] Bundle cree: ${outputPath}`);
