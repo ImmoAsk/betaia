@@ -373,7 +373,8 @@ module.exports = async (req, res) => {
   }
 
   const parsed = url.parse(req.url || '', true);
-  if (parsed.pathname !== '/api/ads') {
+  const pathname = (parsed.pathname || '/').replace(/\/+$/, '');
+  if (pathname !== '' && pathname !== '/' && pathname !== '/api/ads') {
     res.statusCode = 404;
     res.end(JSON.stringify({ error: 'Not found', ads: [] }));
     return;

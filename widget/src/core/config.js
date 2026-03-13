@@ -10,6 +10,10 @@ const DEFAULT_MAX_ADS_FROM_BUILD =
   (typeof __AW_DEFAULT_MAX_ADS__ !== 'undefined') ? __AW_DEFAULT_MAX_ADS__ : null;
 const DEFAULT_SLIDE_INTERVAL_FROM_BUILD =
   (typeof __AW_DEFAULT_SLIDE_INTERVAL_MS__ !== 'undefined') ? __AW_DEFAULT_SLIDE_INTERVAL_MS__ : null;
+const DEFAULT_WIDGET_API_BASE_URL =
+  (typeof __AW_WIDGET_API_BASE_URL__ !== 'undefined' && String(__AW_WIDGET_API_BASE_URL__).trim())
+    ? String(__AW_WIDGET_API_BASE_URL__).trim()
+    : null;
 
 /**
  * Configuration par defaut du widget
@@ -20,7 +24,7 @@ const defaultConfig = {
   layout: LAYOUTS.AUTO,
   adaptColors: true,
   containerId: DEFAULT_CONTAINER_ID,
-  apiUrl: null,
+  apiUrl: DEFAULT_WIDGET_API_BASE_URL,
   debug: false,
   width: null,
   height: null,

@@ -37,6 +37,7 @@ function getBuildDefaults() {
   let widgetMagazineLabel = null;
   let widgetMagazineDownloadName = null;
   let widgetAppLabel = null;
+  let widgetApiBaseUrl = null;
 
   try {
     if (fs.existsSync(envPath)) {
@@ -52,6 +53,7 @@ function getBuildDefaults() {
       widgetMagazineLabel = parseNonEmptyString(parsed.WIDGET_MAGAZINE_LABEL);
       widgetMagazineDownloadName = parseNonEmptyString(parsed.WIDGET_MAGAZINE_DOWNLOAD_NAME);
       widgetAppLabel = parseNonEmptyString(parsed.WIDGET_APP_LABEL);
+      widgetApiBaseUrl = parseNonEmptyString(parsed.WIDGET_API_BASE_URL);
     }
   } catch (e) {
     console.warn('[Build] Impossible de lire .env pour les defaults widget:', e.message);
@@ -68,7 +70,8 @@ function getBuildDefaults() {
     widgetAppIosUrl,
     widgetMagazineLabel,
     widgetMagazineDownloadName,
-    widgetAppLabel
+    widgetAppLabel,
+    widgetApiBaseUrl
   };
 }
 
@@ -196,7 +199,8 @@ async function build() {
   bundle += `const __AW_APP_IOS_URL__ = ${toJsString(buildDefaults.widgetAppIosUrl)};\n`;
   bundle += `const __AW_MAGAZINE_LABEL__ = ${toJsString(buildDefaults.widgetMagazineLabel)};\n`;
   bundle += `const __AW_MAGAZINE_DOWNLOAD_NAME__ = ${toJsString(buildDefaults.widgetMagazineDownloadName)};\n`;
-  bundle += `const __AW_APP_LABEL__ = ${toJsString(buildDefaults.widgetAppLabel)};\n\n`;
+  bundle += `const __AW_APP_LABEL__ = ${toJsString(buildDefaults.widgetAppLabel)};\n`;
+  bundle += `const __AW_WIDGET_API_BASE_URL__ = ${toJsString(buildDefaults.widgetApiBaseUrl)};\n\n`;
   
   for (const modulePath of moduleOrder) {
     try {

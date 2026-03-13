@@ -9,6 +9,14 @@ function writeCorsHeaders(res) {
 
 module.exports = (req, res) => {
   writeCorsHeaders(res);
+  const parsed = new URL(req.url || '/', `http://${req.headers.host || 'localhost'}`);
+  const pathname = (parsed.pathname || '/').replace(/\/+$/, '');
+
+  if (pathname !== '' && pathname !== '/' && pathname !== '/api/health') {
+    res.statusCode = 404;
+    res.end(JSON.stringify({ error: 'Not found' }));
+    return;
+  }
 
   if (req.method === 'OPTIONS') {
     res.statusCode = 200;
