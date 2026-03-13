@@ -25,6 +25,10 @@ function parseNonEmptyString(value) {
   return s ? s : null;
 }
 
+function getEnvValueFromBuildEnvironment(envObj, key) {
+  return parseNonEmptyString(envObj[key]);
+}
+
 function getBuildDefaults() {
   let widgetDefaultMaxAds = null;
   let widgetDefaultSlideIntervalMs = null;
@@ -38,26 +42,41 @@ function getBuildDefaults() {
   let widgetMagazineDownloadName = null;
   let widgetAppLabel = null;
   let widgetApiBaseUrl = null;
+  const envFromProcess = process.env || {};
+  const envFromFile = {};
 
   try {
     if (fs.existsSync(envPath)) {
       const parsed = dotenv.parse(fs.readFileSync(envPath, 'utf8'));
-      widgetDefaultMaxAds = parsePositiveInt(parsed.WIDGET_DEFAULT_MAX_ADS);
-      widgetDefaultSlideIntervalMs = parsePositiveInt(parsed.WIDGET_DEFAULT_SLIDE_INTERVAL_MS);
-      widgetUtmMedium = parseNonEmptyString(parsed.WIDGET_UTM_MEDIUM);
-      widgetUtmCampaign = parseNonEmptyString(parsed.WIDGET_UTM_CAMPAIGN);
-      widgetMagazineUrl = parseNonEmptyString(parsed.WIDGET_MAGAZINE_URL);
-      widgetAppUrl = parseNonEmptyString(parsed.WIDGET_APP_URL);
-      widgetAppAndroidUrl = parseNonEmptyString(parsed.WIDGET_APP_ANDROID_URL);
-      widgetAppIosUrl = parseNonEmptyString(parsed.WIDGET_APP_IOS_URL);
-      widgetMagazineLabel = parseNonEmptyString(parsed.WIDGET_MAGAZINE_LABEL);
-      widgetMagazineDownloadName = parseNonEmptyString(parsed.WIDGET_MAGAZINE_DOWNLOAD_NAME);
-      widgetAppLabel = parseNonEmptyString(parsed.WIDGET_APP_LABEL);
-      widgetApiBaseUrl = parseNonEmptyString(parsed.WIDGET_API_BASE_URL);
+      Object.assign(envFromFile, parsed);
     }
   } catch (e) {
     console.warn('[Build] Impossible de lire .env pour les defaults widget:', e.message);
   }
+
+  const getBuildValue = (key, parser = parseNonEmptyString) => {
+    const value =
+      getEnvValueFromBuildEnvironment(envFromProcess, key) ??
+      getEnvValueFromBuildEnvironment(envFromFile, key);
+    return parser(value);
+  };
+
+  widgetDefaultMaxAds = parsePositiveInt(
+    getBuildValue('WIDGET_DEFAULT_MAX_ADS', parseInt) ?? widgetDefaultMaxAds
+  );
+  widgetDefaultSlideIntervalMs = parsePositiveInt(
+    getBuildValue('WIDGET_DEFAULT_SLIDE_INTERVAL_MS', parseInt) ?? widgetDefaultSlideIntervalMs
+  );
+  widgetUtmMedium = getBuildValue('WIDGET_UTM_MEDIUM');
+  widgetUtmCampaign = getBuildValue('WIDGET_UTM_CAMPAIGN');
+  widgetMagazineUrl = getBuildValue('WIDGET_MAGAZINE_URL');
+  widgetAppUrl = getBuildValue('WIDGET_APP_URL');
+  widgetAppAndroidUrl = getBuildValue('WIDGET_APP_ANDROID_URL');
+  widgetAppIosUrl = getBuildValue('WIDGET_APP_IOS_URL');
+  widgetMagazineLabel = getBuildValue('WIDGET_MAGAZINE_LABEL');
+  widgetMagazineDownloadName = getBuildValue('WIDGET_MAGAZINE_DOWNLOAD_NAME');
+  widgetAppLabel = getBuildValue('WIDGET_APP_LABEL');
+  widgetApiBaseUrl = getBuildValue('WIDGET_API_BASE_URL');
 
   return {
     widgetDefaultMaxAds,
