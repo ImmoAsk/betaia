@@ -10,7 +10,7 @@ import { API_URL, BASE_URL, IMAGE_URL } from '../../utils/settings';
 // Helper function to fetch negotiations by statut for property owner
 async function fetchVisitationsByStatut(statut, proprietaireID) {
   const dataAPIresponse = await fetch(
-    `${API_URL}?query={getVisitationsByKeyWords(statut:${statut},proprietaire_id:${proprietaireID},orderBy:{order:DESC,column:ID}){id,visiteur{name,id},date_visite,heure_visite,statut,telephone_visitor,fullname_visitor,propriete{id,nuo}}}`
+    `${API_URL}?query={getVisitationsByKeyWords(statut:${statut},proprietaire_id:${proprietaireID},orderBy:{order:DESC,column:ID}){id,visiteur{name,id,phone},date_visite,heure_visite,statut,telephone_visitor,fullname_visitor,propriete{id,nuo}}}`
   );
   const responseData = await dataAPIresponse.json();
   console.log(responseData)
@@ -21,7 +21,7 @@ async function fetchVisitationsByStatut(statut, proprietaireID) {
 
 async function fetchRenterVisitationsByStatut(statut, proprietaireID) {
   const dataAPIresponse = await fetch(
-    `${API_URL}?query={getVisitationsByKeyWords(statut:${statut},user_id:${proprietaireID},orderBy:{order:DESC,column:ID}){id,visiteur{name,id},date_visite,heure_visite,statut,telephone_visitor,fullname_visitor,propriete{id,nuo}}}`
+    `${API_URL}?query={getVisitationsByKeyWords(statut:${statut},user_id:${proprietaireID},orderBy:{order:DESC,column:ID}){id,visiteur{name,id,phone},date_visite,heure_visite,statut,telephone_visitor,fullname_visitor,propriete{id,nuo}}}`
   );
   const responseData = await dataAPIresponse.json();
   console.log(responseData)
@@ -31,7 +31,7 @@ async function fetchRenterVisitationsByStatut(statut, proprietaireID) {
 // Helper function to fetch negotiations by statut for admin
 async function fetchVisitationsByStatutByRole(statut) {
   const dataAPIresponse = await fetch(
-    `${API_URL}?query={getVisitationsByKeyWords(statut:${statut},orderBy:{order:DESC,column:ID}){id,visiteur{name,id},date_visite,heure_visite,statut,telephone_visitor,fullname_visitor,propriete{id,nuo}}}`
+    `${API_URL}?query={getVisitationsByKeyWords(statut:${statut},orderBy:{order:DESC,column:ID}){id,visiteur{name,id,phone},date_visite,heure_visite,statut,telephone_visitor,fullname_visitor,propriete{id,nuo}}}`
   );
   const responseData = await dataAPIresponse.json();
   console.log(responseData)

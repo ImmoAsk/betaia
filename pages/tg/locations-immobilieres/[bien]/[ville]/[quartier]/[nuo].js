@@ -22,7 +22,7 @@ import { useEffect } from "react";
 import getPropertyFullUrl from "../../../../../../utils/getPropertyFullURL";
 import getFirstImageArray from "../../../../../../utils/formatFirsImageArray";
 import buildPropertyBadge from "../../../../../../utils/buildPropertyBadge";
-import { useSession } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import ProRealEstateAgency from "../../../../../../components/iacomponents/ProRealEstateAgency";
 import FurnishedEquipmentList from "../../../../../../components/iacomponents/FurnishedEquipmentList";
 import NearestInfrastructureList from "../../../../../../components/iacomponents/NearestInfrastructureList";
@@ -40,6 +40,7 @@ import AddNewImagesModal from "../../../../../../components/iacomponents/AddNewI
 import DeletePropertyModal from "../../../../../../components/iacomponents/DeleteProperty/DeletePropertyModal";
 import EditPropertyModal from "../../../../../../components/iacomponents/EditPropertyModal";
 import RePostPropertyModal from "../../../../../../components/iacomponents/RePost/RePostPropertyModal";
+import { Alert } from "react-bootstrap";
 
 function SinglePropertyAltPage({ property }) {
   // Sign in modal
@@ -222,7 +223,7 @@ function SinglePropertyAltPage({ property }) {
     }
   }
 
-   const handlePropertyRepostModal = () => {
+  const handlePropertyRepostModal = () => {
     //e.preventDefault();
     if (session) {
       handlePropertyRepostShow();
@@ -332,7 +333,7 @@ function SinglePropertyAltPage({ property }) {
     );
   }
 
- return (
+  return (
     <RealEstatePageLayout
       pageTitle={`${property.categorie_propriete.denomination} à louer, ${property.ville.denomination}, ${property.quartier.denomination} | No. ${nuo} | Togo`}
       userLoggedIn={session ? true : false}
@@ -473,8 +474,6 @@ function SinglePropertyAltPage({ property }) {
               <Col lg={7} className="pt-lg-2 mb-5 mb-lg-0" sm={12} md={12}>
                 <div className="d-flex flex-column">
                   {/* Gallery */}
-
-
                   <div className="order-lg-1 order-2">
                     <SwiperGallery />
                   </div>
@@ -520,16 +519,25 @@ function SinglePropertyAltPage({ property }) {
                 {/* Overview */}
                 <h2 className="h5">Descriptif immobilier</h2>
                 <p className="mb-4 pb-2">{property && property.descriptif}</p>
-                {session && session.user && (session.user.roleId === '1200' || session.user.roleId === '1231') ? (
+                {!session || !session.user ? (
+                  <Alert variant="info" className="d-flex justify-content-between align-items-center">
+                    <div>
+                      <h6 className="mb-1">Connectez-vous pour en savoir plus</h6>
+                      <p className="mb-0">
+                        Vous êtes agent immobilier professionnel ? Créez votre compte dès aujourd’hui et choisissez l’abonnement qui vous correspond. Accédez en toute simplicité aux coordonnées exclusives des propriétaires et agences. Cet accès réservé aux abonnés vous permet de conserver l’intégralité de vos commissions, de multiplier vos opportunités et de conclure davantage de ventes.
+                      </p>
+                    </div>
+                    <Button variant="primary" onClick={() =>signIn()}>
+                      Se connecter
+                    </Button>
+                  </Alert>
+                ) : (session.user.roleId === '1200' || session.user.roleId === '1231') ? (
                   <DetailRealEstateAgency user={property.user.id} />
-                ) : (
+                ) : (session.user.roleId === '1233' || session.user.roleId === '1234' || session.user.roleId === '1235' || session.user.roleId === '1236' || session.user.roleId === '152') ? (
                   <ProRealEstateAgency user={property.user.id} />
-                )}
-
-
+                ) : null}
 
               </Col>
-
               {/* Sidebar with details */}
               <Col as="aside" lg={5} sm={12} className="pt-lg-2 mb-1 mb-lg-0" md={12}>
                 <div className="ps-lg-2">
@@ -620,64 +628,64 @@ function SinglePropertyAltPage({ property }) {
                       </Dropdown>
                       {canAccessMoreOptionsProperty(session?.user, property.user.id) && (
                         <Dropdown className="d-inline-block">
-                        <OverlayTrigger
-                          placement="top"
-                          overlay={<Tooltip>Gerer plus d'options</Tooltip>}
-                        >
-                          <Dropdown.Toggle variant="icon btn-light-primary btn-xs shadow-sm rounded-circle ms-2 mb-2">
-                            <i className="fi-dots-vertical"></i>
-                          </Dropdown.Toggle>
-                        </OverlayTrigger>
-                        <Dropdown.Menu align="end" className="my-1">
-                          <Dropdown.Item as="button">
-          
+                          <OverlayTrigger
+                            placement="top"
+                            overlay={<Tooltip>Gérer plus d'options</Tooltip>}
+                          >
+                            <Dropdown.Toggle variant="icon btn-light-primary btn-xs shadow-sm rounded-circle ms-2 mb-2">
+                              <i className="fi-dots-vertical"></i>
+                            </Dropdown.Toggle>
+                          </OverlayTrigger>
+                          <Dropdown.Menu align="end" className="my-1">
+                            <Dropdown.Item as="button">
+
                               <a target="_blank" rel="noopener noreferrer" onClick={handleAddNewImagesPropertyModal}>
                                 <i className="fi-image fs-base opacity-75 me-2"></i>
                                 Mettre plus d'images
                               </a>
-                            
-                          </Dropdown.Item>
 
-                          <Dropdown.Item as="button">
-                           
+                            </Dropdown.Item>
+
+                            <Dropdown.Item as="button">
+
                               <a target="_blank" rel="noopener noreferrer" onClick={console.log("Mettre en avant")}>
                                 <i className="fi-flame fs-base opacity-75 me-2"></i>
                                 Mettre en avant
                               </a>
-                            
-                          </Dropdown.Item>
 
-                          <Dropdown.Item as="button">
+                            </Dropdown.Item>
+
+                            <Dropdown.Item as="button">
 
                               <a target="_blank" rel="noopener noreferrer" onClick={handleEditPropertyModal}>
                                 <i className="fi-edit fs-base opacity-75 me-2"></i>
                                 Editer
                               </a>
-                            
-                          </Dropdown.Item>
 
-                          <Dropdown.Item as="button">
-      
+                            </Dropdown.Item>
+
+                            <Dropdown.Item as="button">
+
                               <a target="_blank" rel="noopener noreferrer" onClick={handleDeletePropertyModal}>
                                 <i className="fi-trash fs-base opacity-75 me-2"></i>
                                 Rendre indisponible
                               </a>
-                            
-                          </Dropdown.Item>
 
-                          <Dropdown.Item as="button">
-      
+                            </Dropdown.Item>
+
+                            <Dropdown.Item as="button">
+
                               <a target="_blank" rel="noopener noreferrer" onClick={handlePropertyRepostModal}>
                                 <i className="fi-trash fs-base opacity-75 me-2"></i>
                                 Remettre en location ou vente
                               </a>
-                            
-                          </Dropdown.Item>
 
-                        </Dropdown.Menu>
-                      </Dropdown>
+                            </Dropdown.Item>
+
+                          </Dropdown.Menu>
+                        </Dropdown>
                       )}
-                      
+
                     </div>
                   </div>
 
@@ -1073,7 +1081,7 @@ export async function getServerSideProps(context) {
 
   try {
     // Fetch data from external API
-    const final_url = `${API_URL}?query={propriete(nuo:${nuo}){tarifications{id,mode,currency,montant},id,statut,super_categorie,cout_visite,cout_assistance_client,est_disponible,nuo,garage,est_meuble,titre,descriptif,surface,usage,cuisine,salon,piece,wc_douche_interne,cout_mensuel,nuitee,cout_vente,categorie_propriete{denomination,id},infrastructures{denomination,icone},meubles{libelle,icone},badge_propriete{id,date_expiration,badge{id,badge_name,badge_image}},pays{id,code,denomination},caution_avance,ville{denomination,id},quartier{id,denomination,minus_denomination},adresse{libelle},offre{denomination,id},visuels{uri,position},user{id,organisation{name_organisation,logo,description,id,adresse_commune,tel_whatsapp}}}}`
+    const final_url = `${API_URL}?query={propriete(nuo:${nuo}){tarifications{id,mode,currency,montant},id,statut,super_categorie,cout_visite,cout_assistance_client,est_disponible,nuo,garage,est_meuble,titre,descriptif,surface,usage,cuisine,salon,piece,wc_douche_interne,cout_mensuel,nuitee,cout_vente,categorie_propriete{denomination,id,minus_denomination},infrastructures{denomination,icone},meubles{libelle,icone},badge_propriete{id,date_expiration,badge{id,badge_name,badge_image}},pays{id,code,denomination},caution_avance,ville{denomination,id},quartier{id,denomination,minus_denomination},adresse{libelle},offre{denomination,id},visuels{uri,position},user{id,name,email,organisation{name_organisation,logo,description,id,adresse_commune,tel_whatsapp}}}}`
     const dataAPIresponse = await fetch(final_url);
     console.log(final_url)
     // Check if the response is OK (status 200-299)

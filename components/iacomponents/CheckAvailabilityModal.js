@@ -9,13 +9,15 @@ import { useSession } from 'next-auth/react';
 import 'react-phone-input-2/lib/style.css';
 import axios from 'axios';
 import { min } from 'moment'
-import { API_URL } from '../../utils/settings';
+import { API_URL, BASE_URL, IMAGE_URL, RESEND_API_KEY } from '../../utils/settings';
 import EmbedSigninForm from './EmbedSignIn/EmbedSigninForm';
+import { get } from 'http';
+import getPropertyFullUrl from '../../utils/getPropertyFullURL';
 
 const CheckAvailabilityModal = ({ property, onSwap, pillButtons, ...props }) => {
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
-  const [requestAvailability, setRequestAvailability] = useState('');
+  //const [requestAvailability, setRequestAvailability] = useState('');
   const [firstName, setFirstName] = useState('');
   const [validated, setValidated] = useState(false);
   const [disponibiliteNotification, setDisponibiliteNotification] = useState(null);
@@ -23,7 +25,7 @@ const CheckAvailabilityModal = ({ property, onSwap, pillButtons, ...props }) => 
   const { data: session } = useSession();
 
   // Adjust validation logic based on session
-  const isFormValid = session && true ;
+  const isFormValid = session && true;
 
   // Form submission handler
   const handleSubmit = async (event) => {
@@ -62,6 +64,7 @@ const CheckAvailabilityModal = ({ property, onSwap, pillButtons, ...props }) => 
       }
     };
     console.log("Before Mutation: ", disponibilite_data)
+    console.log("Property info: ", property)
     try {
       const response = await axios.post(API_URL, disponibilite_data, {
         headers: { 'Content-Type': 'application/json' }
@@ -74,7 +77,44 @@ const CheckAvailabilityModal = ({ property, onSwap, pillButtons, ...props }) => 
       console.error("Error during disponibilite:", error);
     }
 
+    console.log("Form Data Submitted:", {
+      agentName: property?.user?.name,
+      agentEmail: property?.user?.email,
+      customerName: session?.user?.name || formData.firstName,
+      propertyNuo: property.nuo,
+      propertyLink: property.href,
+      propertyImage: property.visuels && property.visuels.length > 0 ? property.visuels[0]?.uri : null,
+    });
+    try {
+      const res = await fetch("/api/sendVerificationDisponibiliteEmail", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          agentName: property?.user?.name,
+          agentEmail: property?.user?.email || 'immoaskimmobilier@gmail.com',
+          customerName: session?.user?.name || formData.firstName,
+          propertyNuo: property?.nuo,
+          propertyLink: BASE_URL+getPropertyFullUrl(
+            property?.pays?.code || 'tg',
+            property?.offre?.denomination,
+            property?.categorie_propriete?.denomination,
+            property?.ville?.denomination,
+            property?.quartier?.denomination,
+            property?.nuo || ''
+          ),
+          //propertyLink: `${BASE_URL}/tg/${}/${property?.categorie_propriete?.minus_denomination}/${property?.ville?.denomination.toLowerCase()}/${property?.quartier?.minus_denomination}/${property?.nuo}`,
+          propertyImage: property.visuels && property.visuels.length > 0 ? IMAGE_URL+'/'+property.visuels[0]?.uri : null,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Erreur inconnue");
+      console.log("Email sent successfully:", data);
+    } catch (err) {
+      console.error("Échec de l'envoi de l'email:", err.message);
+    }
     setValidated(true);
+
+
   };
 
   const propertyCard = createPropertyObject(property);
@@ -103,23 +143,23 @@ const CheckAvailabilityModal = ({ property, onSwap, pillButtons, ...props }) => 
             <h3 className='h4'>
               Verification de disponibilité du bien immobilier N° {property.nuo}. Bonne chance !
             </h3>
-            { session ? (
+            {session ? (
               <Form noValidate validated={validated} onSubmit={handleSubmit}>
-              <Button
-                type='submit'
-                disabled={!isFormValid}
-                size='lg'
-                variant={`primary ${pillButtons ? 'rounded-pill' : ''} w-100`}
-              >
-                Vérifier la disponibilité
-              </Button>
-              {disponibiliteNotification && <div className="alert alert-success mt-3">{disponibiliteNotification}</div>}
-            </Form>
+                <Button
+                  type='submit'
+                  disabled={!isFormValid}
+                  size='lg'
+                  variant={`primary ${pillButtons ? 'rounded-pill' : ''} w-100`}
+                >
+                  Vérifier la disponibilité
+                </Button>
+                {disponibiliteNotification && <div className="alert alert-success mt-3">{disponibiliteNotification}</div>}
+              </Form>
             ) : (
 
               <>
-              <h5 className='h6 mb-3'>Connectez-vous pour vérifier la disponibilité</h5>
-              <EmbedSigninForm/>
+                <h5 className='h6 mb-3'>Connectez-vous pour vérifier la disponibilité</h5>
+                <EmbedSigninForm />
               </>
             )}
           </div>

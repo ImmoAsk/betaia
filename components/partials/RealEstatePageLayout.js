@@ -104,7 +104,7 @@ const RealEstatePageLayout = (props) => {
       router.push("/tg/add-property");
     }
   };
-
+  const avatarSrc = session?.user?.avatar || '/images/avatars/45.jpg';
   const displayCreationAccountButton = () => {
     return (
       <Link href="/auth/signin" passHref>
@@ -261,7 +261,7 @@ const RealEstatePageLayout = (props) => {
                     style={{ width: "40px" }}
                   >
                     <ImageLoader
-                      src="/images/avatars/45.jpg"
+                      src={'https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/avatars/' + avatarSrc}
                       width={80}
                       height={80}
                       placeholder={false}
@@ -276,7 +276,7 @@ const RealEstatePageLayout = (props) => {
                     style={{ width: "16rem" }}
                   >
                     <ImageLoader
-                      src="/images/avatars/45.jpg"
+                      src={'https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/avatars/' + avatarSrc}
                       width={48}
                       height={48}
                       placeholder={false}
@@ -360,9 +360,9 @@ const RealEstatePageLayout = (props) => {
               <></>
             )}
             {session ? (
-              session.user.roleId === "1230" || session.user.roleId === "1200"
+              (session.user.roleId === "1230" || session.user.roleId === "1200")
                 ? displayCreationContractButton()
-                : session.user.roleId === "1232" || session.user.roleId === "151"
+                : (session.user.roleId === "1232" || session.user.roleId === "151" || session.user.roleId === "1233" || session.user.roleId === "1234" || session.user.roleId === "1235")
                   ? displayCreationProjectButton()
                   : null
             ) : (
@@ -668,18 +668,23 @@ const RealEstatePageLayout = (props) => {
                   de gestion immobiliere boosté par une intelligence
                   artificielle.
                 </p>
-                {/*  <Nav className='flex-column mb-sm-4 mb-2'>
+                  <Nav className='flex-column mb-sm-4 mb-2'>
                   <Nav.Item className='mb-2'>
-                    <Nav.Link href='mailto:contact@immoask.com' className='p-0 fw-normal'>
-                      <i className='fi-mail me-2 align-middle opacity-70'></i>contact@immoask.com
+                    <Nav.Link href='/toc' className='p-0 fw-normal'>
+                      <i className='fi-info-circle me-2 align-middle opacity-70'></i>Conditions d'utilisation
                     </Nav.Link>
                   </Nav.Item>
-                  <Nav.Item>
-                    <Nav.Link href='tel:0022870453625' className='p-0 fw-normal'>
-                      <i className='fi-device-mobile me-2 align-middle opacity-70'></i>(+228) 7045-3625
+                  <Nav.Item className='mb-2'>
+                    <Nav.Link href='/privacy' className='p-0 fw-normal'>
+                      <i className='fi-info-circle me-2 align-middle opacity-70'></i>Politique de confidentialité
                     </Nav.Link>
                   </Nav.Item>
-                </Nav> */}
+                  <Nav.Item className='mb-2'>
+                    <Nav.Link href='/legal' className='p-0 fw-normal'>
+                      <i className='fi-info-circle me-2 align-middle opacity-70'></i>Mentions légales
+                    </Nav.Link>
+                  </Nav.Item>
+                </Nav> 
                 <div className="pt-2">
                   <SocialButton
                     href="https://facebook.com/immoask"

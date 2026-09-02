@@ -69,11 +69,23 @@ const PropertyAccounting = ({ rent_collection }) => {
             ({prop?.categorie_propriete?.denomination} No. {prop?.nuo}), enregistrées le {formattedDate}.
           </Card.Body>
         );
+      case type_mouvement === "sortie" && source_mouvement === "entretien":
+        return (
+          <Card.Body>
+            Frais d’entretien mensuel de {montant} XOF pour les espaces communs, enregistrées le {formattedDate}.
+          </Card.Body>
+        );
 
       case type_mouvement === "sortie" && source_mouvement === "depot":
         return (
           <Card.Body>
             Dépôt bancaire de {montant} XOF provenant des revenus locatifs, enregistré le {formattedDate}.
+          </Card.Body>
+        );
+      case type_mouvement === "bilan" && source_mouvement === "depot":
+        return (
+          <Card.Body>
+            Bilan bancaire de {montant} XOF provenant des revenus locatifs, enregistré le {formattedDate}.
           </Card.Body>
         );
 
@@ -90,7 +102,7 @@ const PropertyAccounting = ({ rent_collection }) => {
   };
 
   const renderReceiptLink = () => {
-    if (rent_collection.type_mouvement === "sortie" && rent_collection.recu && role === "1200") {
+    if (rent_collection.type_mouvement === "sortie" || rent_collection.type_mouvement === "bilan" && rent_collection.recu && role === "1200") {
       return (
         <Card.Footer>
           <a

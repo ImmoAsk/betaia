@@ -9,9 +9,12 @@ import Collapse from 'react-bootstrap/Collapse'
 import Avatar from '../Avatar'
 import StarRating from '../StarRating'
 import CardNav from '../CardNav'
-import { getSession, useSession } from 'next-auth/react'
-import { useRessourceByRole } from '../../customHooks/realEstateHooks'
+import { useSession } from 'next-auth/react'
+import { useRessourceByRole, useRessourceByUser, useUser } from '../../customHooks/realEstateHooks'
 import MediumRealEstateAgencyCard from '../iacomponents/RealEstateAgency/MediumRealEstateAgencyCard'
+import { Spinner, Alert } from 'react-bootstrap';
+import { IMAGE_URL } from '../../utils/settings'
+import ProRealEstateAgency from '../iacomponents/RealEstateAgency/LargeRealEstateAgencyCard'
 
 const SuperAdminActionButtons = () => {
   const [showMenu, setShowMenu] = useState(false);
@@ -20,14 +23,14 @@ const SuperAdminActionButtons = () => {
 
   return (
     <>
-     <div className="flex items-center space-x-2 mb-3">
+      <div className="flex items-center space-x-2 mb-3">
         <Link href="/tg/add-property" passHref>
           <Button as="a" size="lg" className="w-100 mb-3">
             <i className="fi-plus me-2"></i>
             Lister un immeuble
           </Button>
         </Link>
-  
+
         <div className="position-relative">
           {/* 3-dot icon */}
           <Button
@@ -54,7 +57,7 @@ const SuperAdminActionButtons = () => {
             </div>
           )}
         </div>
-        </div>
+      </div>
     </>
   );
 };
@@ -111,25 +114,32 @@ const RealEstateAccountLayout = ({ accountPageTitle, children }) => {
   const { data: session } = useSession();
   //console.log(session);
   const roleId = Number(session && session.user?.roleId);
+  const userId = Number(session?.user?.id);
   //console.log(roleId);
-  const { data: ressources, isLoading, error } = useRessourceByRole(session ? roleId : 0);
-  //console.log(session);
+  const { data: roleRessources, isLoading: loadingRole, error: errorRole } = useRessourceByRole(roleId);
+  const { data: userRessources, isLoading: loadingUser, error: errorUser } = useRessourceByUser(userId);
+  //const { data: user_identity, isLoading: userLoading, error: userError } = useUser(userId);
+  // Use userRessources if available, otherwise fall back to roleRessources
+  const ressources = (userRessources && userRessources.length > 0) ? userRessources : roleRessources;
+  const isLoading = loadingRole || loadingUser;
+  const error = errorRole || errorUser;
+
+  //console.log("User Identity", user_identity);
+  const avatarSrc = session?.user?.avatar || '/images/avatars/45.jpg';
+
 
   return (
     <Container fluid className='pt-5 pb-lg-4 mt-5 mb-sm-2'>
-
       {/* Breadcrumb */}
-
-
       <Row>
-
         {/* Sidebar (Account nav) */}
-        <Col md={5} lg={3} className='pe-xl-4 mb-5'>
+        <Col md={5} lg={3} className='pe-xl-4 mb-2'>
           <div className='card card-body border-0 shadow-sm pb-1 me-lg-1'>
             <div className='d-flex d-md-block d-lg-flex align-items-start pt-lg-2 mb-4'>
-              <Avatar img={{ src: '/images/avatars/45.jpg', alt: 'ImmoAsk' }} size={[48, 48]} />
+
+              {session && (<Avatar img={{ src: 'https://immoaskbetaapi.omnisoft.africa/public/storage/uploads/visuels/avatars/' + avatarSrc, alt: 'Avatar' }} size={[48, 48]} />)}
               <div className='pt-md-2 pt-lg-0 ps-3 ps-md-0 ps-lg-3'>
-                <h2 className='fs-lg mb-0'>{session ? session.user?.name : " "}</h2>
+                <h2 className='fs-lg mb-0'>{session?.user?.name || " "}</h2>
                 <MediumRealEstateAgencyCard user={session ? session.user?.id : "1"} />
                 <StarRating rating={4.8} />
                 <ul className='list-unstyled fs-sm mt-3 mb-0'>
@@ -159,8 +169,7 @@ const RealEstateAccountLayout = ({ accountPageTitle, children }) => {
                 </Button>
               </Link>
             )}
-
-            {(roleId === 1232) && (
+            {(roleId === 1232 || roleId === 1233 || roleId === 1234 || roleId === 1235) && (
               <Link href="/tg/add-property" passHref>
                 <Button as="a" size="lg" className="w-100 mb-3">
                   <i className="fi-plus me-2"></i>
@@ -171,20 +180,16 @@ const RealEstateAccountLayout = ({ accountPageTitle, children }) => {
 
             {(roleId === 1230) && (
               <Link href="/tg/account-contracts" passHref>
-                <Button as="a" size="lg" className="w-100 mb-3">
+                <Button as="a" size="lg" className="w-100 mb-2">
                   <i className="fi-file me-2"></i>
                   Créer un contrat immobilier
                 </Button>
               </Link>
             )}
-
-
-
-
             {/* Enroller une propriété */}
             <Button
               variant='outline-secondary'
-              className='d-block d-md-none w-100 mb-3'
+              className='d-block d-md-none w-100 mb-2'
               onClick={() => setOpen(!open)}
               aria-controls='account-menu'
               aria-expanded={open}
@@ -194,7 +199,7 @@ const RealEstateAccountLayout = ({ accountPageTitle, children }) => {
             </Button>
             <Collapse in={open} className='d-md-block'>
               <div id='account-menu'>
-                <CardNav className='pt-3'>
+                <CardNav className='pt-1'>
                   {session && session.user.roleId === "1232" && (
                     <CardNav.Item
                       href='/tg/subscriptions'
@@ -205,20 +210,32 @@ const RealEstateAccountLayout = ({ accountPageTitle, children }) => {
                   )}
 
                   {
-                    ressources && ressources.map((ressource) => {
-
-                      if (ressource.ressource.statut > 0) {
-                        return (<CardNav.Item
-                          key={ressource.ressource.id}
-                          href={ressource.ressource.ressourceLink}
-                          icon={ressource.ressource.icone}
-                          active={accountPageTitle === ressource.ressource.ressourceName ? true : false}
-                        >
-                          {ressource.ressource.ressourceName}
-                        </CardNav.Item>)
-                      }
-
-                    }
+                    isLoading ? (
+                      <div className="text-center my-4">
+                        <Spinner animation="border" role="status" variant="primary">
+                          <span className="visually-hidden">Chargement...</span>
+                        </Spinner>
+                      </div>
+                    ) : error ? (
+                      <Alert variant="danger" className="my-3">
+                        Une erreur s'est produite lors du chargement des ressources.
+                      </Alert>
+                    ) : (
+                      ressources && ressources.map((ressource) => {
+                        if (ressource.ressource.statut > 0) {
+                          return (
+                            <CardNav.Item
+                              key={ressource.ressource.id}
+                              href={ressource.ressource.ressourceLink}
+                              icon={ressource.ressource.icone}
+                              active={accountPageTitle === ressource.ressource.ressourceName}
+                            >
+                              {ressource.ressource.ressourceName}
+                            </CardNav.Item>
+                          );
+                        }
+                        return null;
+                      })
                     )
                   }
                   {/* <CardNav.Item
@@ -283,7 +300,7 @@ const RealEstateAccountLayout = ({ accountPageTitle, children }) => {
                     icon='fi-settings'
                     active={accountPageTitle === 'Paramètres' ? true : false}
                   >
-                    Paramètres 
+                    Paramètres
                   </CardNav.Item>
                   <CardNav.Item
                     href='/tg/account-info'

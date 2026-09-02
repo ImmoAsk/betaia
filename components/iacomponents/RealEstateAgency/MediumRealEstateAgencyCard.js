@@ -1,6 +1,6 @@
 import React from "react";
 import { Card } from "react-bootstrap";
-import useOrganisation from "../../../customHooks/useOrganisation";
+import {useOrganisation} from "../../../customHooks/useOrganisation";
 import LoadingSpinner from "../../LoadingSpinner";
 
 
