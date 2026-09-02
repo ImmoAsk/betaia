@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Simple Widget</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; background: #f0f0f0; }
+    #annonces-widget { 
+      background: white; 
+      padding: 20px; 
+      border-radius: 8px; 
+      min-height: 200px;
+    }
+    .log { background: #222; color: #0f0; padding: 10px; margin-top: 20px; font-family: monospace; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <h1>Test Widget Betaia</h1>
+  
+  <div id="annonces-widget"></div>
+  
+  <div class="log" id="log">Chargement...</div>
+
+  <script>
+    // Intercepte les erreurs
+    window.onerror = function(msg, url, line) {
+      log('ERREUR: ' + msg + ' (ligne ' + line + ')');
+    };
+    
+    function log(msg) {
+      const el = document.getElementById('log');
+      el.textContent += '\n' + new Date().toLocaleTimeString() + ' - ' + msg;
+    }
+    
+    // Observe le chargement
+    log('DOM pret');
+  </script>
+  
+  <script async src="./dist/widget.js" data-id="TEST_123"></script>
+  
+  <script>
+    // Verifie apres 2s si le widget est charge
+    setTimeout(function() {
+      if (window.__AnnoncesWidget__) {
+        log('Widget charge avec succes');
+        log('Stats: ' + JSON.stringify(window.__AnnoncesWidget__.getStats()));
+      } else {
+        log('Widget NON charge');
+      }
+    }, 3000);
+  </script>
+</body>
+</html>
